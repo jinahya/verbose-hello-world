@@ -24,6 +24,7 @@ import java.security.SignatureException;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
+import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.stream.Stream;
@@ -50,23 +51,22 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class RSASSA_PSS_Test {
 
-        static final String KEY_PAIR_ALGORITHM = "RSA";
+        private static final String KEY_PAIR_ALGORITHM = "RSA";
 
         private static final String MGF1_ALGORITHM = "MGF1";
 
-        private static final int TRAILER_FIELD_BC = 1; // Represents 0xBC
+        private static final String SIGNATURE_ALGORITHM = "RSASSA-PSS";
 
-        static final String SIGNATURE_ALGORITHM = "RSASSA-PSS";
-
-        static Stream<Arguments> pssTestProvider() {
-            return Stream.of(2048, 3072, 4096).flatMap(k -> Stream.of(
-                    Arguments.of(k, MGF1ParameterSpec.SHA256, 32),
-                    Arguments.of(k, MGF1ParameterSpec.SHA384, 48)
-            ));
+        private static Stream<Arguments> pssTestProvider() {
+            return Stream.of(1024, 2048, 3072, 4096)
+                    .flatMap(k -> Stream.of(
+                            Arguments.of(k, MGF1ParameterSpec.SHA256, 256 >> 3),
+                            Arguments.of(k, MGF1ParameterSpec.SHA384, 384 >> 3)
+                    ));
         }
 
         @ParameterizedTest(name = "{0}-bit RSA with {1}")
-        @MethodSource("pssTestProvider")
+        @MethodSource({"pssTestProvider"})
         void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen) throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
@@ -75,26 +75,29 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                     keysize
             );
             final var pssSpec = new PSSParameterSpec(
-                    mgfSpec.getDigestAlgorithm(),
-                    MGF1_ALGORITHM,
-                    mgfSpec,
-                    saltLen,
-                    TRAILER_FIELD_BC
+                    mgfSpec.getDigestAlgorithm(),     // <mdName>
+                    MGF1_ALGORITHM,                   // <mgfName>
+                    mgfSpec,                          // <mgfSpec>
+                    saltLen,                          // <saltLen>
+                    PSSParameterSpec.TRAILER_FIELD_BC // <trailerField>
             );
-            // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
-            instance.setParameter(pssSpec);
-            service.update(instance);
-            final var signature = instance.sign();
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            instance.setParameter(pssSpec);
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                instance.initSign(keyPair.getPrivate());
+                instance.setParameter(pssSpec);
+                service.update(instance);
+                final var signature = instance.sign();
+                System.out.printf("%d %40s %d (%d) %s%n", keysize, mgfSpec, i,
+                                  signature.length, Base64.getEncoder().encodeToString(signature));
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                instance.setParameter(pssSpec);
+                service.update(instance);
+                final var verified = instance.verify(signature);
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
         }
     }
 
@@ -122,25 +125,28 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 512, 1024
         })
         @ParameterizedTest
-        void __SHA1withDSA(final int keysize)
-                throws Exception {
+        void __SHA1withDSA(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         keysize);
-            // -------------------------------------------------------------------------------- when
+            final var service = service();
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keysize
+            );
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                instance.initSign(keyPair.getPrivate());
+                service.update(instance);
+                final var signature = instance.sign();
+                System.out.printf("%d %d (%d) %s%n", keysize, i,
+                                  signature.length, Base64.getEncoder().encodeToString(signature));
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service.update(instance);
+                final var verified = instance.verify(signature);
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
         }
     }
 
