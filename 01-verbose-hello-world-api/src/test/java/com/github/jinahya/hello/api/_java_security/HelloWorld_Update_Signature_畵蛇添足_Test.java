@@ -125,7 +125,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 512, 1024
         })
         @ParameterizedTest
-        void __SHA1withDSA(final int keysize) throws Exception {
+        void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = service();
             final var keyPair = _Java_Security_TestUtils.generateKeyPair(
