@@ -130,9 +130,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA1WithDSATest {
 
-        static final String KEY_PAIR_ALGORITHM = "DSA";
+        private static final String KEY_PAIR_ALGORITHM = "DSA";
 
-        static final String SIGNATURE_ALGORITHM = "SHA1withDSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA1withDSA";
 
         @ValueSource(ints = {
                 1024, 2048
@@ -170,9 +170,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA256WithDSATest {
 
-        static final String KEY_PAIR_ALGORITHM = "DSA";
+        private static final String KEY_PAIR_ALGORITHM = "DSA";
 
-        static final String SIGNATURE_ALGORITHM = "SHA256withDSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA256withDSA";
 
         @ValueSource(ints = {
                 1024, 2048
@@ -210,11 +210,11 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA256WithECDSA_Test {
 
-        static final String KEY_PAIR_ALGORITHM = "EC";
+        private static final String KEY_PAIR_ALGORITHM = "EC";
 
-        static final String SIGNATURE_ALGORITHM = "SHA256withECDSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA256withECDSA";
 
-        static final String CURVE_NAME = "secp256r1"; // Standard for P-256
+        private static final String CURVE_NAME = "secp256r1"; // Standard for P-256
 
         @Test
         void __() throws Exception {
@@ -246,11 +246,11 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA384withECDSA_Test {
 
-        static final String KEY_PAIR_ALGORITHM = "EC";
+        private static final String KEY_PAIR_ALGORITHM = "EC";
 
-        static final String SIGNATURE_ALGORITHM = "SHA384withECDSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA384withECDSA";
 
-        static final String CURVE_NAME = "secp384r1";
+        private static final String CURVE_NAME = "secp384r1";
 
         @Test
         void __() throws Exception {
@@ -282,9 +282,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA1withRSA_Test {
 
-        static final String KEY_PAIR_ALGORITHM = "RSA";
+        private static final String KEY_PAIR_ALGORITHM = "RSA";
 
-        static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 
         @ValueSource(ints = {
                 1024, 2048, 3072, 4096
@@ -321,9 +321,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA256withRSA_Test {
 
-        static final String KEY_PAIR_ALGORITHM = "RSA";
+        private static final String KEY_PAIR_ALGORITHM = "RSA";
 
-        static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
 
         @ValueSource(ints = {
                 1024, 2048, 3072, 4096
@@ -360,9 +360,9 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
     @Nested
     class SHA384withRSA_Test {
 
-        static final String KEY_PAIR_ALGORITHM = "RSA";
+        private static final String KEY_PAIR_ALGORITHM = "RSA";
 
-        static final String SIGNATURE_ALGORITHM = "SHA384withRSA";
+        private static final String SIGNATURE_ALGORITHM = "SHA384withRSA";
 
         @ValueSource(ints = {
                 1024, 2048, 3072, 4096
