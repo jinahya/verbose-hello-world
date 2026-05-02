@@ -59,8 +59,8 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         System.out.printf("%10s %20s #%d (%4d) %s...%s%n", keyPairParameter,
                           Optional.ofNullable(signatureParameter).orElse(""),
                           iteration, signature.length,
-                          encoded.substring(0, 4),
-                          encoded.substring(encoded.length() - 4));
+                          encoded.substring(0, 8),
+                          encoded.substring(encoded.length() - 8));
     }
 
     private static void printf(final int keysize, final int iteration, final byte[] signature) {
