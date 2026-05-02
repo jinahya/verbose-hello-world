@@ -7,7 +7,9 @@ import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,8 +19,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.opentest4j.TestAbortedException;
+import org.opentest4j.TestSkippedException;
 
 import java.io.File;
+import java.security.InvalidKeyException;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.ECGenParameterSpec;
@@ -27,8 +32,10 @@ import java.security.spec.PSSParameterSpec;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+// https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
 @畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -47,18 +54,35 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         return _Java_Security_TestUtils.SIGNATURE_ALGORITHMS;
     }
 
+    private static void printf(final Object keyPairParameter,
+                               final @Nullable Object signatureParameter,
+                               final int iteration,
+                               final byte[] signature) {
+        final var encoded = Base64.getEncoder().encodeToString(signature);
+        System.out.printf("%10s %20s #%d (%4d) %s...%s%n", keyPairParameter,
+                          Optional.ofNullable(signatureParameter).orElse(""),
+                          iteration, signature.length,
+                          encoded.substring(0, 4),
+                          encoded.substring(encoded.length() - 4));
+    }
+
+    private static void printf(final int keysize, final int iteration, final byte[] signature) {
+        System.out.printf("%4d %d (%d) %s%n", keysize, iteration,
+                          signature.length, Base64.getEncoder().encodeToString(signature));
+    }
+
     @DisplayName("RSASSA-PSS")
     @Nested
     class RSASSA_PSS_Test {
 
-        private static final String KEY_PAIR_ALGORITHM = "RSA";
+        private static final String KEY_PAIR_ALGORITHM = "RSASSA-PSS";
 
         private static final String MGF1_ALGORITHM = "MGF1";
 
         private static final String SIGNATURE_ALGORITHM = "RSASSA-PSS";
 
         private static Stream<Arguments> pssTestProvider() {
-            return Stream.of(1024, 2048, 3072, 4096)
+            return Stream.of(2048, 3072, 4096)
                     .flatMap(k -> Stream.of(
                             Arguments.of(k, MGF1ParameterSpec.SHA256, 256 >> 3),
                             Arguments.of(k, MGF1ParameterSpec.SHA384, 384 >> 3)
@@ -84,12 +108,15 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             for (int i = 0; i < 2; i++) {
                 // ----------------------------------------------------------- sign with private key
-                instance.initSign(keyPair.getPrivate());
+                try {
+                    instance.initSign(keyPair.getPrivate());
+                } catch (final InvalidKeyException ike) {
+                    throw new TestAbortedException(ike.getMessage(), ike);
+                }
                 instance.setParameter(pssSpec);
                 service.update(instance);
                 final var signature = instance.sign();
-                System.out.printf("%d %40s %d (%d) %s%n", keysize, mgfSpec, i,
-                                  signature.length, Base64.getEncoder().encodeToString(signature));
+                printf(keysize, pssSpec, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
                 instance.setParameter(pssSpec);
@@ -101,18 +128,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         }
     }
 
-    /**
-     * .
-     * <blockquote>
-     * For signature generation, if the security strength of the digest algorithm is weaker than the
-     * security strength of the key used to sign the signature (for example, using (2048, 256)-bit
-     * DSA keys with the SHA1withDSA signature), then the operation will fail with the error
-     * message: "The security strength of SHA1 digest algorithm is not sufficient for this key
-     * size.
-     * </blockquote>
-     *
-     * @see <a href="https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html"></a>
-     */
+    // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
     @DisplayName("SHA1withDSA")
     @Nested
     class SHA1WithDSATest {
@@ -122,7 +138,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String SIGNATURE_ALGORITHM = "SHA1withDSA";
 
         @ValueSource(ints = {
-                512, 1024
+                1024, 2048
         })
         @ParameterizedTest
         void __(final int keysize) throws Exception {
@@ -135,11 +151,14 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             for (int i = 0; i < 2; i++) {
                 // ----------------------------------------------------------- sign with private key
-                instance.initSign(keyPair.getPrivate());
+                try {
+                    instance.initSign(keyPair.getPrivate());
+                } catch (final InvalidKeyException ike) {
+                    throw new TestAbortedException(ike.getMessage(), ike);
+                }
                 service.update(instance);
                 final var signature = instance.sign();
-                System.out.printf("%d %d (%d) %s%n", keysize, i,
-                                  signature.length, Base64.getEncoder().encodeToString(signature));
+                printf(keysize, null, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
                 service.update(instance);
@@ -159,28 +178,34 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String SIGNATURE_ALGORITHM = "SHA256withDSA";
 
         @ValueSource(ints = {
-                512, 1024, 2048
+                1024, 2048
         })
         @ParameterizedTest
-        void __SHA1withDSA(final int keysize)
-                throws Exception {
+        void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         keysize);
-            // -------------------------------------------------------------------------------- when
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keysize
+            );
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                try {
+                    instance.initSign(keyPair.getPrivate());
+                } catch (final InvalidKeyException ike) {
+                    throw new TestAbortedException(ike.getMessage(), ike);
+                }
+                service.update(instance);
+                final var signature = instance.sign();
+                printf(keysize, i, signature);
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service.update(instance);
+                final var verified = instance.verify(signature);
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
         }
     }
 
@@ -195,26 +220,28 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String CURVE_NAME = "secp256r1"; // Standard for P-256
 
         @Test
-        void __()
-                throws Exception {
+        void __() throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         new ECGenParameterSpec(
-                                                                                 CURVE_NAME));
-            // -------------------------------------------------------------------------------- when
+            final var service = service();
+            final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keyPairSpec
+            );
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                instance.initSign(keyPair.getPrivate());
+                service.update(instance);
+                final var signature = instance.sign();
+                log.debug("signature: {}", HexFormat.of().formatHex(signature));
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service.update(instance);
+                final var verified = instance.verify(signature);
+                // -------------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
         }
     }
 
@@ -261,7 +288,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 
         @ValueSource(ints = {
-                1024, 2048, 2072, 4096
+                1024, 2048, 3072, 4096
         })
         @ParameterizedTest
         void __(final int keysize)
@@ -273,7 +300,13 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
+            try {
+                instance.initSign(keyPair.getPrivate());
+            } catch (final InvalidKeyException ike) {
+                throw new TestAbortedException(
+                        SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
+                                + ike.getMessage());
+            }
             service.update(instance);
             final var signature = instance.sign();
             log.debug("signature: {}", HexFormat.of().formatHex(signature));
@@ -295,7 +328,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
 
         @ValueSource(ints = {
-                2048, 3072, 4096
+                1024, 2048, 3072, 4096
         })
         @ParameterizedTest
         void __(final int keysize)
@@ -307,7 +340,13 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
+            try {
+                instance.initSign(keyPair.getPrivate());
+            } catch (final InvalidKeyException ike) {
+                throw new TestAbortedException(
+                        SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
+                                + ike.getMessage());
+            }
             service.update(instance);
             final var signature = instance.sign();
             log.debug("signature: {}", HexFormat.of().formatHex(signature));
@@ -329,7 +368,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String SIGNATURE_ALGORITHM = "SHA384withRSA";
 
         @ValueSource(ints = {
-                2048, 3072, 4096
+                1024, 2048, 3072, 4096
         })
         @ParameterizedTest
         void __(final int keysize)
@@ -341,7 +380,13 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
             // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
+            try {
+                instance.initSign(keyPair.getPrivate());
+            } catch (final InvalidKeyException ike) {
+                throw new TestAbortedException(
+                        SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
+                                + ike.getMessage());
+            }
             service.update(instance);
             final var signature = instance.sign();
             log.debug("signature: {}", HexFormat.of().formatHex(signature));
