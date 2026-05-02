@@ -28,7 +28,6 @@ import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
 import java.util.Base64;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -291,31 +290,30 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 1024, 2048, 3072, 4096
         })
         @ParameterizedTest
-        void __(final int keysize)
-                throws Exception {
+        void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         keysize);
-            // -------------------------------------------------------------------------------- when
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keysize
+            );
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            try {
-                instance.initSign(keyPair.getPrivate());
-            } catch (final InvalidKeyException ike) {
-                throw new TestAbortedException(
-                        SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
-                        + ike.getMessage());
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                try {
+                    instance.initSign(keyPair.getPrivate());
+                } catch (final InvalidKeyException ike) {
+                    throw new TestAbortedException(ike.getMessage(), ike);
+                }
+                service().update(instance);
+                final var signature = instance.sign();
+                printf(keysize, null, i, signature);
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service().update(instance);
+                final var verified = instance.verify(signature);
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
             }
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
         }
     }
 
@@ -331,31 +329,30 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 1024, 2048, 3072, 4096
         })
         @ParameterizedTest
-        void __(final int keysize)
-                throws Exception {
+        void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         keysize);
-            // -------------------------------------------------------------------------------- when
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keysize
+            );
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            try {
-                instance.initSign(keyPair.getPrivate());
-            } catch (final InvalidKeyException ike) {
-                throw new TestAbortedException(
-                        SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
-                        + ike.getMessage());
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                try {
+                    instance.initSign(keyPair.getPrivate());
+                } catch (final InvalidKeyException ike) {
+                    throw new TestAbortedException(ike.getMessage(), ike);
+                }
+                service().update(instance);
+                final var signature = instance.sign();
+                printf(keysize, null, i, signature);
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service().update(instance);
+                final var verified = instance.verify(signature);
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
             }
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
         }
     }
 
@@ -371,31 +368,31 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 1024, 2048, 3072, 4096
         })
         @ParameterizedTest
-        void __(final int keysize)
-                throws Exception {
+        void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         keysize);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keysize
+            );
             // -------------------------------------------------------------------------------- when
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            try {
-                instance.initSign(keyPair.getPrivate());
-            } catch (final InvalidKeyException ike) {
-                throw new TestAbortedException(
-                        SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
-                        + ike.getMessage());
+            for (int i = 0; i < 2; i++) {
+                // ----------------------------------------------------------- sign with private key
+                try {
+                    instance.initSign(keyPair.getPrivate());
+                } catch (final InvalidKeyException ike) {
+                    throw new TestAbortedException(ike.getMessage(), ike);
+                }
+                service().update(instance);
+                final var signature = instance.sign();
+                printf(keysize, null, i, signature);
+                // ---------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service().update(instance);
+                final var verified = instance.verify(signature);
+                // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
             }
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
         }
     }
 }
