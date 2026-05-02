@@ -46,11 +46,6 @@ class HelloWorld_Update_Signature__Test
     @TempDir
     private static File tempDir;
 
-    @BeforeEach
-    void __() throws SignatureException {
-        HelloWorldTestUtils.update_signature_updates_hello_world_bytes(service());
-    }
-
     private static void printf(final Object keyPairParameter,
                                final @Nullable Object signatureParameter,
                                final int iteration,
@@ -63,6 +58,13 @@ class HelloWorld_Update_Signature__Test
                           encoded.substring(encoded.length() - 12));
     }
 
+    // ---------------------------------------------------------------------------------------------
+    @BeforeEach
+    void __() throws SignatureException {
+        HelloWorldTestUtils.update_signature_updates_hello_world_bytes(service());
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @DisplayName("RSASSA-PSS")
     @Nested
     class RSASSA_PSS_Test {

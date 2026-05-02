@@ -23,20 +23,14 @@ package com.github.jinahya.hello.api;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
-import java.io.BufferedWriter;
-import java.io.CharArrayWriter;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
-import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PipedWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -306,10 +300,6 @@ interface HelloWorldRevisited
     }
 
     // ------------------------------------------------------------------------------------ java.sql
-    @Override
-    default <T extends Blob> T set(final T blob, final long pos) throws SQLException {
-        return HelloWorld.super.set(blob, pos);
-    }
 
     // ----------------------------------------------------------------------------------- java.util
     @Override

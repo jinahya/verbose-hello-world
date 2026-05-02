@@ -55,6 +55,8 @@ import java.security.MessageDigest;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.Collection;
@@ -1193,25 +1195,60 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------------ java.sql
-    default <T extends Blob> T set(final T blob, long pos) throws SQLException {
+    default <T extends PreparedStatement> T setBytes(final T preparedStatement,
+                                                     final int parameterIndex)
+            throws SQLException {
+        Objects.requireNonNull(preparedStatement, "preparedStatement is null");
+        if (parameterIndex < 1) {
+            throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        preparedStatement.setBytes(parameterIndex, array);
+        return preparedStatement;
+    }
+
+    default <T extends Blob> T writeThroughBinaryStream(final T blob, final long pos)
+            throws SQLException, IOException {
         Objects.requireNonNull(blob, "blob is null");
-        if (pos <= 0L) {
+        if (pos < 1L) {
+            throw new IllegalArgumentException("non-positive pos: " + pos);
+        }
+        try (var stream = blob.setBinaryStream(pos)) {
+            write(stream);
+            stream.flush();
+        }
+        return blob;
+    }
+
+    default <T extends Clob> T writeThroughAsciiStream(final T clob, final long pos)
+            throws SQLException, IOException {
+        Objects.requireNonNull(clob, "clob is null");
+        if (pos < 1L) {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
         final var array = new byte[BYTES];
         set(array);
-        for (int offset = 0; offset < array.length; ) {
-            final var written = blob.setBytes(
-                    pos,                  // <pos>
-                    array,                // <bytes>
-                    offset,               // <offset>
-                    array.length - offset // <len>
-            );
-            assert written >= 0;
-            offset += written;
-            pos += written;
+        try (var stream = clob.setAsciiStream(pos)) {
+            write(stream);
+            stream.flush();
         }
-        return blob;
+        return clob;
+    }
+
+    default <T extends Clob> T writeThroughCharacterStream(final T clob, final long pos)
+            throws SQLException, IOException {
+        Objects.requireNonNull(clob, "clob is null");
+        if (pos < 1L) {
+            throw new IllegalArgumentException("non-positive pos: " + pos);
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        try (var writer = clob.setCharacterStream(pos)) {
+            write(writer);
+            writer.flush();
+        }
+        return clob;
     }
 
     // ----------------------------------------------------------------------------------- java.util
