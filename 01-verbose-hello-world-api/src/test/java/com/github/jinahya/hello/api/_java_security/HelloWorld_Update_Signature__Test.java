@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 @畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Signature_畵蛇添足_Test
+class HelloWorld_Update_Signature__Test
         extends HelloWorldTest {
 
     @TempDir
