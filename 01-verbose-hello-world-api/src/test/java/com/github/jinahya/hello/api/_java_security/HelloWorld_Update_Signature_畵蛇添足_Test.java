@@ -21,7 +21,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.opentest4j.TestAbortedException;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 import java.security.InvalidKeyException;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.ECGenParameterSpec;
@@ -90,7 +95,6 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         @MethodSource({"pssTestProvider"})
         void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
             final var keyPair = _Java_Security_TestUtils.generateKeyPair(
                     KEY_PAIR_ALGORITHM,
                     keysize
@@ -111,15 +115,62 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                     throw new TestAbortedException(ike.getMessage(), ike);
                 }
                 instance.setParameter(pssSpec);
-                service.update(instance);
+                service().update(instance);
                 final var signature = instance.sign();
                 printf(keysize, pssSpec, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
                 instance.setParameter(pssSpec);
-                service.update(instance);
+                service().update(instance);
                 final var verified = instance.verify(signature);
                 // ---------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
+        }
+
+        @Test
+        void __file() throws Exception {
+            final var file = HelloWorldTestUtils.writeSome(
+                    File.createTempFile("tmp", null, tempDir)
+            );
+            // -------------------------------------------------------------------------------------
+            final var mgfSpec = MGF1ParameterSpec.SHA384;
+            final var pssSpec = new PSSParameterSpec(
+                    mgfSpec.getDigestAlgorithm(),
+                    MGF1_ALGORITHM,
+                    mgfSpec,
+                    384 >> 3,
+                    PSSParameterSpec.TRAILER_FIELD_BC
+            );
+            final PublicKey publicKey;
+            final byte[] signature;
+            {
+                final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                        KEY_PAIR_ALGORITHM,
+                        4096
+                );
+                publicKey = keyPair.getPublic();
+                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
+                instance.initSign(keyPair.getPrivate());
+                instance.setParameter(pssSpec);
+                try (var stream = new FileInputStream(file)) {
+                    final var b = new byte[128];
+                    for (int r; (r = stream.read(b)) != -1; ) {
+                        instance.update(b, 0, r);
+                    }
+                }
+                signature = instance.sign();
+            }
+            {
+                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
+                instance.initVerify(publicKey);
+                instance.setParameter(pssSpec);
+                try (var channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+                    for (final var b = ByteBuffer.allocate(128); channel.read(b.clear()) != -1; ) {
+                        instance.update(b.flip());
+                    }
+                }
+                final var verified = instance.verify(signature);
                 Assertions.assertTrue(verified);
             }
         }
@@ -140,7 +191,6 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
             final var keyPair = _Java_Security_TestUtils.generateKeyPair(
                     KEY_PAIR_ALGORITHM,
                     keysize
@@ -153,12 +203,12 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 } catch (final InvalidKeyException ike) {
                     throw new TestAbortedException(ike.getMessage(), ike);
                 }
-                service.update(instance);
+                service().update(instance);
                 final var signature = instance.sign();
                 printf(keysize, null, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
-                service.update(instance);
+                service().update(instance);
                 final var verified = instance.verify(signature);
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertTrue(verified);
@@ -180,7 +230,6 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
             final var keyPair = _Java_Security_TestUtils.generateKeyPair(
                     KEY_PAIR_ALGORITHM,
                     keysize
@@ -193,12 +242,12 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 } catch (final InvalidKeyException ike) {
                     throw new TestAbortedException(ike.getMessage(), ike);
                 }
-                service.update(instance);
+                service().update(instance);
                 final var signature = instance.sign();
                 printf(keysize, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
-                service.update(instance);
+                service().update(instance);
                 final var verified = instance.verify(signature);
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertTrue(verified);
@@ -219,7 +268,6 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
             final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
             final var keyPair = _Java_Security_TestUtils.generateKeyPair(
                     KEY_PAIR_ALGORITHM,
@@ -229,12 +277,12 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             for (int i = 0; i < 2; i++) {
                 // ----------------------------------------------------------- sign with private key
                 instance.initSign(keyPair.getPrivate());
-                service.update(instance);
+                service().update(instance);
                 final var signature = instance.sign();
                 printf(CURVE_NAME, null, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
-                service.update(instance);
+                service().update(instance);
                 final var verified = instance.verify(signature);
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertTrue(verified);
@@ -255,7 +303,6 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
             final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
             final var keyPair = _Java_Security_TestUtils.generateKeyPair(
                     KEY_PAIR_ALGORITHM,
@@ -265,14 +312,52 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             for (int i = 0; i < 2; i++) {
                 // --------------------------------------------------------------- sign with private key
                 instance.initSign(keyPair.getPrivate());
-                service.update(instance);
+                service().update(instance);
                 final var signature = instance.sign();
                 printf(CURVE_NAME, null, i, signature);
                 // -------------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
-                service.update(instance);
+                service().update(instance);
                 final var verified = instance.verify(signature);
                 // -------------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
+        }
+
+        @Test
+        void __file() throws Exception {
+            final var file = HelloWorldTestUtils.writeSome(
+                    File.createTempFile("tmp", null, tempDir)
+            );
+            // -------------------------------------------------------------------------------------
+            final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
+            final PublicKey publicKey;
+            final byte[] signature;
+            {
+                final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                        KEY_PAIR_ALGORITHM,
+                        keyPairSpec
+                );
+                publicKey = keyPair.getPublic();
+                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
+                instance.initSign(keyPair.getPrivate());
+                try (var channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+                    for (final var b = ByteBuffer.allocate(128); channel.read(b.clear()) != -1; ) {
+                        instance.update(b.flip());
+                    }
+                }
+                signature = instance.sign();
+            }
+            {
+                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
+                instance.initVerify(publicKey);
+                try (var stream = new FileInputStream(file)) {
+                    final var b = new byte[128];
+                    for (int r; (r = stream.read(b)) != -1; ) {
+                        instance.update(b, 0, r);
+                    }
+                }
+                final var verified = instance.verify(signature);
                 Assertions.assertTrue(verified);
             }
         }
