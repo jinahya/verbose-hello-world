@@ -33,7 +33,6 @@ import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -52,10 +51,6 @@ class HelloWorld_Update_Signature__Test
         HelloWorldTestUtils.update_signature_updates_hello_world_bytes(service());
     }
 
-    static List<String> algorithms() {
-        return _Java_Security_TestUtils.SIGNATURE_ALGORITHMS;
-    }
-
     private static void printf(final Object keyPairParameter,
                                final @Nullable Object signatureParameter,
                                final int iteration,
@@ -64,13 +59,8 @@ class HelloWorld_Update_Signature__Test
         System.out.printf("%10s %20s #%d (%4d) %s...%s%n", keyPairParameter,
                           Optional.ofNullable(signatureParameter).orElse(""),
                           iteration, signature.length,
-                          encoded.substring(0, 8),
-                          encoded.substring(encoded.length() - 8));
-    }
-
-    private static void printf(final int keysize, final int iteration, final byte[] signature) {
-        System.out.printf("%4d %d (%d) %s%n", keysize, iteration,
-                          signature.length, Base64.getEncoder().encodeToString(signature));
+                          encoded.substring(0, 12),
+                          encoded.substring(encoded.length() - 12));
     }
 
     @DisplayName("RSASSA-PSS")
@@ -244,7 +234,7 @@ class HelloWorld_Update_Signature__Test
                 }
                 service().update(instance);
                 final var signature = instance.sign();
-                printf(keysize, i, signature);
+                printf(keysize, null, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
                 service().update(instance);
