@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,7 +19,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.opentest4j.TestAbortedException;
-import org.opentest4j.TestSkippedException;
 
 import java.io.File;
 import java.security.InvalidKeyException;
@@ -234,12 +232,12 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
                 instance.initSign(keyPair.getPrivate());
                 service.update(instance);
                 final var signature = instance.sign();
-                log.debug("signature: {}", HexFormat.of().formatHex(signature));
+                printf(CURVE_NAME, null, i, signature);
                 // ---------------------------------------------------------- verify with public key
                 instance.initVerify(keyPair.getPublic());
                 service.update(instance);
                 final var verified = instance.verify(signature);
-                // -------------------------------------------------------------------------------- then
+                // ---------------------------------------------------------------------------- then
                 Assertions.assertTrue(verified);
             }
         }
@@ -256,26 +254,28 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
         static final String CURVE_NAME = "secp384r1";
 
         @Test
-        void __()
-                throws Exception {
+        void __() throws Exception {
             // ------------------------------------------------------------------------------- given
             final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(KEY_PAIR_ALGORITHM,
-                                                                         new ECGenParameterSpec(
-                                                                                 CURVE_NAME));
-            // -------------------------------------------------------------------------------- when
+            final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
+            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
+                    KEY_PAIR_ALGORITHM,
+                    keyPairSpec
+            );
             final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            // --------------------------------------------------------------- sign with private key
-            instance.initSign(keyPair.getPrivate());
-            service.update(instance);
-            final var signature = instance.sign();
-            log.debug("signature: {}", HexFormat.of().formatHex(signature));
-            // -------------------------------------------------------------- verify with public key
-            instance.initVerify(keyPair.getPublic());
-            service.update(instance);
-            final var verified = instance.verify(signature);
-            // -------------------------------------------------------------------------------- then
-            Assertions.assertTrue(verified);
+            for (int i = 0; i < 2; i++) {
+                // --------------------------------------------------------------- sign with private key
+                instance.initSign(keyPair.getPrivate());
+                service.update(instance);
+                final var signature = instance.sign();
+                printf(CURVE_NAME, null, i, signature);
+                // -------------------------------------------------------------- verify with public key
+                instance.initVerify(keyPair.getPublic());
+                service.update(instance);
+                final var verified = instance.verify(signature);
+                // -------------------------------------------------------------------------------- then
+                Assertions.assertTrue(verified);
+            }
         }
     }
 
@@ -305,7 +305,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             } catch (final InvalidKeyException ike) {
                 throw new TestAbortedException(
                         SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
-                                + ike.getMessage());
+                        + ike.getMessage());
             }
             service.update(instance);
             final var signature = instance.sign();
@@ -345,7 +345,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             } catch (final InvalidKeyException ike) {
                 throw new TestAbortedException(
                         SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
-                                + ike.getMessage());
+                        + ike.getMessage());
             }
             service.update(instance);
             final var signature = instance.sign();
@@ -385,7 +385,7 @@ class HelloWorld_Update_Signature_畵蛇添足_Test
             } catch (final InvalidKeyException ike) {
                 throw new TestAbortedException(
                         SIGNATURE_ALGORITHM + " rejects " + keysize + "-bit key: "
-                                + ike.getMessage());
+                        + ike.getMessage());
             }
             service.update(instance);
             final var signature = instance.sign();
