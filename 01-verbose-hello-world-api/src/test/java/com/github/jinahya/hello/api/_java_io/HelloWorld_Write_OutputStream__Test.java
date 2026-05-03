@@ -47,11 +47,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-@畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_OutputStream_畵蛇添足_Test
+class HelloWorld_Write_OutputStream__Test
         extends HelloWorldTest {
 
     @TempDir
