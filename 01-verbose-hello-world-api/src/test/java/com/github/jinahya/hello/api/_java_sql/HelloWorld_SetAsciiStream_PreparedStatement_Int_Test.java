@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
  */
 @Slf4j
-class HelloWorld_SetAsciiStream_PreparedStatement_ParameterIndex_Test
+class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test
         extends HelloWorldTest {
 
     @DisplayName("(null, parameterIndex)NullPointerException")
@@ -62,14 +62,14 @@ class HelloWorld_SetAsciiStream_PreparedStatement_ParameterIndex_Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
-        final var baos = new ByteArrayOutputStream();
+        final var sink = new ByteArrayOutputStream();
         final var statement = Mockito.mock(PreparedStatement.class);
         Mockito.doAnswer(i -> {
-            i.getArgument(1, InputStream.class).transferTo(baos);
+            i.getArgument(1, InputStream.class).transferTo(sink);
             return null;
         }).when(statement).setAsciiStream(
                 ArgumentMatchers.intThat(v -> v >= 1),
-                ArgumentMatchers.notNull()
+                ArgumentMatchers.<InputStream>notNull()
         );
         final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
@@ -77,8 +77,8 @@ class HelloWorld_SetAsciiStream_PreparedStatement_ParameterIndex_Test
         // ------------------------------------------------------------------------------------ then
         final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         Mockito.verify(statement, Mockito.times(1))
-                .setAsciiStream(Mockito.eq(index), Mockito.notNull());
-        Assertions.assertArrayEquals(array, baos.toByteArray());
+                .setAsciiStream(Mockito.eq(index), Mockito.<InputStream>notNull());
+        Assertions.assertArrayEquals(array, sink.toByteArray());
         Assertions.assertSame(statement, result);
     }
 }

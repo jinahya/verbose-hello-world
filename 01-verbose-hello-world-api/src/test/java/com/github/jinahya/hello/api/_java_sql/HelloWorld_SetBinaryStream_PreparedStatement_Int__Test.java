@@ -21,11 +21,11 @@ import java.sql.SQLException;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetBinaryStream_PreparedStatement_ParameterIndex__Test
+class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
         extends HelloWorldTest {
 
     @BeforeEach
-    void __() throws SQLException {
+    void __() throws IOException, SQLException {
         Mockito.doAnswer(invocation -> {
             final var ps = invocation.getArgument(0, PreparedStatement.class);
             final var pi = invocation.getArgument(1, Integer.class);
@@ -35,7 +35,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_ParameterIndex__Test
             );
             return ps;
         }).when(service()).setBinaryStream(
-                ArgumentMatchers.notNull(),
+                ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
         HelloWorldTestUtils.set_array_returns_the_array(service());
@@ -45,7 +45,8 @@ class HelloWorld_SetBinaryStream_PreparedStatement_ParameterIndex__Test
     @Nested
     class H2_Test {
 
-        private static final String URL = "jdbc:h2:mem:setbinarystream_testdb;DB_CLOSE_DELAY=-1";
+        private static final String URL
+                = "jdbc:h2:mem:setbinarystream_preparedstatement_int_testdb;DB_CLOSE_DELAY=-1";
 
         private static final String USER = "sa";
 
@@ -101,7 +102,8 @@ class HelloWorld_SetBinaryStream_PreparedStatement_ParameterIndex__Test
     @Nested
     class Hsql_Test {
 
-        private static final String URL = "jdbc:hsqldb:mem:setbinarystream_testdb";
+        private static final String URL
+                = "jdbc:hsqldb:mem:setbinarystream_preparedstatement_int_testdb";
 
         private static final String USER = "SA";
 

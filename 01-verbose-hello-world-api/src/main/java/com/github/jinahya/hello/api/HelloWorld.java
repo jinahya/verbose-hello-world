@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -214,9 +215,11 @@ public interface HelloWorld {
      * of {@value #BYTES} bytes, and returns the result.
      */
     default byte[] byteArray() {
-        final var array = new byte[BYTES];
-        set(array);
-        return array;
+        return set(new byte[BYTES]);
+    }
+
+    default String string() {
+        return new String(byteArray(), StandardCharsets.US_ASCII);
     }
 
     /**
@@ -358,6 +361,10 @@ public interface HelloWorld {
         return stream;
     }
 
+    default InputStream inputStream() {
+        return new ByteArrayInputStream(byteArray());
+    }
+
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the end of the specified
      * file.
@@ -462,6 +469,10 @@ public interface HelloWorld {
         }
 //        append(writer);
         return writer;
+    }
+
+    default Reader reader() {
+        return new InputStreamReader(inputStream(), StandardCharsets.US_ASCII);
     }
 
     /**
@@ -1211,31 +1222,82 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------------ java.sql
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a>, as an ASCII stream value, of the
+     * designated parameter on the specified prepared statement.
+     *
+     * @param <T>               prepared statement type parameter
+     * @param preparedStatement the prepared statement on which the value is set.
+     * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
+     * @return the given {@code preparedStatement}.
+     * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
+     * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
+     * @throws IOException              if an I/O error occurs.
+     * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
+     *                                  marker in the SQL statement; if a database access error
+     *                                  occurs; or if this method is called on a closed
+     *                                  {@link PreparedStatement}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes
+     * {@link PreparedStatement#setAsciiStream(int, InputStream) setAsciiStream(parameterIndex,
+     * stream)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
+     * stream, {@link InputStream#close() closes} the stream, and returns the
+     * {@code preparedStatement}.
+     * @see #set(byte[])
+     * @see PreparedStatement#setAsciiStream(int, InputStream)
+     */
     default <T extends PreparedStatement> T setAsciiStream(final T preparedStatement,
                                                            final int parameterIndex)
-            throws SQLException {
+            throws IOException, SQLException {
         Objects.requireNonNull(preparedStatement, "preparedStatement is null");
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var array = new byte[BYTES];
-        set(array);
-        final var x = new ByteArrayInputStream(array);
-        preparedStatement.setAsciiStream(parameterIndex, x);
+        final var buf = new byte[BYTES];
+        set(buf);
+        try (var x = new ByteArrayInputStream(buf)) {
+            preparedStatement.setAsciiStream(parameterIndex, x);
+        }
         return preparedStatement;
     }
 
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a>, as a binary stream value, of the
+     * designated parameter on the specified prepared statement.
+     *
+     * @param <T>               prepared statement type parameter
+     * @param preparedStatement the prepared statement on which the value is set.
+     * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
+     * @return the given {@code preparedStatement}.
+     * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
+     * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
+     * @throws IOException              if an I/O error occurs.
+     * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
+     *                                  marker in the SQL statement; if a database access error
+     *                                  occurs; or if this method is called on a closed
+     *                                  {@link PreparedStatement}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes
+     * {@link PreparedStatement#setBinaryStream(int, InputStream) setBinaryStream(parameterIndex,
+     * stream)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
+     * stream, {@link InputStream#close() closes} the stream, and returns the
+     * {@code preparedStatement}.
+     * @see #set(byte[])
+     * @see PreparedStatement#setBinaryStream(int, InputStream)
+     */
     default <T extends PreparedStatement> T setBinaryStream(final T preparedStatement,
                                                             final int parameterIndex)
-            throws SQLException {
+            throws IOException, SQLException {
         Objects.requireNonNull(preparedStatement, "preparedStatement is null");
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var array = new byte[BYTES];
-        set(array);
-        final var x = new ByteArrayInputStream(array);
-        preparedStatement.setBinaryStream(parameterIndex, x);
+        final var buf = new byte[BYTES];
+        set(buf);
+        try (var x = new ByteArrayInputStream(buf)) {
+            preparedStatement.setBinaryStream(parameterIndex, x);
+        }
         return preparedStatement;
     }
 
@@ -1244,7 +1306,7 @@ public interface HelloWorld {
      * parameter on the specified prepared statement.
      *
      * @param <T>               prepared statement type parameter
-     * @param preparedStatement the prepared statement on which the bytes are set.
+     * @param preparedStatement the prepared statement on which the value is set.
      * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
      * @return the given {@code preparedStatement}.
      * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
@@ -1274,24 +1336,69 @@ public interface HelloWorld {
         return preparedStatement;
     }
 
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a>, as a character stream value, of
+     * the designated parameter on the specified prepared statement.
+     *
+     * @param <T>               prepared statement type parameter
+     * @param preparedStatement the prepared statement on which the value is set.
+     * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
+     * @return the given {@code preparedStatement}.
+     * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
+     * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
+     * @throws IOException              if an I/O error occurs.
+     * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
+     *                                  marker in the SQL statement; if a database access error
+     *                                  occurs; or if this method is called on a closed
+     *                                  {@link PreparedStatement}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, wraps the array in an {@link InputStreamReader} decoded as
+     * {@link StandardCharsets#US_ASCII US_ASCII}, invokes
+     * {@link PreparedStatement#setCharacterStream(int, Reader) setCharacterStream(parameterIndex,
+     * reader)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
+     * reader, {@link Reader#close() closes} the reader, and returns the {@code preparedStatement}.
+     * @see #set(byte[])
+     * @see PreparedStatement#setCharacterStream(int, Reader)
+     */
     default <T extends PreparedStatement> T setCharacterStream(final T preparedStatement,
                                                                final int parameterIndex)
-            throws SQLException {
+            throws IOException, SQLException {
         Objects.requireNonNull(preparedStatement, "preparedStatement is null");
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var array = new byte[BYTES];
-        set(array);
-        final var reader = new InputStreamReader(
-                new ByteArrayInputStream(array),
-                StandardCharsets.US_ASCII
-        );
-        preparedStatement.setCharacterStream(parameterIndex, reader);
+        final var buf = new byte[BYTES];
+        set(buf);
+        try (var reader = new InputStreamReader(new ByteArrayInputStream(buf),
+                                                StandardCharsets.US_ASCII)) {
+            preparedStatement.setCharacterStream(parameterIndex, reader);
+        }
+
         return preparedStatement;
     }
 
-    default <T extends Blob> T writeThroughBinaryStream(final T blob, final long pos)
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified blob, through
+     * a binary stream obtained from the blob, starting at the specified position.
+     *
+     * @param <T>  blob type parameter
+     * @param blob the blob to which the bytes are written.
+     * @param pos  the position in the blob at which to start writing; the first byte is at position
+     *             {@code 1}.
+     * @return the given {@code blob}.
+     * @throws NullPointerException     if {@code blob} is {@code null}.
+     * @throws IllegalArgumentException if {@code pos} is not positive.
+     * @throws IOException              if an I/O error occurs.
+     * @throws SQLException             if there is an error accessing the {@code BLOB} value.
+     * @implSpec Default implementation opens an output stream by invoking
+     * {@link Blob#setBinaryStream(long) blob.setBinaryStream(pos)} method on the {@code blob} with
+     * the {@code pos}, invokes {@link #write(OutputStream) write(stream)} method with the stream,
+     * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
+     * returns the {@code blob}.
+     * @see #write(OutputStream)
+     * @see Blob#setBinaryStream(long)
+     */
+    default <T extends Blob> T setBinaryStream(final T blob, final long pos)
             throws SQLException, IOException {
         Objects.requireNonNull(blob, "blob is null");
         if (pos < 1L) {
@@ -1304,14 +1411,63 @@ public interface HelloWorld {
         return blob;
     }
 
-    default <T extends Clob> T writeThroughAsciiStream(final T clob, final long pos)
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> in the specified blob, starting
+     * at the specified position.
+     *
+     * @param <T>  blob type parameter
+     * @param blob the blob on which the bytes are set.
+     * @param pos  the position in the blob at which to start writing; the first byte is at position
+     *             {@code 1}.
+     * @return the given {@code blob}.
+     * @throws NullPointerException     if {@code blob} is {@code null}.
+     * @throws IllegalArgumentException if {@code pos} is not positive.
+     * @throws SQLException             if there is an error accessing the {@code BLOB} value.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, invokes
+     * {@link Blob#setBytes(long, byte[]) blob.setBytes(pos, array)} method on the {@code blob} with
+     * the {@code pos} and the array, and returns the {@code blob}.
+     * @see #set(byte[])
+     * @see Blob#setBytes(long, byte[])
+     */
+    default <T extends Blob> T setBytes(final T blob, final long pos) throws SQLException {
+        Objects.requireNonNull(blob, "blob is null");
+        if (pos < 1L) {
+            throw new IllegalArgumentException("non-positive pos: " + pos);
+        }
+        final var bytes = new byte[BYTES];
+        set(bytes);
+        blob.setBytes(pos, bytes);
+        return blob;
+    }
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified clob, through
+     * an ASCII stream obtained from the clob, starting at the specified position.
+     *
+     * @param <T>  clob type parameter
+     * @param clob the clob to which the bytes are written.
+     * @param pos  the position in the clob at which to start writing; the first character is at
+     *             position {@code 1}.
+     * @return the given {@code clob}.
+     * @throws NullPointerException     if {@code clob} is {@code null}.
+     * @throws IllegalArgumentException if {@code pos} is not positive.
+     * @throws IOException              if an I/O error occurs.
+     * @throws SQLException             if there is an error accessing the {@code CLOB} value.
+     * @implSpec Default implementation opens an output stream by invoking
+     * {@link Clob#setAsciiStream(long) clob.setAsciiStream(pos)} method on the {@code clob} with
+     * the {@code pos}, invokes {@link #write(OutputStream) write(stream)} method with the stream,
+     * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
+     * returns the {@code clob}.
+     * @see #write(OutputStream)
+     * @see Clob#setAsciiStream(long)
+     */
+    default <T extends Clob> T setAsciiStream(final T clob, final long pos)
             throws SQLException, IOException {
         Objects.requireNonNull(clob, "clob is null");
         if (pos < 1L) {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
-        final var array = new byte[BYTES];
-        set(array);
         try (var stream = clob.setAsciiStream(pos)) {
             write(stream);
             stream.flush();
@@ -1319,18 +1475,69 @@ public interface HelloWorld {
         return clob;
     }
 
-    default <T extends Clob> T writeThroughCharacterStream(final T clob, final long pos)
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified clob, through
+     * a character stream obtained from the clob, starting at the specified position.
+     *
+     * @param <T>  clob type parameter
+     * @param clob the clob to which the characters are written.
+     * @param pos  the position in the clob at which to start writing; the first character is at
+     *             position {@code 1}.
+     * @return the given {@code clob}.
+     * @throws NullPointerException     if {@code clob} is {@code null}.
+     * @throws IllegalArgumentException if {@code pos} is not positive.
+     * @throws IOException              if an I/O error occurs.
+     * @throws SQLException             if there is an error accessing the {@code CLOB} value.
+     * @implSpec Default implementation opens a writer by invoking
+     * {@link Clob#setCharacterStream(long) clob.setCharacterStream(pos)} method on the {@code clob}
+     * with the {@code pos}, invokes {@link #write(Writer) write(writer)} method with the writer,
+     * {@link Writer#flush() flushes} and {@link Writer#close() closes} the writer, and returns the
+     * {@code clob}.
+     * @see #write(Writer)
+     * @see Clob#setCharacterStream(long)
+     */
+    default <T extends Clob> T setCharacterStream(final T clob, final long pos)
             throws SQLException, IOException {
+        Objects.requireNonNull(clob, "clob is null");
+        if (pos < 1L) {
+            throw new IllegalArgumentException("non-positive pos: " + pos);
+        }
+        try (var writer = clob.setCharacterStream(pos)) {
+            write(writer);
+            writer.flush();
+        }
+        return clob;
+    }
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a>, as a string, in the specified
+     * clob starting at the specified position.
+     *
+     * @param <T>  clob type parameter
+     * @param clob the clob into which the string is written.
+     * @param pos  the position at which writing starts; the first character is at position
+     *             {@code 1}.
+     * @return the given {@code clob}.
+     * @throws NullPointerException     if {@code clob} is {@code null}.
+     * @throws IllegalArgumentException if {@code pos} is not positive.
+     * @throws SQLException             if there is an error accessing the {@code CLOB} value, or if
+     *                                  {@code pos} is greater than the length of the {@code clob}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, decodes the array as an ASCII string, invokes
+     * {@link Clob#setString(long, String) clob.setString(pos, string)} method on the {@code clob}
+     * with the {@code pos} and the string, and returns the {@code clob}.
+     * @see #set(byte[])
+     * @see Clob#setString(long, String)
+     */
+    default <T extends Clob> T setString(final T clob, final long pos) throws SQLException {
         Objects.requireNonNull(clob, "clob is null");
         if (pos < 1L) {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
         final var array = new byte[BYTES];
         set(array);
-        try (var writer = clob.setCharacterStream(pos)) {
-            write(writer);
-            writer.flush();
-        }
+        final var str = new String(array, StandardCharsets.UTF_8);
+        clob.setString(pos, str);
         return clob;
     }
 
@@ -1375,22 +1582,6 @@ public interface HelloWorld {
             }
         }
         return bitset;
-    }
-
-    /**
-     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> into the specified bit set,
-     * starting at index {@code 0}.
-     *
-     * @param bitset the bit set into which the bits are set.
-     * @param <T>    bit set type parameter
-     * @return the given {@code bitset}.
-     * @throws NullPointerException when the {@code bitset} is {@code null}.
-     * @implSpec The default implementation invokes the {@link #set(BitSet, int) set(bitset, 0)}
-     * method with the given {@code bitset} and {@code 0}, and returns the result.
-     */
-    default <T extends BitSet> T set(final T bitset) {
-        Objects.requireNonNull(bitset, "bitset is null");
-        return set(bitset, 0);
     }
 
     /**

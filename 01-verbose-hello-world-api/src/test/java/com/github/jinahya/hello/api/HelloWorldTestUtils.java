@@ -126,6 +126,10 @@ public final class HelloWorldTestUtils {
         return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
     }
 
+    public static String hello_world_string() {
+        return new String(hello_world_byte_array(), StandardCharsets.US_ASCII);
+    }
+
     public static ByteBuffer hello_world_byte_buffer() {
         return ByteBuffer.wrap(hello_world_byte_array());
     }
