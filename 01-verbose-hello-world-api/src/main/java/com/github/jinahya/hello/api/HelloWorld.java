@@ -1796,7 +1796,7 @@ public interface HelloWorld {
         return checksum;
     }
 
-    default <T extends Deflater> T input(final T deflater) {
+    default <T extends Deflater> T setInput(final T deflater) {
         Objects.requireNonNull(deflater, "deflater is null");
         final var array = new byte[BYTES];
         set(array);

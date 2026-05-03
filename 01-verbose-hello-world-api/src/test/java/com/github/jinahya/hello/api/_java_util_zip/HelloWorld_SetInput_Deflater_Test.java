@@ -18,14 +18,14 @@ import java.util.zip.Inflater;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Set_Deflater_Test
+class HelloWorld_SetInput_Deflater_Test
         extends HelloWorldTest {
 
     @Test
     void _ThrowNullPointerException_DeflaterIsNull() {
         final var service = service();
         // -----------------------------------------------------------------------------------------
-        Assertions.assertThrows(NullPointerException.class, () -> service.input(null));
+        Assertions.assertThrows(NullPointerException.class, () -> service.setInput(null));
     }
 
     @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1})
@@ -39,7 +39,7 @@ class HelloWorld_Set_Deflater_Test
                 .set(Mockito.any(byte[].class));
         // -----------------------------------------------------------------------------------------
         try (var deflater = new Deflater(level)) {
-            service.input(deflater);
+            service.setInput(deflater);
             deflater.finish();
             final var deflationOutput = ByteBuffer.allocate(HelloWorld.BYTES << 2);
             while (!deflater.finished()) {

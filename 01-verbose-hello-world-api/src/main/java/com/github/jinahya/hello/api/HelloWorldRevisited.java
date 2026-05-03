@@ -339,7 +339,7 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends Deflater> T input(final T deflater) {
+    default <T extends Deflater> T setInput(final T deflater) {
         deflater.setInput(byteArray());
         return deflater;
     }
