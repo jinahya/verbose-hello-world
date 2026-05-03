@@ -14,6 +14,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.nio.ByteBuffer;
+import java.util.stream.IntStream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -22,6 +23,10 @@ import java.util.zip.Inflater;
 @Slf4j
 class HelloWorld_SetInput_Deflater__Test
         extends HelloWorldTest {
+
+    static IntStream levelStream() {
+        return IntStream.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1);
+    }
 
     @BeforeEach
     void __() {
