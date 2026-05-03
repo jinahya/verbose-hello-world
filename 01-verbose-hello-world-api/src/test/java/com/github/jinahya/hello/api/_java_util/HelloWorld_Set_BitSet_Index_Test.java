@@ -8,10 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -61,21 +59,14 @@ class HelloWorld_Set_BitSet_Index_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var array = i.getArgument(0, byte[].class);
-            Arrays.fill(array, (byte) -1);
-            return array;
-        }).when(service).set(ArgumentMatchers.<byte[]>notNull());
-        final var nbits = HelloWorld.BYTES << 3;
-        final var bitset = Mockito.spy(new BitSet(nbits));
+        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
+        final var bitset = Mockito.spy(new BitSet(HelloWorld.BYTES << 3));
         final var index = 0;
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
         final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         Assertions.assertArrayEquals(array, bitset.toByteArray());
-        Assertions.assertTrue(bitset.length() <= nbits);
         Assertions.assertSame(bitset, result);
     }
 

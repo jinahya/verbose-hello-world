@@ -1584,6 +1584,8 @@ public interface HelloWorld {
         return bitset;
     }
 
+    // h e l l o ,  w o r l d
+
     /**
      * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
      * {@link Byte}, into the specified collection.
