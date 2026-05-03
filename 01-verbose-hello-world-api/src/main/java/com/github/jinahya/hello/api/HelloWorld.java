@@ -63,8 +63,9 @@ import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Objects;
+import java.util.SequencedCollection;
+import java.util.SequencedMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
@@ -1586,29 +1587,29 @@ public interface HelloWorld {
         return bitset;
     }
 
-    /**
-     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
-     * {@link Byte}, into the specified collection.
-     *
-     * @param <T>        collection type parameter
-     * @param collection the collection into which each byte is collected.
-     * @return the given {@code collection}.
-     * @throws NullPointerException if {@code collection} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link Collection#add(Object) adds} each byte in the array,
-     * boxed as {@link Byte}, to the {@code collection}.
-     * @see #set(byte[])
-     * @see Collection#add(Object)
-     */
-    default <T extends Collection<? super Byte>> T collect(final T collection) {
-        Objects.requireNonNull(collection, "collection is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-            collection.add(b);
-        }
-        return collection;
-    }
+//    /**
+//     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
+//     * {@link Byte}, into the specified collection.
+//     *
+//     * @param <T>        collection type parameter
+//     * @param collection the collection into which each byte is collected.
+//     * @return the given {@code collection}.
+//     * @throws NullPointerException if {@code collection} is {@code null}.
+//     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+//     * of {@value #BYTES} bytes, and {@link Collection#add(Object) adds} each byte in the array,
+//     * boxed as {@link Byte}, to the {@code collection}.
+//     * @see #set(byte[])
+//     * @see Collection#add(Object)
+//     */
+//    default <T extends Collection<? super Byte>> T collect(final T collection) {
+//        Objects.requireNonNull(collection, "collection is null");
+//        final var array = new byte[BYTES];
+//        set(array);
+//        for (final var b : array) {
+//            collection.add(b);
+//        }
+//        return collection;
+//    }
 
     /**
      * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
@@ -1623,14 +1624,14 @@ public interface HelloWorld {
      * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, boxed as
-     * {@link Byte}, and {@link Collection#add(Object) adds} the result to the {@code collection}.
+     * {@link Byte}, and {@link SequencedCollection#add(Object) adds} the result to the
+     * {@code collection}.
      * @see #set(byte[])
      * @see Function#apply(Object)
-     * @see Collection#add(Object)
+     * @see SequencedCollection#add(Object)
      */
-    default <T extends Collection<? super U>, U> T collect(
-            final T collection,
-            final Function<? super Byte, ? extends U> mapper) {
+    default <T extends SequencedCollection<? super U>, U>
+    T add(final T collection, final Function<? super Byte, ? extends U> mapper) {
         Objects.requireNonNull(collection, "collection is null");
         Objects.requireNonNull(mapper, "mapper is null");
         final var array = new byte[BYTES];
@@ -1645,35 +1646,80 @@ public interface HelloWorld {
      * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
      * specified mapper, into the specified collection.
      * <p>
-     * Each byte is applied to the {@code mapper} as an unsigned {@code int} in the range
-     * {@code [0..255]} (i.e., {@code b & 0xFF}).
+     * Each byte is applied to the {@code mapper} as an {@code int}. Because every
+     * <a href="#hello-world-bytes">hello-world-byte</a> is non-negative (within
+     * {@code [0x20..0x77]}), the widening conversion preserves the byte's numeric value with no
+     * masking required.
      *
      * @param <T>        collection type parameter
      * @param <R>        element type parameter
      * @param collection the collection into which each mapped value is collected.
-     * @param mapper     the function applied to each byte, as an unsigned {@code int} in the range
-     *                   {@code [0..255]}, to produce the value to be collected.
+     * @param mapper     the function applied to each byte, widened to an {@code int}, to produce
+     *                   the value to be collected.
      * @return the given {@code collection}.
      * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, masked to an
-     * unsigned {@code int} (i.e., {@code b & 0xFF}), and {@link Collection#add(Object) adds} the
-     * result to the {@code collection}.
+     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, widened to an
+     * {@code int}, and {@link SequencedCollection#add(Object) adds} the result to the
+     * {@code collection}.
      * @see #set(byte[])
      * @see IntFunction#apply(int)
-     * @see Collection#add(Object)
+     * @see SequencedCollection#add(Object)
      */
-    default <T extends Collection<? super R>, R> T collect(
-            final T collection,
-            final IntFunction<? extends R> mapper) {
+    default <T extends SequencedCollection<? super R>, R>
+    T add(final T collection, final IntFunction<? extends R> mapper) {
         Objects.requireNonNull(collection, "collection is null");
         Objects.requireNonNull(mapper, "mapper is null");
         final var array = new byte[BYTES];
         set(array);
         for (final var b : array) {
-            collection.add(mapper.apply(b & 0xFF));
+//            collection.add(mapper.apply(b & 0xFF));
+            collection.add(mapper.apply(b));
         }
         return collection;
+    }
+
+    /**
+     * Puts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the specified
+     * value mapper and keyed by the specified key mapper, into the specified sequenced map.
+     * <p>
+     * For each byte index {@code i} in {@code [0, }{@value #BYTES}{@code )}, the entry
+     * {@code (keyMapper.apply(i), valueMapper.apply(array[i]))} is put into the {@code map} in
+     * encounter order.
+     *
+     * @param <T>         map type parameter
+     * @param <K>         key type parameter
+     * @param <V>         value type parameter
+     * @param map         the sequenced map into which each entry is put.
+     * @param keyMapper   the function applied to each byte index, in
+     *                    {@code [0, }{@value #BYTES}{@code )}, to produce the key.
+     * @param valueMapper the function applied to each byte, boxed as {@link Byte}, to produce the
+     *                    value.
+     * @return the given {@code map}.
+     * @throws NullPointerException if any of {@code map}, {@code keyMapper}, or {@code valueMapper}
+     *                              is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and, for each byte index {@code i} in
+     * {@code [0, }{@value #BYTES}{@code )}, {@link SequencedMap#put(Object, Object) puts}
+     * {@code (keyMapper.apply(i), valueMapper.apply(array[i]))} into the {@code map}.
+     * @see #set(byte[])
+     * @see IntFunction#apply(int)
+     * @see Function#apply(Object)
+     * @see SequencedMap#put(Object, Object)
+     */
+    default <T extends SequencedMap<? super K, ? super V>, K, V> T put(
+            final T map,
+            final IntFunction<? extends K> keyMapper,
+            final Function<? super Byte, ? extends V> valueMapper) {
+        Objects.requireNonNull(map, "map is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        final var array = new byte[BYTES];
+        set(array);
+        for (var i = 0; i < array.length; i++) {
+            map.put(keyMapper.apply(i), valueMapper.apply(array[i]));
+        }
+        return map;
     }
 
     // -------------------------------------------------------------------------- java.util.function

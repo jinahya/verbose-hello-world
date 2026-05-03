@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Collect_Collection_Function__Test
+class HelloWorld_Add_Collection_Function__Test
         extends HelloWorldTest {
 
     @Test
@@ -21,7 +21,7 @@ class HelloWorld_Collect_Collection_Function__Test
         final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
         final var collection = new ArrayList<Integer>();
         // ------------------------------------------------------------------------------------ when
-        service.collect(collection, Byte::intValue);
+        service.add(collection, Byte::intValue);
         // ------------------------------------------------------------------------------------ then
         final var expected = HelloWorldTestUtils.hello_world_byte_array();
         Assertions.assertEquals(expected.length, collection.size());

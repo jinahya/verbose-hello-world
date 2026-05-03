@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.SequencedCollection;
 import java.util.function.IntFunction;
 
 /**
  * A class for testing
- * {@link HelloWorld#collect(Collection, IntFunction) collect(collection, mapper)} method.
+ * {@link HelloWorld#add(SequencedCollection, IntFunction) add(collection, mapper)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("collect(Collection, IntFunction)")
+@DisplayName("add(SequencedCollection, IntFunction)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Collect_Collection_IntFunction_Test
+class HelloWorld_Add_Collection_IntFunction_Test
         extends HelloWorldTest {
 
     @DisplayName("""
@@ -34,12 +34,12 @@ class HelloWorld_Collect_Collection_IntFunction_Test
     void _ThrowNullPointerException_CollectionIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var collection = (Collection<Integer>) null;
+        final var collection = (SequencedCollection<Integer>) null;
         final IntFunction<? extends Integer> mapper = i -> i;
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.collect(collection, mapper)
+                () -> service.add(collection, mapper)
         );
     }
 
@@ -55,30 +55,30 @@ class HelloWorld_Collect_Collection_IntFunction_Test
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.collect(collection, mapper)
+                () -> service.add(collection, mapper)
         );
     }
 
     @DisplayName("""
-            should invoke <set(byte[])>, and <collection.add(mapper.apply(b & 0xFF))> for each byte""")
+            should invoke <set(byte[])>, and <collection.add(mapper.apply(b))> for each byte""")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
         @SuppressWarnings("unchecked")
-        final var collection = (Collection<Integer>) Mockito.mock(Collection.class);
+        final var collection = (SequencedCollection<Integer>) Mockito.mock(SequencedCollection.class);
         @SuppressWarnings("unchecked")
         final IntFunction<Integer> mapper = Mockito.mock(IntFunction.class);
         Mockito.when(mapper.apply(Mockito.anyInt())).thenAnswer(i -> (int) i.getArgument(0));
         // ------------------------------------------------------------------------------------ when
-        final var result = service.collect(collection, mapper);
+        final var result = service.add(collection, mapper);
         // ------------------------------------------------------------------------------------ then
         final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         final var inOrder = Mockito.inOrder(mapper, collection);
         for (final var b : array) {
-            final var unsigned = b & 0xFF;
-            inOrder.verify(mapper, Mockito.calls(1)).apply(unsigned);
-            inOrder.verify(collection, Mockito.calls(1)).add(unsigned);
+            final int widened = b;
+            inOrder.verify(mapper, Mockito.calls(1)).apply(widened);
+            inOrder.verify(collection, Mockito.calls(1)).add(widened);
         }
         inOrder.verifyNoMoreInteractions();
         Assertions.assertSame(collection, result);

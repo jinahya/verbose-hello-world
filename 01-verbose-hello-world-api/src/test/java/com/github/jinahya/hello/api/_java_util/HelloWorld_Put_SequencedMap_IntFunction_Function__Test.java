@@ -8,28 +8,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.function.IntFunction;
+import java.util.LinkedHashMap;
+import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Collect_Collection_IntFunction__Test
+class HelloWorld_Put_SequencedMap_IntFunction_Function__Test
         extends HelloWorldTest {
 
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        final var collection = new ArrayList<Integer>();
+        final var map = new LinkedHashMap<Integer, Byte>();
         // ------------------------------------------------------------------------------------ when
-        service.collect(collection, (IntFunction<Integer>) i -> i);
+        service.put(map, i -> i, Function.identity());
         // ------------------------------------------------------------------------------------ then
         final var expected = HelloWorldTestUtils.hello_world_byte_array();
-        Assertions.assertEquals(expected.length, collection.size());
-        for (var i = 0; i < expected.length; i++) {
-            final var value = collection.get(i);
-            Assertions.assertEquals(expected[i] & 0xFF, (int) value);
-            Assertions.assertTrue(value >= 0 && value <= 0xFF);
+        Assertions.assertEquals(expected.length, map.size());
+        var i = 0;
+        for (final var entry : map.entrySet()) {
+            Assertions.assertEquals(i, entry.getKey());
+            Assertions.assertEquals(expected[i], entry.getValue());
+            i++;
         }
     }
 }
