@@ -46,6 +46,8 @@ import java.util.HexFormat;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -183,28 +185,47 @@ class HelloWorld_Write_OutputStream__Test
         }
     }
 
-    @畵蛇添足
-    @Test
-    void __GZIPOutputStream() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils
-                .write_stream_will_write_actual_hello_world_bytes(service());
-        // -------------------------------------------------------------------------------- compress
-        final var baos = new ByteArrayOutputStream();
-        try (var zipos = new GZIPOutputStream(baos)) {
-            service.write(zipos);
-            zipos.flush();
-            zipos.finish(); // maybe redundant; DeflatorOutputStream#close() does this
+    // ------------------------------------------------------------------------------- java.util.zip
+    @Nested
+    class JavaUtilZipTest {
+
+        @Test
+        void __GZIPOutputStream() throws IOException {
+            // ------------------------------------------------------------------------------- given
+            // ---------------------------------------------------------------------------- compress
+            final var baos = new ByteArrayOutputStream();
+            try (var zipos = new GZIPOutputStream(baos)) {
+                service().write(zipos);
+                zipos.flush();
+                zipos.finish(); // maybe redundant; DeflatorOutputStream#close() does this
+            }
+            final var compressed = baos.toByteArray();
+            log.debug("  compressed: {} ({})", HexFormat.of().formatHex(compressed),
+                      compressed.length);
+            // ------------------------------------------------------------------------------ decompress
+            try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
+                final var decompressed = gzipis.readAllBytes();
+                log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
+                          decompressed.length);
+                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+                                             decompressed);
+            }
         }
-        final var compressed = baos.toByteArray();
-        log.debug("  compressed: {} ({})", HexFormat.of().formatHex(compressed), compressed.length);
-        // ------------------------------------------------------------------------------ decompress
-        try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
-            final var decompressed = gzipis.readAllBytes();
-            log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
-                      decompressed.length);
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
-                                         decompressed);
+
+        @Test
+        void __ZipOutputStream() throws IOException {
+            // ------------------------------------------------------------------------------- given
+            final var file = File.createTempFile("tmp", "", tempDir);
+            // ---------------------------------------------------------------------------- compress
+            try (var fos = new FileOutputStream(file);
+                 var zos = new ZipOutputStream(fos)) {
+                final var entry = new ZipEntry("hello.txt");
+                zos.putNextEntry(entry);
+                service().write(zos);
+                zos.closeEntry();
+                zos.finish();
+                zos.flush();
+            }
         }
     }
 }

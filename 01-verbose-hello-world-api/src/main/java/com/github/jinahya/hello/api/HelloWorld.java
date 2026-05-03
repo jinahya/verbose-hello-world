@@ -1751,7 +1751,9 @@ public interface HelloWorld {
      */
     default <T extends Consumer<? super Byte>> T accept(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
-        for (final var b : set(new byte[BYTES])) {
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
             consumer.accept(b);
         }
         return consumer;
@@ -1759,7 +1761,9 @@ public interface HelloWorld {
 
     default <T extends IntConsumer> T accept(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
-        for (final var b : set(new byte[BYTES])) {
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
             consumer.accept(b);
         }
         return consumer;
