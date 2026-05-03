@@ -31,7 +31,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 /**
- * A class for testing {@link HelloWorld#set()} method.
+ * A class for testing {@link HelloWorld#byteArray()} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -46,7 +46,7 @@ class HelloWorld_Set_Test
         extends HelloWorldTest {
 
     /**
-     * Verifies that the {@link HelloWorld#set() set()} method invokes
+     * Verifies that the {@link HelloWorld#byteArray() set()} method invokes
      * {@link HelloWorld#set(byte[]) set(array} method with an array of {@value HelloWorld#BYTES}
      * bytes, and returns the array.
      */
@@ -62,7 +62,7 @@ class HelloWorld_Set_Test
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class));
         // ------------------------------------------------------------------------------------ when
-        final var result = service.set();
+        final var result = service.byteArray();
         // ------------------------------------------------------------------------------------ then
         final var captured = HelloWorldTestUtils.set_array12_invoked_once(service);
         Assertions.assertSame(result, captured);

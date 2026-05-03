@@ -178,6 +178,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    public static <T extends HelloWorld> T set_array_sets_random_bytes(final T service) {
+        requireMock(service);
+        Mockito.doAnswer(i -> {
+            final var array = i.getArgument(0, byte[].class);
+            ThreadLocalRandom.current().nextBytes(array);
+            return array;
+        }).when(service).set(ArgumentMatchers.any(byte[].class));
+        return service;
+    }
+
     /**
      * Stubs the specified mock service's {@link HelloWorld#set(byte[]) set(array)} method to set an
      * actual {@code hello, world} bytes to the {@code array}, and returns the array.
@@ -191,14 +201,11 @@ public final class HelloWorldTestUtils {
     public static <T extends HelloWorld>
     T set_array_sets_actual_hello_world_bytes(final T service) {
         requireMock(service);
-        Mockito
-                .doAnswer(i -> {
-                    final var array = i.getArgument(0, byte[].class);
-                    System.arraycopy(hello_world_byte_array(), 0, array, 0, HelloWorld.BYTES);
-                    return array;
-                })
-                .when(service)
-                .set(ArgumentMatchers.any(byte[].class));
+        Mockito.doAnswer(i -> {
+            final var array = i.getArgument(0, byte[].class);
+            System.arraycopy(hello_world_byte_array(), 0, array, 0, HelloWorld.BYTES);
+            return array;
+        }).when(service).set(ArgumentMatchers.any(byte[].class));
         return service;
     }
 

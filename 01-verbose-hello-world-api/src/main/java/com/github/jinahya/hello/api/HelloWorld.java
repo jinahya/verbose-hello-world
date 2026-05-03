@@ -21,14 +21,16 @@ package com.github.jinahya.hello.api;
  */
 
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.Flushable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.foreign.MemorySegment;
@@ -48,6 +50,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -65,6 +68,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.function.Supplier;
 import java.util.jar.JarOutputStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -209,7 +213,7 @@ public interface HelloWorld {
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, and returns the result.
      */
-    default byte[] set() {
+    default byte[] byteArray() {
         final var array = new byte[BYTES];
         set(array);
         return array;
@@ -502,6 +506,10 @@ public interface HelloWorld {
 //            writer.flush();
 //        }
         return file;
+    }
+
+    default InputStream asInputStream() throws IOException {
+        return new ByteArrayInputStream(byteArray());
     }
 
     // ------------------------------------------------------------------------------------ java.net
@@ -817,6 +825,16 @@ public interface HelloWorld {
         return buffer;
     }
 
+    @SuppressWarnings({"unchecked"})
+    default <T extends ByteBuffer> T byteBuffer(final Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return (T) put(Objects.requireNonNull(supplier.get(), "supplier.get() is null")).flip();
+    }
+
+    default ByteBuffer byteBuffer() {
+        return byteBuffer(() -> ByteBuffer.allocate(BYTES));
+    }
+
     /**
      * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
      * href="#hello-world-bytes">hello-world-bytes</a>, whose {@code position}, {@code limit} is
@@ -848,9 +866,7 @@ public interface HelloWorld {
      * @see ByteBuffer#flip()
      */
     default ByteBuffer put() {
-        final var buffer = ByteBuffer.allocate(BYTES);
-        put(buffer);
-        return buffer;
+        return ByteBuffer.wrap(byteArray());
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
@@ -1195,8 +1211,8 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------------ java.sql
-    default <T extends PreparedStatement> T setBytes(final T preparedStatement,
-                                                     final int parameterIndex)
+    default <T extends PreparedStatement> T setAsciiStream(final T preparedStatement,
+                                                           final int parameterIndex)
             throws SQLException {
         Objects.requireNonNull(preparedStatement, "preparedStatement is null");
         if (parameterIndex < 1) {
@@ -1204,7 +1220,74 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        preparedStatement.setBytes(parameterIndex, array);
+        final var x = new ByteArrayInputStream(array);
+        preparedStatement.setAsciiStream(parameterIndex, x);
+        return preparedStatement;
+    }
+
+    default <T extends PreparedStatement> T setBinaryStream(final T preparedStatement,
+                                                            final int parameterIndex)
+            throws SQLException {
+        Objects.requireNonNull(preparedStatement, "preparedStatement is null");
+        if (parameterIndex < 1) {
+            throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        final var x = new ByteArrayInputStream(array);
+        preparedStatement.setBinaryStream(parameterIndex, x);
+        return preparedStatement;
+    }
+
+    /**
+     * Sets the <a href="#hello-world-bytes">hello-world-bytes</a> as the value of the designated
+     * parameter on the specified prepared statement.
+     *
+     * @param <T>               prepared statement type parameter
+     * @param preparedStatement the prepared statement on which the bytes are set.
+     * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
+     * @return the given {@code preparedStatement}.
+     * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
+     * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
+     * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
+     *                                  marker in the SQL statement; if a database access error
+     *                                  occurs; or if this method is called on a closed
+     *                                  {@link PreparedStatement}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, invokes
+     * {@link PreparedStatement#setBytes(int, byte[]) setBytes(parameterIndex, array)} method on the
+     * {@code preparedStatement} with the {@code parameterIndex} and the array, and returns the
+     * {@code preparedStatement}.
+     * @see #set(byte[])
+     * @see PreparedStatement#setBytes(int, byte[])
+     */
+    default <T extends PreparedStatement> T setBytes(final T preparedStatement,
+                                                     final int parameterIndex)
+            throws SQLException {
+        Objects.requireNonNull(preparedStatement, "preparedStatement is null");
+        if (parameterIndex < 1) {
+            throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
+        }
+        final var x = new byte[BYTES];
+        set(x);
+        preparedStatement.setBytes(parameterIndex, x);
+        return preparedStatement;
+    }
+
+    default <T extends PreparedStatement> T setCharacterStream(final T preparedStatement,
+                                                               final int parameterIndex)
+            throws SQLException {
+        Objects.requireNonNull(preparedStatement, "preparedStatement is null");
+        if (parameterIndex < 1) {
+            throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
+        }
+        final var array = new byte[BYTES];
+        set(array);
+        final var reader = new InputStreamReader(
+                new ByteArrayInputStream(array),
+                StandardCharsets.US_ASCII
+        );
+        preparedStatement.setCharacterStream(parameterIndex, reader);
         return preparedStatement;
     }
 
@@ -1490,22 +1573,6 @@ public interface HelloWorld {
         final var result = cipher.update(array);
         consumer.accept(result);
         return cipher;
-    }
-
-    /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified cipher output
-     * stream.
-     *
-     * @param stream the cipher output stream to which the bytes are written.
-     * @param <T>    cipher output stream type parameter
-     * @return the given {@code stream}
-     * @throws IOException if an I/O error occurs
-     * @see #write(OutputStream)
-     */
-    @Deprecated(forRemoval = true)
-    @屋上架屋("CipherOutputStream extends OutputStream")
-    default <T extends CipherOutputStream> T write(final T stream) throws IOException {
-        return (T) write((OutputStream) stream);
     }
 
     /**

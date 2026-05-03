@@ -108,7 +108,7 @@ Analysis of interface methods organized by Java API package.
 | Interface | Target Class | Method | Status | Notes |
 |-----------|--------------|--------|--------|-------|
 | `HelloWorld` | `MessageDigest` | `update(T)` | Active | → `set(byte[])` |
-| `HelloWorld` | `DigestOutputStream` | `write(T)` | Active | → `write(FilterOutputStream)` |
+| `HelloWorld` | `DigestOutputStream` | `write(T)` | Deprecated | → `write(OutputStream)` |
 | `HelloWorld` | `Signature` | `update(T)` | Active | → `set(byte[])` |
 
 ## java.sql
@@ -204,6 +204,7 @@ Analysis of interface methods organized by Java API package.
 | `put(LongBuffer)` | `put(IntBuffer)` |
 | `write(BufferedOutputStream)` | `write(FilterOutputStream)` |
 | `write(CipherOutputStream)` | `write(FilterOutputStream)` |
+| `write(DigestOutputStream)` | `write(OutputStream)` |
 | `write(FileOutputStream)` | `write(OutputStream)` |
 | `write(PipedOutputStream)` | `write(OutputStream)` |
 | `write(ObjectOutputStream)` | `write(OutputStream)` |

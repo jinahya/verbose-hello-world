@@ -21,12 +21,10 @@ package com.github.jinahya.hello.api;
  */
 
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.Mac;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -52,8 +50,6 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -79,13 +75,13 @@ interface HelloWorldRevisited
     // ------------------------------------------------------------------------------------- java.io
     @Override
     default <T extends DataOutput> T write(final T output) throws IOException {
-        output.write(set());
+        output.write(byteArray());
         return output;
     }
 
     @Override
     default <T extends OutputStream> T write(final T stream) throws IOException {
-        stream.write(set());
+        stream.write(byteArray());
         return stream;
     }
 
@@ -110,7 +106,6 @@ interface HelloWorldRevisited
         return file;
     }
 
-
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     default <T extends PrintStream> T write(final T stream) throws IOException {
@@ -134,13 +129,13 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default byte[] set() {
+    default byte[] byteArray() {
         return set(new byte[BYTES]);
     }
 
     @Override
     default <T extends Appendable> T append(final T appendable) throws IOException {
-        for (final var b : set()) {
+        for (final var b : byteArray()) {
             appendable.append((char) b);
         }
         return appendable;
@@ -149,7 +144,7 @@ interface HelloWorldRevisited
     // --------------------------------------------------------------------------- java.lang.foreign
     @Override
     default <T extends MemorySegment> T copy(final T segment) {
-        final var array = set();
+        final var array = byteArray();
         MemorySegment.copy(
                 array,                 // <srcArray>
                 0,                     // <srcIndex>
@@ -208,7 +203,7 @@ interface HelloWorldRevisited
     @SuppressWarnings({"unchecked"})
     @Override
     default <T extends HttpRequest.Builder> T method(final T builder, final String method) {
-        return (T) builder.method(method, HttpRequest.BodyPublishers.ofByteArray(set()));
+        return (T) builder.method(method, HttpRequest.BodyPublishers.ofByteArray(byteArray()));
     }
 
     // ------------------------------------------------------------------------------------ java.nio
@@ -218,13 +213,13 @@ interface HelloWorldRevisited
             set(buffer.array(), (buffer.arrayOffset() + buffer.position()));
             buffer.position(buffer.position() + BYTES);
         } else {
-            buffer.put(set());
+            buffer.put(byteArray());
         }
         return buffer;
     }
 
     @Override
-    default ByteBuffer put() {
+    default ByteBuffer byteBuffer() {
         return put(ByteBuffer.allocate(BYTES));
     }
 
@@ -232,7 +227,7 @@ interface HelloWorldRevisited
     @Override
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
-        for (final var b = put().flip(); b.hasRemaining(); ) {
+        for (final var b = byteBuffer().flip(); b.hasRemaining(); ) {
             channel.write(b).get();
         }
         return channel;
@@ -241,7 +236,7 @@ interface HelloWorldRevisited
     @Override
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
-        for (final var b = put().flip(); b.hasRemaining(); ) {
+        for (final var b = byteBuffer().flip(); b.hasRemaining(); ) {
             final var future = channel.write(b, position);
             position += future.get();
         }
@@ -251,7 +246,7 @@ interface HelloWorldRevisited
     @Override
     default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
             throws IOException {
-        if (channel.send(put().flip(), target) != BYTES) {
+        if (channel.send(byteBuffer().flip(), target) != BYTES) {
             throw new IOException("packet dropped; OS's send buffer is full");
         }
         return channel;
@@ -259,7 +254,7 @@ interface HelloWorldRevisited
 
     @Override
     default <T extends DatagramChannel> T write(final T channel) throws IOException {
-        if (channel.write(put().flip()) != BYTES) {
+        if (channel.write(byteBuffer().flip()) != BYTES) {
             throw new IOException("packet dropped; OS's send buffer is full");
         }
         return channel;
@@ -267,7 +262,7 @@ interface HelloWorldRevisited
 
     @Override
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
-        for (final var b = put().flip(); b.hasRemaining(); ) {
+        for (final var b = byteBuffer().flip(); b.hasRemaining(); ) {
             channel.write(b);
         }
         return channel;
@@ -289,13 +284,13 @@ interface HelloWorldRevisited
     // ------------------------------------------------------------------------------- java.security
     @Override
     default <T extends MessageDigest> T update(final T digest) {
-        digest.update(set());
+        digest.update(byteArray());
         return digest;
     }
 
     @Override
     default <T extends Signature> T update(final T signature) throws SignatureException {
-        signature.update(set());
+        signature.update(byteArray());
         return signature;
     }
 
@@ -310,7 +305,7 @@ interface HelloWorldRevisited
     // -------------------------------------------------------------------------- java.util.function
     @Override
     default <T extends Consumer<? super Byte>> T accept(final T consumer) {
-        for (final var b : set()) {
+        for (final var b : byteArray()) {
             consumer.accept(b);
         }
         return consumer;
@@ -339,13 +334,13 @@ interface HelloWorldRevisited
     // ------------------------------------------------------------------------------- java.util.zip
     @Override
     default <T extends Checksum> T update(final T checksum) {
-        checksum.update(set());
+        checksum.update(byteArray());
         return checksum;
     }
 
     @Override
     default <T extends Deflater> T input(final T deflater) {
-        deflater.setInput(set());
+        deflater.setInput(byteArray());
         return deflater;
     }
 
@@ -358,20 +353,13 @@ interface HelloWorldRevisited
     // -------------------------------------------------------------------------------- javax.crypto
     @Override
     default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
-        consumer.accept(cipher.update(set()));
+        consumer.accept(cipher.update(byteArray()));
         return cipher;
-    }
-
-    @Deprecated(forRemoval = true)
-    @Override
-    @SuppressWarnings({"removal", "unchecked"})
-    default <T extends CipherOutputStream> T write(final T stream) throws IOException {
-        return (T) write((FilterOutputStream) stream);
     }
 
     @Override
     default <T extends Mac> T update(final T mac) {
-        mac.update(set());
+        mac.update(byteArray());
         return mac;
     }
 

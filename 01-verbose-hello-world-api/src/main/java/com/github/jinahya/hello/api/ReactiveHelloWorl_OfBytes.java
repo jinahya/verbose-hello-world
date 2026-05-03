@@ -19,7 +19,7 @@ non-sealed class ReactiveHelloWorl_OfBytes
     @Override
     public Subscription subscribe(final Subscriber<? super Byte> subscriber) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        final var array = service.set();
+        final var array = service.byteArray();
         final var index = new AtomicInteger();
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
