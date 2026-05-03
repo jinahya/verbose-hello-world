@@ -68,7 +68,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntConsumer;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.jar.JarOutputStream;
 import java.util.stream.IntStream;
@@ -1604,6 +1606,72 @@ public interface HelloWorld {
         set(array);
         for (final var b : array) {
             collection.add(b);
+        }
+        return collection;
+    }
+
+    /**
+     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
+     * specified mapper, into the specified collection.
+     *
+     * @param <T>        collection type parameter
+     * @param <U>        element type parameter
+     * @param collection the collection into which each mapped value is collected.
+     * @param mapper     the function applied to each byte, boxed as {@link Byte}, to produce the
+     *                   value to be collected.
+     * @return the given {@code collection}.
+     * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, boxed as
+     * {@link Byte}, and {@link Collection#add(Object) adds} the result to the {@code collection}.
+     * @see #set(byte[])
+     * @see Function#apply(Object)
+     * @see Collection#add(Object)
+     */
+    default <T extends Collection<? super U>, U> T collect(
+            final T collection,
+            final Function<? super Byte, ? extends U> mapper) {
+        Objects.requireNonNull(collection, "collection is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            collection.add(mapper.apply(b));
+        }
+        return collection;
+    }
+
+    /**
+     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
+     * specified mapper, into the specified collection.
+     * <p>
+     * Each byte is applied to the {@code mapper} as an unsigned {@code int} in the range
+     * {@code [0..255]} (i.e., {@code b & 0xFF}).
+     *
+     * @param <T>        collection type parameter
+     * @param <R>        element type parameter
+     * @param collection the collection into which each mapped value is collected.
+     * @param mapper     the function applied to each byte, as an unsigned {@code int} in the range
+     *                   {@code [0..255]}, to produce the value to be collected.
+     * @return the given {@code collection}.
+     * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, masked to an
+     * unsigned {@code int} (i.e., {@code b & 0xFF}), and {@link Collection#add(Object) adds} the
+     * result to the {@code collection}.
+     * @see #set(byte[])
+     * @see IntFunction#apply(int)
+     * @see Collection#add(Object)
+     */
+    default <T extends Collection<? super R>, R> T collect(
+            final T collection,
+            final IntFunction<? extends R> mapper) {
+        Objects.requireNonNull(collection, "collection is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            collection.add(mapper.apply(b & 0xFF));
         }
         return collection;
     }

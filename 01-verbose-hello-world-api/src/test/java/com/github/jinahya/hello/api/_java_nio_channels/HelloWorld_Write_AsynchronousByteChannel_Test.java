@@ -90,7 +90,8 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer_will_increase_buffer_position_by_12();
+        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
+                service());
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var written = new LongAdder();
         final var reference = new AtomicReference<Future<Integer>>();

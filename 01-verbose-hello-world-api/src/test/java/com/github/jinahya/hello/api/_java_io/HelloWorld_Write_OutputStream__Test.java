@@ -179,7 +179,8 @@ class HelloWorld_Write_OutputStream_畵蛇添足_Test
             final var decompressed = gzipis.readAllBytes();
             log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
                       decompressed.length);
-            Assertions.assertArrayEquals(hello_world_byte_array(), decompressed);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+                                         decompressed);
         }
     }
 
@@ -203,7 +204,8 @@ class HelloWorld_Write_OutputStream_畵蛇添足_Test
             final var decompressed = gzipis.readAllBytes();
             log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
                       decompressed.length);
-            Assertions.assertArrayEquals(hello_world_byte_array(), decompressed);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+                                         decompressed);
         }
     }
 }

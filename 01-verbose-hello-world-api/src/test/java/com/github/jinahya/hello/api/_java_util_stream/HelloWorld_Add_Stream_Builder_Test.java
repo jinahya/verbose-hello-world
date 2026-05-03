@@ -2,6 +2,7 @@ package com.github.jinahya.hello.api._java_util_stream;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -45,7 +46,7 @@ class HelloWorld_Add_Stream_Builder_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_will_return_the_array();
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         @SuppressWarnings("unchecked")
         final var builder = (Stream.Builder<Byte>) Mockito.mock(Stream.Builder.class);
         // ------------------------------------------------------------------------------------ when
@@ -59,12 +60,12 @@ class HelloWorld_Add_Stream_Builder_Test
     @Test
     void _添足_畵蛇() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_will_set_actual_hello_world_bytes();
+        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
         final var builder = Stream.<Number>builder();
         // ------------------------------------------------------------------------------------ when
         service.add(builder);
         // ------------------------------------------------------------------------------------ then
-        final var expected = hello_world_byte_array();
+        final var expected = HelloWorldTestUtils.hello_world_byte_array();
         final var ints = builder.build().mapToInt(Number::intValue).toArray();
         Assertions.assertEquals(expected.length, ints.length);
         for (var i = 0; i < ints.length; i++) {

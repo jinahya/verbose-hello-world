@@ -2,6 +2,7 @@ package com.github.jinahya.hello.api._javax_crypto;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -71,7 +72,7 @@ class HelloWorld_Update_Cipher_Test
     @Test
     void __() {
         // ------------------------------------------------------------------------------- given
-        final var service = set_array_will_return_the_array();
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         final var cipher = Mockito.mock(Cipher.class);
         final var output = ThreadLocalRandom.current().nextBoolean() ? new byte[0] : null;
         Mockito.doAnswer(i -> output).when(cipher).update(ArgumentMatchers.notNull());
@@ -80,7 +81,7 @@ class HelloWorld_Update_Cipher_Test
         // -------------------------------------------------------------------------------- when
         final var result = service.update(cipher, consumer);
         // -------------------------------------------------------------------------------- then
-        final var array = set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         Mockito.verify(cipher).update(array);
         Mockito.verify(consumer, Mockito.atMostOnce()).accept(output);
         Assertions.assertSame(cipher, result);
@@ -105,7 +106,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             final AlgorithmParameterSpec params;
@@ -142,7 +144,7 @@ class HelloWorld_Update_Cipher_Test
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
             Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
             Assertions.assertArrayEquals(
-                    hello_world_byte_array(),
+                    HelloWorldTestUtils.hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -166,7 +168,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             final AlgorithmParameterSpec params;
@@ -191,7 +194,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -213,7 +216,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -244,7 +248,7 @@ class HelloWorld_Update_Cipher_Test
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
             Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
             Assertions.assertArrayEquals(
-                    hello_world_byte_array(),
+                    HelloWorldTestUtils.hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -268,7 +272,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -287,7 +292,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -313,7 +318,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             final AlgorithmParameterSpec params;
@@ -354,7 +360,7 @@ class HelloWorld_Update_Cipher_Test
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // GCM is a stream cipher mode - no padding needed, decrypted equals original plaintext
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -374,7 +380,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             final AlgorithmParameterSpec params;
@@ -400,7 +407,7 @@ class HelloWorld_Update_Cipher_Test
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // ChaCha20-Poly1305 is a stream cipher (AEAD) - no padding, decrypted equals original
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -422,7 +429,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             final AlgorithmParameterSpec params;
@@ -459,7 +467,7 @@ class HelloWorld_Update_Cipher_Test
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             Assertions.assertEquals(16, decrypted.length);
             Assertions.assertArrayEquals(
-                    hello_world_byte_array(),
+                    HelloWorldTestUtils.hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -483,7 +491,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             final AlgorithmParameterSpec params;
@@ -508,7 +517,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -530,7 +539,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -560,7 +570,7 @@ class HelloWorld_Update_Cipher_Test
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             Assertions.assertEquals(16, decrypted.length);
             Assertions.assertArrayEquals(
-                    hello_world_byte_array(),
+                    HelloWorldTestUtils.hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -584,7 +594,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var key = generateSecretKey(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -603,7 +614,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -629,7 +640,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var keyPair = generateKeyPair(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -650,7 +662,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -673,7 +685,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var keyPair = generateKeyPair(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -692,7 +705,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 
@@ -715,7 +728,8 @@ class HelloWorld_Update_Cipher_Test
         @ParameterizedTest
         void __(final int keysize) throws Exception {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_will_set_actual_hello_world_bytes();
+            final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(
+                    service());
             final var keyPair = generateKeyPair(ALGORITHM, keysize);
             final var cipher = Cipher.getInstance(TRANSFORMATION);
             // ----------------------------------------------------------------------------- encrypt
@@ -734,7 +748,7 @@ class HelloWorld_Update_Cipher_Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(hello_world_byte_array(), decrypted);
+            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
     }
 }

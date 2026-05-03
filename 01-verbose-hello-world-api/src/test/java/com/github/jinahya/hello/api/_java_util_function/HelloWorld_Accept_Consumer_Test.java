@@ -2,6 +2,7 @@ package com.github.jinahya.hello.api._java_util_function;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -44,13 +45,13 @@ class HelloWorld_Accept_Consumer_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_will_return_the_array();
+        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         @SuppressWarnings("unchecked")
         final var consumer = (Consumer<Byte>) Mockito.mock(Consumer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.accept(consumer);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         final var inOrder = Mockito.inOrder(consumer);
         for (final var b : array) {
             inOrder.verify(consumer, Mockito.calls(1)).accept(b);
@@ -63,7 +64,7 @@ class HelloWorld_Accept_Consumer_Test
     @Test
     void _添足_畵蛇() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_will_set_actual_hello_world_bytes();
+        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
         final var baos = new ByteArrayOutputStream();
         final Consumer<Number> consumer = b -> {
             baos.write(b.byteValue());
@@ -71,6 +72,7 @@ class HelloWorld_Accept_Consumer_Test
         // ------------------------------------------------------------------------------------ when
         service.accept(consumer);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertArrayEquals(hello_world_byte_array(), baos.toByteArray());
+        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+                                     baos.toByteArray());
     }
 }

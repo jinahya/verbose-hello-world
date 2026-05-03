@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,8 +34,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -119,6 +118,6 @@ class HelloWorld_Write_FilterOutputStream_Test
         service.write(stream);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(stream, Mockito.times(1))
-                .write(ArgumentMatchers.eq(hello_world_byte_array()));
+                .write(ArgumentMatchers.eq(HelloWorldTestUtils.hello_world_byte_array()));
     }
 }

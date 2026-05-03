@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +110,8 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
     @Test
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer_will_increase_buffer_position_by_12();
+        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
+                service());
         final var channel = Mockito.mock(AsynchronousFileChannel.class,
                                          Mockito.withSettings().verboseLogging());
         final var increments = new ArrayList<Integer>();
@@ -132,7 +134,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = put_buffer12_invoked_once();
+        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
         final List<Long> positions;
         {
             final var captor = ArgumentCaptor.forClass(long.class);
