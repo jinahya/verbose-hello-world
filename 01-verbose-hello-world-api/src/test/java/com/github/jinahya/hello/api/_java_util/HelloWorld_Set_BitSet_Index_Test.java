@@ -3,7 +3,6 @@ package com.github.jinahya.hello.api._java_util;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -68,24 +67,5 @@ class HelloWorld_Set_BitSet_Index_Test
         final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
         Assertions.assertArrayEquals(array, bitset.toByteArray());
         Assertions.assertSame(bitset, result);
-    }
-
-    @畵蛇添足
-    @Test
-    void _添足_畵蛇() {
-        // ----------------------------------------------------------------------------------- given
-        final var service = set_array_will_set_actual_hello_world_bytes();
-        final var bitset = new BitSet();
-        var index = ThreadLocalRandom.current().nextInt(16);
-        // ------------------------------------------------------------------------------------ when
-        service.set(bitset, index);
-        // ------------------------------------------------------------------------------------ then
-        final var array = new byte[HelloWorld.BYTES];
-        for (var i = 0; i < array.length; i++) {
-            for (var j = 0; j < Byte.SIZE; j++) {
-                array[i] |= (byte) ((bitset.get(index++) ? 0x01 : 0x00) << j);
-            }
-        }
-        Assertions.assertArrayEquals(hello_world_byte_array(), array);
     }
 }

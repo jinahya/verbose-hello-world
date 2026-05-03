@@ -1575,16 +1575,14 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        for (var b : array) {
-            for (int i = 0; i < Byte.SIZE; i++) {
+        for (int b : array) {
+            for (var i = 0; i < Byte.SIZE; i++) {
                 bitset.set(index++, (b & 1) == 1);
-                b = (byte) (b >> 1);
+                b >>>= 1;
             }
         }
         return bitset;
     }
-
-    // h e l l o ,  w o r l d
 
     /**
      * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
