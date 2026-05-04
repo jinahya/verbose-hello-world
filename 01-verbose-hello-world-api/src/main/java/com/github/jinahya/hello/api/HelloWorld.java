@@ -1748,7 +1748,9 @@ public interface HelloWorld {
      * boxed as {@link Byte}, to the {@code consumer}.
      * @see #set(byte[])
      * @see Consumer#accept(Object)
+     * @deprecated Use {@link #acceptEach(Consumer, Function)}
      */
+    @Deprecated
     default <T extends Consumer<? super Byte>> T accept(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
@@ -1759,7 +1761,75 @@ public interface HelloWorld {
         return consumer;
     }
 
-    default <T extends IntConsumer> T accept(final T consumer) {
+    /**
+     * Accepts a value, mapped from each of the <a href="#hello-world-bytes">hello-world-bytes</a>
+     * by the specified mapper, to the specified consumer.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(consumer, "consumer is null");
+     * Objects.requireNonNull(mapper, "mapper is null");
+     * final var array = new byte[BYTES];
+     * set(array);
+     * for (final var b : array) { // @highlight region
+     *     consumer.accept(mapper.apply(b));
+     * } // @end
+     * return consumer;
+     *}
+     *
+     * @param <T>      consumer type parameter
+     * @param <U>      mapped value type parameter
+     * @param consumer the consumer to which each mapped value is accepted.
+     * @param mapper   the mapper for mapping each byte, boxed as {@link Byte}, to a value of type
+     *                 {@code U}.
+     * @return the given {@code consumer}.
+     * @throws NullPointerException if either {@code consumer} or {@code mapper} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and, for each byte in the array,
+     * {@link Consumer#accept(Object) accepts} the result of
+     * {@link Function#apply(Object) mapper.apply(b)} to the {@code consumer}.
+     * @see #set(byte[])
+     * @see Function#apply(Object)
+     * @see Consumer#accept(Object)
+     */
+    default <T extends Consumer<? super U>, U>
+    T acceptEach(final T consumer, final Function<? super Byte, ? extends U> mapper) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            consumer.accept(mapper.apply(b));
+        }
+        return consumer;
+    }
+
+    /**
+     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, widened to
+     * {@code int}, to the specified consumer.
+     * <p>
+     * The default implementation would be as follows.
+     * {@snippet lang = "java":
+     * Objects.requireNonNull(consumer, "consumer is null");
+     * final var array = new byte[BYTES];
+     * set(array);
+     * for (final var b : array) { // @highlight region
+     *     consumer.accept(b);
+     * } // @end
+     * return consumer;
+     *}
+     *
+     * @param <T>      consumer type parameter
+     * @param consumer the consumer to which each byte, widened to {@code int}, is accepted.
+     * @return the given {@code consumer}.
+     * @throws NullPointerException if {@code consumer} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link IntConsumer#accept(int) accepts} each byte in the array,
+     * widened to {@code int}, to the {@code consumer}.
+     * @see #set(byte[])
+     * @see IntConsumer#accept(int)
+     */
+    default <T extends IntConsumer> T acceptEach(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
         set(array);
@@ -1847,10 +1917,15 @@ public interface HelloWorld {
         return (T) accept((Consumer<? super Byte>) builder);
     }
 
+    default <T extends Stream.Builder<? super U>, U> T add(final T builder,
+                                                           final Function<? super Byte, ? extends U> mapper) {
+        return (T) acceptEach((Consumer<? super U>) builder, mapper);
+    }
+
     @屋上架屋("IntStream.Builder extends IntConsumer")
     @Deprecated(forRemoval = true)
     default <T extends IntStream.Builder> T add(final T builder) {
-        return (T) accept((IntConsumer) builder);
+        return (T) acceptEach((IntConsumer) builder);
     }
 
     // -------------------------------------------------------------------------------- javax.crypto
