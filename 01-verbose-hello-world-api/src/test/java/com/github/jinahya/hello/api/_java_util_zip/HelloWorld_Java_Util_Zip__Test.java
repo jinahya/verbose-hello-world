@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
@@ -51,25 +50,24 @@ class HelloWorld_Java_Util_Zip__Test
 
         @Test
         void __ZipInputStream() throws IOException {
-            // ----------------------------------------------------------------------------- given
-            final var tempFile = File.createTempFile("tmp", null, tempDir);
-            // ------------------------------------------------------------------------------ when
-            try (var fos = new FileOutputStream(tempFile);
-                 var zos = new ZipOutputStream(fos)) {
+            // ------------------------------------------------------------------------------- given
+            // -------------------------------------------------------------------------------- when
+            try (var baos = new ByteArrayOutputStream();
+                 var zos = new ZipOutputStream(baos)) {
                 zos.putNextEntry(new ZipEntry("hello-world.txt"));
                 service().write(zos);
                 zos.closeEntry();
                 zos.flush();
-            }
-            // ------------------------------------------------------------------------------ then
-            try (var fis = new FileInputStream(tempFile);
-                 var zis = new ZipInputStream(fis)) {
-                final var entry = zis.getNextEntry();
-                assert entry != null;
-                Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
-                        zis.readAllBytes()
-                );
+                // ---------------------------------------------------------------------------- then
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     var zis = new ZipInputStream(bais)) {
+                    final var entry = zis.getNextEntry();
+                    assert entry != null;
+                    Assertions.assertArrayEquals(
+                            HelloWorldTestUtils.hello_world_byte_array(),
+                            zis.readAllBytes()
+                    );
+                }
             }
         }
 
