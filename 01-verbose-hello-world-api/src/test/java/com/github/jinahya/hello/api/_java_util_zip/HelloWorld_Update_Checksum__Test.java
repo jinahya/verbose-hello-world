@@ -5,8 +5,12 @@ import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.Crc16;
+import org.apache.commons.codec.digest.XXHash32;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
@@ -31,6 +35,10 @@ class HelloWorld_Update_Checksum__Test
         );
     }
 
+    private static void printf(final String algorithm, final long value) {
+        System.out.printf("%30s: 0x%016x%n", algorithm, value);
+    }
+
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
@@ -51,8 +59,32 @@ class HelloWorld_Update_Checksum__Test
         final var result = service.update(checksum);
         // ------------------------------------------------------------------------------------ then
         Assertions.assertSame(checksum, result);
-        final var value = checksum.getValue();
-        System.out.printf("%7s: 0x%s%n", checksum.getClass().getSimpleName(),
-                          Long.toHexString(value));
+        printf(checksum.getClass().getSimpleName(), checksum.getValue());
     }
+
+    // ----------------------------------------------------------------------- Apache Commons Codec
+    @Nested
+    class XXHash32_Test {
+
+        @Test
+        void __() {
+            final var checksum = new XXHash32();
+            final var result = service().update(checksum);
+            Assertions.assertSame(checksum, result);
+            printf("XXHash32", checksum.getValue());
+        }
+    }
+
+    @Nested
+    class Crc16_Test {
+
+        @Test
+        void __() {
+            final var checksum = Crc16.arc();
+            final var result = service().update(checksum);
+            Assertions.assertSame(checksum, result);
+            printf("Crc16.arc", checksum.getValue());
+        }
+    }
+
 }

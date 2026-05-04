@@ -133,13 +133,13 @@
         <artifactId>error_prone_core</artifactId>
         <version>${version.com.google.errorprone}</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>com.google.guava</groupId>-->
-      <!--        <artifactId>guava-bom</artifactId>-->
-      <!--        <version>${version.com.google.guava}</version>-->
-      <!--        <type>pom</type>-->
-      <!--        <scope>import</scope>-->
-      <!--      </dependency>-->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-bom</artifactId>
+        <version>${version.com.google.guava}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
@@ -168,6 +168,11 @@
         <artifactId>nullaway</artifactId>
         <!-- https://central.sonatype.com/artifact/com.uber.nullaway/nullaway/versions -->
         <version>${version.com.uber.nullaway}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.22.0</version>
       </dependency>
       <dependency>
         <groupId>io.projectreactor</groupId>
