@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
@@ -43,7 +42,6 @@ class HelloWorld_Update_Checksum__Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("update(Checksum)")
     @MethodSource("getChecksumStream")
     @ParameterizedTest
     void __(final Checksum checksum) {
