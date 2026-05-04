@@ -53,7 +53,6 @@ import java.security.SignatureException;
 import java.util.BitSet;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
@@ -312,18 +311,6 @@ interface HelloWorldRevisited
     }
 
     // ------------------------------------------------------------------------------- java.util.jar
-    @SuppressWarnings("removal")
-    @Deprecated(forRemoval = true)
-    @Override
-    default <T extends JarOutputStream> T write(final T stream) throws IOException {
-        return HelloWorld.super.write(stream);
-    }
-
-    @Override
-    default <T extends JarOutputStream> T put(final T stream, final String name)
-            throws IOException {
-        return HelloWorld.super.put(stream, name);
-    }
 
     // ---------------------------------------------------------------------------- java.util.stream
     @Override

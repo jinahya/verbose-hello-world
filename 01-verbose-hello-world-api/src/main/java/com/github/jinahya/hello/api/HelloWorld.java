@@ -73,7 +73,6 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
-import java.util.jar.JarOutputStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
@@ -1840,22 +1839,6 @@ public interface HelloWorld {
     }
 
     // ------------------------------------------------------------------------------- java.util.jar
-    @屋上架屋("JarOutputStream extends ZipOutputStream")
-    @Deprecated(forRemoval = true)
-    default <T extends JarOutputStream> T write(final T stream) throws IOException {
-        final var result = write((ZipOutputStream) stream);
-        assert result == stream;
-        return stream;
-    }
-
-    @屋上架屋("JarOutputStream extends ZipOutputStream")
-    @Deprecated(forRemoval = true)
-    default <T extends JarOutputStream> T put(final T stream, final String name)
-            throws IOException {
-        final var result = put((ZipOutputStream) stream, name);
-        assert result == stream;
-        return stream;
-    }
 
     // ------------------------------------------------------------------------------- java.util.zip
     default <T extends Checksum> T update(final T checksum) {
