@@ -1839,6 +1839,20 @@ public interface HelloWorld {
     // ------------------------------------------------------------------------------- java.util.jar
 
     // ------------------------------------------------------------------------------- java.util.zip
+
+    /**
+     * Updates the specified checksum with the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param <T>      checksum type parameter
+     * @param checksum the checksum to be updated.
+     * @return the given {@code checksum}.
+     * @throws NullPointerException if {@code checksum} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Checksum#update(byte[]) updates} the {@code checksum} with
+     * the array, and returns the {@code checksum}.
+     * @see #set(byte[])
+     * @see Checksum#update(byte[])
+     */
     default <T extends Checksum> T update(final T checksum) {
         Objects.requireNonNull(checksum, "checksum is null");
         final var array = new byte[BYTES];
@@ -1847,6 +1861,20 @@ public interface HelloWorld {
         return checksum;
     }
 
+    /**
+     * Sets, as an input data for compression, the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> to the specified deflater.
+     *
+     * @param <T>      deflater type parameter
+     * @param deflater the deflater to which the input data is set.
+     * @return the given {@code deflater}.
+     * @throws NullPointerException if {@code deflater} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Deflater#setInput(byte[]) sets} the array as the input data
+     * of the {@code deflater}, and returns the {@code deflater}.
+     * @see #set(byte[])
+     * @see Deflater#setInput(byte[])
+     */
     default <T extends Deflater> T setInput(final T deflater) {
         Objects.requireNonNull(deflater, "deflater is null");
         final var array = new byte[BYTES];
@@ -1857,36 +1885,49 @@ public interface HelloWorld {
 
     // ---------------------------------------------------------------------------- java.util.stream
 
-    /**
-     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
-     * {@link Byte}, to the specified stream builder.
-     *
-     * @param <T>     stream builder type parameter
-     * @param builder the stream builder to which each byte is accepted.
-     * @return the given {@code builder}.
-     * @throws NullPointerException if {@code builder} is {@code null}.
-     * @implSpec Default implementation invokes {@link #accept(Consumer) accept(consumer)} method
-     * with the {@code builder} cast as a {@link Consumer}, and returns the {@code builder}.
-     * @see #accept(Consumer)
-     * @see Stream.Builder
-     * @deprecated Invoke {@link #accept(Consumer)} with the {@code builder}.
-     */
-    @屋上架屋("Stream.Builder<T> extends Consumer<T>")
-    @Deprecated(forRemoval = true)
-    default <T extends Stream.Builder<? super Byte>> T add(final T builder) {
-        return (T) accept((Consumer<? super Byte>) builder);
-    }
-
-    default <T extends Stream.Builder<? super U>, U> T add(final T builder,
-                                                           final Function<? super Byte, ? extends U> mapper) {
-        return (T) acceptEach((Consumer<? super U>) builder, mapper);
-    }
-
-    @屋上架屋("IntStream.Builder extends IntConsumer")
-    @Deprecated(forRemoval = true)
-    default <T extends IntStream.Builder> T add(final T builder) {
-        return (T) acceptEach((IntConsumer) builder);
-    }
+//    /**
+//     * Adds, to the specified stream builder, a value mapped from each of the <a
+//     * href="#hello-world-bytes">hello-world-bytes</a> by the specified mapper.
+//     *
+//     * @param <T>     stream builder type parameter
+//     * @param <U>     mapped value type parameter
+//     * @param builder the stream builder to which each mapped value is added.
+//     * @param mapper  the mapper for mapping each byte, boxed as {@link Byte}, to a value of type
+//     *                {@code U}.
+//     * @return the given {@code builder}.
+//     * @throws NullPointerException if either {@code builder} or {@code mapper} is {@code null}.
+//     * @implSpec Default implementation invokes
+//     * {@link #acceptEach(Consumer, Function) acceptEach(consumer, mapper)} method with the
+//     * {@code builder} and the {@code mapper}, and returns the {@code builder}.
+//     * @see #acceptEach(Consumer, Function)
+//     * @see Stream.Builder#accept(Object)
+//     */
+//    @SuppressWarnings({"unchecked"})
+//    default <T extends Stream.Builder<? super U>, U>
+//    T allAll(final T builder, final Function<? super Byte, ? extends U> mapper) {
+//        Objects.requireNonNull(builder, "builder is null");
+//        Objects.requireNonNull(mapper, "mapper is null");
+//        return (T) acceptEach((Consumer<? super U>) builder, mapper);
+//    }
+//
+//    /**
+//     * Adds, to the specified int stream builder, each of the <a
+//     * href="#hello-world-bytes">hello-world-bytes</a>, widened to {@code int}.
+//     *
+//     * @param <T>     int stream builder type parameter
+//     * @param builder the int stream builder to which each byte, widened to {@code int}, is added.
+//     * @return the given {@code builder}.
+//     * @throws NullPointerException if {@code builder} is {@code null}.
+//     * @implSpec Default implementation invokes {@link #acceptEach(IntConsumer) acceptEach(consumer)}
+//     * method with the {@code builder}, and returns the {@code builder}.
+//     * @see #acceptEach(IntConsumer)
+//     * @see IntStream.Builder#accept(int)
+//     */
+//    @SuppressWarnings({"unchecked"})
+//    default <T extends IntStream.Builder> T addAll(final T builder) {
+//        Objects.requireNonNull(builder, "builder is null");
+//        return (T) acceptEach((IntConsumer) builder);
+//    }
 
     // -------------------------------------------------------------------------------- javax.crypto
 

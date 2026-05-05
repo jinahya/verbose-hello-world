@@ -53,7 +53,6 @@ import java.security.SignatureException;
 import java.util.BitSet;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 
@@ -312,10 +311,6 @@ interface HelloWorldRevisited
     // ------------------------------------------------------------------------------- java.util.jar
 
     // ---------------------------------------------------------------------------- java.util.stream
-    @Override
-    default <T extends Stream.Builder<? super Byte>> T add(final T builder) {
-        return HelloWorld.super.add(builder);
-    }
 
     // ------------------------------------------------------------------------------- java.util.zip
     @Override
