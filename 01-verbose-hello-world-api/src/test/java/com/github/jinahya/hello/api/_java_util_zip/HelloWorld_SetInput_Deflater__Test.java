@@ -254,7 +254,7 @@ class HelloWorld_SetInput_Deflater__Test
         final var nowrap = true;
         final byte[] compressed;
         try (var baos = new ByteArrayOutputStream();
-             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap), 1)) {
+             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap))) {
             service().write(dos);
             dos.finish(); // redundant, invoked in close()
             baos.flush(); // no-op
@@ -262,7 +262,7 @@ class HelloWorld_SetInput_Deflater__Test
         }
         printf(level, compressed);
         try (var bais = new ByteArrayInputStream(compressed);
-             var iis = new InflaterInputStream(bais, new Inflater(nowrap), 1)) {
+             var iis = new InflaterInputStream(bais, new Inflater(nowrap))) {
             final var uncompressed = iis.readAllBytes();
             assert uncompressed.length == HelloWorld.BYTES;
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
@@ -275,7 +275,7 @@ class HelloWorld_SetInput_Deflater__Test
     void __DeflatorOutputStream(final int level, final boolean nowrap) throws IOException {
         final byte[] compressed;
         try (var baos = new ByteArrayOutputStream();
-             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap), 1)) {
+             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap))) {
             service().write(dos);
             dos.finish(); // redundant, invoked in close()
             baos.flush(); // no-op
@@ -286,7 +286,7 @@ class HelloWorld_SetInput_Deflater__Test
             assertZlibWrapped(compressed); // wrapper present only when nowrap=false
         }
         try (var bais = new ByteArrayInputStream(compressed);
-             var iis = new InflaterInputStream(bais, new Inflater(nowrap), 1)) {
+             var iis = new InflaterInputStream(bais, new Inflater(nowrap))) {
             final var uncompressed = iis.readAllBytes();
             assert uncompressed.length == HelloWorld.BYTES;
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
