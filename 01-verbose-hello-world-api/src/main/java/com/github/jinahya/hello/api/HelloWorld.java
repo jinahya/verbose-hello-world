@@ -77,8 +77,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * An interface for writing <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -1855,27 +1853,6 @@ public interface HelloWorld {
         set(array);
         deflater.setInput(array);
         return deflater;
-    }
-
-    /**
-     * Puts an entry of the specified name, whose content is the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>, to the specified zip output stream.
-     *
-     * @param stream the zip output stream to which the entry is put.
-     * @param name   the name of the entry to put.
-     * @param <T>    zip output stream type parameter
-     * @return given {@code stream}.
-     * @throws IOException if an I/O error occurs.
-     */
-    default <T extends ZipOutputStream> T put(final T stream, final String name)
-            throws IOException {
-        Objects.requireNonNull(stream, "stream is null");
-        Objects.requireNonNull(name, "name is null");
-        final var entry = new ZipEntry(name);
-        stream.putNextEntry(entry);
-        write(stream);
-        stream.closeEntry();
-        return stream;
     }
 
     // ---------------------------------------------------------------------------- java.util.stream

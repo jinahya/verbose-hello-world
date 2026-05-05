@@ -56,7 +56,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Just a revisited implementation.
@@ -329,12 +328,6 @@ interface HelloWorldRevisited
     default <T extends Deflater> T setInput(final T deflater) {
         deflater.setInput(byteArray());
         return deflater;
-    }
-
-    @Override
-    default <T extends ZipOutputStream> T put(final T stream, final String name)
-            throws IOException {
-        return HelloWorld.super.put(stream, name);
     }
 
     // -------------------------------------------------------------------------------- javax.crypto
