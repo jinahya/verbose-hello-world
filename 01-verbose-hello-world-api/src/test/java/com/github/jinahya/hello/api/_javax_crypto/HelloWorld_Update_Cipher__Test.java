@@ -29,7 +29,9 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HexFormat;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
@@ -79,6 +81,16 @@ class HelloWorld_Update_Cipher__Test
         final var generator = KeyPairGenerator.getInstance(algorithm);
         generator.initialize(keysize);
         return generator.generateKeyPair();
+    }
+
+    private static void printf(final String transformation, final Object parameter,
+                               final byte[] encrypted) {
+        final var encoded = Base64.getEncoder().encodeToString(encrypted);
+        System.out.printf("%40s %20s (%4d) %s...%s%n", transformation,
+                          Optional.ofNullable(parameter).orElse(""),
+                          encrypted.length,
+                          encoded.substring(0, 4),
+                          encoded.substring(encoded.length() - 4));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -140,11 +152,10 @@ class HelloWorld_Update_Cipher__Test
             }
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
-            log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
+            printf(TRANSFORMATION, keysize, encrypted);
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             final var decrypted = cipher.doFinal(encrypted);
-            log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
@@ -192,11 +203,10 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
-            log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
+            printf(TRANSFORMATION, keysize, encrypted);
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             final var decrypted = cipher.doFinal(encrypted);
-            log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
         }
@@ -240,11 +250,10 @@ class HelloWorld_Update_Cipher__Test
                 baos.writeBytes(cipher.doFinal());
             }
             final var encrypted = baos.toByteArray();
-            log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
+            printf(TRANSFORMATION, keysize, encrypted);
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key);
             final var decrypted = cipher.doFinal(encrypted);
-            log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
@@ -286,6 +295,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -348,6 +358,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
@@ -396,6 +407,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
@@ -452,6 +464,7 @@ class HelloWorld_Update_Cipher__Test
                 baos.writeBytes(cipher.doFinal());
             }
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
@@ -503,6 +516,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
@@ -551,6 +565,7 @@ class HelloWorld_Update_Cipher__Test
                 baos.writeBytes(cipher.doFinal());
             }
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -596,6 +611,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -641,6 +657,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, iterationCount, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
@@ -682,6 +699,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, iterationCount, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
@@ -727,6 +745,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             // RSA decrypts with PRIVATE key
@@ -769,6 +788,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
@@ -810,6 +830,7 @@ class HelloWorld_Update_Cipher__Test
             });
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
+            printf(TRANSFORMATION, keysize, encrypted);
             log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
