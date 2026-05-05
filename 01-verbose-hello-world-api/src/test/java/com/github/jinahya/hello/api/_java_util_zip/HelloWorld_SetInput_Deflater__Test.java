@@ -40,7 +40,7 @@ class HelloWorld_SetInput_Deflater__Test
         return IntStream.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 
-    static Stream<Arguments> levelAndNoWrapStream() {
+    static Stream<Arguments> levelAndNowrapStream() {
         return levelStream().boxed()
                 .flatMap(l -> Stream.of(false, true).map(nr -> Arguments.of(l, nr)));
     }
@@ -49,8 +49,8 @@ class HelloWorld_SetInput_Deflater__Test
         System.out.printf("level: %d, length: %d%n", level, length);
     }
 
-    private static void printf(final int level, final boolean noWrap, final int length) {
-        System.out.printf("level: %d, noWrap: %5b, length: %d%n", level, noWrap, length);
+    private static void printf(final int level, final boolean nowrap, final int length) {
+        System.out.printf("level: %d, nowrap: %5b, length: %d%n", level, nowrap, length);
     }
 
     private static void printf(final int level, final byte[] bytes) {
@@ -58,8 +58,8 @@ class HelloWorld_SetInput_Deflater__Test
                           Base64.getEncoder().encodeToString(bytes));
     }
 
-    private static void printf(final int level, final boolean noWrap, final byte[] bytes) {
-        System.out.printf("level: %d, noWrap: %5b, length: %d, bytes: %s%n", level, noWrap,
+    private static void printf(final int level, final boolean nowrap, final byte[] bytes) {
+        System.out.printf("level: %d, nowrap: %5b, length: %d, bytes: %s%n", level, nowrap,
                           bytes.length, Base64.getEncoder().encodeToString(bytes));
     }
 
@@ -127,13 +127,13 @@ class HelloWorld_SetInput_Deflater__Test
         }
     }
 
-    @MethodSource({"levelAndNoWrapStream"})
+    @MethodSource({"levelAndNowrapStream"})
     @ParameterizedTest
-    void __Deflator(final int level, final boolean noWrap) throws IOException, DataFormatException{
+    void __Deflator(final int level, final boolean nowrap) throws IOException, DataFormatException{
         final var size = 128;
         final byte[] compressed;
         try (var baos = new ByteArrayOutputStream();
-             var deflater = new Deflater(level, noWrap)) {
+             var deflater = new Deflater(level, nowrap)) {
             service().setInput(deflater);
             assert !deflater.needsInput(); // input buffer is populated
             deflater.finish();
@@ -147,8 +147,8 @@ class HelloWorld_SetInput_Deflater__Test
             baos.flush(); // no-op
             compressed = baos.toByteArray();
         }
-        printf(level, noWrap, compressed);
-        try (var inflater = new Inflater(noWrap)) {
+        printf(level, nowrap, compressed);
+        try (var inflater = new Inflater(nowrap)) {
             inflater.setInput(compressed);
             assert !inflater.needsInput(); // input buffer is populated
             final var uncompressed = new byte[HelloWorld.BYTES];
@@ -162,7 +162,7 @@ class HelloWorld_SetInput_Deflater__Test
             inflater.end();  // redundant, invoked in close()
         }
         try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-             var inflater = new Inflater(noWrap)) {
+             var inflater = new Inflater(nowrap)) {
             inflater.setInput(compressed);
             assert !inflater.needsInput(); // input buffer is populated
             final var output = new byte[size];
@@ -201,21 +201,21 @@ class HelloWorld_SetInput_Deflater__Test
         }
     }
 
-    @MethodSource({"levelAndNoWrapStream"})
+    @MethodSource({"levelAndNowrapStream"})
     @ParameterizedTest
-    void __DeflatorOutputStream(final int level, final boolean noWrap) throws IOException {
+    void __DeflatorOutputStream(final int level, final boolean nowrap) throws IOException {
         final var size = 128;
         final byte[] compressed;
         try (var baos = new ByteArrayOutputStream();
-             var dos = new DeflaterOutputStream(baos, new Deflater(level, noWrap), size)) {
+             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap), size)) {
             service().write(dos);
             dos.finish(); // redundant, invoked in close()
             baos.flush(); // no-op
             compressed = baos.toByteArray();
         }
-        printf(level, noWrap, compressed);
+        printf(level, nowrap, compressed);
         try (var bais = new ByteArrayInputStream(compressed);
-             var iis = new InflaterInputStream(bais, new Inflater(noWrap), size)) {
+             var iis = new InflaterInputStream(bais, new Inflater(nowrap), size)) {
             final var uncompressed = iis.readAllBytes();
             assert uncompressed.length == HelloWorld.BYTES;
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
