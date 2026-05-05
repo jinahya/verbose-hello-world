@@ -341,7 +341,6 @@ class HelloWorld_Update_Cipher__Test
             if (ThreadLocalRandom.current().nextBoolean()) {
                 aad = new byte[ThreadLocalRandom.current().nextInt(1, 32)];
                 ThreadLocalRandom.current().nextBytes(aad);
-                log.debug("aad: {}", HexFormat.of().formatHex(aad));
             } else {
                 aad = null;
             }
@@ -359,14 +358,12 @@ class HelloWorld_Update_Cipher__Test
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
             printf(TRANSFORMATION, keysize, encrypted);
-            log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             if (aad != null) {
                 cipher.updateAAD(aad);
             }
             final var decrypted = cipher.doFinal(encrypted);
-            log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // GCM is a stream cipher mode - no padding needed, decrypted equals original plaintext
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
@@ -408,11 +405,9 @@ class HelloWorld_Update_Cipher__Test
             baos.writeBytes(cipher.doFinal());
             final var encrypted = baos.toByteArray();
             printf(TRANSFORMATION, keysize, encrypted);
-            log.debug("encrypted: {}", HexFormat.of().formatHex(encrypted));
             // ----------------------------------------------------------------------------- decrypt
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             final var decrypted = cipher.doFinal(encrypted);
-            log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // ChaCha20-Poly1305 is a stream cipher (AEAD) - no padding, decrypted equals original
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
