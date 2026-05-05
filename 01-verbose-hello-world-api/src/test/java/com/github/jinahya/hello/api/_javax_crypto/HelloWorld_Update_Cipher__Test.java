@@ -138,6 +138,7 @@ class HelloWorld_Update_Cipher__Test
             cipher.init(Cipher.ENCRYPT_MODE, key, params);
             final var baos = new ByteArrayOutputStream();
             service().update(cipher, (byte[] r) -> {
+                assert r == null;
                 if (r != null) {
                     baos.writeBytes(r);
                 }
@@ -146,6 +147,7 @@ class HelloWorld_Update_Cipher__Test
                 // AES/CBC/NoPadding requires input to be a multiple of the block size (16 bytes).
                 // Since "hello, world" is 12 bytes, we pad with 4 zero bytes to complete the block.
                 final var updated = cipher.update(new byte[AES_BLOCK_SIZE - HelloWorld.BYTES]);
+                assert updated != null;
                 if (updated != null) {
                     baos.writeBytes(updated);
                 }
