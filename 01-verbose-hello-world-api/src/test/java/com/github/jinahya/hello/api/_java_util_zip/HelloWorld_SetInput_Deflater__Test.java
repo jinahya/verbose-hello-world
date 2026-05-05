@@ -298,14 +298,13 @@ class HelloWorld_SetInput_Deflater__Test
     void __GZIPOutputStream() throws IOException {
         // -------------------------------------------------------------------------------- compress
         final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream()) {
-            try (var gzipos = new GZIPOutputStream(baos)) { // header (10 bytes) is written here
-                service().write(gzipos); // bytes are buffered by the deflater
-                gzipos.finish(); // flushes remaining deflate output, then writes the trailer
-                // (CRC-32 + ISIZE, 8 bytes); redundant, invoked in close()
-                gzipos.flush(); // no-op: deflater is finished (SYNC_FLUSH branch skipped) and
-                // baos doesn't buffer; idempotent and harmless
-            }
+        try (var baos = new ByteArrayOutputStream();
+             var gzipos = new GZIPOutputStream(baos)) { // header (10 bytes) is written here
+            service().write(gzipos); // bytes are buffered by the deflater
+            gzipos.finish(); // flushes remaining deflate output, then writes the trailer
+            // (CRC-32 + ISIZE, 8 bytes); redundant, invoked in close()
+            gzipos.flush(); // no-op: deflater is finished (SYNC_FLUSH branch skipped) and
+            // baos doesn't buffer; idempotent and harmless
             compressed = baos.toByteArray();
         }
         System.out.printf("(%2d) %s%n", compressed.length,
