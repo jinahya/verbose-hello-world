@@ -73,8 +73,6 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 
@@ -1933,11 +1931,12 @@ public interface HelloWorld {
 
     /**
      * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>, and
-     * accepts the result to the specified consumer.
+     * accepts the result, which may be {@code null}, to the specified consumer.
      *
      * @param cipher   the cipher to be updated.
      * @param consumer the consumer to accept the result of
-     *                 {@link Cipher#update(byte[]) cipher.update(array)}.
+     *                 {@link Cipher#update(byte[]) cipher.update(array)}, again, which may be
+     *                 {@code null}.
      * @param <T>      cipher type parameter
      * @return the given {@code cipher}.
      * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
@@ -1950,7 +1949,8 @@ public interface HelloWorld {
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
      */
-    default <T extends Cipher> T update(final T cipher, final Consumer<? super byte[]> consumer) {
+    default <T extends Cipher>
+    T update(final T cipher, final Consumer<? super byte[]> consumer) {
         Objects.requireNonNull(cipher, "cipher is null");
         Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
