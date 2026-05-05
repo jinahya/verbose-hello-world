@@ -152,9 +152,10 @@ class HelloWorld_SetInput_Deflater__Test
     @MethodSource({"levelStream"})
     @ParameterizedTest
     void __Deflator(final int level) throws IOException, DataFormatException {
+        final var nowrap = true;
         final byte[] compressed;
         try (var baos = new ByteArrayOutputStream();
-             var deflater = new Deflater(level)) {
+             var deflater = new Deflater(level, nowrap)) {
             service().setInput(deflater);
             assert !deflater.needsInput(); // input buffer is populated
             deflater.finish();
@@ -167,8 +168,8 @@ class HelloWorld_SetInput_Deflater__Test
             compressed = baos.toByteArray();
         }
         printf(level, compressed);
-        assertZlibWrapped(compressed); // Deflater(level) defaults to nowrap=false → zlib wrapper
-        try (var inflater = new Inflater()) {
+//        assertZlibWrapped(compressed); // Deflater(level) defaults to nowrap=false → zlib wrapper
+        try (var inflater = new Inflater(nowrap)) {
             inflater.setInput(compressed);
             assert !inflater.needsInput(); // input buffer is populated
             final var uncompressed = new byte[HelloWorld.BYTES];
@@ -182,7 +183,7 @@ class HelloWorld_SetInput_Deflater__Test
             inflater.end();  // redundant, invoked in close()
         }
         try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-             var inflater = new Inflater()) {
+             var inflater = new Inflater(nowrap)) {
             inflater.setInput(compressed);
             assert !inflater.needsInput(); // input buffer is populated
             for (final var b = new byte[1]; !inflater.finished(); ) {
@@ -250,18 +251,18 @@ class HelloWorld_SetInput_Deflater__Test
     @MethodSource({"levelStream"})
     @ParameterizedTest
     void __DeflatorOutputStream(final int level) throws IOException {
+        final var nowrap = true;
         final byte[] compressed;
         try (var baos = new ByteArrayOutputStream();
-             var dos = new DeflaterOutputStream(baos, new Deflater(level), 1)) {
+             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap), 1)) {
             service().write(dos);
             dos.finish(); // redundant, invoked in close()
             baos.flush(); // no-op
             compressed = baos.toByteArray();
         }
         printf(level, compressed);
-        assertZlibWrapped(compressed); // Deflater(level) defaults to nowrap=false → zlib wrapper
         try (var bais = new ByteArrayInputStream(compressed);
-             var iis = new InflaterInputStream(bais, new Inflater(), 1)) {
+             var iis = new InflaterInputStream(bais, new Inflater(nowrap), 1)) {
             final var uncompressed = iis.readAllBytes();
             assert uncompressed.length == HelloWorld.BYTES;
             Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
