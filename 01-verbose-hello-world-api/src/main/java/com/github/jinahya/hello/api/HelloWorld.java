@@ -1975,7 +1975,8 @@ public interface HelloWorld {
      */
     default <T extends Mac> T update(final T mac) {
         Objects.requireNonNull(mac, "mac is null");
-        final var array = set(new byte[BYTES]);
+        final var array = new byte[BYTES];
+        set(array);
         mac.update(array);
         return mac;
     }
