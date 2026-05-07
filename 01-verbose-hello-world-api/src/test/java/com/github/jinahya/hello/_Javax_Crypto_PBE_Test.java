@@ -39,7 +39,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("Password hashing — PBKDF2 / scrypt / Argon2id (signup/login round-trip)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class _Javax_Crypto_PBE__Test {
+class _Javax_Crypto_PBE_Test {
 
     /**
      * Registers the {@link org.bouncycastle.jce.provider.BouncyCastleProvider BouncyCastle} and
