@@ -2,16 +2,9 @@ package com.github.jinahya.hello.api._javax_crypto;
 
 import com.github.jinahya.hello.api.HelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.password4j.jca.providers.Password4jProvider;
-import com.password4j.jca.spec.Argon2KeySpec;
-import com.password4j.types.Argon2;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
-import org.bouncycastle.crypto.params.Argon2Parameters;
-import org.bouncycastle.jcajce.spec.ScryptKeySpec;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,17 +60,18 @@ class HelloWorld_Update_Mac__Test
         extends HelloWorldTest {
 
     /**
-     * Registers the {@link BouncyCastleProvider BouncyCastle} and
-     * {@link Password4jProvider Password4j} providers with the JCA so {@code SCRYPT/BC},
-     * {@code argon2}, and other algorithms used by the nested test classes resolve by their
-     * standard JCE names.
+     * Registers the {@link org.bouncycastle.jce.provider.BouncyCastleProvider BouncyCastle} and
+     * {@link com.password4j.jca.providers.Password4jProvider Password4j} providers with the JCA so
+     * {@code SCRYPT/BC}, {@code argon2}, and other algorithms used by the nested test classes
+     * resolve by their standard JCE names.
      */
     @BeforeAll
     static void registerProviders() {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
+        if (Security.getProvider(org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME)
+            == null) {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         }
-        Password4jProvider.enable();
+        com.password4j.jca.providers.Password4jProvider.enable();
     }
 
     /**
@@ -369,10 +363,10 @@ class HelloWorld_Update_Mac__Test
         private static final int p = 1;
 
         /**
-         * A nested test class running scrypt via the {@link Password4jProvider Password4j} JCA
-         * provider, using {@link SecretKeyFactory#getInstance(String) SecretKeyFactory} for the
-         * lowercase algorithm name {@code "scrypt"} together with
-         * {@link com.password4j.jca.spec.ScryptKeySpec}.
+         * A nested test class running scrypt via the
+         * {@link com.password4j.jca.providers.Password4jProvider Password4j} JCA provider, using
+         * {@link SecretKeyFactory#getInstance(String) SecretKeyFactory} for the lowercase algorithm
+         * name {@code "scrypt"} together with {@link com.password4j.jca.spec.ScryptKeySpec}.
          */
         @DisplayName("Password4j-JCA")
         @Nested
@@ -380,6 +374,9 @@ class HelloWorld_Update_Mac__Test
 
             // Password4j-JCA registered name (lowercase)
             private static final String ALGORITHM = "scrypt";
+
+            // Password4j-JCA provider name (set by com.password4j.jca.providers.Password4jProvider's constructor)
+            private static final String PROVIDER = "Password4j";
 
             /**
              * Verifies that signing up the given {@code password} with scrypt (via the
@@ -396,7 +393,7 @@ class HelloWorld_Update_Mac__Test
             @ParameterizedTest
             void __(final String password) throws Exception {
                 // --------------------------------------------------------------------------- given
-                final var factory = SecretKeyFactory.getInstance(ALGORITHM);
+                final var factory = SecretKeyFactory.getInstance(ALGORITHM, PROVIDER);
                 // ---------------------------------------------------------------------------------
                 final byte[] column;
                 // -------------------------------------------------------------------------- signup
@@ -429,7 +426,7 @@ class HelloWorld_Update_Mac__Test
         /**
          * A nested test class running scrypt via the BouncyCastle JCE provider, using
          * {@link SecretKeyFactory#getInstance(String, String)} with {@code "SCRYPT"} and
-         * {@link ScryptKeySpec}.
+         * {@link org.bouncycastle.jcajce.spec.ScryptKeySpec}.
          */
         @DisplayName("BouncyCastle JCE")
         @Nested
@@ -441,8 +438,8 @@ class HelloWorld_Update_Mac__Test
             /**
              * Verifies that signing up the given {@code password} with scrypt (via the BC
              * {@link SecretKeyFactory}) and packing {@code salt | hash} into a 48-byte record
-             * yields a byte array that is reproduced exactly during login by re-deriving with
-             * the stored salt.
+             * yields a byte array that is reproduced exactly during login by re-deriving with the
+             * stored salt.
              *
              * @param password the password to register and verify.
              */
@@ -454,14 +451,15 @@ class HelloWorld_Update_Mac__Test
             void __(final String password) throws Exception {
                 // --------------------------------------------------------------------------- given
                 final var factory = SecretKeyFactory.getInstance(
-                        ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
+                        ALGORITHM,
+                        org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
                 // ---------------------------------------------------------------------------------
                 final byte[] column;
                 // -------------------------------------------------------------------------- signup
                 {
                     final var salt = new byte[SALT_BYTES];
                     ThreadLocalRandom.current().nextBytes(salt);
-                    final var spec = new ScryptKeySpec(
+                    final var spec = new org.bouncycastle.jcajce.spec.ScryptKeySpec(
                             password.toCharArray(), salt, N, r, p, HASH_BYTES << 3);
                     final var start = System.nanoTime();
                     final var hash = factory.generateSecret(spec).getEncoded();
@@ -473,7 +471,7 @@ class HelloWorld_Update_Mac__Test
                 // --------------------------------------------------------------------------- login
                 {
                     final var salt = Arrays.copyOfRange(column, 0, SALT_BYTES);
-                    final var spec = new ScryptKeySpec(
+                    final var spec = new org.bouncycastle.jcajce.spec.ScryptKeySpec(
                             password.toCharArray(), salt, N, r, p, HASH_BYTES << 3);
                     final var hash = factory.generateSecret(spec).getEncoded();
                     final var attempt = new byte[COLUMN_BYTES];
@@ -521,10 +519,11 @@ class HelloWorld_Update_Mac__Test
         private static final int PARALLELISM = 4;
 
         /**
-         * A nested test class running Argon2id via the {@link Password4jProvider Password4j} JCA
-         * provider, using the standard {@link SecretKeyFactory} API with {@link Argon2KeySpec}.
-         * This is the only mainstream way to call Argon2id through the JCE today; SunJCE does not
-         * (yet) ship Argon2.
+         * A nested test class running Argon2id via the
+         * {@link com.password4j.jca.providers.Password4jProvider Password4j} JCA provider, using
+         * the standard {@link SecretKeyFactory} API with
+         * {@link com.password4j.jca.spec.Argon2KeySpec}. This is the only mainstream way to call
+         * Argon2id through the JCE today; SunJCE does not (yet) ship Argon2.
          */
         @DisplayName("Password4j-JCA")
         @Nested
@@ -532,6 +531,9 @@ class HelloWorld_Update_Mac__Test
 
             // Password4j-JCA registered name (lowercase)
             private static final String ALGORITHM = "argon2";
+
+            // Password4j-JCA provider name (set by com.password4j.jca.providers.Password4jProvider's constructor)
+            private static final String PROVIDER = "Password4j";
 
             /**
              * Verifies that signing up the given {@code password} with Argon2id (via the
@@ -548,16 +550,16 @@ class HelloWorld_Update_Mac__Test
             @ParameterizedTest
             void __(final String password) throws Exception {
                 // ------------------------------------------------------------------------------- given
-                final var factory = SecretKeyFactory.getInstance(ALGORITHM);
+                final var factory = SecretKeyFactory.getInstance(ALGORITHM, PROVIDER);
                 // -------------------------------------------------------------------------------------
                 final byte[] column;
                 // ------------------------------------------------------------------------------ signup
                 {
                     final var salt = new byte[SALT_BYTES];
                     ThreadLocalRandom.current().nextBytes(salt);
-                    final var spec = new Argon2KeySpec(
+                    final var spec = new com.password4j.jca.spec.Argon2KeySpec(
                             password.toCharArray(), salt, MEMORY_KB, ITERATIONS, PARALLELISM,
-                            HASH_BYTES, Argon2.ID);
+                            HASH_BYTES, com.password4j.types.Argon2.ID);
                     final var start = System.nanoTime();
                     final var hash = factory.generateSecret(spec).getEncoded();
                     log.debug("elapsed: {}", Duration.ofNanos(System.nanoTime() - start));
@@ -568,9 +570,9 @@ class HelloWorld_Update_Mac__Test
                 // ------------------------------------------------------------------------------- login
                 {
                     final var salt = Arrays.copyOfRange(column, 0, SALT_BYTES);
-                    final var spec = new Argon2KeySpec(
+                    final var spec = new com.password4j.jca.spec.Argon2KeySpec(
                             password.toCharArray(), salt, MEMORY_KB, ITERATIONS, PARALLELISM,
-                            HASH_BYTES, Argon2.ID);
+                            HASH_BYTES, com.password4j.types.Argon2.ID);
                     final var hash = factory.generateSecret(spec).getEncoded();
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
@@ -582,7 +584,8 @@ class HelloWorld_Update_Mac__Test
 
         /**
          * A nested test class running Argon2id via the BouncyCastle low-level API
-         * ({@link Argon2BytesGenerator} + {@link Argon2Parameters}). BouncyCastle does not register
+         * ({@link org.bouncycastle.crypto.generators.Argon2BytesGenerator} +
+         * {@link org.bouncycastle.crypto.params.Argon2Parameters}). BouncyCastle does not register
          * a JCE {@link SecretKeyFactory} for Argon2, so this is the canonical idiom for using BC's
          * Argon2 implementation.
          */
@@ -592,22 +595,25 @@ class HelloWorld_Update_Mac__Test
 
             /**
              * Derives a {@value Argon2id_Test#HASH_BYTES}-byte Argon2id hash from the given
-             * password and salt, using {@link Argon2BytesGenerator} configured with the enclosing
-             * class's memory, iteration, and parallelism parameters.
+             * password and salt, using
+             * {@link org.bouncycastle.crypto.generators.Argon2BytesGenerator} configured with the
+             * enclosing class's memory, iteration, and parallelism parameters.
              *
              * @param password the password.
              * @param salt     the salt.
              * @return the derived hash.
              */
             private static byte[] derive(final char[] password, final byte[] salt) {
-                final var params = new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
-                        .withVersion(Argon2Parameters.ARGON2_VERSION_13)
+                final var params = new org.bouncycastle.crypto.params.Argon2Parameters.Builder(
+                        org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_id)
+                        .withVersion(
+                                org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_VERSION_13)
                         .withSalt(salt)
                         .withMemoryAsKB(MEMORY_KB)
                         .withIterations(ITERATIONS)
                         .withParallelism(PARALLELISM)
                         .build();
-                final var generator = new Argon2BytesGenerator();
+                final var generator = new org.bouncycastle.crypto.generators.Argon2BytesGenerator();
                 generator.init(params);
                 final var out = new byte[HASH_BYTES];
                 generator.generateBytes(
@@ -617,9 +623,10 @@ class HelloWorld_Update_Mac__Test
 
             /**
              * Verifies that signing up the given {@code password} with Argon2id (via the
-             * BouncyCastle low-level {@link Argon2BytesGenerator}) and packing {@code salt | hash}
-             * into a 48-byte record yields a byte array that is reproduced exactly during login by
-             * re-deriving with the stored salt.
+             * BouncyCastle low-level
+             * {@link org.bouncycastle.crypto.generators.Argon2BytesGenerator}) and packing
+             * {@code salt | hash} into a 48-byte record yields a byte array that is reproduced
+             * exactly during login by re-deriving with the stored salt.
              *
              * @param password the password to register and verify.
              */
