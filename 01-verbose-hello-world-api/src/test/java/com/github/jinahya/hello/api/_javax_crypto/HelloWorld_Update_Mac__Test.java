@@ -60,6 +60,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc9106">RFC 9106 &mdash; Argon2 Memory-Hard
  * Function for Password Hashing and Proof-of-Work Applications</a>
  */
+@DisplayName("HelloWorld#update(Mac) — HMAC, PBE-MAC, and password-based KDFs")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Mac__Test
@@ -126,6 +127,7 @@ class HelloWorld_Update_Mac__Test
     @Nested
     class HmacSha1_Test {
 
+        // JCE std name (HMAC: RFC 2104; SHA-1: FIPS 180-4)
         private static final String ALGORITHM = "HmacSHA1";
 
         /**
@@ -170,6 +172,7 @@ class HelloWorld_Update_Mac__Test
     @Nested
     class HmacSHA256_Test {
 
+        // JCE std name (HMAC: RFC 2104; SHA-256: RFC 6234)
         private static final String ALGORITHM = "HmacSHA256";
 
         /**
@@ -213,8 +216,10 @@ class HelloWorld_Update_Mac__Test
     @Nested
     class PBEWithHmacSHA256_Test {
 
+        // JCE PBE-MAC name (PKCS#5 v2.1 / RFC 8018)
         private static final String ALGORITHM = "PBEWithHmacSHA256";
 
+        // JCE SecretKeyFactory name (PKCS#5 PBES2)
         private static final String KEY_FACTORY_ALGORITHM = ALGORITHM + "AndAES_256";
 
         /**
@@ -273,15 +278,20 @@ class HelloWorld_Update_Mac__Test
     @Nested
     class PBKDF2_Test {
 
+        // JCE PBKDF2 name (RFC 8018 §5.2)
         private static final String ALGORITHM = "PBKDF2WithHmacSHA256";
 
+        // 16 bytes — OWASP recommendation; RFC 8018 requires ≥8
         private static final int SALT_BYTES = 16;
 
-        private static final int HASH_BYTES = 32;  // 256 bits
+        // 32 bytes (256 bits) — matches HMAC-SHA256 native output
+        private static final int HASH_BYTES = 32;
 
+        // 1,000,000 — conservative; OWASP 2023 recommends ≥600,000
         private static final int ITERATION_COUNT = 1_000_000;
 
-        private static final int COLUMN_BYTES = SALT_BYTES + HASH_BYTES;  // 48-byte record
+        // derived: salt | hash → 48-byte fixed record
+        private static final int COLUMN_BYTES = SALT_BYTES + HASH_BYTES;
 
         /**
          * Verifies that signing up the given {@code password} with PBKDF2-HMAC-SHA256 and packing
@@ -339,18 +349,24 @@ class HelloWorld_Update_Mac__Test
     @Nested
     class Scrypt_Test {
 
+        // 16 bytes — OWASP recommendation; RFC 7914 doesn't mandate
         private static final int SALT_BYTES = 16;
 
+        // 32 bytes (256 bits) — picked; matches AES-256 sizing
         private static final int HASH_BYTES = 32;
 
+        // derived: salt | hash → 48-byte fixed record
         private static final int COLUMN_BYTES = SALT_BYTES + HASH_BYTES;
 
-        // OWASP-style scrypt parameters (RFC 7914 §2 names: N / r / p)
-        private static final int N = 1 << 17;  // 131_072 — CPU/memory cost
+        // RFC 7914 §2 parameter names: N (CPU/memory cost), r (block size), p (parallelization)
+        // 131,072 — OWASP "interactive login" profile
+        private static final int N = 1 << 17;
 
-        private static final int r = 8;        // block size
+        // 8 — RFC 7914 §6 example value; common standard
+        private static final int r = 8;
 
-        private static final int p = 1;        // parallelization
+        // 1 — RFC 7914 §6 example value; common standard
+        private static final int p = 1;
 
         /**
          * A nested test class running scrypt via the {@link Password4jProvider Password4j} JCA
@@ -358,9 +374,11 @@ class HelloWorld_Update_Mac__Test
          * lowercase algorithm name {@code "scrypt"} together with
          * {@link com.password4j.jca.spec.ScryptKeySpec}.
          */
+        @DisplayName("Password4j-JCA")
         @Nested
         class Password4J_Test {
 
+            // Password4j-JCA registered name (lowercase)
             private static final String ALGORITHM = "scrypt";
 
             /**
@@ -413,9 +431,11 @@ class HelloWorld_Update_Mac__Test
          * {@link SecretKeyFactory#getInstance(String, String)} with {@code "SCRYPT"} and
          * {@link ScryptKeySpec}.
          */
+        @DisplayName("BouncyCastle JCE")
         @Nested
         class BouncyCastle_Test {
 
+            // BC registered name (uppercase)
             private static final String ALGORITHM = "SCRYPT";
 
             /**
@@ -481,17 +501,23 @@ class HelloWorld_Update_Mac__Test
     @Nested
     class Argon2id_Test {
 
+        // 16 bytes — OWASP recommendation; RFC 9106 requires ≥8
         private static final int SALT_BYTES = 16;
 
+        // 32 bytes — picked; RFC 9106 allows 4..2^32-1
         private static final int HASH_BYTES = 32;
 
+        // derived: salt | hash → 48-byte fixed record
         private static final int COLUMN_BYTES = SALT_BYTES + HASH_BYTES;
 
-        // OWASP-style Argon2id parameters
-        private static final int MEMORY_KB = 64 * 1024;  // 64 MiB
+        // RFC 9106 §4 "second recommended option": m=64 MiB, t=3, p=4 — for memory-constrained envs
+        // 65,536 KiB = 64 MiB — RFC 9106 §4 second option
+        private static final int MEMORY_KB = 64 * 1024;
 
+        // 3 passes — RFC 9106 §4 second option (paired with 64 MiB)
         private static final int ITERATIONS = 3;
 
+        // 4 lanes — RFC 9106 §4 recommendation
         private static final int PARALLELISM = 4;
 
         /**
@@ -500,9 +526,11 @@ class HelloWorld_Update_Mac__Test
          * This is the only mainstream way to call Argon2id through the JCE today; SunJCE does not
          * (yet) ship Argon2.
          */
+        @DisplayName("Password4j-JCA")
         @Nested
         class Password4J_Test {
 
+            // Password4j-JCA registered name (lowercase)
             private static final String ALGORITHM = "argon2";
 
             /**
@@ -558,6 +586,7 @@ class HelloWorld_Update_Mac__Test
          * a JCE {@link SecretKeyFactory} for Argon2, so this is the canonical idiom for using BC's
          * Argon2 implementation.
          */
+        @DisplayName("BouncyCastle (low-level)")
         @Nested
         class BouncyCastle_Test {
 
