@@ -230,5 +230,4 @@ class HelloWorld_Update_Mac__Test
             }
         }
     }
-
 }

@@ -2,7 +2,6 @@ package com.github.jinahya.hello;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -38,7 +38,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("Password hashing — PBKDF2 / scrypt / Argon2id (signup/login round-trip)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
 class _Javax_Crypto_PBE_Test {
 
     /**
@@ -54,6 +53,27 @@ class _Javax_Crypto_PBE_Test {
             Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         }
         com.password4j.jca.providers.Password4jProvider.enable();
+    }
+
+    /**
+     * Prints a one-line summary of a password-hashing derivation &mdash; algorithm/label, password,
+     * hash byte length, Base64-encoded first/last four characters, and elapsed time &mdash; to
+     * {@link System#out}.
+     *
+     * @param label    the algorithm (or algorithm/provider) label.
+     * @param password the password that was hashed.
+     * @param hash     the derived hash bytes.
+     * @param elapsed  the wall-clock time the derivation took.
+     */
+    private static void printf(final String label, final String password, final byte[] hash,
+                               final Duration elapsed) {
+        final var encoded = Base64.getEncoder().encodeToString(hash);
+        System.out.printf("%-22s [%-10s] (%4d) %s...%s  %s%n",
+                          label, password,
+                          hash.length,
+                          encoded.substring(0, 4),
+                          encoded.substring(encoded.length() - 4),
+                          elapsed);
     }
 
     /**
@@ -109,7 +129,8 @@ class _Javax_Crypto_PBE_Test {
                         password.toCharArray(), salt, ITERATION_COUNT, HASH_BYTES << 3);
                 final var start = System.nanoTime();
                 final var hash = factory.generateSecret(spec).getEncoded();
-                log.debug("elapsed: {}", Duration.ofNanos(System.nanoTime() - start));
+                printf(ALGORITHM, password, hash,
+                       Duration.ofNanos(System.nanoTime() - start));
                 column = new byte[COLUMN_BYTES];
                 System.arraycopy(salt, 0, column, 0, SALT_BYTES);
                 System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
@@ -201,7 +222,8 @@ class _Javax_Crypto_PBE_Test {
                             password.toCharArray(), salt, N, r, p, HASH_BYTES);
                     final var start = System.nanoTime();
                     final var hash = factory.generateSecret(spec).getEncoded();
-                    log.debug("elapsed: {}", Duration.ofNanos(System.nanoTime() - start));
+                    printf(ALGORITHM + "/" + PROVIDER, password, hash,
+                           Duration.ofNanos(System.nanoTime() - start));
                     column = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, column, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
@@ -260,7 +282,8 @@ class _Javax_Crypto_PBE_Test {
                             password.toCharArray(), salt, N, r, p, HASH_BYTES << 3);
                     final var start = System.nanoTime();
                     final var hash = factory.generateSecret(spec).getEncoded();
-                    log.debug("elapsed: {}", Duration.ofNanos(System.nanoTime() - start));
+                    printf(ALGORITHM + "/BC", password, hash,
+                           Duration.ofNanos(System.nanoTime() - start));
                     column = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, column, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
@@ -359,7 +382,8 @@ class _Javax_Crypto_PBE_Test {
                             HASH_BYTES, com.password4j.types.Argon2.ID);
                     final var start = System.nanoTime();
                     final var hash = factory.generateSecret(spec).getEncoded();
-                    log.debug("elapsed: {}", Duration.ofNanos(System.nanoTime() - start));
+                    printf(ALGORITHM + "/" + PROVIDER, password, hash,
+                           Duration.ofNanos(System.nanoTime() - start));
                     column = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, column, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
@@ -442,7 +466,8 @@ class _Javax_Crypto_PBE_Test {
                     ThreadLocalRandom.current().nextBytes(salt);
                     final var start = System.nanoTime();
                     final var hash = derive(password.toCharArray(), salt);
-                    log.debug("elapsed: {}", Duration.ofNanos(System.nanoTime() - start));
+                    printf("Argon2id/BC", password, hash,
+                           Duration.ofNanos(System.nanoTime() - start));
                     column = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, column, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
