@@ -41,10 +41,9 @@ import java.util.concurrent.ThreadLocalRandom;
 class _Javax_Crypto_PBE_Test {
 
     /**
-     * Registers the {@link org.bouncycastle.jce.provider.BouncyCastleProvider BouncyCastle} and
-     * {@link com.password4j.jca.providers.Password4jProvider Password4j} providers with the JCA so
-     * {@code SCRYPT/BC}, {@code argon2}, and other algorithms used by the nested test classes
-     * resolve by their standard JCE names.
+     * Registers the {@link org.bouncycastle.jce.provider.BouncyCastleProvider BouncyCastle}
+     * provider with the JCA so {@code SCRYPT/BC} resolves by its standard JCE name. Password4j
+     * is invoked through its native (non-JCA) API and needs no JCA registration.
      */
     @BeforeAll
     static void registerProviders() {
@@ -52,7 +51,6 @@ class _Javax_Crypto_PBE_Test {
             == null) {
             Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         }
-        com.password4j.jca.providers.Password4jProvider.enable();
     }
 
     /**
@@ -180,27 +178,31 @@ class _Javax_Crypto_PBE_Test {
         // 1 — RFC 7914 §6 example value; common standard
         private static final int p = 1;
 
+        // shared by both nested classes so Password4j and BC, given the same password, produce
+        // byte-identical hashes (scrypt is deterministic given password + salt + N + r + p + dkLen)
+        private static final byte[] SALT = new byte[SALT_BYTES];
+
+        static {
+            ThreadLocalRandom.current().nextBytes(SALT);
+        }
+
         /**
          * A nested test class running scrypt via the
-         * {@link com.password4j.jca.providers.Password4jProvider Password4j} JCA provider, using
-         * {@link SecretKeyFactory#getInstance(String) SecretKeyFactory} for the lowercase algorithm
-         * name {@code "scrypt"} together with {@link com.password4j.jca.spec.ScryptKeySpec}.
+         * {@link com.password4j.Password Password4j} native API
+         * ({@link com.password4j.Password#hash(CharSequence) Password.hash} +
+         * {@link com.password4j.HashBuilder#addSalt(byte[]) addSalt(byte[])} +
+         * {@link com.password4j.ScryptFunction}). The native API preserves the raw salt bytes;
+         * the {@code password4j-jca} 1.0.5 wrapper would corrupt them via a UTF-8 String
+         * round-trip (only safe for ASCII salts).
          */
-        @DisplayName("Password4j-JCA")
+        @DisplayName("Password4j (native)")
         @Nested
-        class Password4J_Test {
-
-            // Password4j-JCA registered name (lowercase)
-            private static final String ALGORITHM = "scrypt";
-
-            // Password4j-JCA provider name (set by com.password4j.jca.providers.Password4jProvider's constructor)
-            private static final String PROVIDER = "Password4j";
+        class Password4j_Test {
 
             /**
-             * Verifies that signing up the given {@code password} with scrypt (via the
-             * Password4j-JCA {@link SecretKeyFactory}) and packing {@code salt | hash} into a
-             * 48-byte record yields a byte array that is reproduced exactly during login by
-             * re-deriving with the stored salt.
+             * Verifies that signing up the given {@code password} with scrypt (via the Password4j
+             * native API) and packing {@code salt | hash} into a 48-byte record yields a byte
+             * array that is reproduced exactly during login by re-deriving with the stored salt.
              *
              * @param password the password to register and verify.
              */
@@ -209,20 +211,20 @@ class _Javax_Crypto_PBE_Test {
                     "letmein"
             })
             @ParameterizedTest
-            void __(final String password) throws Exception {
+            void __(final String password) {
                 // --------------------------------------------------------------------------- given
-                final var factory = SecretKeyFactory.getInstance(ALGORITHM, PROVIDER);
+                final var function = com.password4j.ScryptFunction.getInstance(N, r, p, HASH_BYTES);
                 // ---------------------------------------------------------------------------------
                 final byte[] column;
                 // -------------------------------------------------------------------------- signup
                 {
-                    final var salt = new byte[SALT_BYTES];
-                    ThreadLocalRandom.current().nextBytes(salt);
-                    final var spec = new com.password4j.jca.spec.ScryptKeySpec(
-                            password.toCharArray(), salt, N, r, p, HASH_BYTES);
+                    final var salt = SALT;
                     final var start = System.nanoTime();
-                    final var hash = factory.generateSecret(spec).getEncoded();
-                    printf(ALGORITHM + "/" + PROVIDER, password, hash,
+                    final var hash = com.password4j.Password.hash(password)
+                            .addSalt(salt)
+                            .with(function)
+                            .getBytes();
+                    printf("scrypt/Password4j", password, hash,
                            Duration.ofNanos(System.nanoTime() - start));
                     column = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, column, 0, SALT_BYTES);
@@ -231,9 +233,10 @@ class _Javax_Crypto_PBE_Test {
                 // --------------------------------------------------------------------------- login
                 {
                     final var salt = Arrays.copyOfRange(column, 0, SALT_BYTES);
-                    final var spec = new com.password4j.jca.spec.ScryptKeySpec(
-                            password.toCharArray(), salt, N, r, p, HASH_BYTES);
-                    final var hash = factory.generateSecret(spec).getEncoded();
+                    final var hash = com.password4j.Password.hash(password)
+                            .addSalt(salt)
+                            .with(function)
+                            .getBytes();
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
@@ -276,8 +279,7 @@ class _Javax_Crypto_PBE_Test {
                 final byte[] column;
                 // -------------------------------------------------------------------------- signup
                 {
-                    final var salt = new byte[SALT_BYTES];
-                    ThreadLocalRandom.current().nextBytes(salt);
+                    final var salt = SALT;
                     final var spec = new org.bouncycastle.jcajce.spec.ScryptKeySpec(
                             password.toCharArray(), salt, N, r, p, HASH_BYTES << 3);
                     final var start = System.nanoTime();
@@ -338,28 +340,32 @@ class _Javax_Crypto_PBE_Test {
         // 4 lanes — RFC 9106 §4 recommendation
         private static final int PARALLELISM = 4;
 
+        // shared by both nested classes so Password4j and BC, given the same password, produce
+        // byte-identical hashes (Argon2id is deterministic given password + salt + m + t + p + len)
+        private static final byte[] SALT = new byte[SALT_BYTES];
+
+        static {
+            ThreadLocalRandom.current().nextBytes(SALT);
+        }
+
         /**
          * A nested test class running Argon2id via the
-         * {@link com.password4j.jca.providers.Password4jProvider Password4j} JCA provider, using
-         * the standard {@link SecretKeyFactory} API with
-         * {@link com.password4j.jca.spec.Argon2KeySpec}. This is the only mainstream way to call
-         * Argon2id through the JCE today; SunJCE does not (yet) ship Argon2.
+         * {@link com.password4j.Password Password4j} native API
+         * ({@link com.password4j.Password#hash(CharSequence) Password.hash} +
+         * {@link com.password4j.HashBuilder#addSalt(byte[]) addSalt(byte[])} +
+         * {@link com.password4j.Argon2Function}). The native API preserves the raw salt bytes;
+         * the {@code password4j-jca} 1.0.5 wrapper would corrupt them via a UTF-8 String
+         * round-trip (only safe for ASCII salts).
          */
-        @DisplayName("Password4j-JCA")
+        @DisplayName("Password4j (native)")
         @Nested
-        class Password4J_Test {
-
-            // Password4j-JCA registered name (lowercase)
-            private static final String ALGORITHM = "argon2";
-
-            // Password4j-JCA provider name (set by com.password4j.jca.providers.Password4jProvider's constructor)
-            private static final String PROVIDER = "Password4j";
+        class Password4j_Test {
 
             /**
              * Verifies that signing up the given {@code password} with Argon2id (via the
-             * Password4j-JCA {@link SecretKeyFactory}) and packing {@code salt | hash} into a
-             * 48-byte record yields a byte array that is reproduced exactly during login by
-             * re-deriving with the stored salt.
+             * Password4j native API) and packing {@code salt | hash} into a 48-byte record
+             * yields a byte array that is reproduced exactly during login by re-deriving with
+             * the stored salt.
              *
              * @param password the password to register and verify.
              */
@@ -368,33 +374,35 @@ class _Javax_Crypto_PBE_Test {
                     "letmein"
             })
             @ParameterizedTest
-            void __(final String password) throws Exception {
-                // ------------------------------------------------------------------------------- given
-                final var factory = SecretKeyFactory.getInstance(ALGORITHM, PROVIDER);
-                // -------------------------------------------------------------------------------------
+            void __(final String password) {
+                // --------------------------------------------------------------------------- given
+                final var function = com.password4j.Argon2Function.getInstance(
+                        MEMORY_KB, ITERATIONS, PARALLELISM, HASH_BYTES,
+                        com.password4j.types.Argon2.ID,
+                        com.password4j.Argon2Function.ARGON2_VERSION_13);
+                // ---------------------------------------------------------------------------------
                 final byte[] column;
-                // ------------------------------------------------------------------------------ signup
+                // -------------------------------------------------------------------------- signup
                 {
-                    final var salt = new byte[SALT_BYTES];
-                    ThreadLocalRandom.current().nextBytes(salt);
-                    final var spec = new com.password4j.jca.spec.Argon2KeySpec(
-                            password.toCharArray(), salt, MEMORY_KB, ITERATIONS, PARALLELISM,
-                            HASH_BYTES, com.password4j.types.Argon2.ID);
+                    final var salt = SALT;
                     final var start = System.nanoTime();
-                    final var hash = factory.generateSecret(spec).getEncoded();
-                    printf(ALGORITHM + "/" + PROVIDER, password, hash,
+                    final var hash = com.password4j.Password.hash(password)
+                            .addSalt(salt)
+                            .with(function)
+                            .getBytes();
+                    printf("argon2id/Password4j", password, hash,
                            Duration.ofNanos(System.nanoTime() - start));
                     column = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, column, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
                 }
-                // ------------------------------------------------------------------------------- login
+                // --------------------------------------------------------------------------- login
                 {
                     final var salt = Arrays.copyOfRange(column, 0, SALT_BYTES);
-                    final var spec = new com.password4j.jca.spec.Argon2KeySpec(
-                            password.toCharArray(), salt, MEMORY_KB, ITERATIONS, PARALLELISM,
-                            HASH_BYTES, com.password4j.types.Argon2.ID);
-                    final var hash = factory.generateSecret(spec).getEncoded();
+                    final var hash = com.password4j.Password.hash(password)
+                            .addSalt(salt)
+                            .with(function)
+                            .getBytes();
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
@@ -462,8 +470,7 @@ class _Javax_Crypto_PBE_Test {
                 final byte[] column;
                 // -------------------------------------------------------------------------- signup
                 {
-                    final var salt = new byte[SALT_BYTES];
-                    ThreadLocalRandom.current().nextBytes(salt);
+                    final var salt = SALT;
                     final var start = System.nanoTime();
                     final var hash = derive(password.toCharArray(), salt);
                     printf("Argon2id/BC", password, hash,

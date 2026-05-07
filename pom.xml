@@ -152,6 +152,11 @@
       </dependency>
       <dependency>
         <groupId>com.password4j</groupId>
+        <artifactId>password4j</artifactId>
+        <version>1.8.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.password4j</groupId>
         <artifactId>password4j-jca</artifactId>
         <version>1.0.5</version>
       </dependency>
