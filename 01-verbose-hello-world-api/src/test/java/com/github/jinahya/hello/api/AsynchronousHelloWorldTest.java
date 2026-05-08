@@ -1,63 +1,58 @@
 package com.github.jinahya.hello.api;
 
-import org.junit.platform.commons.util.ReflectionUtils;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 
 /**
- * An abstract class for testing a specific subclass of {@link AsynchronousHelloWorldTest}.
+ * An abstract class for testing {@link AsynchronousHelloWorldTest} interface.
  *
- * @param <T> subclass type parameter.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-abstract class AsynchronousHelloWorldTest<T extends AsynchronousHelloWorld> {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+abstract class AsynchronousHelloWorldTest
+        extends HelloWorldTest {
 
-    private static final System.Logger logger = System.getLogger(
-            MethodHandles.lookup().lookupClass().getName()
-    );
-
-    // -------------------------------------------------------------------------------- CONSTRUCTORS
-
-    /**
-     * Creates a new instance for testing the specified type.
-     *
-     * @param type the type to test
-     */
-    AsynchronousHelloWorldTest(final Class<T> type) {
-        super();
-        this.type = Objects.requireNonNull(type, "type is null");
+    @BeforeEach
+    void initAsynchronousService() {
+        asynchronousService = Mockito.spy(new DefaultAsynchronousHelloWorld(service));
     }
 
-    // ---------------------------------------------------------------------------------------- type
+//    @BeforeEach
+//    void verifyWiring() throws Exception {
+////        Assertions.assertInstanceOf(DefaultAsynchronousHelloWorld.class, asynchronousService);
+//        final var f = DefaultAsynchronousHelloWorld.class.getDeclaredField("service");
+//        f.setAccessible(true);
+//        Assertions.assertSame(service, f.get(asynchronousService));
+//    }
 
-    /**
-     * Returns a new instance of {@link #type}.
-     *
-     * @return a new instance of {@link #type}.
-     */
-    T newTypeInstance() {
-        return ReflectionUtils.newInstance(type);
-    }
+    // ------------------------------------------------------------------------------------- service
+//    protected HelloWorld service() {
+//        return service;
+//    }
 
-    // ------------------------------------------------------------------------------------ instance
-
-    /**
-     * Returns an instance of {@link #type}.
-     *
-     * @return an instance of {@link #type}.
-     */
-    protected final AsynchronousHelloWorld service() {
-        T result = _instance;
-        if (result == null) {
-            result = _instance = Mockito.spy(newTypeInstance());
-        }
-        return result;
-    }
+    // ------------------------------------------------------------------------- asynchronousService
+//    protected AsynchronousHelloWorld asynchronousService() {
+////        return asynchronousService;
+//        return Objects.requireNonNull(asynchronousService, "asynchronousService is null");
+//    }
 
     // ---------------------------------------------------------------------------------------------
-    final Class<T> type;
+    @Spy
+    @Accessors(fluent = true)
+    @Getter(AccessLevel.PROTECTED)
+    private HelloWorld service;
 
-    private volatile T _instance;
+
+    @Accessors(fluent = true)
+    @Getter(AccessLevel.PROTECTED)
+    private DefaultAsynchronousHelloWorld asynchronousService;
 }

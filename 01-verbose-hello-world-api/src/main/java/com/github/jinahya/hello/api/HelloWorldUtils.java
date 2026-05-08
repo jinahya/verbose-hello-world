@@ -27,9 +27,22 @@ import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor
  */
 public final class HelloWorldUtils {
 
+    private static final byte[] HELLO_WORLD_BYTES = HelloWorldConstants.HELLO_WORLD_STRING.getBytes(
+            HelloWorldConstants.HELLO_WORLD_CHARSET);
+
     static byte[] hello_world_bytes() {
         return HelloWorldConstants.HELLO_WORLD_STRING
                 .getBytes(HelloWorldConstants.HELLO_WORLD_CHARSET);
+    }
+
+    static void copyHelloWorldBytes(final byte[] target, final int a) {
+        System.arraycopy(
+                HELLO_WORLD_BYTES,
+                0,
+                target,
+                a,
+                HELLO_WORLD_BYTES.length
+        );
     }
 
     // ---------------------------------------------------------------------------------------------
