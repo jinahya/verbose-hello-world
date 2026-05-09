@@ -144,7 +144,7 @@ public final class HelloWorldTestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    static <T extends HelloWorld> T requireMock(final T object) {
+    public static <T extends HelloWorld> T requireMock(final T object) {
         Objects.requireNonNull(object, "object is null");
         if (!Mockito.mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("not a mock: " + object);
@@ -152,7 +152,7 @@ public final class HelloWorldTestUtils {
         return object;
     }
 
-    static <T extends HelloWorld> T requireNotMock(final T service) {
+    public static <T extends HelloWorld> T requireNotMock(final T service) {
         Objects.requireNonNull(service, "service is null");
         if (Mockito.mockingDetails(service).isMock()) {
             throw new IllegalArgumentException("a mock: " + service);

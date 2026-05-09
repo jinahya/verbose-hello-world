@@ -35,7 +35,32 @@ import java.util.Objects;
 @SuppressWarnings({
         "java:S101"
 })
-public final class MockitoUtils {
+public final class MockitoTestUtils {
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Asserts specified object is a mock.
+     *
+     * @param object the object to test
+     * @param <T>    object's type parameter
+     * @return given {@code object}.
+     */
+    public static <T> T requireMock(final T object) {
+        Objects.requireNonNull(object, "object is null");
+        if (!Mockito.mockingDetails(object).isMock()) {
+            throw new IllegalArgumentException("is not a mock: " + object);
+        }
+        return object;
+    }
+
+    public static <T> T requireNotMock(final T object) {
+        Objects.requireNonNull(object, "object is null");
+        if (Mockito.mockingDetails(object).isMock()) {
+            throw new IllegalArgumentException("is a mock: " + object);
+        }
+        return object;
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -64,7 +89,7 @@ public final class MockitoUtils {
 
     // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private MockitoUtils() {
+    private MockitoTestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

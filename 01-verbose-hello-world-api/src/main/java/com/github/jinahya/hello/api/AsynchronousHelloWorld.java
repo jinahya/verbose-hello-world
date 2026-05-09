@@ -35,9 +35,13 @@ import java.util.function.Function;
  *       {@link #sendPing(WebSocket) sendPing}, and {@link #sendPong(WebSocket) sendPong} — that
  *       return a {@link CompletableFuture} of the same socket;</li>
  *   <li>channel-based writers using {@link CompletionHandler}, for both
- *       {@link AsynchronousByteChannel} and {@link AsynchronousFileChannel}, plus an
- *       {@link #append(Path, Object, CompletionHandler) append} convenience that opens an
- *       {@link AsynchronousFileChannel} for a {@link Path}.</li>
+ *       {@link AsynchronousByteChannel} and {@link AsynchronousFileChannel}; both run the buffer
+ *       preparation on the caller's thread (callers can wrap the call with
+ *       {@link Executor#execute(Runnable)} if they need to dispatch it elsewhere);</li>
+ *   <li>an {@link #append(Path, Object, CompletionHandler) append} convenience that opens an
+ *       {@link AsynchronousFileChannel} for a {@link Path}, with an executor-aware variant,
+ *       {@link #append(Executor, Path, Object, CompletionHandler) append(executor, ...)}, that
+ *       dispatches the blocking append to a caller-provided {@link Executor}.</li>
  * </ul>
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -58,22 +62,11 @@ public interface AsynchronousHelloWorld {
         return new DefaultAsynchronousHelloWorld(service);
     }
 
-    /**
-     * Creates a new instance wrapping {@link DefaultHelloWorld#getInstance()}.
-     *
-     * @return a new instance wrapping {@link DefaultHelloWorld#getInstance()}.
-     * @see #from(HelloWorld)
-     * @see DefaultHelloWorld#getInstance()
-     */
-    static AsynchronousHelloWorld newInstance() {
-        return from(DefaultHelloWorld.getInstance());
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Applies the specified mapper to the wrapped {@link HelloWorld} asynchronously, and returns
-     * the result as a {@link CompletionStage}.
+     * Applies the specified mapper to the wrapped {@link HelloWorld} asynchronously on a default
+     * executor, and returns the result as a {@link CompletionStage}.
      *
      * @param <R>    result type parameter
      * @param mapper the mapper to apply; receives the wrapped {@link HelloWorld} instance and
@@ -81,10 +74,12 @@ public interface AsynchronousHelloWorld {
      * @return a {@link CompletionStage} that completes with the value produced by the
      * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
      * @throws NullPointerException if {@code mapper} is {@code null}.
-     * @deprecated Use {@link #applyAsync(Function, Executor)} with an explicit {@link Executor}
-     * instead.
+     * @apiNote The executor on which the {@code mapper} is dispatched is implementation-defined.
+     * Callers that need control over the execution context should use
+     * {@link #applyAsync(Function, Executor)} with an explicit {@link Executor}.
+     * @deprecated Use {@link #applyAsync(Function, Executor)} with an explicit {@link Executor}.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated
     <R> CompletionStage<R> applyAsync(Function<? super HelloWorld, ? extends R> mapper);
 
     /**
@@ -99,9 +94,8 @@ public interface AsynchronousHelloWorld {
      * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
      * @throws NullPointerException if either {@code mapper} or {@code executor} is {@code null}.
      */
-    <R> CompletionStage<R> applyAsync(
-            Function<? super HelloWorld, ? extends R> mapper,
-            Executor executor);
+    <R> CompletionStage<R> applyAsync(Function<? super HelloWorld, ? extends R> mapper,
+                                      Executor executor);
 
     // ------------------------------------------------------------------------------- java.net.http
 
@@ -162,7 +156,7 @@ public interface AsynchronousHelloWorld {
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
      * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
-     * @see HelloWorld#put(ByteBuffer)
+     * @see HelloWorld#byteBuffer()
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     <T extends AsynchronousByteChannel, A>
@@ -170,35 +164,35 @@ public interface AsynchronousHelloWorld {
                @Nullable final A attachment,
                final CompletionHandler<? super T, ? super A> handler);
 
-    /**
-     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
-     * asynchronous byte channel using the specified executor for the buffer preparation, and
-     * notifies a completion (or a failure) to the specified handler with the specified attachment.
-     * <p>
-     * This is the executor-aware variant of
-     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)}: the allocation and
-     * filling of the {@link ByteBuffer} that holds the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are dispatched to the
-     * {@code executor} rather than running on the caller's thread. The actual non-blocking I/O
-     * still runs on the {@code channel}'s own thread group, as does the eventual notification of
-     * the {@code handler}.
-     *
-     * @param <T>        channel type parameter
-     * @param <A>        attachment type parameter
-     * @param executor   the executor on which the buffer preparation is dispatched.
-     * @param channel    the asynchronous byte channel to which the bytes are written.
-     * @param attachment the attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the completion handler to be notified with a completion (or a failure).
-     * @throws NullPointerException if any of {@code executor}, {@code channel}, or {@code handler}
-     *                              is {@code null}.
-     * @see #write(AsynchronousByteChannel, Object, CompletionHandler)
-     * @see HelloWorld#put(ByteBuffer)
-     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
-     */
-    <T extends AsynchronousByteChannel, A>
-    void write(final Executor executor, final T channel,
-               @Nullable final A attachment,
-               final CompletionHandler<? super T, ? super A> handler);
+//    /**
+//     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+//     * asynchronous byte channel using the specified executor for the buffer preparation, and
+//     * notifies a completion (or a failure) to the specified handler with the specified attachment.
+//     * <p>
+//     * This is the executor-aware variant of
+//     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)}: the allocation and
+//     * filling of the {@link ByteBuffer} that holds the
+//     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are dispatched to the
+//     * {@code executor} rather than running on the caller's thread. The actual non-blocking I/O
+//     * still runs on the {@code channel}'s own thread group, as does the eventual notification of
+//     * the {@code handler}.
+//     *
+//     * @param <T>        channel type parameter
+//     * @param <A>        attachment type parameter
+//     * @param executor   the executor on which the buffer preparation is dispatched.
+//     * @param channel    the asynchronous byte channel to which the bytes are written.
+//     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+//     * @param handler    the completion handler to be notified with a completion (or a failure).
+//     * @throws NullPointerException if any of {@code executor}, {@code channel}, or {@code handler}
+//     *                              is {@code null}.
+//     * @see #write(AsynchronousByteChannel, Object, CompletionHandler)
+//     * @see HelloWorld#put(ByteBuffer)
+//     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+//     */
+//    <T extends AsynchronousByteChannel, A>
+//    void write(final Executor executor, final T channel,
+//               @Nullable final A attachment,
+//               final CompletionHandler<? super T, ? super A> handler);
 
     /**
      * Sends the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
@@ -252,41 +246,41 @@ public interface AsynchronousHelloWorld {
                @Nullable A attachment,
                CompletionHandler<? super T, ? super A> handler);
 
-    /**
-     * Writes, asynchronously, the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
-     * asynchronous file channel, starting at the specified position, using the specified executor
-     * for the buffer preparation, and notifies a completion (or a failure) to the specified handler
-     * with the specified attachment.
-     * <p>
-     * This is the executor-aware variant of
-     * {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler)}: the allocation and
-     * filling of the {@link ByteBuffer} that holds the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are dispatched to the
-     * {@code executor} rather than running on the caller's thread. The actual non-blocking I/O
-     * still runs on the {@code channel}'s own thread group, as does the eventual notification of
-     * the {@code handler}.
-     *
-     * @param <T>        channel type parameter
-     * @param <A>        attachment type parameter
-     * @param executor   the executor on which the buffer preparation is dispatched.
-     * @param channel    the asynchronous file channel to which the bytes are written.
-     * @param position   the file position at which the transfer is to begin; must be non-negative.
-     * @param attachment the attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the completion handler to be notified with a completion (or a failure).
-     * @throws NullPointerException     if any of {@code executor}, {@code channel}, or
-     *                                  {@code handler} is {@code null}.
-     * @throws IllegalArgumentException if {@code position} is negative.
-     * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
-     * @see HelloWorld#put(ByteBuffer)
-     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
-     */
-    <T extends AsynchronousFileChannel, A>
-    void write(Executor executor,
-               T channel,
-               long position,
-               @Nullable A attachment,
-               CompletionHandler<? super T, ? super A> handler);
+//    /**
+//     * Writes, asynchronously, the
+//     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+//     * asynchronous file channel, starting at the specified position, using the specified executor
+//     * for the buffer preparation, and notifies a completion (or a failure) to the specified handler
+//     * with the specified attachment.
+//     * <p>
+//     * This is the executor-aware variant of
+//     * {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler)}: the allocation and
+//     * filling of the {@link ByteBuffer} that holds the
+//     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are dispatched to the
+//     * {@code executor} rather than running on the caller's thread. The actual non-blocking I/O
+//     * still runs on the {@code channel}'s own thread group, as does the eventual notification of
+//     * the {@code handler}.
+//     *
+//     * @param <T>        channel type parameter
+//     * @param <A>        attachment type parameter
+//     * @param executor   the executor on which the buffer preparation is dispatched.
+//     * @param channel    the asynchronous file channel to which the bytes are written.
+//     * @param position   the file position at which the transfer is to begin; must be non-negative.
+//     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+//     * @param handler    the completion handler to be notified with a completion (or a failure).
+//     * @throws NullPointerException     if any of {@code executor}, {@code channel}, or
+//     *                                  {@code handler} is {@code null}.
+//     * @throws IllegalArgumentException if {@code position} is negative.
+//     * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
+//     * @see HelloWorld#put(ByteBuffer)
+//     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+//     */
+//    <T extends AsynchronousFileChannel, A>
+//    void write(Executor executor,
+//               T channel,
+//               long position,
+//               @Nullable A attachment,
+//               CompletionHandler<? super T, ? super A> handler);
 
     /**
      * Appends the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the end of

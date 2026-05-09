@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 /**
@@ -18,7 +19,7 @@ import java.util.function.Function;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class DefaultAsynchronousHelloWorld
+final class DefaultAsynchronousHelloWorld
         implements AsynchronousHelloWorld {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
@@ -36,15 +37,6 @@ class DefaultAsynchronousHelloWorld
     // ---------------------------------------------------------------------------------------------
     @Override
     public <R> CompletionStage<R> applyAsync(
-            final Function<? super HelloWorld, ? extends R> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return CompletableFuture.supplyAsync(
-                () -> mapper.apply(service)
-        );
-    }
-
-    @Override
-    public <R> CompletionStage<R> applyAsync(
             final Function<? super HelloWorld, ? extends R> mapper,
             final Executor executor) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -53,6 +45,13 @@ class DefaultAsynchronousHelloWorld
                 () -> mapper.apply(service),
                 executor
         );
+    }
+
+    @Override
+    public <R> CompletionStage<R> applyAsync(
+            final Function<? super HelloWorld, ? extends R> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return applyAsync(mapper, ForkJoinPool.commonPool());
     }
 
     // ------------------------------------------------------------------------------- java.net.http
@@ -77,79 +76,81 @@ class DefaultAsynchronousHelloWorld
 
     // --------------------------------------------------------------------------- java.nio.channels
     @Override
+    @SuppressWarnings({"java:S117"})
     public <T extends AsynchronousByteChannel, A>
     void write(final T channel,
                @Nullable final A attachment,
                final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
+        final var buffer = service.byteBuffer();
         channel.write( // @formatter:off
                 buffer,                     // <src>
                 null,                       // <attachment>
                 new CompletionHandler<>() { // <handler>
                     @Override
-                    public void completed(final Integer result, final Object a) {
-                        if (!buffer.hasRemaining()) {               // <1>
-                            handler.completed(channel, attachment); // <2>
-                            return;                                 // <3>
+                    public void completed(final Integer result, final Object a_) {
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(channel, attachment);
+                            return;
                         }
-                        channel.write(                              // <4>
-                                buffer,     // <src>
-                                attachment, // <attachment>
-                                this        // <handler>            // <5>
+                        channel.write(
+                                buffer, // <src>
+                                null,   // <attachment>
+                                this    // <handler>
                         );
                     }
                     @Override
-                    public void failed(final Throwable exc, final Object a) {
-                        handler.failed(exc, attachment); // <1>
+                    public void failed(final Throwable exc, final Object a_) {
+                        handler.failed(exc, attachment);
                     }
                 } // @formatter:on
         );
     }
 
-    @Override
-    public <T extends AsynchronousByteChannel, A>
-    void write(final Executor executor,
-               final T channel,
-               @Nullable final A attachment,
-               final CompletionHandler<? super T, ? super A> handler) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip(),
-                executor
-        ).thenAcceptAsync(
-                b -> {
-                    channel.write( // @formatter:on
-                            b,                          // <src>
-                            attachment,                 // <attachment>
-                            new CompletionHandler<>() { // <handler>
-                                @Override
-                                public void completed(final Integer result, final A attachment) {
-                                    if (!b.hasRemaining()) {
-                                        handler.completed(channel, attachment);
-                                        return;
-                                    }
-                                    channel.write(b, attachment, this);
-                                }
+//    @Override
+//    public <T extends AsynchronousByteChannel, A>
+//    void write(final Executor executor,
+//               final T channel,
+//               @Nullable final A attachment,
+//               final CompletionHandler<? super T, ? super A> handler) {
+//        Objects.requireNonNull(executor, "executor is null");
+//        Objects.requireNonNull(channel, "channel is null");
+//        Objects.requireNonNull(handler, "handler is null");
+//        applyAsync(
+//                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip(),
+//                executor
+//        ).thenAcceptAsync(
+//                b -> {
+//                    channel.write( // @formatter:on
+//                            b,                          // <src>
+//                            attachment,                 // <attachment>
+//                            new CompletionHandler<>() { // <handler>
+//                                @Override
+//                                public void completed(final Integer result, final A attachment) {
+//                                    if (!b.hasRemaining()) {
+//                                        handler.completed(channel, attachment);
+//                                        return;
+//                                    }
+//                                    channel.write(b, attachment, this);
+//                                }
+//
+//                                @Override
+//                                public void failed(final Throwable exc, final A attachment) {
+//                                    handler.failed(exc, attachment);
+//                                }
+//                            } // @formatter:on
+//                    );
+//                },
+//                executor
+//        ).exceptionally(t -> {
+//            handler.failed(t, attachment);
+//            return null;
+//        });
+//    }
 
-                                @Override
-                                public void failed(final Throwable exc, final A attachment) {
-                                    handler.failed(exc, attachment);
-                                }
-                            } // @formatter:on
-                    );
-                },
-                executor
-        ).exceptionally(t -> {
-            handler.failed(t, attachment);
-            return null;
-        });
-    }
-
     @Override
+    @SuppressWarnings({"java:S117"})
     public <T extends AsynchronousFileChannel, A>
     void write(final T channel,
                final long position,
@@ -160,78 +161,76 @@ class DefaultAsynchronousHelloWorld
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
-        channel.write( // @formatting:off
+        final var buffer = service.byteBuffer();
+        channel.write( // @formatter:off
                 buffer,                     // <src>
                 position,                   // <position>
                 position,                   // <attachment>
                 new CompletionHandler<>() { // <handler>
                     @Override
-                    public void completed(final Integer result, final Long p) {
+                    public void completed(final Integer result, Long p_) {
                         assert result > 0; // why?
                         if (!buffer.hasRemaining()) {
                             handler.completed(channel, attachment);
                             return;
                         }
-                        final var position = p + result;
                         channel.write(
-                                buffer,   // <src>
-                                position, // <position>
-                                position, // <attachment>
-                                this      // <handler>
+                                buffer,      // <src>
+                                p_ += result, // <position>
+                                p_,           // <attachment>
+                                this         // <handler>
                         );
                     }
-
                     @Override
-                    public void failed(final Throwable t, final Long p) {
+                    public void failed(final Throwable t, final Long p_) {
                         handler.failed(t, attachment);
                     }
-                } // @formatting:on
+                } // @formater:on
         );
     } // @formatter:on
 
-    @Override
-    public <T extends AsynchronousFileChannel, A>
-    void write(final Executor executor,
-               final T channel,
-               final long position,
-               final @Nullable A attachment,
-               final CompletionHandler<? super T, ? super A> handler) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip(),
-                executor
-        ).thenAcceptAsync(b -> {
-            channel.write( // @formatter:off
-                    b,                          // <src>
-                    position,                   // <position>
-                    position,                   // <attachment>
-                    new CompletionHandler<>() { // <handler>
-                        @Override
-                        public void completed(final Integer result, final Long p) {
-                            if (!b.hasRemaining()) {
-                                handler.completed(channel, attachment);
-                                return;
-                            }
-                            final var next = p + result;
-                            channel.write(b, next, next, this);
-                        }
-                        @Override
-                        public void failed(final Throwable t, final Long p) {
-                            handler.failed(t, attachment);
-                        }
-                    } // @formatter:on
-            );
-        }, executor).exceptionally(t -> {
-            handler.failed(t, attachment);
-            return null;
-        });
-    }
+//    @Override
+//    public <T extends AsynchronousFileChannel, A>
+//    void write(final Executor executor,
+//               final T channel,
+//               final long position,
+//               final @Nullable A attachment,
+//               final CompletionHandler<? super T, ? super A> handler) {
+//        Objects.requireNonNull(executor, "executor is null");
+//        Objects.requireNonNull(channel, "channel is null");
+//        if (position < 0L) {
+//            throw new IllegalArgumentException("position(" + position + ") is negative");
+//        }
+//        Objects.requireNonNull(handler, "handler is null");
+//        applyAsync(
+//                HelloWorld::byteBuffer,
+//                executor
+//        ).thenAcceptAsync(b -> {
+//            channel.write( // @formatter:off
+//                    b,                          // <src>
+//                    position,                   // <position>
+//                    position,                   // <attachment>
+//                    new CompletionHandler<>() { // <handler>
+//                        @Override
+//                        public void completed(final Integer result, final Long p) {
+//                            if (!b.hasRemaining()) {
+//                                handler.completed(channel, attachment);
+//                                return;
+//                            }
+//                            final var next = p + result;
+//                            channel.write(b, next, next, this);
+//                        }
+//                        @Override
+//                        public void failed(final Throwable t, final Long p) {
+//                            handler.failed(t, attachment);
+//                        }
+//                    } // @formatter:on
+//            );
+//        }, executor).exceptionally(t -> {
+//            handler.failed(t, attachment);
+//            return null;
+//        });
+//    }
 
     // ---------------------------------------------------------------------------------------------
     private final HelloWorld service;

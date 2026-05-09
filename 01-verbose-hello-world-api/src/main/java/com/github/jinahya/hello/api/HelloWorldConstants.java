@@ -34,8 +34,6 @@ final class HelloWorldConstants {
 
     static final Charset HELLO_WORLD_CHARSET = StandardCharsets.US_ASCII;
 
-    static final byte[] HELLO_WORLD_BYTES = HELLO_WORLD_STRING.getBytes(HELLO_WORLD_CHARSET);
-
     private HelloWorldConstants() {
         throw new AssertionError("instantiation is not allowed");
     }
