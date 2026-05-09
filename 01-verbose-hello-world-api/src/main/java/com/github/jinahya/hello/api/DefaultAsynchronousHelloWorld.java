@@ -22,6 +22,48 @@ import java.util.function.Function;
 final class DefaultAsynchronousHelloWorld
         implements AsynchronousHelloWorld {
 
+    /**
+     * Drains the specified, already-prepared {@link ByteBuffer} to the specified asynchronous byte
+     * channel by recursively invoking
+     * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel.write}
+     * until the {@code buffer} has no remaining bytes, then notifies
+     * {@code handler.completed(channel, attachment)} on success or
+     * {@code handler.failed(exc, attachment)} on failure.
+     *
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param buffer     the buffer to drain; must already be flipped and contain the bytes to
+     *                   write.
+     * @param channel    the channel to write to.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified.
+     */
+    @SuppressWarnings({"java:S117"})
+    private static <T extends AsynchronousByteChannel, A>
+    void write(final ByteBuffer buffer,
+               final T channel,
+               final @Nullable A attachment,
+               final CompletionHandler<? super T, ? super A> handler) {
+        channel.write( // @formatter:off
+                buffer,                     // <src>
+                attachment,                 // <attachment>
+                new CompletionHandler<>() { // <handler>
+                    @Override
+                    public void completed(final Integer result, final A attachment) {
+                        if (!buffer.hasRemaining()) {
+                            handler.completed(channel, attachment);
+                            return;
+                        }
+                        channel.write(buffer, attachment, this);
+                    }
+                    @Override
+                    public void failed(final Throwable exc, final A attachment) {
+                        handler.failed(exc, attachment);
+                    }
+                } // @formatter:on
+        );
+    }
+
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 
     /**
@@ -76,36 +118,36 @@ final class DefaultAsynchronousHelloWorld
 
     // --------------------------------------------------------------------------- java.nio.channels
     @Override
-    @SuppressWarnings({"java:S117"})
     public <T extends AsynchronousByteChannel, A>
     void write(final T channel,
                @Nullable final A attachment,
                final CompletionHandler<? super T, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = service.byteBuffer();
-        channel.write( // @formatter:off
-                buffer,                     // <src>
-                null,                       // <attachment>
-                new CompletionHandler<>() { // <handler>
-                    @Override
-                    public void completed(final Integer result, final Object a_) {
-                        if (!buffer.hasRemaining()) {
-                            handler.completed(channel, attachment);
-                            return;
-                        }
-                        channel.write(
-                                buffer, // <src>
-                                null,   // <attachment>
-                                this    // <handler>
-                        );
-                    }
-                    @Override
-                    public void failed(final Throwable exc, final Object a_) {
-                        handler.failed(exc, attachment);
-                    }
-                } // @formatter:on
-        );
+        final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
+        write(buffer, channel, attachment, handler);
+    }
+
+    @Deprecated(forRemoval = true)
+    @Override
+    public <T extends AsynchronousByteChannel, A>
+    void writeOn(final T channel,
+                 final @Nullable A attachment,
+                 final CompletionHandler<? super T, ? super A> handler,
+                 final Executor executor) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        Objects.requireNonNull(executor, "executor is null");
+        applyAsync(
+                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip(),
+                executor
+        ).thenAcceptAsync(
+                buffer -> write(buffer, channel, attachment, handler),
+                executor
+        ).exceptionally(t -> {
+            handler.failed(t, attachment);
+            return null;
+        });
     }
 
 //    @Override
@@ -161,7 +203,7 @@ final class DefaultAsynchronousHelloWorld
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        final var buffer = service.byteBuffer();
+        final var buffer = service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
         channel.write( // @formatter:off
                 buffer,                     // <src>
                 position,                   // <position>
@@ -175,10 +217,10 @@ final class DefaultAsynchronousHelloWorld
                             return;
                         }
                         channel.write(
-                                buffer,      // <src>
+                                buffer,       // <src>
                                 p_ += result, // <position>
                                 p_,           // <attachment>
-                                this         // <handler>
+                                this          // <handler>
                         );
                     }
                     @Override

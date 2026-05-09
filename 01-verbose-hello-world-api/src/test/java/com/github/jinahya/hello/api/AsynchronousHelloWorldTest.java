@@ -14,7 +14,7 @@ import org.mockito.Spy;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-abstract class AsynchronousHelloWorldTest
+public abstract class AsynchronousHelloWorldTest
         extends HelloWorldTest {
 
     @BeforeEach

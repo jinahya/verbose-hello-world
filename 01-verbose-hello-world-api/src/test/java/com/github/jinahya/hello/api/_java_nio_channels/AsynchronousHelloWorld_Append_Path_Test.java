@@ -21,7 +21,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.DefaultAsynchronousHelloWorldTest;
+import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @DisplayName("append(path, attachment, handler)")
 @Slf4j
 class AsynchronousHelloWorld_Append_Path_Test
-        extends DefaultAsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorldTest {
 
 //    /**
 //     * Verifies that the

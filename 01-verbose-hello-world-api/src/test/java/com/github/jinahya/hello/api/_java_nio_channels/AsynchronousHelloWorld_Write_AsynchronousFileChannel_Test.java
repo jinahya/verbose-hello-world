@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.DefaultAsynchronousHelloWorldTest;
+import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.LongAdder;
 @DisplayName("write(channel, position)")
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Test
-        extends DefaultAsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorldTest {
 
 //    /**
 //     * Verifies that the

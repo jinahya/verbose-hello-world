@@ -1,7 +1,7 @@
 package com.github.jinahya.hello.api._java_net_http;
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.DefaultAsynchronousHelloWorldTest;
+import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
 import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @DisplayName("send(WebSocket, boolean)")
 @Slf4j
 class AsynchornousHelloWorld_SendBinary_WebSocket_Test
-        extends DefaultAsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorldTest {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
     AsynchornousHelloWorld_SendBinary_WebSocket_Test() {

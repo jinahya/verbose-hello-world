@@ -156,13 +156,114 @@ public interface AsynchronousHelloWorld {
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
      * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
-     * @see HelloWorld#byteBuffer()
+     * @see HelloWorld#put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      */
     <T extends AsynchronousByteChannel, A>
-    void write(final T channel,
-               @Nullable final A attachment,
-               final CompletionHandler<? super T, ? super A> handler);
+    void write(T channel,
+               @Nullable A attachment,
+               CompletionHandler<? super T, ? super A> handler);
+
+    /**
+     * <strong>Provisional</strong> — slated for removal. Writes the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+     * asynchronous byte channel, dispatching the buffer preparation onto the specified executor,
+     * and notifies a completion (or a failure) to the specified handler with the specified
+     * attachment.
+     * <p>
+     * This overload exists alongside
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler, Executor)} purely to
+     * demonstrate an alternative implementation idiom — the {@link CompletionStage} pipeline
+     * (see {@code DefaultAsynchronousHelloWorld}). For real use, prefer the
+     * {@link CompletableFuture}-returning overload, which subsumes this one's behaviour and
+     * exposes a future the caller can compose with.
+     *
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param channel    the asynchronous byte channel to which the bytes are written.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with a completion (or a failure).
+     * @param executor   the executor on which the buffer preparation is dispatched.
+     * @throws NullPointerException if any of {@code channel}, {@code handler}, or {@code executor}
+     *                              is {@code null}.
+     * @deprecated Provisional — slated for removal. Use
+     * {@link #write(AsynchronousByteChannel, Object, CompletionHandler, Executor)
+     * write(channel, attachment, handler, executor)} instead, which subsumes this method's
+     * behaviour and additionally returns a {@link CompletableFuture} the caller can compose with
+     * (callers who don't need the future may simply ignore the return value).
+     */
+    @Deprecated(forRemoval = true)
+    <T extends AsynchronousByteChannel, A>
+    void writeOn(final T channel,
+                 final @Nullable A attachment,
+                 final CompletionHandler<? super T, ? super A> handler,
+                 final Executor executor);
+
+    /**
+     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+     * asynchronous byte channel, dispatching the buffer preparation onto the specified executor,
+     * notifies a completion (or a failure) to the specified handler with the specified attachment,
+     * and returns a {@link CompletableFuture} that mirrors the same outcome.
+     * <p>
+     * The returned future tracks the actual I/O completion (not just the dispatch): it completes
+     * with the {@code channel} once the bytes have been written and {@code handler.completed} has
+     * been invoked, or completes exceptionally — also routing the throwable to
+     * {@code handler.failed} — if the buffer preparation or the channel write fails.
+     *
+     * @param <T>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param channel    the asynchronous byte channel to which the bytes are written.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with a completion (or a failure).
+     * @param executor   the executor on which the buffer preparation is dispatched.
+     * @return a {@link CompletableFuture} that completes with the {@code channel} when the I/O
+     * succeeds, or completes exceptionally if the buffer preparation or the channel write fails.
+     * @throws NullPointerException if any of {@code channel}, {@code handler}, or {@code executor}
+     *                              is {@code null}.
+     * @implSpec The default implementation submits a {@link Runnable} to the {@code executor} that
+     * invokes {@link #write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
+     * attachment, handler)} with a wrapped {@link CompletionHandler} that mirrors every
+     * notification to both the caller-supplied {@code handler} and the returned future.
+     */
+    default <T extends AsynchronousByteChannel, A>
+    CompletableFuture<T> write(final T channel,
+                               final @Nullable A attachment,
+                               final CompletionHandler<? super T, ? super A> handler,
+                               final Executor executor) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        Objects.requireNonNull(executor, "executor is null");
+        final var future = new CompletableFuture<T>();
+        executor.execute(() -> { // @formatter:off
+            try {
+                write(channel, attachment, new CompletionHandler<T, A>() {
+                    @Override
+                    public void completed(final T result, final A a) {
+                        try {
+                            handler.completed(result, a);
+                        } finally {
+                            future.complete(result);
+                        }
+                    }
+                    @Override
+                    public void failed(final Throwable t, final A a) {
+                        try {
+                            handler.failed(t, a);
+                        } finally {
+                            future.completeExceptionally(t);
+                        }
+                    }
+                });
+            } catch (final Throwable t) {
+                try {
+                    handler.failed(t, attachment);
+                } finally {
+                    future.completeExceptionally(t);
+                }
+            } // @formatter:on
+        });
+        return future;
+    }
 
 //    /**
 //     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified

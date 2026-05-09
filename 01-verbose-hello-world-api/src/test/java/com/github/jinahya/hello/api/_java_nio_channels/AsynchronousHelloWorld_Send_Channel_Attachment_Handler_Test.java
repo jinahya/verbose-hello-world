@@ -1,7 +1,7 @@
 package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.DefaultAsynchronousHelloWorldTest;
+import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("write(channel, attachment, handler)")
 @Slf4j
 class AsynchronousHelloWorld_Send_Channel_Attachment_Handler_Test
-        extends DefaultAsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorldTest {
 
 //    /**
 //     * Verifies that the
