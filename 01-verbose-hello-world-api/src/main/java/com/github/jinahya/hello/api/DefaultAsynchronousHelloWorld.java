@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -37,26 +36,21 @@ class DefaultAsynchronousHelloWorld
     // ---------------------------------------------------------------------------------------------
     @Override
     public <R> CompletionStage<R> applyAsync(
+            final Function<? super HelloWorld, ? extends R> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return CompletableFuture.supplyAsync(
+                () -> mapper.apply(service)
+        );
+    }
+
+    @Override
+    public <R> CompletionStage<R> applyAsync(
             final Function<? super HelloWorld, ? extends R> mapper,
             final Executor executor) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(executor, "executor is null");
         return CompletableFuture.supplyAsync(
                 () -> mapper.apply(service),
-                executor
-        );
-    }
-
-    @Override
-    public <T, R> CompletionStage<R> applyAsync(
-            final T target,
-            final BiFunction<? super HelloWorld, ? super T, ? extends R> mapper,
-            final Executor executor) {
-        Objects.requireNonNull(target, "target is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return CompletableFuture.supplyAsync(
-                () -> mapper.apply(service, target),
                 executor
         );
     }

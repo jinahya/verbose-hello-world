@@ -9,37 +9,22 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.util.concurrent.Executor;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-class AsynchronousHelloWorld_ApplyAsync_Target_Mapper_Executor_Test
+class AsynchronousHelloWorld_ApplyAsync_Mapper_Executor_Test
         extends AsynchronousHelloWorldTest {
-
-    @Test
-    void _ThrowNullPointerException_TargetIsNull() {
-        // ----------------------------------------------------------------------------------- given
-        final var service = asynchronousService();
-        final var target = (Object) null;
-        final var mapper = Mockito.mock(BiFunction.class);
-        final var executor = Mockito.mock(Executor.class);
-        // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.applyAsync(target, mapper, executor)
-        );
-    }
 
     @Test
     void _ThrowNullPointerException_MapperIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = asynchronousService();
-        final var target = new Object();
-        final var mapper = (BiFunction<HelloWorld, Object, Object>) null;
+        final var mapper = (Function<HelloWorld, Object>) null;
         final var executor = Mockito.mock(Executor.class);
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.applyAsync(target, mapper, executor)
+                () -> service.applyAsync(mapper, executor)
         );
     }
 
@@ -47,13 +32,12 @@ class AsynchronousHelloWorld_ApplyAsync_Target_Mapper_Executor_Test
     void _ThrowNullPointerException_ExecutorIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = asynchronousService();
-        final var target = new Object();
-        final var mapper = Mockito.mock(BiFunction.class);
+        final var mapper = Mockito.mock(Function.class);
         final var executor = (Executor) null;
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.applyAsync(target, mapper, executor)
+                () -> service.applyAsync(mapper, executor)
         );
     }
 
@@ -62,10 +46,9 @@ class AsynchronousHelloWorld_ApplyAsync_Target_Mapper_Executor_Test
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var service = asynchronousService();
-        final var target = "hello";
         final var result = 42;
-        final var mapper = (BiFunction<HelloWorld, String, Integer>) Mockito.mock(BiFunction.class);
-        Mockito.when(mapper.apply(ArgumentMatchers.notNull(), ArgumentMatchers.same(target)))
+        final var mapper = (Function<HelloWorld, Integer>) Mockito.mock(Function.class);
+        Mockito.when(mapper.apply(ArgumentMatchers.notNull()))
                 .thenReturn(result);
         final var executor = Mockito.mock(Executor.class);
         Mockito.doAnswer(i -> {
@@ -73,12 +56,12 @@ class AsynchronousHelloWorld_ApplyAsync_Target_Mapper_Executor_Test
             return null;
         }).when(executor).execute(ArgumentMatchers.notNull());
         // ------------------------------------------------------------------------------------ when
-        final var stage = service.applyAsync(target, mapper, executor);
+        final var stage = service.applyAsync(mapper, executor);
         // ------------------------------------------------------------------------------------ then
         Assertions.assertSame(result, stage.toCompletableFuture().get());
         Mockito.verify(executor, Mockito.times(1)).execute(ArgumentMatchers.notNull());
         Mockito.verify(mapper, Mockito.times(1))
-                .apply(ArgumentMatchers.notNull(), ArgumentMatchers.same(target));
+                .apply(ArgumentMatchers.notNull());
     }
 
     // ----------------------------------------------------------------------------------- java.lang

@@ -17,8 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -30,9 +28,9 @@ import java.util.function.Function;
  * patterns built on top of it:
  * <ul>
  *   <li>a generic dispatcher,
- *       {@link #applyAsync(Object, BiFunction, Executor) applyAsync}, that runs an arbitrary
- *       {@link BiFunction} of {@code (HelloWorld, target)} on a caller-provided {@link Executor};
- *       </li>
+ *       {@link #applyAsync(Function, Executor) applyAsync}, that runs an arbitrary
+ *       {@link Function} of the wrapped {@link HelloWorld} on a caller-provided
+ *       {@link Executor};</li>
  *   <li>WebSocket helpers — {@link #sendBinary(WebSocket, boolean) sendBinary},
  *       {@link #sendPing(WebSocket) sendPing}, and {@link #sendPong(WebSocket) sendPong} — that
  *       return a {@link CompletableFuture} of the same socket;</li>
@@ -74,66 +72,36 @@ public interface AsynchronousHelloWorld {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Applies the specified mapper to the wrapped {@link HelloWorld} asynchronously using the
+     * Applies the specified mapper to the wrapped {@link HelloWorld} asynchronously, and returns
+     * the result as a {@link CompletionStage}.
+     *
+     * @param <R>    result type parameter
+     * @param mapper the mapper to apply; receives the wrapped {@link HelloWorld} instance and
+     *               returns a result.
+     * @return a {@link CompletionStage} that completes with the value produced by the
+     * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
+     * @throws NullPointerException if {@code mapper} is {@code null}.
+     * @deprecated Use {@link #applyAsync(Function, Executor)} with an explicit {@link Executor}
+     * instead.
+     */
+    @Deprecated(forRemoval = true)
+    <R> CompletionStage<R> applyAsync(Function<? super HelloWorld, ? extends R> mapper);
+
+    /**
+     * Applies the specified mapper to the wrapped {@link HelloWorld} asynchronously on the
      * specified executor, and returns the result as a {@link CompletionStage}.
      *
      * @param <R>      result type parameter
      * @param mapper   the mapper to apply; receives the wrapped {@link HelloWorld} instance and
      *                 returns a result.
-     * @param executor the executor to use for async execution.
-     * @return a {@link CompletionStage} representing the async operation.
-     * @throws NullPointerException if {@code mapper} or {@code executor} is {@code null}.
+     * @param executor the executor on which the {@code mapper} is dispatched.
+     * @return a {@link CompletionStage} that completes with the value produced by the
+     * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
+     * @throws NullPointerException if either {@code mapper} or {@code executor} is {@code null}.
      */
     <R> CompletionStage<R> applyAsync(
             Function<? super HelloWorld, ? extends R> mapper,
             Executor executor);
-
-    /**
-     * Applies the specified mapper to the specified target asynchronously using the specified
-     * executor, and returns the result as a {@link CompletionStage}.
-     * <p>
-     * Example usage:
-     * {@snippet lang = "java":
-     * var instance = AsynchronousHelloWorld.newInstance();
-     * instance.applyAsync(s, HelloWorld::write, executor)
-     *         .thenAccept(s -> System.out.println("written"));
-     *}
-     *
-     * @param <T>      target type parameter
-     * @param <R>      result type parameter
-     * @param target   the target to be passed to the {@code mapper}.
-     * @param mapper   the mapper to apply; receives a {@link HelloWorld} instance and the
-     *                 {@code target}, and returns a result.
-     * @param executor the executor to use for async execution.
-     * @return a {@link CompletionStage} representing the async operation.
-     * @throws NullPointerException if {@code target}, {@code mapper} or {@code executor} is
-     *                              {@code null}.
-     */
-    <T, R> CompletionStage<R> applyAsync(
-            T target,
-            BiFunction<? super HelloWorld, ? super T, ? extends R> mapper,
-            Executor executor);
-
-    /**
-     * Applies the specified mapper to the specified target asynchronously using
-     * {@link ForkJoinPool#commonPool()}, and returns the result as a {@link CompletionStage}.
-     *
-     * @param <T>    target type parameter
-     * @param <R>    result type parameter
-     * @param target the target to be passed to the {@code mapper}.
-     * @param mapper the mapper to apply; receives a {@link HelloWorld} instance and the
-     *               {@code target}, and returns a result.
-     * @return a {@link CompletionStage} representing the async operation.
-     * @throws NullPointerException if {@code target} or {@code mapper} is {@code null}.
-     * @implSpec Default implementation invokes {@link #applyAsync(Object, BiFunction, Executor)}
-     * with the {@code target}, {@code mapper}, and {@link ForkJoinPool#commonPool()}.
-     * @see #applyAsync(Object, BiFunction, Executor)
-     */
-    default <T, R> CompletionStage<R> applyAsync(
-            final T target,
-            final BiFunction<? super HelloWorld, ? super T, ? extends R> mapper) {
-        return applyAsync(target, mapper, ForkJoinPool.commonPool());
-    }
 
     // ------------------------------------------------------------------------------- java.net.http
 
@@ -185,12 +153,12 @@ public interface AsynchronousHelloWorld {
 
     /**
      * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
-     * channel, and then notifies a completion (or a failure) to the specified handler with the
-     * specified attachment.
+     * asynchronous byte channel, and notifies a completion (or a failure) to the specified handler
+     * with the specified attachment.
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
-     * @param channel    the channel to which the bytes are written.
+     * @param channel    the asynchronous byte channel to which the bytes are written.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
      * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
@@ -204,21 +172,21 @@ public interface AsynchronousHelloWorld {
 
     /**
      * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
-     * channel using the specified executor for the buffer preparation, and then notifies a
-     * completion (or a failure) to the specified handler with the specified attachment.
+     * asynchronous byte channel using the specified executor for the buffer preparation, and
+     * notifies a completion (or a failure) to the specified handler with the specified attachment.
      * <p>
      * This is the executor-aware variant of
      * {@link #write(AsynchronousByteChannel, Object, CompletionHandler)}: the allocation and
      * filling of the {@link ByteBuffer} that holds the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are dispatched to the
-     * {@code executor} rather than running on the caller's thread. The actual non-blocking
-     * I/O still runs on the {@code channel}'s own thread group, as does the eventual
-     * notification of the {@code handler}.
+     * {@code executor} rather than running on the caller's thread. The actual non-blocking I/O
+     * still runs on the {@code channel}'s own thread group, as does the eventual notification of
+     * the {@code handler}.
      *
      * @param <T>        channel type parameter
      * @param <A>        attachment type parameter
      * @param executor   the executor on which the buffer preparation is dispatched.
-     * @param channel    the channel to which the bytes are written.
+     * @param channel    the asynchronous byte channel to which the bytes are written.
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
      * @throws NullPointerException if any of {@code executor}, {@code channel}, or {@code handler}
@@ -288,8 +256,8 @@ public interface AsynchronousHelloWorld {
      * Writes, asynchronously, the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
      * asynchronous file channel, starting at the specified position, using the specified executor
-     * for the buffer preparation, and notifies a completion (or a failure) to the specified
-     * handler with the specified attachment.
+     * for the buffer preparation, and notifies a completion (or a failure) to the specified handler
+     * with the specified attachment.
      * <p>
      * This is the executor-aware variant of
      * {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler)}: the allocation and
@@ -396,8 +364,8 @@ public interface AsynchronousHelloWorld {
 
     /**
      * Appends the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the end of
-     * the file at the specified path using the specified executor, and notifies a completion (or
-     * a failure) to the specified handler with the specified attachment.
+     * the file at the specified path using the specified executor, and notifies a completion (or a
+     * failure) to the specified handler with the specified attachment.
      * <p>
      * This is the executor-aware variant of {@link #append(Path, Object, CompletionHandler)}: the
      * blocking append is dispatched to the {@code executor} rather than running on the caller's
@@ -436,9 +404,9 @@ public interface AsynchronousHelloWorld {
                 },
                 executor
         ).thenAccept(p -> handler.completed(p, attachment))
-         .exceptionally(t -> {
-             handler.failed(t, attachment);
-             return null;
-         });
+                .exceptionally(t -> {
+                    handler.failed(t, attachment);
+                    return null;
+                });
     }
 }
