@@ -35,5 +35,5 @@ public abstract class AsynchronousHelloWorldTest
 
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
-    private DefaultAsynchronousHelloWorld asynchronousService;
+    private AsynchronousHelloWorld asynchronousService;
 }

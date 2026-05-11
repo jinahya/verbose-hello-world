@@ -62,6 +62,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.BreakIterator;
 import java.util.BitSet;
 import java.util.Objects;
 import java.util.SequencedCollection;
@@ -1537,6 +1538,16 @@ public interface HelloWorld {
         final var str = new String(array, StandardCharsets.UTF_8);
         clob.setString(pos, str);
         return clob;
+    }
+
+    // ----------------------------------------------------------------------------------- java.text
+    default <T extends BreakIterator> T setText(final T iterator) {
+        Objects.requireNonNull(iterator, "iterator is null");
+        final var array = new byte[BYTES];
+        set(array);
+        final var string = new String(array, StandardCharsets.UTF_8);
+//        iterator.setText(string);
+        return iterator;
     }
 
     // ----------------------------------------------------------------------------------- java.util

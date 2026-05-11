@@ -25,22 +25,22 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test
+class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__Test
         extends AsynchronousHelloWorldTest {
 
     @BeforeEach
-    @SuppressWarnings({"unchecked"})
     void __() { // @formatter:off
         Mockito.doAnswer(i -> {
-            var channel = i.getArgument(0, AsynchronousByteChannel.class);
-            var attachment = i.getArgument(1);
-            var handler = i.getArgument(2, CompletionHandler.class);
+            var channel = i.getArgument(1, AsynchronousByteChannel.class);
+            var attachment = i.getArgument(2);
+            var future = new CompletableFuture<>();
             var src = HelloWorldTestUtils.hello_world_byte_buffer();
             channel.write(src, attachment, new CompletionHandler<>() {
                 @Override
@@ -49,18 +49,18 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
                         channel.write(src, a, this);
                         return;
                     }
-                    handler.completed(channel, a);
+                    future.complete(a);
                 }
                 @Override
                 public void failed(Throwable t, Object a) {
-                    handler.failed(t, a);
+                    future.completeExceptionally(t);
                 }
             });
-            return null;
+            return future;
         }).when(asynchronousService()).write(
+                ArgumentMatchers.<Executor>notNull(),
                 ArgumentMatchers.<AsynchronousByteChannel>notNull(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<CompletionHandler<AsynchronousByteChannel, Object>>notNull()
+                ArgumentMatchers.any()
         ); // @formatter:on
     }
 
@@ -72,21 +72,17 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
             var group = AsynchronousChannelGroup.withCachedThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
                     0);
-            try (var server = AsynchronousServerSocketChannel.open(group)) {
+            try (var server = AsynchronousServerSocketChannel.open(group);
+                 var executor = Executors.newSingleThreadExecutor(
+                         Thread.ofPlatform().name("exec-", 0).factory())) {
                 server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
                 server.accept(null, new CompletionHandler<>() {
                     @Override
                     public void completed(AsynchronousSocketChannel c, Object a) {
                         server.accept(null, this);
-                        asynchronousService().write(c, null, new CompletionHandler<>() {
-                            @Override
-                            public void completed(AsynchronousSocketChannel r, Object a2) {
-                                try { c.close(); } catch (IOException _) { }
-                            }
-                            @Override
-                            public void failed(Throwable t, Object a2) {
-                                try { c.close(); } catch (IOException _) { }
-                            }
+                        AsynchronousHelloWorld service = asynchronousService();
+                        service.write(executor, c, c).whenComplete((r, t) -> {
+                            try { c.close(); } catch (IOException _) { }
                         });
                     }
                     @Override
@@ -146,7 +142,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
             var group = AsynchronousChannelGroup.withCachedThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
                     0);
-            try (var server = AsynchronousServerSocketChannel.open(group)) {
+            try (var server = AsynchronousServerSocketChannel.open(group);
+                 var executor = Executors.newSingleThreadExecutor(
+                         Thread.ofPlatform().name("exec-", 0).factory())) {
                 server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
                 server.accept(null, new CompletionHandler<>() {
                     @Override
@@ -184,18 +182,15 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
                     client.connect(server.getLocalAddress(), null, new CompletionHandler<>() {
                         @Override
                         public void completed(Void v, Object a) {
-                            asynchronousService().write(client, null, new CompletionHandler<>() {
-                                @Override
-                                public void completed(AsynchronousSocketChannel c, Object a2) {
-                                    try { client.close(); } catch (IOException _) { }
-                                    future.complete(null);
-                                }
-                                @Override
-                                public void failed(Throwable t, Object a2) {
-                                    try { client.close(); } catch (IOException _) { }
-                                    future.completeExceptionally(t);
-                                }
-                            });
+                            asynchronousService().write(executor, client, client)
+                                    .whenComplete((r, t) -> {
+                                        try { client.close(); } catch (IOException _) { }
+                                        if (t != null) {
+                                            future.completeExceptionally(t);
+                                        } else {
+                                            future.complete(null);
+                                        }
+                                    });
                         }
                         @Override
                         public void failed(Throwable t, Object a) {

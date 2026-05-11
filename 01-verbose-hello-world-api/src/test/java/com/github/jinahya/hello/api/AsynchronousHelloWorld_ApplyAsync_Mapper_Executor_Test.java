@@ -47,8 +47,7 @@ class AsynchronousHelloWorld_ApplyAsync_Mapper_Executor_Test
         final var service = asynchronousService();
         final var result = 42;
         final var mapper = (Function<HelloWorld, Integer>) Mockito.mock(Function.class);
-        Mockito.when(mapper.apply(ArgumentMatchers.notNull()))
-                .thenReturn(result);
+        Mockito.when(mapper.apply(ArgumentMatchers.notNull())).thenReturn(result);
         final var executor = Mockito.mock(Executor.class);
         Mockito.doAnswer(i -> {
             i.getArgument(0, Runnable.class).run();
