@@ -1,6 +1,5 @@
 package com.github.jinahya.hello.api._java_nio_channels;
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
@@ -133,7 +132,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
                 CompletableFuture.allOf(readFutures).get(8L, TimeUnit.SECONDS);
             } finally {
                 group.shutdown();
-                group.awaitTermination(8L, TimeUnit.SECONDS);
+                if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
+                    log.warn("channel group did not terminate within 8s");
+                }
             } // @formatter:on
         }
     }
@@ -207,7 +208,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
                 CompletableFuture.allOf(writeFutures).get(8L, TimeUnit.SECONDS);
             } finally {
                 group.shutdown();
-                group.awaitTermination(8L, TimeUnit.SECONDS);
+                if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
+                    log.warn("channel group did not terminate within 8s");
+                }
             } // @formatter:on
         }
     }

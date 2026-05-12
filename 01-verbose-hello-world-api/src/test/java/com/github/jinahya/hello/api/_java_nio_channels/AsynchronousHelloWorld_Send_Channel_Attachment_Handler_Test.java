@@ -40,16 +40,16 @@ class AsynchronousHelloWorld_Send_Channel_Attachment_Handler_Test
 //    @SuppressWarnings({"unchecked"})
 //    void __() {
 //        // ----------------------------------------------------------------------------------- given
-//        final var service = asynchronousService();
+//        final var asynchronousService = asynchronousService();
 //        Mockito.doNothing()
-//                .when(service)
+//                .when(asynchronousService)
 //                .write(ArgumentMatchers.notNull(), ArgumentMatchers.any(), ArgumentMatchers.any());
 //        final var channel = Mockito.mock(AsynchronousByteChannel.class);
 //        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
 //        final var handler = Mockito.mock(CompletionHandler.class);
 //        // ------------------------------------------------------------------------------------ when
-//        service.write(channel, attachment, handler);
+//        asynchronousService.write(channel, attachment, handler);
 //        // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1)).write(channel, attachment, handler);
+//        Mockito.verify(asynchronousService, Mockito.times(1)).write(channel, attachment, handler);
 //    }
 }

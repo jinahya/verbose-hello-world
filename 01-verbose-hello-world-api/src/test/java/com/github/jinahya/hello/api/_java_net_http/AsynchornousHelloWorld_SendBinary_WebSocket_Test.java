@@ -47,13 +47,13 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test
 //    @Test
 //    void _ThrowNullPointerException_SocketIsNull() {
 //        // ----------------------------------------------------------------------------------- given
-//        final var service = asynchronousService();
+//        final var asynchronousService = asynchronousService();
 //        final WebSocket socket = null;
 //        final var last = ThreadLocalRandom.current().nextBoolean();
 //        // ------------------------------------------------------------------------------- when/then
 //        Assertions.assertThrows(
 //                NullPointerException.class,
-//                () -> service.sendBinary(socket, last)
+//                () -> asynchronousService.sendBinary(socket, last)
 //        );
 //    }
 //
@@ -66,14 +66,14 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test
 //        // - we invoke the send(socket, last) method with the socket
 //        // - we get the result future which should be not null
 //        // ----------------------------------------------------------------------------------- given
-//        final var service = asynchronousService();
+//        final var asynchronousService = asynchronousService();
 //        final var socket = Mockito.mock(WebSocket.class);
 //        final var future = new CompletableFuture<WebSocket>();
 //        Mockito.when(socket.sendBinary(Mockito.any(ByteBuffer.class), Mockito.anyBoolean()))
 //                .thenReturn(future);
 //        final var last = ThreadLocalRandom.current().nextBoolean();
 //        // ------------------------------------------------------------------------------------ when
-//        final var result = service.sendBinary(socket, last);
+//        final var result = asynchronousService.sendBinary(socket, last);
 //        // ------------------------------------------------------------------------------------ then
 //        Mockito.verify(socket, Mockito.times(1)).sendBinary(
 //                Mockito.argThat(b -> b.remaining() == HelloWorld.BYTES),
@@ -85,7 +85,7 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test
 //    @Test
 //    void _添足_畵蛇()
 //            throws Exception {
-//        final var service = asynchronousService();
+//        final var asynchronousService = asynchronousService();
 //        final var port = 8887;
 //
 //        // 1. Minimal Server that only logs
@@ -113,7 +113,7 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test
 //                    .buildAsync(URI.create("ws://localhost:" + port), new WebSocket.Listener() {
 //                    })
 //                    .join();
-//            final var future = service.sendBinary(client, true);
+//            final var future = asynchronousService.sendBinary(client, true);
 //            future.join();
 //            client.sendClose(WebSocket.NORMAL_CLOSURE, "ok").join();
 //        } finally {
@@ -124,7 +124,7 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test
 //    @Test
 //    void __vertx()
 //            throws Exception {
-//        final var service = asynchronousService();
+//        final var asynchronousService = asynchronousService();
 //        final var vertx = Vertx.vertx();
 //        final var received = new CompletableFuture<Void>();
 //        final var port = 8888;
@@ -144,7 +144,7 @@ class AsynchornousHelloWorld_SendBinary_WebSocket_Test
 //                .buildAsync(URI.create("ws://localhost:" + port), new WebSocket.Listener() {
 //                })
 //                .join();
-//        service.sendBinary(client, true);
+//        asynchronousService.sendBinary(client, true);
 //        received.get(5, TimeUnit.SECONDS);
 //        server.close().toCompletionStage().toCompletableFuture().get();
 //        vertx.close().toCompletionStage().toCompletableFuture().get();

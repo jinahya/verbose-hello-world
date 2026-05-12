@@ -71,9 +71,9 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
         try (var executor = Executors.newSingleThreadExecutor(
                 Thread.ofPlatform().name("exec-", 0).factory());
              var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
-            AsynchronousHelloWorld service = asynchronousService();
+            AsynchronousHelloWorld asynchronousService = asynchronousService();
             var attachment = new Object();
-            var result = service.write(executor, channel, 0L, attachment).get(8L, TimeUnit.SECONDS);
+            var result = asynchronousService.write(executor, channel, 0L, attachment).toCompletableFuture().get(8L, TimeUnit.SECONDS);
             Assertions.assertSame(attachment, result);
         }
         Assertions.assertEquals(HelloWorld.BYTES, Files.size(file)); // @formatter:on

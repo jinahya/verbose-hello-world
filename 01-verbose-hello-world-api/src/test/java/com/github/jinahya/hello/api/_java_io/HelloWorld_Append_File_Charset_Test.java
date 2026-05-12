@@ -34,6 +34,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -124,7 +125,7 @@ class HelloWorld_Append_File_Charset_Test
     void __(final Charset charset) throws IOException, NoSuchMethodException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .write(ArgumentMatchers.<Writer>any());
         final var file = Mockito.mock(File.class);

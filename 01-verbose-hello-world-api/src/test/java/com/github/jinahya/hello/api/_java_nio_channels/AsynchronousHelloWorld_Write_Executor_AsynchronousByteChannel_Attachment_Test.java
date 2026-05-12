@@ -41,13 +41,13 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) null;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(executor, channel, null)
+                () -> asynchronousService.write(executor, channel, null)
         );
     }
 
@@ -59,13 +59,13 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = (AsynchronousByteChannel) null;
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(executor, channel, null)
+                () -> asynchronousService.write(executor, channel, null)
         );
     }
 
@@ -82,8 +82,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
@@ -103,9 +103,9 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         );
         final var attachment = new Object();
         // ------------------------------------------------------------------------------------ when
-        final var future = service.write(executor, channel, attachment);
+        final var future = asynchronousService.write(executor, channel, attachment);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(attachment, future.get(8L, TimeUnit.SECONDS));
+        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
@@ -121,8 +121,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     @SuppressWarnings({"unchecked"})
     void __completedNullAttachment() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
@@ -141,9 +141,9 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
                 ArgumentMatchers.notNull()
         );
         // ------------------------------------------------------------------------------------ when
-        final var future = service.write(executor, channel, null);
+        final var future = asynchronousService.write(executor, channel, null);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertNull(future.get(8L, TimeUnit.SECONDS));
+        Assertions.assertNull(future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
@@ -159,8 +159,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     @SuppressWarnings({"unchecked"})
     void __failed() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
@@ -185,11 +185,11 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         );
         final var attachment = new Object();
         // ------------------------------------------------------------------------------------ when
-        final var future = service.write(executor, channel, attachment);
+        final var future = asynchronousService.write(executor, channel, attachment);
         // ------------------------------------------------------------------------------------ then
         final var cause = Assertions.assertThrows(
                 ExecutionException.class,
-                () -> future.get(8L, TimeUnit.SECONDS)
+                () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
         Assertions.assertSame(exc, cause);
     }
@@ -206,8 +206,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     @SuppressWarnings({"unchecked"})
     void __completedChannelAsAttachment() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
@@ -226,8 +226,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
                 ArgumentMatchers.notNull()
         );
         // ------------------------------------------------------------------------------------ when
-        final var future = service.write(executor, channel, channel);
+        final var future = asynchronousService.write(executor, channel, channel);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(channel, future.get(8L, TimeUnit.SECONDS));
+        Assertions.assertSame(channel, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 }

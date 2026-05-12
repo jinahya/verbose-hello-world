@@ -27,6 +27,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
 
@@ -105,7 +106,7 @@ class HelloWorld_Set_Array_Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class),   // <array>
                      ArgumentMatchers.anyInt()             // <index>

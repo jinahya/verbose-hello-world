@@ -39,6 +39,7 @@ import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.nio.BufferOverflowException;
@@ -328,7 +329,7 @@ class HelloWorld_Put_ByteBuffer_Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyInt());
         final var buffer = Mockito.spy(

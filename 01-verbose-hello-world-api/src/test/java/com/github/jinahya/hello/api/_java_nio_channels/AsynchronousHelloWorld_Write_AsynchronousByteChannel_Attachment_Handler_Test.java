@@ -39,14 +39,14 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var channel = (AsynchronousByteChannel) null;
         final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel, null, handler)
+                () -> asynchronousService.write(channel, null, handler)
         );
     }
 
@@ -58,13 +58,13 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var handler = (CompletionHandler<AsynchronousByteChannel, Object>) null;
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel, null, handler)
+                () -> asynchronousService.write(channel, null, handler)
         );
     }
 
@@ -81,8 +81,8 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @SuppressWarnings({"unchecked"})
     void __completed() {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var written = new LongAdder();
         Mockito.doAnswer(i -> {
@@ -105,7 +105,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
-        service.write(channel, attachment, handler);
+        asynchronousService.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(channel, attachment);
@@ -136,8 +136,8 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @SuppressWarnings({"unchecked"})
     void __failed() {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         Mockito.doAnswer(i -> {
@@ -163,7 +163,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
-        service.write(channel, attachment, handler);
+        asynchronousService.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .failed(exc, attachment);

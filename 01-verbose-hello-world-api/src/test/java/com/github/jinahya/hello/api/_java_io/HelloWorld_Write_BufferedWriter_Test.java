@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.BufferedWriter;
@@ -80,7 +81,7 @@ class HelloWorld_Write_BufferedWriter_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .write(ArgumentMatchers.any(Writer.class));
         final var writer = Mockito.mock(BufferedWriter.class);

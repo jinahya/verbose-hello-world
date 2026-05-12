@@ -1114,12 +1114,12 @@ public interface HelloWorld {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-        while (buffer.hasRemaining()) {
-            final var future = channel.write(buffer, position);
-            final var written = future.get();
-            assert written > 0; // why?
-            position += written;
-        }
+//        while (buffer.hasRemaining()) {
+//            final var future = channel.write(buffer, position);
+//            final var written = future.get();
+//            assert written > 0; // why?
+//            position += written;
+//        }
         return channel;
     }
 

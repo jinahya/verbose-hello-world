@@ -5,6 +5,7 @@ import com.github.jinahya.hello.api.HelloWorldTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.Console;
@@ -55,7 +56,7 @@ class HelloWorld_Console_Test
             throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = Mockito.spy(PrivateHelloWorld.class);
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .write(Mockito.any(Writer.class));
         final var console = Optional

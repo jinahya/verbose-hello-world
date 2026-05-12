@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.DataOutput;
@@ -79,7 +80,7 @@ class HelloWorld_Write_DataOutput_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .set(ArgumentMatchers.any(byte[].class));
         final var output = Mockito.mock(DataOutput.class);

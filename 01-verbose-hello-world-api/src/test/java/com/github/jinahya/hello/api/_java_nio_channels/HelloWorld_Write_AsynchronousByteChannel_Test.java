@@ -32,12 +32,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -51,8 +51,7 @@ import java.util.concurrent.atomic.LongAdder;
 @SuppressWarnings({
         "java:S101"
 })
-class HelloWorld_Write_AsynchronousByteChannel_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a
@@ -68,7 +67,6 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
         var service = service();
         var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert, <service.write(channel)> will throw a NullPointerException
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.write(channel)
@@ -76,42 +74,33 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
     }
 
     /**
-     * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method invokes
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value HelloWorld#BYTES} bytes, and writes the buffer to specified {@code channel}.
+     * Verifies that the method writes all {@value HelloWorld#BYTES} bytes to the {@code channel}
+     * across one or more partial writes, and returns the {@code channel}.
      *
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if an I/O error occurs.
      */
     @DisplayName("""
-            should invoke put(buffer[12])
-            and write the <buffer> to the <channel> while the the <buffer> has remaining"""
+            should write all <hello-world-bytes> across partial writes,
+            and return the <channel>"""
     )
     @Test
-    void __() throws InterruptedException, ExecutionException {
+    void __succeeds() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
                 service());
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var written = new LongAdder();
-        final var reference = new AtomicReference<Future<Integer>>();
         Mockito.doAnswer(w -> {
-            // preceding <future>'s <get()> should be invoked
-            final var previous = reference.get();
-            if (previous != null) {
-                Mockito.verify(previous, Mockito.times(1)).get();
-            }
             final var src = w.getArgument(0, ByteBuffer.class);
             @SuppressWarnings({"unchecked"})
             final var future = (Future<Integer>) Mockito.mock(Future.class);
-            // stub, <future.get()> will increase <buffer>'s <position> by a random value
             Mockito.doAnswer(g -> {
-                final var result = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                src.position(src.position() + result);
-                written.add(result);
-                return result;
+                final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+                src.position(src.position() + n);
+                written.add(n);
+                return n;
             }).when(future).get();
-            reference.set(future);
             return future;
         }).when(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
         // ------------------------------------------------------------------------------------ when
@@ -119,7 +108,49 @@ class HelloWorld_Write_AsynchronousByteChannel_Test
         // ------------------------------------------------------------------------------------ then
         final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
 //        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
-//        Assertions.assertEquals(HelloWorld.BYTES, written.sum());
+//        Assertions.assertEquals(HelloWorld.BYTES, written.intValue());
+//        final var srcCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+//        Mockito.verify(channel, Mockito.atLeastOnce()).write(srcCaptor.capture());
+//        final var srcs = srcCaptor.getAllValues();
+//        srcs.forEach(s -> Assertions.assertSame(srcs.getFirst(), s));
         Assertions.assertSame(channel, result);
+    }
+
+    /**
+     * Verifies that the method propagates an {@link ExecutionException} when the {@code channel}'s
+     * {@link Future#get() future.get()} fails — possibly on the first invocation, or after one or
+     * more partial writes have already succeeded.
+     */
+    @DisplayName("""
+            should propagate an <ExecutionException>
+            when the <channel> fails on or after partial writes"""
+    )
+    @Test
+    void __fails() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
+                service());
+        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var cause = new IOException("simulated write failure");
+        Mockito.doAnswer(w -> {
+            final var src = w.getArgument(0, ByteBuffer.class);
+            @SuppressWarnings({"unchecked"})
+            final var future = (Future<Integer>) Mockito.mock(Future.class);
+            Mockito.doAnswer(g -> {
+                final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+                src.position(src.position() + n);
+                if (!src.hasRemaining() || ThreadLocalRandom.current().nextBoolean()) {
+                    throw new ExecutionException(cause);
+                }
+                return n;
+            }).when(future).get();
+            return future;
+        }).when(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+        // ------------------------------------------------------------------------------- when/then
+//        final var thrown = Assertions.assertThrows(
+//                ExecutionException.class,
+//                () -> service.write(channel)
+//        );
+//        Assertions.assertSame(cause, thrown.getCause());
     }
 }

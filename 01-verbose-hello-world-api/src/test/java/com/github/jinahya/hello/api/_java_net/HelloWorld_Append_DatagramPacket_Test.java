@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -106,7 +107,7 @@ class HelloWorld_Append_DatagramPacket_Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .set(Mockito.any(byte[].class), Mockito.anyInt());
         final var offset = ThreadLocalRandom.current().nextInt(8);

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.DataOutput;
@@ -174,7 +175,7 @@ public final class HelloWorldTestUtils {
      */
     public static <T extends HelloWorld> T set_array_returns_the_array(final T service) {
         requireMock(service);
-        Mockito.doAnswer(i -> i.getArgument(0))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .set(ArgumentMatchers.<byte[]>argThat(
                         v -> v != null && v.length >= HelloWorld.BYTES

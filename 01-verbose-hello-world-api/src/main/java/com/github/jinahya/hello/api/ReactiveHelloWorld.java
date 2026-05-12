@@ -15,10 +15,6 @@ public sealed interface ReactiveHelloWorld<T>
         static OfBytes newInstance(final HelloWorld service) {
             return new ReactiveHelloWorl_OfBytes(service);
         }
-
-        static OfBytes newInstance() {
-            return newInstance(HelloWorldRevisited.newInstance());
-        }
     }
 
     sealed interface OfArrays
@@ -28,10 +24,6 @@ public sealed interface ReactiveHelloWorld<T>
         static OfArrays newInstance(final HelloWorld service) {
             return new ReactiveHelloWorld_OfArrays(OfBytes.newInstance(service));
         }
-
-        static OfArrays newInstance() {
-            return newInstance(HelloWorldRevisited.newInstance());
-        }
     }
 
     sealed interface OfStrings
@@ -40,10 +32,6 @@ public sealed interface ReactiveHelloWorld<T>
 
         static OfStrings newInstance(final HelloWorld service) {
             return new ReactiveHelloWorld_OfStrings(OfArrays.newInstance(service));
-        }
-
-        static OfStrings newInstance() {
-            return newInstance(HelloWorldRevisited.newInstance());
         }
     }
 

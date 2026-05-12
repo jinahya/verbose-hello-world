@@ -1,6 +1,5 @@
 package com.github.jinahya.hello.api._java_nio_channels;
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
@@ -68,8 +66,7 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
         var file = Files.createTempFile(dir, null, null);
         var done = new CompletableFuture<AsynchronousFileChannel>();
         try (var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
-            AsynchronousHelloWorld service = asynchronousService();
-            service.write(channel, 0L, null, new CompletionHandler<>() {
+            asynchronousService().write(channel, 0L, null, new CompletionHandler<>() {
                 @Override
                 public void completed(AsynchronousFileChannel c, Object a) {
                     done.complete(c);

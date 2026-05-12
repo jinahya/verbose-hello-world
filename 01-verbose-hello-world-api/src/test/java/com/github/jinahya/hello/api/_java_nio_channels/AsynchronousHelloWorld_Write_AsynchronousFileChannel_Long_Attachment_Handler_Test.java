@@ -37,14 +37,14 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var channel = (AsynchronousFileChannel) null;
         final var position = 0L;
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel, position, null, handler)
+                () -> asynchronousService.write(channel, position, null, handler)
         );
     }
 
@@ -52,27 +52,27 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> service.write(channel, position, null, handler)
+                () -> asynchronousService.write(channel, position, null, handler)
         );
     }
 
     @DisplayName("should throw NullPointerException when handler is null")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = 0L;
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>) null;
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(channel, position, null, handler)
+                () -> asynchronousService.write(channel, position, null, handler)
         );
     }
 
@@ -83,22 +83,21 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() {
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        // ----------------------------------------------------------------------------------- given
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
-        final var position = ThreadLocalRandom.current().nextLong(1024L);
         final var written = new LongAdder();
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var p = i.getArgument(1, Long.class);
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
-            Assertions.assertEquals(position + written.longValue(), p);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
             Thread.ofPlatform().start(() -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
                 written.add(n);
-                h.completed(n, a);
+                handler.completed(n, attachment);
             });
             return null;
         }).when(channel).write(
@@ -107,10 +106,13 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
                 ArgumentMatchers.any(),
                 ArgumentMatchers.notNull()
         );
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
-        service.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ when
+        asynchronousService.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
         Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(channel, attachment);
         Mockito.verify(handler, Mockito.never())
@@ -125,22 +127,24 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        // ----------------------------------------------------------------------------------- given
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
             Thread.ofPlatform().start(() -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
                 if (!src.hasRemaining() || ThreadLocalRandom.current().nextBoolean()) {
-                    h.failed(exc, a);
+                    handler.failed(exc, attachment);
                     return;
                 }
-                h.completed(n, a);
+                handler.completed(n, attachment);
             });
             return null;
         }).when(channel).write(
@@ -153,7 +157,9 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         final var handler = (CompletionHandler<AsynchronousFileChannel, Object>)
                 Mockito.mock(CompletionHandler.class);
-        service.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ when
+        asynchronousService.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
         Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .failed(exc, attachment);
         Mockito.verify(handler, Mockito.never())

@@ -40,8 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @畵蛇添足
 @Slf4j
-class HelloWorld_Write_AsynchronousFileChannel_畵蛇添足_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorldTest {
 
     @TempDir
     private static Path tempDir;

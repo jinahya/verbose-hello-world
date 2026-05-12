@@ -2,7 +2,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -36,39 +35,39 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     @DisplayName("should throw NullPointerException when executor is null")
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) null;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = 0L;
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(executor, channel, position, null)
+                () -> asynchronousService.write(executor, channel, position, null)
         );
     }
 
     @DisplayName("should throw NullPointerException when channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = (AsynchronousFileChannel) null;
         final var position = 0L;
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.write(executor, channel, position, null)
+                () -> asynchronousService.write(executor, channel, position, null)
         );
     }
 
     @DisplayName("should throw IllegalArgumentException when position is negative")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> service.write(executor, channel, position, null)
+                () -> asynchronousService.write(executor, channel, position, null)
         );
     }
 
@@ -79,18 +78,19 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
             Thread.ofPlatform().start(() -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
-                h.completed(n, a);
+                handler.completed(n, attachment);
             });
             return null;
         }).when(channel).write(
@@ -101,8 +101,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
         );
         final var position = ThreadLocalRandom.current().nextLong(1024L);
         final var attachment = new Object();
-        final var future = service.write(executor, channel, position, attachment);
-        Assertions.assertSame(attachment, future.get(8L, TimeUnit.SECONDS));
+        final var future = asynchronousService.write(executor, channel, position, attachment);
+        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     @DisplayName("""
@@ -112,15 +112,17 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(service());
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         Mockito.doAnswer(i -> {
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
-            Thread.ofPlatform().start(() -> h.failed(exc, a));
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
+            Thread.ofPlatform().start(() -> handler.failed(exc, attachment));
             return null;
         }).when(channel).write(
                 ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
@@ -130,10 +132,10 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
         );
         final var position = ThreadLocalRandom.current().nextLong(1024L);
         final var attachment = new Object();
-        final var future = service.write(executor, channel, position, attachment);
+        final var future = asynchronousService.write(executor, channel, position, attachment);
         final var cause = Assertions.assertThrows(
                 ExecutionException.class,
-                () -> future.get(8L, TimeUnit.SECONDS)
+                () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
         Assertions.assertSame(exc, cause);
     }

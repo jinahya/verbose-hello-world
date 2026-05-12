@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedConstruction;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -91,7 +92,7 @@ class HelloWorld_Append_File_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> i.getArgument(0, OutputStream.class))
+        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .write(ArgumentMatchers.any(OutputStream.class));
         final var file = Mockito.mock(File.class);

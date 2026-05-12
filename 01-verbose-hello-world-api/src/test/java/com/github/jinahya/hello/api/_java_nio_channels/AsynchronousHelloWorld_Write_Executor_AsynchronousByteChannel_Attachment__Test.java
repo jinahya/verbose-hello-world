@@ -80,8 +80,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__
                     @Override
                     public void completed(AsynchronousSocketChannel c, Object a) {
                         server.accept(null, this);
-                        AsynchronousHelloWorld service = asynchronousService();
-                        service.write(executor, c, c).whenComplete((r, t) -> {
+                        AsynchronousHelloWorld asynchronousService = asynchronousService();
+                        asynchronousService.write(executor, c, c).whenComplete((r, t) -> {
                             try { c.close(); } catch (IOException _) { }
                         });
                     }

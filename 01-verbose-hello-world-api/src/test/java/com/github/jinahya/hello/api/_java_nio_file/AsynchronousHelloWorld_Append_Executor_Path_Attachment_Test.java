@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._java_nio_channels;
+package com.github.jinahya.hello.api._java_nio_file;
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
@@ -32,24 +32,24 @@ class AsynchronousHelloWorld_Append_Executor_Path_Attachment_Test
     @DisplayName("should throw NullPointerException when executor is null")
     @Test
     void _ThrowNullPointerException_ExecutorIsNull() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) null;
         final var path = Mockito.mock(Path.class);
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.append(executor, path, null)
+                () -> asynchronousService.append(executor, path, null)
         );
     }
 
     @DisplayName("should throw NullPointerException when path is null")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
-        final AsynchronousHelloWorld service = asynchronousService();
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var path = (Path) null;
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> service.append(executor, path, null)
+                () -> asynchronousService.append(executor, path, null)
         );
     }
 
@@ -59,13 +59,13 @@ class AsynchronousHelloWorld_Append_Executor_Path_Attachment_Test
     )
     @Test
     void __completed() throws Exception {
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var path = Mockito.mock(Path.class);
-        Mockito.doReturn(path).when(service()).append(path);
+        Mockito.doReturn(path).when(synchronousService()).append(path);
         final var attachment = new Object();
-        final var future = service.append(executor, path, attachment);
-        Assertions.assertSame(attachment, future.get(8L, TimeUnit.SECONDS));
+        final var future = asynchronousService.append(executor, path, attachment);
+        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     @DisplayName("""
@@ -74,16 +74,16 @@ class AsynchronousHelloWorld_Append_Executor_Path_Attachment_Test
     )
     @Test
     void __failed() throws Exception {
-        final AsynchronousHelloWorld service = AsynchronousHelloWorld.from(service());
+        final var asynchronousService = asynchronousService();
         final var executor = (Executor) Runnable::run;
         final var path = Mockito.mock(Path.class);
         final var exc = new IOException("simulated append failure");
-        Mockito.doThrow(exc).when(service()).append(path);
+        Mockito.doThrow(exc).when(synchronousService()).append(path);
         final var attachment = new Object();
-        final var future = service.append(executor, path, attachment);
+        final var future = asynchronousService.append(executor, path, attachment);
         final var cause = Assertions.assertThrows(
                 ExecutionException.class,
-                () -> future.get(8L, TimeUnit.SECONDS)
+                () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
         // applyAsync wraps the IOException in UncheckedIOException
         Assertions.assertSame(exc, cause.getCause());

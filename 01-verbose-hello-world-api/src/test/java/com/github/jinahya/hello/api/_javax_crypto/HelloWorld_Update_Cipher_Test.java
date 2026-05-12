@@ -59,7 +59,7 @@ class HelloWorld_Update_Cipher_Test
         final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
         final var cipher = Mockito.mock(Cipher.class);
         final var output = ThreadLocalRandom.current().nextBoolean() ? new byte[0] : null;
-        Mockito.doAnswer(i -> output).when(cipher).update(ArgumentMatchers.notNull());
+        Mockito.when(cipher.update(ArgumentMatchers.notNull())).thenReturn(output);
         @SuppressWarnings("unchecked")
         final var consumer = (Consumer<? super byte[]>) Mockito.mock(Consumer.class);
         // ------------------------------------------------------------------------------------ when
