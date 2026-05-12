@@ -16,45 +16,31 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#write(Executor, AsynchronousFileChannel, long, Object)} method.
+ * {@link AsynchronousHelloWorld#write(AsynchronousFileChannel, long, Object) write(channel,
+ * position, attachment)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(executor, channel, position, attachment)")
+@DisplayName("write(channel, position, attachment)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachment_Test
+class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test
         extends AsynchronousHelloWorldTest {
-
-    @DisplayName("should throw NullPointerException when executor is null")
-    @Test
-    void _ThrowNullPointerException_ExecutorIsNull() {
-        final var asynchronousService = asynchronousService();
-        final var executor = (Executor) null;
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
-        final var position = 0L;
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.write(executor, channel, position, null)
-        );
-    }
 
     @DisplayName("should throw NullPointerException when channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = (AsynchronousFileChannel) null;
         final var position = 0L;
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> asynchronousService.write(executor, channel, position, null)
+                () -> asynchronousService.write(channel, position, null)
         );
     }
 
@@ -62,17 +48,16 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> asynchronousService.write(executor, channel, position, null)
+                () -> asynchronousService.write(channel, position, null)
         );
     }
 
     @DisplayName("""
-            should complete the returned future with the <attachment>
+            should complete the returned stage with the <attachment>
             once all <hello-world-bytes> have been written"""
     )
     @Test
@@ -80,7 +65,6 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     void __completed() throws Exception {
         HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -101,12 +85,12 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
         );
         final var position = ThreadLocalRandom.current().nextLong(1024L);
         final var attachment = new Object();
-        final var future = asynchronousService.write(executor, channel, position, attachment);
-        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        final var stage = asynchronousService.write(channel, position, attachment);
+        Assertions.assertSame(attachment, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     @DisplayName("""
-            should complete the returned future exceptionally
+            should complete the returned stage exceptionally
             when the <channel> fails"""
     )
     @Test
@@ -114,12 +98,9 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     void __failed() {
         HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousFileChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         Mockito.doAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
             final var handler = i.getArgument(3, CompletionHandler.class);
             Thread.ofPlatform().start(() -> handler.failed(exc, attachment));
@@ -132,10 +113,10 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
         );
         final var position = ThreadLocalRandom.current().nextLong(1024L);
         final var attachment = new Object();
-        final var future = asynchronousService.write(executor, channel, position, attachment);
+        final var stage = asynchronousService.write(channel, position, attachment);
         final var cause = Assertions.assertThrows(
                 ExecutionException.class,
-                () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
+                () -> stage.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
         Assertions.assertSame(exc, cause);
     }

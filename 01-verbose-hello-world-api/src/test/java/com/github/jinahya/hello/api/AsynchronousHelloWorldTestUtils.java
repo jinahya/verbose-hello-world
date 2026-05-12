@@ -6,7 +6,6 @@ import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 /**
@@ -30,11 +29,10 @@ public final class AsynchronousHelloWorldTestUtils {
 
     /**
      * Stubs the specified mock {@code asynchronousService} so that its
-     * {@link AsynchronousHelloWorld#applyAsync(Function, Executor) applyAsync(mapper, executor)}
-     * synchronously applies the {@code mapper} to the specified mock {@code service} and returns an
-     * already-completed {@link CompletableFuture#completedStage(Object) completed} stage; if the
-     * {@code mapper} throws, returns a {@link CompletableFuture#failedStage(Throwable) failed}
-     * stage. The {@code executor} argument is ignored.
+     * {@link AsynchronousHelloWorld#applyAsync(Function) applyAsync(mapper)} synchronously applies
+     * the {@code mapper} to the specified mock {@code service} and returns an already-completed
+     * {@link CompletableFuture#completedStage(Object) completed} stage; if the {@code mapper}
+     * throws, returns a {@link CompletableFuture#failedStage(Throwable) failed} stage.
      *
      * @param service             the mock {@link HelloWorld} that backs the
      *                            {@code asynchronousService}.
@@ -42,17 +40,14 @@ public final class AsynchronousHelloWorldTestUtils {
      * @throws NullPointerException     if either argument is {@code null}.
      * @throws IllegalArgumentException if either argument is not a mock.
      */
-    public static void applyAsync_mapper_executor_applies_(
+    public static void applyAsync_mapper_applies_(
             final HelloWorld service,
             final AsynchronousHelloWorld asynchronousService) {
         MockitoTestUtils.requireMock(service);
         MockitoTestUtils.requireMock(asynchronousService);
         Mockito.doAnswer(applies_(service))
                 .when(asynchronousService)
-                .applyAsync(
-                        ArgumentMatchers.notNull(),
-                        ArgumentMatchers.notNull()
-                );
+                .applyAsync(ArgumentMatchers.notNull());
     }
 
     private AsynchronousHelloWorldTestUtils() {

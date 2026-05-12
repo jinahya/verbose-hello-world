@@ -9,11 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,22 +27,7 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test
     void __(final @TempDir Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        Mockito.doAnswer(i -> {
-            final var c = i.getArgument(0, AsynchronousFileChannel.class);
-            var p = i.getArgument(1, Long.class);
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
-            for (final var b = ByteBuffer.allocate(HelloWorld.BYTES); b.hasRemaining(); ) {
-                p += c.write(b, p).get();
-            }
-            h.completed(c, a);
-            return null;
-        }).when(asynchronousService).write(
-                ArgumentMatchers.notNull(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<CompletionHandler<AsynchronousFileChannel, Object>>notNull()
-        );
+        HelloWorldTestUtils.append_path_appends_hello_world(synchronousService());
         final var path = Files.createTempFile(tempDir, null, null);
         HelloWorldTestUtils.writeSome(path);
         final var size = Files.size(path);

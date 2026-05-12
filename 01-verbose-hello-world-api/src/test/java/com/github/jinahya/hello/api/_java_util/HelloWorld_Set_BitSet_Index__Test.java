@@ -52,8 +52,8 @@ class HelloWorld_Set_BitSet_Index__Test
 
     /**
      * Demonstrates Jaccard similarity, {@code |A ∩ B| / |A ∪ B|}, computed with
-     * {@link BitSet#and(BitSet)}, {@link BitSet#or(BitSet)}, and {@link BitSet#cardinality()}.
-     * Used in deduplication, near-duplicate detection, and recommendation systems.
+     * {@link BitSet#and(BitSet)}, {@link BitSet#or(BitSet)}, and {@link BitSet#cardinality()}. Used
+     * in deduplication, near-duplicate detection, and recommendation systems.
      */
     @Nested
     class Jaccard_Test {
@@ -93,8 +93,8 @@ class HelloWorld_Set_BitSet_Index__Test
 
     /**
      * Demonstrates Hamming distance, the count of differing bits, computed with
-     * {@link BitSet#xor(BitSet)} and {@link BitSet#cardinality()}. Used in error-correcting
-     * codes (Hamming, BCH), locality-sensitive hashing, and SimHash-style fingerprinting.
+     * {@link BitSet#xor(BitSet)} and {@link BitSet#cardinality()}. Used in error-correcting codes
+     * (Hamming, BCH), locality-sensitive hashing, and SimHash-style fingerprinting.
      */
     @Nested
     class Hamming_Test {

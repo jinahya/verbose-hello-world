@@ -55,8 +55,8 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
     }
 
     /**
-     * Irregular tree-shaped parallelism: branches die early, others explode — work-stealing's
-     * sweet spot.
+     * Irregular tree-shaped parallelism: branches die early, others explode — work-stealing's sweet
+     * spot.
      */
     @Nested
     class NQueens_Test {
@@ -123,8 +123,8 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
     }
 
     /**
-     * Balanced divide-and-conquer with real data movement: catches join/merge bugs that
-     * "compute a number" tests miss.
+     * Balanced divide-and-conquer with real data movement: catches join/merge bugs that "compute a
+     * number" tests miss.
      */
     @Nested
     class MergeSort_Test {

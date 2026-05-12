@@ -66,7 +66,8 @@ class HelloWorld_Add_Collection_IntFunction_Test
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
         @SuppressWarnings("unchecked")
-        final var collection = (SequencedCollection<Integer>) Mockito.mock(SequencedCollection.class);
+        final var collection = (SequencedCollection<Integer>) Mockito.mock(
+                SequencedCollection.class);
         @SuppressWarnings("unchecked")
         final IntFunction<Integer> mapper = Mockito.mock(IntFunction.class);
         Mockito.when(mapper.apply(Mockito.anyInt())).thenAnswer(i -> (int) i.getArgument(0));

@@ -16,8 +16,8 @@ import java.util.SequencedCollection;
 import java.util.function.Function;
 
 /**
- * A class for testing
- * {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)} method.
+ * A class for testing {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

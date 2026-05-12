@@ -42,8 +42,8 @@ class _Javax_Crypto_PBE_Test {
 
     /**
      * Registers the {@link org.bouncycastle.jce.provider.BouncyCastleProvider BouncyCastle}
-     * provider with the JCA so {@code SCRYPT/BC} resolves by its standard JCE name. Password4j
-     * is invoked through its native (non-JCA) API and needs no JCA registration.
+     * provider with the JCA so {@code SCRYPT/BC} resolves by its standard JCE name. Password4j is
+     * invoked through its native (non-JCA) API and needs no JCA registration.
      */
     @BeforeAll
     static void registerProviders() {
@@ -187,13 +187,12 @@ class _Javax_Crypto_PBE_Test {
         }
 
         /**
-         * A nested test class running scrypt via the
-         * {@link com.password4j.Password Password4j} native API
-         * ({@link com.password4j.Password#hash(CharSequence) Password.hash} +
+         * A nested test class running scrypt via the {@link com.password4j.Password Password4j}
+         * native API ({@link com.password4j.Password#hash(CharSequence) Password.hash} +
          * {@link com.password4j.HashBuilder#addSalt(byte[]) addSalt(byte[])} +
-         * {@link com.password4j.ScryptFunction}). The native API preserves the raw salt bytes;
-         * the {@code password4j-jca} 1.0.5 wrapper would corrupt them via a UTF-8 String
-         * round-trip (only safe for ASCII salts).
+         * {@link com.password4j.ScryptFunction}). The native API preserves the raw salt bytes; the
+         * {@code password4j-jca} 1.0.5 wrapper would corrupt them via a UTF-8 String round-trip
+         * (only safe for ASCII salts).
          */
         @DisplayName("Password4j (native)")
         @Nested
@@ -201,8 +200,8 @@ class _Javax_Crypto_PBE_Test {
 
             /**
              * Verifies that signing up the given {@code password} with scrypt (via the Password4j
-             * native API) and packing {@code salt | hash} into a 48-byte record yields a byte
-             * array that is reproduced exactly during login by re-deriving with the stored salt.
+             * native API) and packing {@code salt | hash} into a 48-byte record yields a byte array
+             * that is reproduced exactly during login by re-deriving with the stored salt.
              *
              * @param password the password to register and verify.
              */
@@ -349,23 +348,21 @@ class _Javax_Crypto_PBE_Test {
         }
 
         /**
-         * A nested test class running Argon2id via the
-         * {@link com.password4j.Password Password4j} native API
-         * ({@link com.password4j.Password#hash(CharSequence) Password.hash} +
+         * A nested test class running Argon2id via the {@link com.password4j.Password Password4j}
+         * native API ({@link com.password4j.Password#hash(CharSequence) Password.hash} +
          * {@link com.password4j.HashBuilder#addSalt(byte[]) addSalt(byte[])} +
-         * {@link com.password4j.Argon2Function}). The native API preserves the raw salt bytes;
-         * the {@code password4j-jca} 1.0.5 wrapper would corrupt them via a UTF-8 String
-         * round-trip (only safe for ASCII salts).
+         * {@link com.password4j.Argon2Function}). The native API preserves the raw salt bytes; the
+         * {@code password4j-jca} 1.0.5 wrapper would corrupt them via a UTF-8 String round-trip
+         * (only safe for ASCII salts).
          */
         @DisplayName("Password4j (native)")
         @Nested
         class Password4j_Test {
 
             /**
-             * Verifies that signing up the given {@code password} with Argon2id (via the
-             * Password4j native API) and packing {@code salt | hash} into a 48-byte record
-             * yields a byte array that is reproduced exactly during login by re-deriving with
-             * the stored salt.
+             * Verifies that signing up the given {@code password} with Argon2id (via the Password4j
+             * native API) and packing {@code salt | hash} into a 48-byte record yields a byte array
+             * that is reproduced exactly during login by re-deriving with the stored salt.
              *
              * @param password the password to register and verify.
              */

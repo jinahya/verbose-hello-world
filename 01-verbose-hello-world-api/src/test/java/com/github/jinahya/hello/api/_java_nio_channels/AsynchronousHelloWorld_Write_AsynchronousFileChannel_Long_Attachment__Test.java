@@ -15,30 +15,26 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachment__Test
+class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test
         extends AsynchronousHelloWorldTest {
 
     @BeforeEach
     void __() { // @formatter:off
         Mockito.doAnswer(i -> {
-            var channel = i.getArgument(1, AsynchronousFileChannel.class);
-            var position = i.getArgument(2, Long.class);
-            var attachment = i.getArgument(3);
+            var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            var position = i.getArgument(1, Long.class);
+            var attachment = i.getArgument(2);
             var future = new CompletableFuture<>();
             var src = HelloWorldTestUtils.hello_world_byte_buffer();
             channel.write(src, position, position, new CompletionHandler<>() {
@@ -58,8 +54,7 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
             });
             return future;
         }).when(asynchronousService()).write(
-                ArgumentMatchers.notNull(),
-                ArgumentMatchers.notNull(),
+                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
                 ArgumentMatchers.anyLong(),
                 ArgumentMatchers.any()
         ); // @formatter:on
@@ -68,12 +63,10 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousFileChannel_Long_Attachm
     @Test
     void __(@TempDir final Path dir) throws Exception { // @formatter:off
         var file = Files.createTempFile(dir, null, null);
-        try (var executor = Executors.newSingleThreadExecutor(
-                Thread.ofPlatform().name("exec-", 0).factory());
-             var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
+        try (var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
             AsynchronousHelloWorld asynchronousService = asynchronousService();
             var attachment = new Object();
-            var result = asynchronousService.write(executor, channel, 0L, attachment).toCompletableFuture().get(8L, TimeUnit.SECONDS);
+            var result = asynchronousService.write(channel, 0L, attachment).toCompletableFuture().get(8L, TimeUnit.SECONDS);
             Assertions.assertSame(attachment, result);
         }
         Assertions.assertEquals(HelloWorld.BYTES, Files.size(file)); // @formatter:on

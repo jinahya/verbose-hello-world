@@ -25,21 +25,20 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__Test
+class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
         extends AsynchronousHelloWorldTest {
 
     @BeforeEach
     void __() { // @formatter:off
         Mockito.doAnswer(i -> {
-            var channel = i.getArgument(1, AsynchronousByteChannel.class);
-            var attachment = i.getArgument(2);
+            var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            var attachment = i.getArgument(1);
             var future = new CompletableFuture<>();
             var src = HelloWorldTestUtils.hello_world_byte_buffer();
             channel.write(src, attachment, new CompletionHandler<>() {
@@ -58,7 +57,6 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__
             });
             return future;
         }).when(asynchronousService()).write(
-                ArgumentMatchers.<Executor>notNull(),
                 ArgumentMatchers.<AsynchronousByteChannel>notNull(),
                 ArgumentMatchers.any()
         ); // @formatter:on
@@ -72,16 +70,14 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__
             var group = AsynchronousChannelGroup.withCachedThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
                     0);
-            try (var server = AsynchronousServerSocketChannel.open(group);
-                 var executor = Executors.newSingleThreadExecutor(
-                         Thread.ofPlatform().name("exec-", 0).factory())) {
+            try (var server = AsynchronousServerSocketChannel.open(group)) {
                 server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
                 server.accept(null, new CompletionHandler<>() {
                     @Override
                     public void completed(AsynchronousSocketChannel c, Object a) {
                         server.accept(null, this);
                         AsynchronousHelloWorld asynchronousService = asynchronousService();
-                        asynchronousService.write(executor, c, c).whenComplete((r, t) -> {
+                        asynchronousService.write(c, c).whenComplete((r, t) -> {
                             try { c.close(); } catch (IOException _) { }
                         });
                     }
@@ -142,9 +138,7 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__
             var group = AsynchronousChannelGroup.withCachedThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
                     0);
-            try (var server = AsynchronousServerSocketChannel.open(group);
-                 var executor = Executors.newSingleThreadExecutor(
-                         Thread.ofPlatform().name("exec-", 0).factory())) {
+            try (var server = AsynchronousServerSocketChannel.open(group)) {
                 server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
                 server.accept(null, new CompletionHandler<>() {
                     @Override
@@ -182,7 +176,7 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment__
                     client.connect(server.getLocalAddress(), null, new CompletionHandler<>() {
                         @Override
                         public void completed(Void v, Object a) {
-                            asynchronousService().write(executor, client, client)
+                            asynchronousService().write(client, client)
                                     .whenComplete((r, t) -> {
                                         try { client.close(); } catch (IOException _) { }
                                         if (t != null) {

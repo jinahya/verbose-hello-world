@@ -8,13 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 
 /**
@@ -67,97 +64,48 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
     }
 
     @DisplayName("""
-            should open a channel, invoke <write(channel, 0, attachment, ...)>,
-            force + close the channel,
-            and invoke <handler.completed(path, attachment)>"""
+            should invoke <synchronousService.append(path)>
+            and notify <handler.completed(path, attachment)>"""
     )
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        Mockito.doAnswer(i -> {
-            final var c = i.getArgument(0, AsynchronousFileChannel.class);
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
-            h.completed(c, a);
-            return null;
-        }).when(asynchronousService).write(
-                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<CompletionHandler<AsynchronousFileChannel, Object>>notNull()
-        );
         final var path = Mockito.mock(Path.class);
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        Mockito.doReturn(path).when(synchronousService()).append(path);
         final var attachment = new Object();
         final var handler = (CompletionHandler<Path, Object>)
                 Mockito.mock(CompletionHandler.class);
-        try (var mockStatic = Mockito.mockStatic(AsynchronousFileChannel.class)) {
-            mockStatic.when(() -> AsynchronousFileChannel.open(ArgumentMatchers.same(path),
-                                                               ArgumentMatchers.any(OpenOption[].class)))
-                    .thenReturn(channel);
-            // -------------------------------------------------------------------------------- when
-            asynchronousService.append(path, attachment, handler);
-            // -------------------------------------------------------------------------------- then
-//            final var captor = ArgumentCaptor.forClass(OpenOption[].class);
-//            mockStatic.verify(
-//                    () -> AsynchronousFileChannel.open(ArgumentMatchers.same(path), captor.capture()),
-//                    Mockito.times(1)
-//            );
-//            final var value = captor.getValue();
-//            final var options = new HashSet<>(Arrays.asList(value));
-//            Assertions.assertTrue(options.remove(StandardOpenOption.CREATE));
-//            Assertions.assertTrue(options.remove(StandardOpenOption.WRITE));
-//            Assertions.assertTrue(options.isEmpty());
-//            Mockito.verify(asynchronousService, Mockito.times(1)).write(
-//                    ArgumentMatchers.same(channel),
-//                    ArgumentMatchers.eq(0L),
-//                    ArgumentMatchers.any(),
-//                    ArgumentMatchers.<CompletionHandler<AsynchronousFileChannel, Object>>notNull()
-//            );
-//            Mockito.verify(channel, Mockito.times(1)).force(true);
-//            Mockito.verify(channel, Mockito.times(1)).close();
-            Mockito.verify(handler, Mockito.times(1)).completed(path, attachment);
-        }
+        // ------------------------------------------------------------------------------------ when
+        asynchronousService.append(path, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
+        Mockito.verify(synchronousService(), Mockito.times(1)).append(path);
+        Mockito.verify(handler, Mockito.times(1)).completed(path, attachment);
+        Mockito.verify(handler, Mockito.never())
+                .failed(Mockito.any(), Mockito.any());
     }
 
     @DisplayName("""
-            should close the channel
-            and invoke <handler.failed(exc, attachment)>
-            when the inner <write> fails"""
+            should notify <handler.failed(exc, attachment)>
+            when <synchronousService.append(path)> throws"""
     )
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        final var exc = new RuntimeException("simulated write failure");
-        Mockito.doAnswer(i -> {
-            final var a = i.getArgument(2);
-            final var h = i.getArgument(3, CompletionHandler.class);
-            h.failed(exc, a);
-            return null;
-        }).when(asynchronousService).write(
-                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<CompletionHandler<AsynchronousFileChannel, Object>>notNull()
-        );
         final var path = Mockito.mock(Path.class);
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var exc = new IOException("simulated append failure");
+        Mockito.doThrow(exc).when(synchronousService()).append(path);
         final var attachment = new Object();
         final var handler = (CompletionHandler<Path, Object>)
                 Mockito.mock(CompletionHandler.class);
-        try (var mockStatic = Mockito.mockStatic(AsynchronousFileChannel.class)) {
-            mockStatic.when(() -> AsynchronousFileChannel.open(ArgumentMatchers.same(path),
-                                                               ArgumentMatchers.any(OpenOption[].class)))
-                    .thenReturn(channel);
-            // -------------------------------------------------------------------------------- when
-            asynchronousService.append(path, attachment, handler);
-            // -------------------------------------------------------------------------------- then
-//            Mockito.verify(channel, Mockito.times(1)).close();
-            Mockito.verify(handler, Mockito.times(1)).failed(exc, attachment);
-        }
+        // ------------------------------------------------------------------------------------ when
+        asynchronousService.append(path, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
+        Mockito.verify(handler, Mockito.times(1)).failed(exc, attachment);
+        Mockito.verify(handler, Mockito.never())
+                .completed(Mockito.any(), Mockito.any());
     }
 }

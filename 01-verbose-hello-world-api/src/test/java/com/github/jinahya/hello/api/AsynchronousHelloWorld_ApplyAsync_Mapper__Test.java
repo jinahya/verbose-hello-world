@@ -6,18 +6,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-class AsynchronousHelloWorld_ApplyAsync_Mapper_Executor__Test
+class AsynchronousHelloWorld_ApplyAsync_Mapper__Test
         extends AsynchronousHelloWorldTest {
 
     @BeforeEach
     void __() {
-        AsynchronousHelloWorldTestUtils.applyAsync_mapper_executor_applies_(
+        AsynchronousHelloWorldTestUtils.applyAsync_mapper_applies_(
                 synchronousService(),
                 asynchronousService()
         );
@@ -38,8 +36,7 @@ class AsynchronousHelloWorld_ApplyAsync_Mapper_Executor__Test
             HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
             // -------------------------------------------------------------------------------- when
             final var stage = asynchronousService().applyAsync(
-                    ss -> ss.set(new byte[HelloWorld.BYTES]),
-                    Mockito.mock(Executor.class)
+                    ss -> ss.set(new byte[HelloWorld.BYTES])
             );
             final var array = stage.toCompletableFuture().get(5L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then

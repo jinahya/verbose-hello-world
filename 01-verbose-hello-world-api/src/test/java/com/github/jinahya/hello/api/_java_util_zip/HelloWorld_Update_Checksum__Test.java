@@ -86,5 +86,4 @@ class HelloWorld_Update_Checksum__Test
             printf("Crc16.arc", checksum.getValue());
         }
     }
-
 }

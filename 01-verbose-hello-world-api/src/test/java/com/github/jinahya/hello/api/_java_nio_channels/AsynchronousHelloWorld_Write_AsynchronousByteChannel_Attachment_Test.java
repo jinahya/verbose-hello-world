@@ -17,39 +17,21 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#write(Executor, AsynchronousByteChannel, Object)} method.
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object) write(channel, attachment)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(executor, channel, attachment)")
+@DisplayName("write(channel, attachment)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_Test
+class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         extends AsynchronousHelloWorldTest {
-
-    /**
-     * Verifies that the method throws a {@link NullPointerException} when the {@code executor}
-     * argument is {@code null}.
-     */
-    @DisplayName("should throw NullPointerException when executor is null")
-    @Test
-    void _ThrowNullPointerException_ExecutorIsNull() {
-        // ----------------------------------------------------------------------------------- given
-        final var asynchronousService = asynchronousService();
-        final var executor = (Executor) null;
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.write(executor, channel, null)
-        );
-    }
 
     /**
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
@@ -60,22 +42,21 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = (AsynchronousByteChannel) null;
         // ----------------------------------------------------------------------------- when / then
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> asynchronousService.write(executor, channel, null)
+                () -> asynchronousService.write(channel, null)
         );
     }
 
     /**
-     * Verifies that the returned {@link java.util.concurrent.CompletableFuture future} completes
-     * with the supplied {@code attachment} once all {@value HelloWorld#BYTES} bytes have been
-     * written across one or more partial writes.
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
+     * the supplied {@code attachment} once all {@value HelloWorld#BYTES} bytes have been written
+     * across one or more partial writes.
      */
     @DisplayName("""
-            should complete the returned future with the <attachment>
+            should complete the returned stage with the <attachment>
             once all <hello-world-bytes> have been written"""
     )
     @Test
@@ -84,7 +65,6 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         // ----------------------------------------------------------------------------------- given
         HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -103,18 +83,17 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         );
         final var attachment = new Object();
         // ------------------------------------------------------------------------------------ when
-        final var future = asynchronousService.write(executor, channel, attachment);
+        final var stage = asynchronousService.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        Assertions.assertSame(attachment, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
-     * Verifies that the returned {@link java.util.concurrent.CompletableFuture future} completes
-     * with the supplied {@code attachment} of {@code null} when {@code null} is passed as the
-     * attachment.
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
+     * {@code null} when {@code null} is passed as the attachment.
      */
     @DisplayName("""
-            should complete the returned future with <null>
+            should complete the returned stage with <null>
             when the <attachment> is <null>"""
     )
     @Test
@@ -123,7 +102,6 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         // ----------------------------------------------------------------------------------- given
         HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -141,27 +119,26 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
                 ArgumentMatchers.notNull()
         );
         // ------------------------------------------------------------------------------------ when
-        final var future = asynchronousService.write(executor, channel, null);
+        final var stage = asynchronousService.write(channel, null);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertNull(future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        Assertions.assertNull(stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
-     * Verifies that the returned {@link java.util.concurrent.CompletableFuture future} completes
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes
      * exceptionally when the {@code channel} fails — possibly synchronously on the first
      * invocation, or asynchronously after one or more partial writes.
      */
     @DisplayName("""
-            should complete the returned future exceptionally
+            should complete the returned stage exceptionally
             when the <channel> fails on or after partial writes"""
     )
     @Test
     @SuppressWarnings({"unchecked"})
-    void __failed() throws Exception {
+    void __failed() {
         // ----------------------------------------------------------------------------------- given
         HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         Mockito.doAnswer(i -> {
@@ -185,22 +162,22 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         );
         final var attachment = new Object();
         // ------------------------------------------------------------------------------------ when
-        final var future = asynchronousService.write(executor, channel, attachment);
+        final var stage = asynchronousService.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
         final var cause = Assertions.assertThrows(
                 ExecutionException.class,
-                () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
+                () -> stage.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
         Assertions.assertSame(exc, cause);
     }
 
     /**
-     * Verifies that passing the {@code channel} itself as the {@code attachment} yields a future
+     * Verifies that passing the {@code channel} itself as the {@code attachment} yields a stage
      * that completes with the same channel — the idiom that takes the place of the (removed)
-     * future-of-channel overload.
+     * stage-of-channel overload.
      */
     @DisplayName("""
-            future completes with the <channel> when the <channel> is passed as the <attachment>"""
+            stage completes with the <channel> when the <channel> is passed as the <attachment>"""
     )
     @Test
     @SuppressWarnings({"unchecked"})
@@ -208,7 +185,6 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
         // ----------------------------------------------------------------------------------- given
         HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var executor = (Executor) Runnable::run;
         final var channel = Mockito.mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -226,8 +202,8 @@ class AsynchronousHelloWorld_Write_Executor_AsynchronousByteChannel_Attachment_T
                 ArgumentMatchers.notNull()
         );
         // ------------------------------------------------------------------------------------ when
-        final var future = asynchronousService.write(executor, channel, channel);
+        final var stage = asynchronousService.write(channel, channel);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(channel, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        Assertions.assertSame(channel, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 }

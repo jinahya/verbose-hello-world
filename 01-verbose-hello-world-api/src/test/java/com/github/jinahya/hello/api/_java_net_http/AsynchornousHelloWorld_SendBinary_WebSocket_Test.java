@@ -2,26 +2,11 @@ package com.github.jinahya.hello.api._java_net_http;
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorld;
-import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.WebSocket;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A class for testing

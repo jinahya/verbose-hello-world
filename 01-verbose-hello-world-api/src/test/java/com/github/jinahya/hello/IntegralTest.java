@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 class IntegralTest {
 
     /**
-     * Returns a string representing binary of the specified value, starting from the specified higher bit index
-     * (inclusive) to the specified lower bit index (inclusive).
+     * Returns a string representing binary of the specified value, starting from the specified
+     * higher bit index (inclusive) to the specified lower bit index (inclusive).
      *
      * @param i the int value whose bit binary is printed.
-     * @param h the higher bit index (inclusive) which should be less than or equal to {@code 31} and greater than the
-     *          {@code l}.
-     * @param l the lower bit index (inclusive) which should be greater than or equal to {@code 0} and less than the
-     *          {@code h}.
+     * @param h the higher bit index (inclusive) which should be less than or equal to {@code 31}
+     *          and greater than the {@code l}.
+     * @param l the lower bit index (inclusive) which should be greater than or equal to {@code 0}
+     *          and less than the {@code h}.
      * @return a string representing bit
      */
     static String printBits(int i, final int h, final int l) {
@@ -30,14 +30,14 @@ class IntegralTest {
     }
 
     /**
-     * Returns a string representing binary of the specified value, starting from the specified higher bit index
-     * (inclusive) to the specified lower bit index (inclusive).
+     * Returns a string representing binary of the specified value, starting from the specified
+     * higher bit index (inclusive) to the specified lower bit index (inclusive).
      *
      * @param l  the long value whose bit binary is printed.
-     * @param h  the higher bit index (inclusive) which should be less than or equal to {@code 63} and greater than the
-     *           {@code lo}.
-     * @param lo the lower bit index (inclusive) which should be greater than or equal to {@code 0} and less than the
-     *           {@code h}.
+     * @param h  the higher bit index (inclusive) which should be less than or equal to {@code 63}
+     *           and greater than the {@code lo}.
+     * @param lo the lower bit index (inclusive) which should be greater than or equal to {@code 0}
+     *           and less than the {@code h}.
      * @return a string representing bit
      */
     static String printBits(long l, final int h, final int lo) {
@@ -87,27 +87,27 @@ class IntegralTest {
 
     static void printf(final String name, final byte value) {
         System.out.printf("%-20s: %s (%+4d, 0x%02X)%n",
-                name, printBits(value), value, Byte.toUnsignedInt(value));
+                          name, printBits(value), value, Byte.toUnsignedInt(value));
     }
 
     static void printf(final String name, final short value) {
         System.out.printf("%-20s: %s (%+6d, 0x%04X)%n",
-                name, printBits(value), value, Short.toUnsignedInt(value));
+                          name, printBits(value), value, Short.toUnsignedInt(value));
     }
 
     static void printf(final String name, final int value) {
         System.out.printf("%-20s: %s (%+11d, 0x%08X)%n",
-                name, printBits(value), value, value);
+                          name, printBits(value), value, value);
     }
 
     static void printf(final String name, final long value) {
         System.out.printf("%-20s: %s (%+20d, 0x%016X)%n",
-                name, printBits(value), value, value);
+                          name, printBits(value), value, value);
     }
 
     static void printf(final String name, final char value) {
         System.out.printf("%-20s: %s (%+6d, U+%04X, '%c')%n",
-                name, printBits(value), (int) value, (int) value, value);
+                          name, printBits(value), (int) value, (int) value, value);
     }
 
     // =================================================================================================================
