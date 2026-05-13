@@ -12,5 +12,4 @@ module com.github.jinahya.hello.api {
 //    requires org.apache.commons.lang3;
     exports com.github.jinahya.hello.api;
     exports com.github.jinahya.hello.api.spi;
-    exports com.github.jinahya.hello.api.reactive;
 }

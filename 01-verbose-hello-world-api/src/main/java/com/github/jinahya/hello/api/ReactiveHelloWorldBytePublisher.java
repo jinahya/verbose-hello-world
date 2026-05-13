@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.api;
 
+import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -9,48 +10,42 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A package-private implementation of {@link ReactiveHelloWorldPublisher} that publishes the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> as individual {@link Byte}
- * elements, one per byte of the payload, in order.
+ * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, in order.
  * <p>
  * The instance carries a single field — the wrapped {@link HelloWorld} {@code service} — and is
- * intended to be reused across any number of subscribers. Each
- * {@link #subscribe(org.reactivestreams.Subscriber) subscribe} call allocates fresh per-subscriber
- * state (demand counter, terminated flag, lock, source array, index) and starts a dedicated
- * <em>virtual</em> thread to drive emission. Virtual threads are always daemon threads, so a
- * subscriber that is dropped without {@code cancel}ing or fully consuming the stream cannot block
- * JVM shutdown.
+ * reusable across any number of subscribers. The source byte array is allocated <em>lazily</em>,
+ * inside the producer thread, immediately before the first {@code onNext}; a subscriber that
+ * subscribes and cancels without ever {@code request}ing pays no allocation cost.
  * <p>
- * Spec compliance is split across two surfaces:
- * <ul>
- *   <li>The inner {@link org.reactivestreams.Subscription Subscription} is the control surface
- *       observed by the subscriber. It accumulates demand into an {@link java.util.concurrent.atomic.AtomicLong
- *       AtomicLong} (capped at {@link Long#MAX_VALUE} on overflow) and signals the producer thread
- *       via a {@link java.util.concurrent.locks.Condition Condition}.</li>
- *   <li>The producer thread owns all subscriber signals — every {@code onNext}, {@code onError},
- *       and {@code onComplete} is invoked from that single thread, satisfying
- *       <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- *       1.3</a> (sequential signalling) without an explicit serial channel.</li>
- * </ul>
+ * <strong>Threading.</strong> Each {@link #subscribe(Subscriber) subscribe} call allocates fresh
+ * per-subscriber state (demand counter, terminated flag, lock, source array, index) and starts a
+ * dedicated <em>virtual</em> thread to drive emission. Virtual threads are always daemon threads,
+ * so an abandoned subscriber cannot block JVM shutdown. The producer thread owns every
+ * {@code onNext}/{@code onError}/{@code onComplete}; the subscription's {@code request}/
+ * {@code cancel} run on whichever thread the subscriber calls them from.
  * <p>
- * <strong>Signal serialization (Rule 1.3).</strong> Every site that may invoke a subscriber
- * method — the producer's {@code onNext} and {@code onComplete}, the producer's {@code onError}
- * from a failed {@link HelloWorld#set(byte[]) service.set}, and {@code onError} from
- * {@link org.reactivestreams.Subscription#request(long) request(n &le; 0)} on the caller's
- * thread — is wrapped in the same {@link java.util.concurrent.locks.ReentrantLock ReentrantLock}.
- * Terminal sites additionally guard their emission with
- * {@code terminated.compareAndSet(false, true)} so that at most one of
- * {@code onError}/{@code onComplete} ever fires (Rule 1.7).
+ * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> Every subscriber-signal site — the
+ * producer's {@code onNext} and {@code onComplete}, the producer's {@code onError} from a failed
+ * {@link HelloWorld#set(byte[]) service.set(...)}, and {@code onError} from
+ * {@link Subscription#request(long) request(n &le; 0)} on the caller's thread — is wrapped in the
+ * same {@link ReentrantLock}, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
+ * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.7</a> — at most one of {@code onError}/{@code onComplete} ever fires.
  * <p>
- * The source byte array is allocated and populated <em>lazily</em>, inside the producer thread,
- * immediately before the first {@code onNext}. A subscriber that subscribes and cancels without
- * ever {@code request}ing pays no allocation cost.
+ * <strong>Lifetime.</strong> The stream completes naturally after all {@value HelloWorld#BYTES}
+ * bytes have been emitted ({@code onComplete}); a {@code request(n &le; 0)} call or a failed
+ * {@code service.set(...)} terminates it early with {@code onError}; downstream
+ * {@code cancel()} stops emission without a terminal signal (Rule 3.12).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see ReactiveHelloWorldPublisher#newInstanceForBytes(HelloWorld)
+ * @see ReactiveHelloWorldPublishers#ofBytes(HelloWorld)
+ * @see ReactiveHelloWorldArrayPublisher
  */
-non-sealed class ReactiveHelloWorldBytePublisher
-        implements ReactiveHelloWorldPublisher<Byte> {
+final class ReactiveHelloWorldBytePublisher
+        implements Publisher<Byte> {
 
     // ---------------------------------------------------------------------------------------------
 

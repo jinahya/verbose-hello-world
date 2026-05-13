@@ -7,49 +7,46 @@ import org.reactivestreams.Subscription;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A package-private implementation of {@link ReactiveHelloWorldPublisher} that publishes
- * {@link String} elements — each decoded in {@link StandardCharsets#US_ASCII US-ASCII} from a
- * {@code byte[]} obtained from the upstream byte-array publisher.
+ * A package-private {@link Publisher} of {@link String} elements — each decoded in
+ * {@link StandardCharsets#US_ASCII US-ASCII} from a {@code byte[]} obtained from the upstream
+ * byte-array publisher.
  * <p>
- * This publisher follows the same structural pattern as {@link ReactiveHelloWorldArrayPublisher}: a
- * producer virtual thread parks on demand, and for each unit of downstream demand spawns a fresh
- * worker virtual thread that initiates a new subscription to the upstream byte-array publisher. The
- * worker requests <strong>one</strong> {@code byte[]}, awaits delivery via a
- * {@link CountDownLatch}, cancels the upstream subscription, decodes the bytes into a
- * {@link String}, and emits the string downstream.
+ * Unlike {@link ReactiveHelloWorldArrayPublisher} (which aggregates {@value HelloWorld#BYTES} bytes
+ * into one array via a worker-per-demand pattern), this publisher is a strict <strong>1:1
+ * transform</strong>: each upstream {@code onNext(byte[])} produces exactly one downstream
+ * {@code onNext(String)}. Each {@link #subscribe(Subscriber) subscribe} call creates a fresh
+ * single-use {@link Processor} ({@link StringEncoder}) that wraps the upstream byte-array
+ * publisher and forwards demand 1:1.
  * <p>
- * The instance carries a single field — the wrapped upstream byte-array publisher — and is intended
- * to be reused across any number of subscribers. Each
- * {@link #subscribe(org.reactivestreams.Subscriber) subscribe} call allocates fresh per-subscriber
- * state (demand counter, terminated flag, lock) and starts a dedicated <em>virtual</em> thread to
- * drive demand. Virtual threads are always daemon threads, so a subscriber that is dropped without
- * {@code cancel}ing the subscription cannot block JVM shutdown.
+ * <strong>Threading.</strong> No producer thread of its own; the {@link StringEncoder} runs on
+ * whichever thread the upstream emits on. Per-subscriber state (terminated flag, lock,
+ * subscriptions) lives inside the encoder instance.
  * <p>
- * <strong>Signal serialization (Rule 1.3).</strong> Every site that may invoke a subscriber
- * method — each worker's {@code onNext} and {@code onError}, plus {@code onError} from
- * {@link org.reactivestreams.Subscription#request(long) request(n &le; 0)} on the caller's thread —
- * is wrapped in the same {@link ReentrantLock}. Terminal sites additionally guard their emission
- * with {@code terminated.compareAndSet(false, true)} so that at most one of
- * {@code onError}/{@code onComplete} ever fires (Rule 1.7).
+ * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> All downstream signals — upstream's
+ * {@code onNext}/{@code onError}/{@code onComplete} translated through the encoder, plus
+ * {@code onError} from {@link Subscription#request(long) request(n &le; 0)} on the caller's
+ * thread — are wrapped in the same {@link ReentrantLock} inside the encoder, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
+ * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.7</a> — at most one terminal ever fires.
  * <p>
- * The stream's natural lifetime mirrors the upstream's — if upstream errors, downstream errors; if
- * upstream completes without delivering a {@code byte[]} for a pending worker, downstream
- * completes. (When stacked on top of the open-ended {@link ReactiveHelloWorldArrayPublisher}, this
- * publisher is open-ended too, since the inner subscription is cancelled after one delivery and the
- * upstream's natural completion is never observed.)
+ * <strong>Lifetime.</strong> The stream's natural lifetime mirrors the upstream's — if upstream
+ * errors, downstream errors; if upstream completes, downstream completes. When stacked on top of
+ * the open-ended {@link ReactiveHelloWorldArrayPublisher}, this publisher is open-ended too;
+ * downstream {@code cancel()} (or {@code request(n &le; 0)}) is the only way it stops.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see ReactiveHelloWorldPublishers#ofStrings(HelloWorld)
  * @see ReactiveHelloWorldArrayPublisher
+ * @see Processor
  */
-non-sealed class ReactiveHelloWorldStringPublisher
-        implements ReactiveHelloWorldPublisher<String> {
+final class ReactiveHelloWorldStringPublisher
+        implements Publisher<String> {
 
     /**
      * A single-use {@link Processor} that subscribes to an upstream {@code byte[]} publisher and
@@ -66,12 +63,12 @@ non-sealed class ReactiveHelloWorldStringPublisher
      * {@code upstream.request(n)}; each upstream {@code onNext(byte[])} produces one downstream
      * {@code onNext(String)}.
      * <p>
-     * One downstream subscriber per instance. Downstream signals are serialized through an
-     * internal {@link ReentrantLock} (Rule 1.3), and terminal sites are gated by
+     * One downstream subscriber per instance. Downstream signals are serialized through an internal
+     * {@link ReentrantLock} (Rule 1.3), and terminal sites are gated by
      * {@code terminated.compareAndSet(false, true)} so that at most one of
      * {@code onError}/{@code onComplete} ever fires (Rule 1.7).
      */
-    private static class StringEncoder implements Processor<byte[], String> {
+    private static final class StringEncoder implements Processor<byte[], String> {
 
         // -------------------------------------------------------------------------------- CONSTRUCTORS
 
@@ -91,11 +88,20 @@ non-sealed class ReactiveHelloWorldStringPublisher
         @Override
         public void subscribe(final Subscriber<? super String> s) {
             Objects.requireNonNull(s, "s is null");
-            this.downstreamSubscriber = s;
-            s.onSubscribe(new Subscription() {
+            downstreamSubscriber = s;
+            upstreamPublisher.subscribe(this);   // upstream synchronously calls onSubscribe
+        }
+
+        // ------------------------------------------------------------------- Subscriber<byte[]> side
+        @Override
+        public void onSubscribe(final Subscription s) {
+            this.upstreamSubscription = s;
+            downstreamSubscriber.onSubscribe(new Subscription() {
                 @Override
                 public void request(final long n) {
-                    if (terminated.get()) { return; }                        // Rule 3.6
+                    if (terminated.get()) {
+                        return;
+                    }                        // Rule 3.6
                     if (n <= 0L) {                                           // Rule 3.9
                         if (terminated.compareAndSet(false, true)) {         // Rule 1.7
                             lock.lock();
@@ -104,46 +110,43 @@ non-sealed class ReactiveHelloWorldStringPublisher
                                     downstreamSubscriber.onError(new IllegalArgumentException(
                                             "n(" + n + ") is not positive"
                                     ));
-                                } catch (final Throwable st) { }
-                            } finally { lock.unlock(); }
-                            final var u = upstreamSubscription;
-                            if (u != null) { u.cancel(); }
+                                } catch (final Throwable st) {
+                                }
+                            } finally {
+                                lock.unlock();
+                            }
+                            upstreamSubscription.cancel();
                         }
                         return;
                     }
-                    final var u = upstreamSubscription;
-                    if (u != null) { u.request(n); }                         // 1:1 passthrough
+                    upstreamSubscription.request(n);                         // 1:1 passthrough
                 }
 
                 @Override
                 public void cancel() {                                       // Rule 3.5, 3.7
                     terminated.set(true);
-                    final var u = upstreamSubscription;
-                    if (u != null) { u.cancel(); }
+                    upstreamSubscription.cancel();
                 }
             });
-        }
-
-        // ------------------------------------------------------------------- Subscriber<byte[]> side
-        @Override
-        public void onSubscribe(final Subscription s) {
-            this.upstreamSubscription = s;
         }
 
         @Override
         public void onNext(final byte[] bytes) {
             lock.lock();
             try {
-                if (terminated.get()) { return; }                            // Rule 3.12 / 1.7
+                if (terminated.get()) {
+                    return;
+                }                            // Rule 3.12 / 1.7
                 try {
                     downstreamSubscriber.onNext(new String(bytes, StandardCharsets.US_ASCII));
                 } catch (final Throwable t) {
                     terminated.set(true);
                 }
-            } finally { lock.unlock(); }
+            } finally {
+                lock.unlock();
+            }
             if (terminated.get()) {
-                final var u = upstreamSubscription;
-                if (u != null) { u.cancel(); }
+                upstreamSubscription.cancel();
             }
         }
 
@@ -152,8 +155,13 @@ non-sealed class ReactiveHelloWorldStringPublisher
             if (terminated.compareAndSet(false, true)) {                     // Rule 1.7
                 lock.lock();
                 try {
-                    try { downstreamSubscriber.onError(t); } catch (final Throwable st) { }
-                } finally { lock.unlock(); }
+                    try {
+                        downstreamSubscriber.onError(t);
+                    } catch (final Throwable st) {
+                    }
+                } finally {
+                    lock.unlock();
+                }
             }
         }
 
@@ -162,16 +170,25 @@ non-sealed class ReactiveHelloWorldStringPublisher
             if (terminated.compareAndSet(false, true)) {                     // Rule 1.7
                 lock.lock();
                 try {
-                    try { downstreamSubscriber.onComplete(); } catch (final Throwable st) { }
-                } finally { lock.unlock(); }
+                    try {
+                        downstreamSubscriber.onComplete();
+                    } catch (final Throwable st) {
+                    }
+                } finally {
+                    lock.unlock();
+                }
             }
         }
 
         // ------------------------------------------------------------------------------------------
         private final Publisher<? extends byte[]> upstreamPublisher;
+
         private Subscription upstreamSubscription;
+
         private final ReentrantLock lock = new ReentrantLock();
+
         private final AtomicBoolean terminated = new AtomicBoolean();
+
         private Subscriber<? super String> downstreamSubscriber;
     }
 
@@ -180,11 +197,11 @@ non-sealed class ReactiveHelloWorldStringPublisher
     /**
      * Creates a new instance wrapping the specified upstream byte-array publisher.
      *
-     * @param publisher the upstream {@link ReactiveHelloWorldPublisher} of {@code byte[]} that
-     *                  supplies the bytes for each decoded string.
+     * @param publisher the upstream {@link Publisher} of {@code byte[]} that supplies the bytes
+     *                  for each decoded string.
      * @throws NullPointerException if the {@code publisher} is {@code null}.
      */
-    ReactiveHelloWorldStringPublisher(final ReactiveHelloWorldPublisher<byte[]> publisher) {
+    ReactiveHelloWorldStringPublisher(final Publisher<byte[]> publisher) {
         super();
         this.publisher = Objects.requireNonNull(publisher, "publisher is null");
     }
@@ -195,157 +212,18 @@ non-sealed class ReactiveHelloWorldStringPublisher
      * {@inheritDoc}
      *
      * @throws NullPointerException if the {@code subscriber} is {@code null}.
-     * @implSpec The default implementation invokes
-     * {@link org.reactivestreams.Subscriber#onSubscribe(org.reactivestreams.Subscription)
-     * onSubscribe} with a fresh control-surface
-     * {@link org.reactivestreams.Subscription Subscription}, then starts a virtual thread that
-     * loops as follows:
-     * <ol>
-     *   <li>parks on a {@link java.util.concurrent.locks.Condition Condition} until demand arrives
-     *       or the subscription is terminated,</li>
-     *   <li>for each unit of demand, spawns a fresh worker virtual thread which subscribes to the
-     *       upstream byte-array publisher with an inner {@link Subscriber} that
-     *       {@code request(1L)}s one {@code byte[]}; on receiving it the worker cancels the
-     *       upstream subscription, decodes the bytes into a {@link String} via
-     *       {@link String#String(byte[], java.nio.charset.Charset)
-     *       new String(bytes, StandardCharsets.US_ASCII)}, and signals downstream
-     *       {@code onNext(string)} (or, on the upstream's {@code onError}, the downstream
-     *       {@code onError}; on the upstream's {@code onComplete} without delivery, the downstream
-     *       {@code onComplete}). All downstream signals from workers are serialized through the
-     *       producer's lock.</li>
-     * </ol>
-     * The loop only exits via cancellation; this publisher does not naturally complete unless the
-     * upstream completes a worker's subscription without delivering an element.
-     * <p>
-     * Reentrant {@code request} calls from inside {@code onNext} are safe — the additional demand
-     * is accumulated and picked up on the next iteration of the demand loop, satisfying
-     * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#3.2">Rule
-     * 3.2</a> without unbounded recursion
-     * (<a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#3.3">Rule
-     * 3.3</a>).
+     * @implSpec The default implementation creates a fresh {@link StringEncoder} {@link Processor}
+     * wrapping the upstream byte-array publisher and subscribes the given {@code subscriber} to it.
+     * Demand is forwarded 1:1 from downstream to upstream, and each upstream {@code onNext(byte[])}
+     * produces one downstream {@code onNext(String)} decoded in
+     * {@link StandardCharsets#US_ASCII US-ASCII}.
      */
     @Override
-    public void subscribe(final Subscriber<? super String> subscriber) { // @formatter:off
+    public void subscribe(final Subscriber<? super String> subscriber) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        final var demand = new AtomicLong();
-        final var terminated = new AtomicBoolean();
-        final var lock = new ReentrantLock();
-        final var condition = lock.newCondition();
-        final var subscription = new Subscription() {
-            @Override public void request(final long n) {
-                if (terminated.get()) { return; }                            // Rule 3.6
-                if (n <= 0L) {                                              // Rule 3.9
-                    if (terminated.compareAndSet(false, true)) {             // Rule 1.7
-                        lock.lock();
-                        try {
-                            condition.signalAll();
-                            try {
-                                subscriber.onError(new IllegalArgumentException(
-                                        "n(" + n + ") is not positive"
-                                ));
-                            } catch (final Throwable st) { }
-                        } finally { lock.unlock(); }
-                    }
-                    return;
-                }
-                demand.accumulateAndGet(n, (cur, inc) -> {
-                    try { return Math.addExact(cur, inc); }
-                    catch (final ArithmeticException ae) { return Long.MAX_VALUE; }
-                });
-                signal();
-            }
-            @Override public void cancel() {                                // Rule 3.5, 3.7
-                terminated.set(true);
-                signal();
-            }
-            private void signal() {
-                lock.lock();
-                try { condition.signalAll(); } finally { lock.unlock(); }
-            }
-        };
-        try {
-            subscriber.onSubscribe(subscription);
-        } catch (final Throwable t) {
-            terminated.set(true);
-            return;
-        }
-        Thread.ofVirtual().start(() -> {
-            while (true) {
-                lock.lock();
-                try {
-                    while (demand.get() == 0L && !terminated.get()) {
-                        try {
-                            condition.await();
-                        } catch (final InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                            return;
-                        }
-                    }
-                } finally {
-                    lock.unlock();
-                }
-                if (terminated.get()) { break; }
-                demand.decrementAndGet();
-                Thread.ofVirtual().start(() -> {
-                    final var result = new AtomicReference<byte[]>();
-                    final var error = new AtomicReference<Throwable>();
-                    final var latch = new CountDownLatch(1);
-                    publisher.subscribe(new Subscriber<>() {
-                        private Subscription upstreamSub;
-                        @Override public void onSubscribe(final Subscription s) {
-                            this.upstreamSub = s;
-                            s.request(1L);
-                        }
-                        @Override public void onNext(final byte[] bytes) {
-                            result.set(bytes);
-                            upstreamSub.cancel();
-                            latch.countDown();
-                        }
-                        @Override public void onError(final Throwable t) {
-                            error.set(t);
-                            latch.countDown();
-                        }
-                        @Override public void onComplete() {
-                            latch.countDown();
-                        }
-                    });
-                    try {
-                        latch.await();
-                    } catch (final InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
-                    lock.lock();
-                    try {
-                        if (terminated.get()) { return; }                   // Rule 3.12
-                        final var t = error.get();
-                        if (t != null) {
-                            if (terminated.compareAndSet(false, true)) {    // Rule 1.7
-                                try { subscriber.onError(t); }
-                                catch (final Throwable st) { }
-                            }
-                            return;
-                        }
-                        final var bytes = result.get();
-                        if (bytes == null) {
-                            // upstream completed without delivering a byte[]
-                            if (terminated.compareAndSet(false, true)) {    // Rule 1.7
-                                try { subscriber.onComplete(); }
-                                catch (final Throwable st) { }
-                            }
-                            return;
-                        }
-                        try {
-                            subscriber.onNext(new String(bytes, StandardCharsets.US_ASCII));
-                        } catch (final Throwable st) {
-                            terminated.set(true);
-                        }
-                    } finally { lock.unlock(); }
-                });
-            }
-        }); // @formatter:on
+        new StringEncoder(publisher).subscribe(subscriber);
     }
 
     // ---------------------------------------------------------------------------------------------
-    private final ReactiveHelloWorldPublisher<byte[]> publisher;
+    private final Publisher<? extends byte[]> publisher;
 }

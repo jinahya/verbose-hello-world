@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.api;
 
-import org.jspecify.annotations.Nullable;
+import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -13,61 +13,56 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A package-private implementation of {@link ReactiveHelloWorldPublisher} that publishes
- * {@code byte[]} elements — each a freshly assembled snapshot of the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, of length
- * {@value HelloWorld#BYTES}.
+ * A package-private {@link Publisher} of {@code byte[]} elements — each a freshly assembled,
+ * {@value HelloWorld#BYTES}-byte snapshot of the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
  * <p>
- * Unlike {@link ReactiveHelloWorldBytePublisher} which is sourced directly from a
- * {@link HelloWorld}, this publisher is composed on top of another
- * {@link ReactiveHelloWorldPublisher} of {@link Byte} elements. <strong>For each unit of downstream
- * demand</strong>, the producer thread initiates a new subscription to the upstream byte publisher;
- * the inner byte subscriber accumulates {@value HelloWorld#BYTES} bytes into a fresh {@code byte[]}
- * and, on the upstream's {@code onComplete}, emits the assembled array downstream via
- * {@code onNext}. Multiple upstream subscriptions may run concurrently if demand arrives faster
- * than they complete; all downstream signals are serialized through a single lock to keep
- * <a
- * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a> intact.
+ * Unlike {@link ReactiveHelloWorldBytePublisher} which sources from a {@link HelloWorld} directly,
+ * this publisher is composed on top of another {@link Publisher} of {@link Byte} elements. <strong>
+ * For each unit of downstream demand</strong>, the producer thread spawns a fresh worker virtual
+ * thread that opens a new subscription to the upstream byte publisher, accumulates
+ * {@value HelloWorld#BYTES} bytes into a {@code byte[]}, and — on the upstream's
+ * {@code onComplete} — emits the assembled array downstream via {@code onNext}.
  * <p>
- * The stream is open-ended — it does not naturally complete; only {@code cancel()} (or an upstream
- * {@code onError}) terminates it.
+ * <strong>Threading.</strong> Each {@link #subscribe(Subscriber) subscribe} call allocates fresh
+ * per-subscriber state (demand counter, terminated flag, lock) and starts a dedicated producer
+ * <em>virtual</em> thread that parks on demand. Virtual threads are always daemon threads, so an
+ * abandoned subscriber cannot block JVM shutdown. Multiple upstream subscriptions may run
+ * concurrently if demand arrives faster than they complete — the workers race independently.
  * <p>
- * The instance carries a single field — the wrapped upstream byte publisher — and is intended to be
- * reused across any number of subscribers. Each
- * {@link #subscribe(org.reactivestreams.Subscriber) subscribe} call allocates fresh per-subscriber
- * state (demand counter, terminated flag, lock) and starts a dedicated <em>virtual</em> thread to
- * drive demand. Virtual threads are always daemon threads, so a subscriber that is dropped without
- * {@code cancel}ing the subscription cannot block JVM shutdown.
+ * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> Every subscriber-signal site — each
+ * worker's downstream {@code onNext} (on upstream-completion) and {@code onError} (on
+ * upstream-error), plus {@code onError} from {@link Subscription#request(long) request(n &le; 0)}
+ * on the caller's thread — is wrapped in the same {@link ReentrantLock}, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
+ * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.7</a> — at most one terminal ever fires.
  * <p>
- * <strong>Signal serialization (Rule 1.3).</strong> Every site that may invoke a subscriber
- * method — each worker's {@code onNext} and {@code onError}, plus {@code onError} from
- * {@link org.reactivestreams.Subscription#request(long) request(n &le; 0)} on the caller's
- * thread — is wrapped in the same {@link java.util.concurrent.locks.ReentrantLock ReentrantLock}.
- * Terminal sites additionally guard their emission with
- * {@code terminated.compareAndSet(false, true)} so that at most one of
- * {@code onError}/{@code onComplete} ever fires (Rule 1.7).
- * <p>
- * The order in which assembled {@code byte[]} elements reach the downstream is the race-determined
- * order of upstream completions, not the request order. Since every emitted array contains the
- * same payload, this ordering does not affect observable behaviour.
+ * <strong>Lifetime.</strong> The stream is open-ended — it does not naturally complete; only a
+ * {@code cancel()} (or an upstream {@code onError}, or a {@code request(n &le; 0)}) terminates
+ * it. The order in which assembled arrays reach the downstream is the race-determined order of
+ * upstream completions; since every emitted array contains the same payload, ordering does not
+ * affect observable behaviour.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see ReactiveHelloWorldPublishers#ofArrays(HelloWorld)
  * @see ReactiveHelloWorldBytePublisher
+ * @see ReactiveHelloWorldStringPublisher
  */
-non-sealed class ReactiveHelloWorldArrayPublisher
-        implements ReactiveHelloWorldPublisher<byte[]> {
+final class ReactiveHelloWorldArrayPublisher
+        implements Publisher<byte[]> {
 
     // ---------------------------------------------------------------------------------------------
 
     /**
      * Creates a new instance wrapping the specified upstream byte publisher.
      *
-     * @param publisher the upstream {@link ReactiveHelloWorldPublisher} of {@link Byte} that
-     *                  supplies the individual bytes for each assembled array.
+     * @param publisher the upstream {@link Publisher} of {@link Byte} that supplies the individual
+     *                  bytes for each assembled array.
      * @throws NullPointerException if the {@code publisher} is {@code null}.
      */
-    ReactiveHelloWorldArrayPublisher(final ReactiveHelloWorldPublisher<Byte> publisher) {
+    ReactiveHelloWorldArrayPublisher(final Publisher<Byte> publisher) {
         super();
         this.publisher = Objects.requireNonNull(publisher, "publisher is null");
     }
@@ -211,5 +206,5 @@ non-sealed class ReactiveHelloWorldArrayPublisher
     }
 
     // ---------------------------------------------------------------------------------------------
-    private final ReactiveHelloWorldPublisher<Byte> publisher;
+    private final Publisher<Byte> publisher;
 }
