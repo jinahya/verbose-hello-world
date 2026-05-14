@@ -32,11 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings({
         "java:S101"
 })
-public final class JavaNioChannelsTestUtils {
+public final class _Java_Nio_Channels_TestUtils {
 
     // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private JavaNioChannelsTestUtils() {
+    private _Java_Nio_Channels_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

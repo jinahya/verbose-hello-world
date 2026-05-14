@@ -3,6 +3,9 @@ package com.github.jinahya.hello.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 /*-
  * #%L
@@ -29,8 +32,59 @@ import lombok.extern.slf4j.Slf4j;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldUtilsTest
-        extends HelloWorldTest {
+class HelloWorldUtilsTest extends HelloWorldTest {
 
-    // empty
+    // --------------------------------------------------------------------------------------- array
+    @Test
+    @DisplayName("array(service) → byte[12] of \"hello, world\"")
+    void array__() {
+        // ----------------------------------------------------------------------------------- given
+        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        // ------------------------------------------------------------------------------------ when
+        final var result = HelloWorldUtils.array(service());
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(HelloWorld.BYTES, result.length);
+        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), result);
+    }
+
+    // -------------------------------------------------------------------------------------- buffer
+    @Test
+    @DisplayName("buffer(service) → ByteBuffer of \"hello, world\", ready for reading")
+    void buffer__() {
+        // ----------------------------------------------------------------------------------- given
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
+        // ------------------------------------------------------------------------------------ when
+        final var buffer = HelloWorldUtils.buffer(service());
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(0, buffer.position());
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.limit());
+        Assertions.assertEquals(HelloWorld.BYTES, buffer.remaining());
+        final var bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), bytes);
+    }
+
+    // ----------------------------------------------------------------------------- stringFromArray
+    @Test
+    @DisplayName("stringFromArray(service) → \"hello, world\"")
+    void stringFromArray__() {
+        // ----------------------------------------------------------------------------------- given
+        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        // ------------------------------------------------------------------------------------ when
+        final var result = HelloWorldUtils.stringFromArray(service());
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), result);
+    }
+
+    // ---------------------------------------------------------------------------- stringFromBuffer
+    @Test
+    @DisplayName("stringFromBuffer(service) → \"hello, world\"")
+    void stringFromBuffer__() {
+        // ----------------------------------------------------------------------------------- given
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
+        // ------------------------------------------------------------------------------------ when
+        final var result = HelloWorldUtils.stringFromBuffer(service());
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), result);
+    }
 }

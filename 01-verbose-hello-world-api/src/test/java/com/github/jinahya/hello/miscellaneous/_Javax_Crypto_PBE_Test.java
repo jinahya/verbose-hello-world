@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.miscellaneous;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

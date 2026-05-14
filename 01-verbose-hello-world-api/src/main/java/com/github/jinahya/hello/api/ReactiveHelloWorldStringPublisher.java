@@ -5,7 +5,9 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,8 +21,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * into one array via a worker-per-demand pattern), this publisher is a strict <strong>1:1
  * transform</strong>: each upstream {@code onNext(byte[])} produces exactly one downstream
  * {@code onNext(String)}. Each {@link #subscribe(Subscriber) subscribe} call creates a fresh
- * single-use {@link Processor} ({@link StringEncoder}) that wraps the upstream byte-array
- * publisher and forwards demand 1:1.
+ * single-use {@link Processor} ({@link StringEncoder}) that wraps the upstream byte-array publisher
+ * and forwards demand 1:1.
  * <p>
  * <strong>Threading.</strong> No producer thread of its own; the {@link StringEncoder} runs on
  * whichever thread the upstream emits on. Per-subscriber state (terminated flag, lock,
@@ -28,11 +30,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> All downstream signals — upstream's
  * {@code onNext}/{@code onError}/{@code onComplete} translated through the encoder, plus
- * {@code onError} from {@link Subscription#request(long) request(n &le; 0)} on the caller's
- * thread — are wrapped in the same {@link ReentrantLock} inside the encoder, satisfying
- * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying
- * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * {@code onError} from {@link Subscription#request(long) request(n &le; 0)} on the caller's thread
+ * — are wrapped in the same {@link ReentrantLock} inside the encoder, satisfying <a
+ * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
+ * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying <a
+ * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
  * 1.7</a> — at most one terminal ever fires.
  * <p>
  * <strong>Lifetime.</strong> The stream's natural lifetime mirrors the upstream's — if upstream
@@ -45,8 +47,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see ReactiveHelloWorldArrayPublisher
  * @see Processor
  */
-final class ReactiveHelloWorldStringPublisher
-        implements Publisher<String> {
+final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
+
+    private static final System.Logger logger = System.getLogger(
+            MethodHandles.lookup().lookupClass().getName()
+    );
 
     /**
      * A single-use {@link Processor} that subscribes to an upstream {@code byte[]} publisher and
@@ -87,6 +92,7 @@ final class ReactiveHelloWorldStringPublisher
         // ------------------------------------------------------------------- Publisher<String> side
         @Override
         public void subscribe(final Subscriber<? super String> s) {
+            logger.log(System.Logger.Level.DEBUG, "subscribe({0})", s);
             Objects.requireNonNull(s, "s is null");
             downstreamSubscriber = s;
             upstreamPublisher.subscribe(this);   // upstream synchronously calls onSubscribe
@@ -94,36 +100,47 @@ final class ReactiveHelloWorldStringPublisher
 
         // ------------------------------------------------------------------- Subscriber<byte[]> side
         @Override
-        public void onSubscribe(final Subscription s) {
+        public void onSubscribe(final Subscription s) { // @formatter:off
+            logger.log(System.Logger.Level.DEBUG, "onSubscribe({0})", s);
             this.upstreamSubscription = s;
             downstreamSubscriber.onSubscribe(new Subscription() {
-                @Override
-                public void request(final long n) {
+                @Override public void request(final long n) {
+                    logger.log(System.Logger.Level.DEBUG, "request({0})", n);
                     if (terminated.get()) {
                         return;
                     }                        // Rule 3.6
                     if (n <= 0L) {                                           // Rule 3.9
                         if (terminated.compareAndSet(false, true)) {         // Rule 1.7
-                            lock.lock();
-                            try {
+                            ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
                                 try {
                                     downstreamSubscriber.onError(new IllegalArgumentException(
                                             "n(" + n + ") is not positive"
                                     ));
                                 } catch (final Throwable st) {
                                 }
-                            } finally {
-                                lock.unlock();
-                            }
+                            });
                             upstreamSubscription.cancel();
                         }
                         return;
                     }
                     upstreamSubscription.request(n);                         // 1:1 passthrough
                 }
+                @Override public void cancel() {                                       // Rule 3.5, 3.7
+                    logger.log(System.Logger.Level.DEBUG, "cancel()");
+                    terminated.set(true);
+                    upstreamSubscription.cancel();
+                }
+            }); // @formatter:on
+        }
 
-                @Override
-                public void cancel() {                                       // Rule 3.5, 3.7
+        @Override
+        public void onNext(final byte[] element) {
+            logger.log(System.Logger.Level.DEBUG, "onNext({0})", Arrays.toString(element));
+            ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                if (terminated.get()) return;                // Rule 3.12 / 1.7
+                try {
+                    downstreamSubscriber.onNext(new String(element, StandardCharsets.US_ASCII));
+                } catch (final Throwable t) {
                     terminated.set(true);
                     upstreamSubscription.cancel();
                 }
@@ -131,52 +148,22 @@ final class ReactiveHelloWorldStringPublisher
         }
 
         @Override
-        public void onNext(final byte[] bytes) {
-            lock.lock();
-            try {
-                if (terminated.get()) {
-                    return;
-                }                            // Rule 3.12 / 1.7
-                try {
-                    downstreamSubscriber.onNext(new String(bytes, StandardCharsets.US_ASCII));
-                } catch (final Throwable t) {
-                    terminated.set(true);
-                }
-            } finally {
-                lock.unlock();
-            }
-            if (terminated.get()) {
-                upstreamSubscription.cancel();
-            }
-        }
-
-        @Override
         public void onError(final Throwable t) {
+            logger.log(System.Logger.Level.DEBUG, "onError({0})", t);
             if (terminated.compareAndSet(false, true)) {                     // Rule 1.7
-                lock.lock();
-                try {
-                    try {
-                        downstreamSubscriber.onError(t);
-                    } catch (final Throwable st) {
-                    }
-                } finally {
-                    lock.unlock();
-                }
+                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                    try { downstreamSubscriber.onError(t); } catch (final Throwable st) { }
+                });
             }
         }
 
         @Override
         public void onComplete() {
+            logger.log(System.Logger.Level.DEBUG, "onComplete()");
             if (terminated.compareAndSet(false, true)) {                     // Rule 1.7
-                lock.lock();
-                try {
-                    try {
-                        downstreamSubscriber.onComplete();
-                    } catch (final Throwable st) {
-                    }
-                } finally {
-                    lock.unlock();
-                }
+                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                    try { downstreamSubscriber.onComplete(); } catch (final Throwable st) { }
+                });
             }
         }
 
@@ -197,8 +184,8 @@ final class ReactiveHelloWorldStringPublisher
     /**
      * Creates a new instance wrapping the specified upstream byte-array publisher.
      *
-     * @param publisher the upstream {@link Publisher} of {@code byte[]} that supplies the bytes
-     *                  for each decoded string.
+     * @param publisher the upstream {@link Publisher} of {@code byte[]} that supplies the bytes for
+     *                  each decoded string.
      * @throws NullPointerException if the {@code publisher} is {@code null}.
      */
     ReactiveHelloWorldStringPublisher(final Publisher<byte[]> publisher) {
@@ -220,6 +207,7 @@ final class ReactiveHelloWorldStringPublisher
      */
     @Override
     public void subscribe(final Subscriber<? super String> subscriber) {
+        logger.log(System.Logger.Level.DEBUG, "subscribe({0})", subscriber);
         Objects.requireNonNull(subscriber, "subscriber is null");
         new StringEncoder(publisher).subscribe(subscriber);
     }

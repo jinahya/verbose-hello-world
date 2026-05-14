@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.miscellaneous;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.security.Security;
 
 @Slf4j
-class _Java_Security_MessageDigest_Test {
+class _Java_Security_KeyPair_Test {
 
     @Test
     void algorithms__() {

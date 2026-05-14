@@ -22,13 +22,92 @@ package com.github.jinahya.hello.api;
 
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
 /**
+ * Convenience methods that produce the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> in several common Java I/O
+ * shapes — {@code byte[]}, {@link ByteBuffer}, and {@link String} — by delegating to a given
+ * {@link HelloWorld} service.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class HelloWorldUtils {
 
+    @Deprecated(forRemoval = true)
     private static final byte[] HELLO_WORLD_BYTES = HelloWorldConstants.HELLO_WORLD_STRING.getBytes(
             HelloWorldConstants.HELLO_WORLD_CHARSET);
+
+    /**
+     * Returns a fresh {@value HelloWorld#BYTES}-byte array containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by invoking
+     * {@link HelloWorld#set(byte[]) set(byte[])} on the specified service.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@code byte[]} of length {@value HelloWorld#BYTES} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see HelloWorld#set(byte[])
+     */
+    public static byte[] array(final HelloWorld service) {
+        Objects.requireNonNull(service, "service is null");
+        return service.set(new byte[HelloWorld.BYTES]);
+    }
+
+    /**
+     * Returns a fresh {@link ByteBuffer} of capacity {@value HelloWorld#BYTES} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by invoking
+     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} on the specified service and then
+     * {@linkplain ByteBuffer#flip() flipping} the result.
+     * <p>
+     * The returned buffer is ready for reading — {@code position} is {@code 0} and {@code limit}
+     * is {@value HelloWorld#BYTES}.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@link ByteBuffer} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, ready for reading.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see HelloWorld#put(ByteBuffer)
+     */
+    public static ByteBuffer buffer(final HelloWorld service) {
+        return service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
+    }
+
+    /**
+     * Returns a fresh {@link String} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, constructed via
+     * {@link String#String(byte[], java.nio.charset.Charset) new String(byte[], Charset)} from
+     * {@link #array(HelloWorld) array(service)}.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@link String} equal to {@code "hello, world"}.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see #array(HelloWorld)
+     * @see #stringFromBuffer(HelloWorld)
+     */
+    public static String stringFromArray(final HelloWorld service) {
+        return new String(array(service), StandardCharsets.US_ASCII);
+    }
+
+    /**
+     * Returns a fresh {@link String} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, produced via
+     * {@link java.nio.charset.Charset#decode(ByteBuffer) Charset.decode(buffer)} on
+     * {@link #buffer(HelloWorld) buffer(service)}.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@link String} equal to {@code "hello, world"}.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see #buffer(HelloWorld)
+     * @see #stringFromArray(HelloWorld)
+     */
+    public static String stringFromBuffer(final HelloWorld service) {
+        return StandardCharsets.US_ASCII.decode(buffer(service)).toString();
+    }
 
     static byte[] hello_world_bytes() {
         return HelloWorldConstants.HELLO_WORLD_STRING

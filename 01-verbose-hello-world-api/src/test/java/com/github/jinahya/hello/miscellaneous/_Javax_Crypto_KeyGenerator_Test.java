@@ -1,4 +1,4 @@
-package com.github.jinahya.hello;
+package com.github.jinahya.hello.miscellaneous;
 
 import com.github.jinahya.hello.api._Javax_Crypto_TestUtils;
 import lombok.extern.slf4j.Slf4j;

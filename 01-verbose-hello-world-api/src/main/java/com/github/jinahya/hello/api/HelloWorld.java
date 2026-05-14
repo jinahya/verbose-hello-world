@@ -213,10 +213,12 @@ public interface HelloWorld {
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, and returns the result.
      */
+    @Deprecated(forRemoval = true)
     default byte[] byteArray() {
         return set(new byte[BYTES]);
     }
 
+    @Deprecated(forRemoval = true)
     default String string() {
         return new String(byteArray(), StandardCharsets.US_ASCII);
     }
@@ -835,12 +837,14 @@ public interface HelloWorld {
         return buffer;
     }
 
+    @Deprecated(forRemoval = true)
     @SuppressWarnings({"unchecked"})
     default <T extends ByteBuffer> T byteBuffer(final Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return (T) put(Objects.requireNonNull(supplier.get(), "supplier.get() is null")).flip();
     }
 
+    @Deprecated(forRemoval = true)
     default ByteBuffer byteBuffer() {
         return byteBuffer(() -> ByteBuffer.allocate(BYTES));
     }

@@ -1,0 +1,287 @@
+= Reactive Libraries
+:toc:
+:toclevels: 2
+
+A survey of the Java reactive ecosystem, with a focus on the libraries this project
+interoperates with.
+Entries note *primary types*, *use case*, *API surface* (which publisher contract —
+`org.reactivestreams.Publisher` or `java.util.concurrent.Flow.Publisher`),
+*TCK conformance* (whether the library passes the Reactive Streams TCK),
+*prefetch behaviour* (how downstream `request(n)` is forwarded), and *status*.
+
+'''
+
+== Background: two equivalent API surfaces
+
+The Reactive Streams 1.0 specification (2015) defines four interfaces under
+`org.reactivestreams.*` — `Publisher`, `Subscriber`, `Subscription`, `Processor`.
+
+JEP 266 (Java 9, 2017) promoted those interfaces into the JDK under
+`java.util.concurrent.Flow.*` with *byte-for-byte identical method shapes*.
+The two interface families are not type-compatible (different packages), but the
+`reactive-streams-flow-adapters` library provides 1:1 zero-cost adapters
+(`FlowAdapters.toFlowPublisher`, `FlowAdapters.toPublisher`, etc.) and most
+implementations expose both surfaces or pick one and offer adapter classes.
+
+Choose `Flow.*` when JDK-only is a hard requirement (no external dependency).
+Choose `org.reactivestreams.*` when interop with the broader ecosystem matters — most
+existing libraries pre-date JEP 266 and stayed on the `org.reactivestreams.*` API.
+
+'''
+
+== 1. Direct `org.reactivestreams.*` Implementations
+
+These libraries depend on the external `org.reactivestreams:reactive-streams` artifact and
+expose `Publisher` / `Subscriber` / `Subscription` directly.
+
+Entries below are ordered by applicability to this project's
+`ReactiveHelloWorld(Byte|Array|String)Publisher_*_Test` matrix — libraries we have an
+explicit per-library test class for come first, then close relatives, then domain-specific
+connectors built on top.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| Library / Framework | Primary Types | Use Case | TCK | Prefetch | Status
+
+| *Project Reactor* (tested ✓)
+| Flux, Mono
+| Default reactive engine for Spring WebFlux, Spring Cloud, R2DBC clients.
+The most-deployed RS implementation.
+| Pass
+| 256 (default)
+| Maintained (VMware / Broadcom)
+
+| *RxJava 3.x* (tested ✓)
+| Flowable, Observable, Single, Maybe, Completable
+| ReactiveX family; Flowable is the RS-compliant type.
+Heavily used in Android, also backend data pipelines and JOOQ.
+| Pass
+| 128 (default)
+| Maintained
+
+| *Akka Streams* (tested ✓)
+| Source, Flow, Sink
+| Distributed, actor-based stream-graph processing; the foundation of Akka HTTP.
+Materializes streams to actors.
+| Pass
+| 16 (default per stage)
+| License-changed to BSL 2022 (Lightbend); Akka 2.6 is the last Apache-2.0 release
+
+| *Apache Pekko Streams*
+| as Akka
+| Apache Software Foundation _fork of Akka 2.6.x_, kept under Apache-2.0 after
+Lightbend's relicensing.
+Drop-in replacement for new projects — the existing `_Akka_Test` should work unchanged
+against Pekko after a coordinate swap.
+| Pass
+| 16
+| Maintained (Apache)
+
+| *RxJava 2.x*
+| as RxJava 3
+| Legacy; still common in older Android projects.
+| Pass
+| 128
+| EOL; security fixes only
+
+| *Vert.x* (with adapters)
+| ReadStream, WriteStream natively; Publisher via `vertx-reactive-streams`
+| Polyglot event-driven toolkit.
+The _core_ Vert.x stream model is callback-based; reactive-streams interop is opt-in via
+the adapter module.
+| N/A core / Pass adapter
+| callback-driven
+| Maintained (Eclipse)
+
+| *Reactor Netty*
+| Flux of ByteBuf, NettyOutbound
+| HTTP/1.1, HTTP/2, TCP, UDP transports on Netty.
+Powers Spring WebFlux's default server.
+Reactor-flavoured — covered transitively by the `_Reactor_Test`.
+| Pass via Reactor
+| Reactor defaults
+| Maintained
+
+| *Lettuce* (Redis)
+| Flux, Mono (Reactor-based)
+| Reactive Redis client used by Spring Data Redis.
+Same Reactor surface as our `_Reactor_Test`.
+| Pass via Reactor
+| Reactor defaults
+| Maintained
+
+| *MongoDB Reactive Streams Driver*
+| Publisher per operation
+| Asynchronous streaming of MongoDB query results.
+Companion to the sync driver.
+| Pass
+| server-cursor batch
+| Maintained (MongoDB)
+
+| *R2DBC Drivers*
+| Publisher of Result, Publisher of Row
+| Reactive Relational Database Connectivity.
+Standard API across drivers (Postgres, MySQL, MSSQL, H2, MariaDB).
+| Pass per driver
+| driver-dependent
+| Maintained
+
+| *Apache Cassandra Java Driver 4.x+*
+| ReactiveResultSet (Reactor-based)
+| Reactive query execution against Cassandra clusters.
+| Pass via Reactor
+| driver fetch size
+| Maintained
+|===
+
+'''
+
+== 2. JDK `Flow.*`-Based Implementations
+
+These implementations target the native `java.util.concurrent.Flow` interfaces and require no
+third-party reactive-streams dependency.
+
+Entries below are ordered by applicability to this project's tests — libraries we have an
+explicit per-library test class for come first.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| Library / Framework | Primary Types | Use Case | TCK | Prefetch | Status
+
+| *SmallRye Mutiny* (tested ✓)
+| Multi, Uni
+| The reactive engine for *Quarkus* and Eclipse MicroProfile.
+Mutiny 2.x+ uses `Flow.Publisher` directly.
+| Pass
+| varies; buffered adapters request `Long.MAX_VALUE` upstream
+| Maintained (Red Hat / SmallRye)
+
+| *Helidon Common Reactive* (tested ✓)
+| Multi, Single
+| Oracle's lightweight framework.
+Helidon *3.x SE* is reactive-first; Helidon *4.x (Níma)* moved to virtual threads, but
+`helidon-common-reactive` still ships for streaming JDBC / HTTP body APIs.
+| Pass
+| implementation-specific
+| Maintained (Oracle)
+
+| *JDK `Flow` built-ins*
+| SubmissionPublisher, BufferedSubscriber, Flow.Publisher factories
+| Reference implementations bundled with the JDK in `java.util.concurrent`.
+Useful for ad-hoc publishers without pulling a reactive framework.
+The shape mirrors what our `ReactiveHelloWorld*Publisher` classes implement on the
+`org.reactivestreams.*` side.
+| Pass
+| per-subscriber buffer (256)
+| JDK-bundled
+
+| *Java HTTP Client*
+| HttpRequest.BodyPublisher, HttpResponse.BodySubscriber (both `Flow.Subscriber` / `Flow.Publisher`)
+| Built-in JDK 11+ client for HTTP/1.1, HTTP/2, WebSocket.
+Request bodies are produced by a BodyPublisher; response bodies are consumed by a
+BodySubscriber.
+| N/A (it's the spec consumer)
+| implementation-defined
+| JDK-bundled
+
+| *Hibernate Reactive*
+| Stage.Session, Mutiny.Session
+| Reactive ORM.
+Two front-ends: Stage (CompletionStage-based) and Mutiny (Multi/Uni).
+Backed internally by Vert.x clients.
+Mutiny surface is the same as our `_Mutiny_Test`.
+| Pass via Mutiny
+| per-session
+| Maintained
+
+| *Eclipse MicroProfile Reactive Streams Operators*
+| PublisherBuilder, SubscriberBuilder
+| A _spec_ for operator chains, not an end-user library.
+SmallRye provides the reference implementation.
+| Pass
+| spec-dependent
+| Maintained spec
+|===
+
+'''
+
+== 3. Adapters and Bridges
+
+Entries below are ordered by direct usage in this project's tests.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| Library / Module | Bridge | Notes
+
+| `reactive-streams-flow-adapters` (used ✓)
+| org.reactivestreams.Publisher ↔ Flow.Publisher
+| The canonical 1:1 adapter; zero-cost (no buffering).
+Required to interoperate between sections 1 and 2.
+Used in `HelloWorldFlow` and in every `_Mutiny_Test` / `_Helidon_Test` to bridge our
+RS publisher into a `Flow.Publisher`.
+
+| Mutiny `Multi.createFrom().publisher(...)` (used ✓)
+| accepts both Flow.Publisher and org.reactivestreams.Publisher (via overloads)
+| The conversion path through Multi introduces prefetch buffering — downstream
+`request(n)` does *not* forward 1:1 upstream.
+This is why our `_Mutiny_Test` set has no `__randomLessThan12` scenario.
+
+| Akka/Pekko Streams `Source.fromPublisher(...)` / `Sink.asPublisher(...)` (used ✓)
+| Source ↔ Publisher at the boundary
+| Inside the stream, Akka/Pekko's own backpressure protocol replaces the Reactive Streams
+demand protocol.
+Used by the `_Akka_Test` set.
+
+| Reactor `JdkFlowAdapter`
+| Flux ↔ Flow.Publisher
+| Reactor's first-class adapter to/from JDK Flow.
+Not used by the `_Reactor_Test` set (we subscribe RS publishers directly via
+`Flux.from(...)`).
+
+| RxJava `FlowAdapters` _(planned)_
+| Equivalent in development
+| Currently use the `reactive-streams-flow-adapters` artifact externally.
+|===
+
+'''
+
+== 4. Choosing one — a brief guide
+
+The pragmatic decision matrix:
+
+* *Spring application?* → Project Reactor.
+Already on the classpath via Spring WebFlux / Spring Data R2DBC.
+* *Quarkus application?* → SmallRye Mutiny.
+Quarkus extensions are written against Mutiny.
+* *Android or RxJava-experienced team?* → RxJava 3.
+* *JVM-only, no third-party RS dependency wanted?* → JDK `Flow` built-ins
+(`SubmissionPublisher`), plus `reactive-streams-flow-adapters` if you need to interoperate.
+* *Stream-graph DSL with distributed workers / actors?* → Apache Pekko Streams (preferred
+over Akka for new projects due to licensing).
+* *Just consuming a reactive driver (Mongo, R2DBC, Cassandra)?* → use whichever wrapper the
+driver vendor publishes.
+Most ship Reactor-flavoured wrappers.
+
+The conformance gap to worry about is *prefetch*: every high-level adapter (Reactor's
+`Flux.from(...)`, Mutiny's `Multi.createFrom().publisher(...)`, RxJava's
+`Flowable.fromPublisher(...)`) may request more from your upstream than the downstream
+asked for.
+This is by-design for throughput, but it means an upstream publisher that strictly respects
+1:1 demand cannot be tested through these adapters with single-item-at-a-time scenarios —
+the adapter will pull in batches and signal completion eagerly.
+Test such strict-demand behaviour with a raw `Subscriber` against `org.reactivestreams.*`
+directly.
+
+'''
+
+== 5. Notes on what's _not_ listed
+
+* *Vavr-Jackson*, *Reactor Kafka*, *Reactor RabbitMQ*, *akka-kafka* etc. — domain connectors
+built on top of the section-1 libraries; they inherit their parent's TCK and prefetch
+behaviour.
+* *Spring Reactor Test* (`reactor-test`) — testing utilities, not a publisher implementation.
+* *JDK `Flux` / `Mono`* — these do *not* exist in the JDK; they are Reactor types.
+The JDK ships `SubmissionPublisher` only.
+* *CompletableFuture / CompletionStage* — single-value asynchronous primitives.
+Not part of Reactive Streams (no backpressure, no multi-value semantics), though
+Mono / Uni / Single exist as 0/1-value reactive analogues with conversion methods.

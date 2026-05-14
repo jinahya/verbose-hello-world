@@ -4,6 +4,7 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,23 +30,26 @@ import java.util.concurrent.locks.ReentrantLock;
  * producer's {@code onNext} and {@code onComplete}, the producer's {@code onError} from a failed
  * {@link HelloWorld#set(byte[]) service.set(...)}, and {@code onError} from
  * {@link Subscription#request(long) request(n &le; 0)} on the caller's thread — is wrapped in the
- * same {@link ReentrantLock}, satisfying
- * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying
- * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * same {@link ReentrantLock}, satisfying <a
+ * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
+ * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying <a
+ * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
  * 1.7</a> — at most one of {@code onError}/{@code onComplete} ever fires.
  * <p>
  * <strong>Lifetime.</strong> The stream completes naturally after all {@value HelloWorld#BYTES}
  * bytes have been emitted ({@code onComplete}); a {@code request(n &le; 0)} call or a failed
- * {@code service.set(...)} terminates it early with {@code onError}; downstream
- * {@code cancel()} stops emission without a terminal signal (Rule 3.12).
+ * {@code service.set(...)} terminates it early with {@code onError}; downstream {@code cancel()}
+ * stops emission without a terminal signal (Rule 3.12).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldPublishers#ofBytes(HelloWorld)
  * @see ReactiveHelloWorldArrayPublisher
  */
-final class ReactiveHelloWorldBytePublisher
-        implements Publisher<Byte> {
+final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
+
+    private static final System.Logger logger = System.getLogger(
+            MethodHandles.lookup().lookupClass().getName()
+    );
 
     // ---------------------------------------------------------------------------------------------
 
@@ -93,6 +97,7 @@ final class ReactiveHelloWorldBytePublisher
      */
     @Override
     public void subscribe(final Subscriber<? super Byte> subscriber) { // @formatter:off
+        logger.log(System.Logger.Level.DEBUG, "subscribe({0})", subscriber);
         Objects.requireNonNull(subscriber, "subscriber is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
@@ -100,18 +105,18 @@ final class ReactiveHelloWorldBytePublisher
         final var condition = lock.newCondition();
         final var subscription = new Subscription() {
             @Override public void request(final long n) {
+                logger.log(System.Logger.Level.DEBUG, "request({0})", n);
                 if (terminated.get()) { return; }                            // Rule 3.6
                 if (n <= 0L) {                                              // Rule 3.9
                     if (terminated.compareAndSet(false, true)) {             // Rule 1.7
-                        lock.lock();
-                        try {
+                        ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
                             condition.signalAll();
                             try {
                                 subscriber.onError(new IllegalArgumentException(
                                         "n(" + n + ") is not positive"
                                 ));
                             } catch (final Throwable st) { }
-                        } finally { lock.unlock(); }
+                        });
                     }
                     return;
                 }
@@ -122,12 +127,12 @@ final class ReactiveHelloWorldBytePublisher
                 signal();
             }
             @Override public void cancel() {                                // Rule 3.5, 3.7
+                logger.log(System.Logger.Level.DEBUG, "cancel()");
                 terminated.set(true);
                 signal();
             }
             private void signal() {
-                lock.lock();
-                try { condition.signalAll(); } finally { lock.unlock(); }
+                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, condition::signalAll);
             }
         };
         try {
@@ -159,9 +164,9 @@ final class ReactiveHelloWorldBytePublisher
                         array = service.set(new byte[HelloWorld.BYTES]);
                     } catch (final Throwable t) {
                         if (terminated.compareAndSet(false, true)) {         // Rule 1.7
-                            lock.lock();
-                            try { try { subscriber.onError(t); } catch (final Throwable st) { }
-                            } finally { lock.unlock(); }
+                            ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                                try { subscriber.onError(t); } catch (final Throwable st) { }
+                            });
                         }
                         return;
                     }
@@ -179,9 +184,9 @@ final class ReactiveHelloWorldBytePublisher
                 if (index == HelloWorld.BYTES) { break; }
             }
             if (terminated.compareAndSet(false, true)) {                     // Rule 1.7
-                lock.lock();
-                try { try { subscriber.onComplete(); } catch (final Throwable st) { }
-                } finally { lock.unlock(); }
+                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                    try { subscriber.onComplete(); } catch (final Throwable st) { }
+                });
             }
         }); // @formatter:on
     }

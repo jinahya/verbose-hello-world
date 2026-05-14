@@ -109,8 +109,7 @@ final class ReactiveHelloWorldArrayPublisher
                 if (terminated.get()) return;                                // Rule 3.6
                 if (n <= 0L) {                                              // Rule 3.9
                     if (terminated.compareAndSet(false, true)) {             // Rule 1.7
-                        lock.lock();
-                        try {
+                        ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
                             condition.signalAll();
                             try {
                                 subscriber.onError(
@@ -118,7 +117,7 @@ final class ReactiveHelloWorldArrayPublisher
                                                 "n(" + n + ") is not positive")
                                 );
                             } catch (final Throwable st) { }
-                        } finally { lock.unlock(); }
+                        });
                     }
                     return;
                 }
@@ -133,8 +132,7 @@ final class ReactiveHelloWorldArrayPublisher
                 signal();
             }
             private void signal() {
-                lock.lock();
-                try { condition.signalAll(); } finally { lock.unlock(); }
+                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, condition::signalAll);
             }
         };
         try {
