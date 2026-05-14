@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.reactivestreams.FlowAdapters;
 
 import java.time.Duration;
 import java.util.concurrent.Flow;
@@ -18,13 +17,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
-class ReactiveHelloWorld_String_Publisher_Mutiny_Test
+class HelloWorld_String_FlowPublisher_Mutiny_Test
         extends HelloWorld__FlowPublisher__Test<Flow.Publisher<String>, String> {
 
-    ReactiveHelloWorld_String_Publisher_Mutiny_Test() {
-        super(service -> FlowAdapters.toFlowPublisher(
-                ReactiveHelloWorldPublishers.ofStrings(service)
-        ));
+    HelloWorld_String_FlowPublisher_Mutiny_Test() {
+        super(HelloWorldFlow::ofStrings);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -72,7 +75,7 @@ class ReactiveHelloWorld_String_Publisher_Mutiny_Test
         @SuppressWarnings({"java:S2925"})
         void __cancel() throws InterruptedException {
             // ----------------------------------------------------------------------------------- given
-            final var lock = new ReentrantLock();              // Rule 2.7
+            final var lock = new ReentrantLock();
             final var terminated = new AtomicBoolean();
             final var requester = new AtomicReference<Thread>();
             final var canceller = new AtomicReference<Thread>();

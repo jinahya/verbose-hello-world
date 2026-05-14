@@ -27,6 +27,12 @@ abstract class HelloWorld__FlowPublisher__Test<T extends Flow.Publisher<U>, U> {
         );
     }
 
+    // ---------------------------------------------------------------------------- java.lang.Object
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
+    }
+
     // ---------------------------------------------------------------------------------------------
     @Accessors(fluent = true)
     @Getter(AccessLevel.PACKAGE)

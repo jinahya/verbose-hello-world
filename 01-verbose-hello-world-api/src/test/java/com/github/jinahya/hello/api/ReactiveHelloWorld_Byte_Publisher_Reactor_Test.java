@@ -10,7 +10,10 @@ import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,6 +24,12 @@ class ReactiveHelloWorld_Byte_Publisher_Reactor_Test
 
     ReactiveHelloWorld_Byte_Publisher_Reactor_Test() {
         super(ReactiveHelloWorldBytePublisher::new);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -66,16 +75,45 @@ class ReactiveHelloWorld_Byte_Publisher_Reactor_Test
     }
 
     @Test
+    @DisplayName("BaseSubscriber: request(12) → exactly 12 elements + onComplete")
+    void __exactly12() throws InterruptedException {
+        // ----------------------------------------------------------------------------------- given
+        final var elements = new ArrayList<Byte>();
+        final var terminated = new CountDownLatch(1);
+        final var error = new AtomicReference<Throwable>();
+        final var completed = new AtomicBoolean();
+        final var subscriber = new BaseSubscriber<Byte>() {
+            @Override public String toString() { return super.toString().substring(getClass().getPackageName().length() + 1); }
+            @Override protected void hookOnSubscribe(final Subscription s) { s.request(HelloWorld.BYTES); }
+            @Override protected void hookOnNext(final Byte e) { elements.add(e); }
+            @Override protected void hookOnComplete() { completed.set(true); terminated.countDown(); }
+            @Override protected void hookOnError(final Throwable t) { error.set(t); terminated.countDown(); }
+        };
+        // ------------------------------------------------------------------------------------ when
+        Flux.from(publisher()).subscribe(subscriber);
+        Assertions.assertTrue(terminated.await(10L, TimeUnit.SECONDS));
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertNull(error.get());
+        Assertions.assertTrue(completed.get());
+        final var expected = HelloWorldTestUtils.hello_world_byte_array();
+        Assertions.assertEquals(expected.length, elements.size());
+        for (var i = 0; i < expected.length; i++) {
+            Assertions.assertEquals(expected[i], elements.get(i).byteValue());
+        }
+    }
+
+    @Test
     @DisplayName("concurrent request(1) and cancel → no terminal signal")
     @SuppressWarnings({"java:S2925"})
     void __cancel() throws InterruptedException {
         // ----------------------------------------------------------------------------------- given
-        final var lock = new ReentrantLock();              // Rule 2.7
+        final var lock = new ReentrantLock();
         final var terminated = new AtomicBoolean();
         final var completedOrErrored = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();
         final var baseSubscriber = new BaseSubscriber<Byte>() {
+            @Override public String toString() { return super.toString().substring(getClass().getPackageName().length() + 1); }
             @Override protected void hookOnSubscribe(final Subscription s) { /* manual */ }
             @Override protected void hookOnComplete() { completedOrErrored.set(true); }
             @Override protected void hookOnError(final Throwable t) { completedOrErrored.set(true); }

@@ -3,6 +3,7 @@ package com.github.jinahya.hello.api;
 import akka.actor.ActorSystem;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
+import akka.stream.testkit.javadsl.TestSink;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -11,15 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-/**
- * <strong>Note</strong>: {@code __cancel} is omitted — without {@code akka-stream-testkit_3} on
- * the classpath there is no idiomatic way to drive explicit per-item demand and cancel from two
- * threads via Akka Streams' public API. Cancel-via-KillSwitch races against the publisher's
- * 12-item natural completion, so a meaningful concurrent-cancel scenario is not expressible.
- */
 @Slf4j
 class ReactiveHelloWorld_Byte_Publisher_Akka_Test
         extends ReactiveHelloWorld__Publisher__Test<ReactiveHelloWorldBytePublisher, Byte> {
@@ -39,6 +35,12 @@ class ReactiveHelloWorld_Byte_Publisher_Akka_Test
 
     ReactiveHelloWorld_Byte_Publisher_Akka_Test() {
         super(ReactiveHelloWorldBytePublisher::new);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -83,5 +85,35 @@ class ReactiveHelloWorld_Byte_Publisher_Akka_Test
         for (var i = 0; i < expected.length; i++) {
             Assertions.assertEquals(expected[i], list.get(i).byteValue());
         }
+    }
+
+    @Test
+    @DisplayName("TestSink.probe(): request(12) → exactly 12 elements + onComplete")
+    void __exactly12() {
+        // ------------------------------------------------------------------------------ given/when
+        final var probe = Source.fromPublisher(publisher())
+                .runWith(TestSink.<Byte>probe(system), system);
+        probe.request(HelloWorld.BYTES);
+        // ------------------------------------------------------------------------------------ then
+        final var expected = HelloWorldTestUtils.hello_world_byte_array();
+        for (final var b : expected) {
+            Assertions.assertEquals(b, probe.expectNext().byteValue());
+        }
+        probe.expectComplete();
+    }
+
+    @Test
+    @DisplayName("TestSink.probe(): request, expect, cancel → no further signals")
+    void __cancel() {
+        // ------------------------------------------------------------------------------ given/when
+        final var probe = Source.fromPublisher(publisher())
+                .runWith(TestSink.<Byte>probe(system), system);
+        probe.request(3L);
+        probe.expectNext();
+        probe.expectNext();
+        probe.expectNext();
+        probe.cancel();
+        // ------------------------------------------------------------------------------------ then
+        probe.expectNoMessage(Duration.ofMillis(200L));
     }
 }

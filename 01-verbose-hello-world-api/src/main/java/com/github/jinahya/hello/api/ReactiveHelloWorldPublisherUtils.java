@@ -28,8 +28,7 @@ final class ReactiveHelloWorldPublisherUtils {
      * @param callable the {@link Callable} whose value to return while the lock is held; must not
      *                 be {@code null}.
      * @param <V>      the type of the result produced by the {@code callable}.
-     * @return the value returned by {@code callable.call()} invoked while the {@code lock} is
-     * held.
+     * @return the value returned by {@code callable.call()} invoked while the {@code lock} is held.
      * @throws NullPointerException if either argument is {@code null}.
      * @throws Exception            if {@code callable.call()} throws.
      */
@@ -56,8 +55,7 @@ final class ReactiveHelloWorldPublisherUtils {
      * @param supplier the {@link Supplier} whose value to return while the lock is held; must not
      *                 be {@code null}.
      * @param <T>      the type of the result produced by the {@code supplier}.
-     * @return the value returned by {@code supplier.get()} invoked while the {@code lock} is
-     * held.
+     * @return the value returned by {@code supplier.get()} invoked while the {@code lock} is held.
      * @throws NullPointerException if either argument is {@code null}.
      * @throws RuntimeException     if {@code supplier.get()} throws; the original exception is the
      *                              {@linkplain Throwable#getCause() cause}.

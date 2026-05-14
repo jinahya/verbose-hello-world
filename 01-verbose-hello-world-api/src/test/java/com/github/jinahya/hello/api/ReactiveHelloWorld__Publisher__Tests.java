@@ -29,6 +29,24 @@ import java.util.stream.IntStream;
 @Slf4j
 final class ReactiveHelloWorld__Publisher__Tests {
 
+    abstract static class LoggingSubscription implements Subscription {
+
+        @Override
+        public String toString() {
+            return super.toString().substring(getClass().getPackageName().length() + 1);
+        }
+
+        @Override
+        public void request(final long n) {
+            log.debug("request({}) / {}", n, this);
+        }
+
+        @Override
+        public void cancel() {
+            log.debug("cancel() / {}", this);
+        }
+    }
+
     /**
      * A {@link Subscriber} that logs every received signal at {@code DEBUG} level.
      * <p>
@@ -37,11 +55,16 @@ final class ReactiveHelloWorld__Publisher__Tests {
      *
      * @param <T> the type of the element signaled to {@link #onNext(Object)}.
      */
-    private static class LoggingSubscriber<T> implements Subscriber<T> {
+    private abstract static class LoggingSubscriber<T> implements Subscriber<T> {
+
+        @Override
+        public String toString() {
+            return super.toString().substring(getClass().getPackageName().length() + 1);
+        }
 
         @Override
         public void onSubscribe(final Subscription s) {
-            log.debug("onSubscribe({})", s);
+            log.debug("onSubscribe({}) / {}", s, this);
         }
 
         @Override
@@ -51,12 +74,12 @@ final class ReactiveHelloWorld__Publisher__Tests {
 
         @Override
         public void onError(final Throwable t) {
-            log.debug("onError({})", (Object) t);
+            log.debug("onError({}) / {}", t, this);
         }
 
         @Override
         public void onComplete() {
-            log.debug("onComplete()");
+            log.debug("onComplete() / {}", this);
         }
     }
 
@@ -64,11 +87,11 @@ final class ReactiveHelloWorld__Publisher__Tests {
      * A {@link LoggingSubscriber} for {@link Byte} elements that formats each value as
      * {@code <hex>'<char>'} (e.g. {@code 68'h'}) in its {@link #onNext(Byte) onNext} log line.
      */
-    static class LoggingByteSubscriber extends LoggingSubscriber<Byte> {
+    abstract static class LoggingByteSubscriber extends LoggingSubscriber<Byte> {
 
         @Override
         public void onNext(final Byte element) {
-            log.debug("onNext({})", String.format("%02x'%c'", element, element));
+            log.debug("onNext({}) / {}", String.format("%02x'%c'", element, element), this);
         }
     }
 
@@ -76,14 +99,15 @@ final class ReactiveHelloWorld__Publisher__Tests {
      * A {@link LoggingSubscriber} for {@code byte[]} elements that formats each array as
      * {@code [<hex>'<char>' <hex>'<char>' ...]} in its {@link #onNext(byte[]) onNext} log line.
      */
-    static class LoggingArraySubscriber extends LoggingSubscriber<byte[]> {
+    abstract static class LoggingArraySubscriber extends LoggingSubscriber<byte[]> {
 
         @Override
         public void onNext(final byte[] element) {
-            log.debug("onNext({})",
+            log.debug("onNext({}) / {}",
                       IntStream.range(0, element.length)
                               .mapToObj(i -> String.format("%02x'%c'", element[i], element[i]))
-                              .collect(Collectors.joining(" ", "[", "]"))
+                              .collect(Collectors.joining(" ", "[", "]")),
+                      this
             );
         }
     }
@@ -92,11 +116,11 @@ final class ReactiveHelloWorld__Publisher__Tests {
      * A {@link LoggingSubscriber} for {@link String} elements that logs each value double-quoted in
      * its {@link #onNext(String) onNext} log line.
      */
-    static class LoggingStringSubscriber extends LoggingSubscriber<String> {
+    abstract static class LoggingStringSubscriber extends LoggingSubscriber<String> {
 
         @Override
         public void onNext(final String element) {
-            log.debug("onNext(\"{}\")", element);
+            log.debug("onNext(\"{}\") / {}", element, this);
         }
     }
 

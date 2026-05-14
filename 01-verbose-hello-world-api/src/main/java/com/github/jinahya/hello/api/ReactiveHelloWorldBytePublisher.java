@@ -10,6 +10,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lockAndRun;
+
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, in order.
@@ -65,6 +67,12 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
         this.service = Objects.requireNonNull(service, "service is null");
     }
 
+    // ---------------------------------------------------------------------------- java.lang.Object
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     /**
@@ -97,19 +105,22 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
      */
     @Override
     public void subscribe(final Subscriber<? super Byte> subscriber) { // @formatter:off
-        logger.log(System.Logger.Level.DEBUG, "subscribe({0})", subscriber);
+        logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", subscriber, this);
         Objects.requireNonNull(subscriber, "subscriber is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
         final var subscription = new Subscription() {
+            @Override public String toString() {
+                return super.toString().substring(getClass().getPackageName().length() + 1);
+            }
             @Override public void request(final long n) {
-                logger.log(System.Logger.Level.DEBUG, "request({0})", n);
-                if (terminated.get()) { return; }                            // Rule 3.6
-                if (n <= 0L) {                                              // Rule 3.9
-                    if (terminated.compareAndSet(false, true)) {             // Rule 1.7
-                        ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                logger.log(System.Logger.Level.DEBUG, "request({0}) / {1}", n, this);
+                if (terminated.get()) { return; }
+                if (n <= 0L) {
+                    if (terminated.compareAndSet(false, true)) {
+                        lockAndRun(lock, () -> {
                             condition.signalAll();
                             try {
                                 subscriber.onError(new IllegalArgumentException(
@@ -126,13 +137,13 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 });
                 signal();
             }
-            @Override public void cancel() {                                // Rule 3.5, 3.7
-                logger.log(System.Logger.Level.DEBUG, "cancel()");
+            @Override public void cancel() {
+                logger.log(System.Logger.Level.DEBUG, "cancel() / {0}", this);
                 terminated.set(true);
                 signal();
             }
             private void signal() {
-                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, condition::signalAll);
+                lockAndRun(lock, condition::signalAll);
             }
         };
         try {
@@ -156,6 +167,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                         }
                     }
                 } finally { lock.unlock(); }
+                assert demand.get() > 0L || terminated.get();
                 if (terminated.get()) { break; }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
@@ -163,8 +175,8 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                     try {
                         array = service.set(new byte[HelloWorld.BYTES]);
                     } catch (final Throwable t) {
-                        if (terminated.compareAndSet(false, true)) {         // Rule 1.7
-                            ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+                        if (terminated.compareAndSet(false, true)) {
+                            lockAndRun(lock, () -> {
                                 try { subscriber.onError(t); } catch (final Throwable st) { }
                             });
                         }
@@ -173,7 +185,6 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 }
                 lock.lock();
                 try {
-                    if (terminated.get()) { break; }                         // Rule 3.12
                     try {
                         subscriber.onNext(array[index++]);
                     } catch (final Throwable t) {
@@ -183,8 +194,10 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 } finally { lock.unlock(); }
                 if (index == HelloWorld.BYTES) { break; }
             }
-            if (terminated.compareAndSet(false, true)) {                     // Rule 1.7
-                ReactiveHelloWorldPublisherUtils.lockAndRun(lock, () -> {
+            if (terminated.compareAndSet(false, true)) {
+                assert array != null;
+                assert index == array.length;
+                lockAndRun(lock, () -> {
                     try { subscriber.onComplete(); } catch (final Throwable st) { }
                 });
             }

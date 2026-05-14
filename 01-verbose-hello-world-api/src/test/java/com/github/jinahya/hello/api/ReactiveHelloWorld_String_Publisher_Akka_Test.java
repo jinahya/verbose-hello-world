@@ -3,6 +3,7 @@ package com.github.jinahya.hello.api;
 import akka.actor.ActorSystem;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
+import akka.stream.testkit.javadsl.TestSink;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -11,13 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-/**
- * <strong>Note</strong>: {@code __cancel} is omitted — see
- * {@link ReactiveHelloWorld_Byte_Publisher_Akka_Test the Byte variant} for the rationale.
- */
 @Slf4j
 class ReactiveHelloWorld_String_Publisher_Akka_Test
         extends ReactiveHelloWorld__Publisher__Test<ReactiveHelloWorldStringPublisher, String> {
@@ -36,11 +34,13 @@ class ReactiveHelloWorld_String_Publisher_Akka_Test
     }
 
     ReactiveHelloWorld_String_Publisher_Akka_Test() {
-        super(service -> new ReactiveHelloWorldStringPublisher(
-                new ReactiveHelloWorldArrayPublisher(
-                        new ReactiveHelloWorldBytePublisher(service)
-                )
-        ));
+        super(ReactiveHelloWorldStringPublisher::from);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -68,5 +68,32 @@ class ReactiveHelloWorld_String_Publisher_Akka_Test
         for (final var element : list) {
             Assertions.assertEquals(expected, element);
         }
+    }
+
+    @Test
+    @DisplayName("TestSink.probe(): request(1) → exactly 1 element, no further signals")
+    void __exactly1() {
+        // ------------------------------------------------------------------------------ given/when
+        final var probe = Source.fromPublisher(publisher())
+                .runWith(TestSink.<String>probe(system), system);
+        probe.request(1L);
+        final var element = probe.expectNext();
+        // ------------------------------------------------------------------------------------ then
+        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), element);
+        probe.expectNoMessage(Duration.ofMillis(200L));
+    }
+
+    @Test
+    @DisplayName("TestSink.probe(): request, expect, cancel → no further signals")
+    void __cancel() {
+        // ------------------------------------------------------------------------------ given/when
+        final var probe = Source.fromPublisher(publisher())
+                .runWith(TestSink.<String>probe(system), system);
+        probe.request(2L);
+        probe.expectNext();
+        probe.expectNext();
+        probe.cancel();
+        // ------------------------------------------------------------------------------------ then
+        probe.expectNoMessage(Duration.ofMillis(200L));
     }
 }

@@ -19,11 +19,13 @@ class ReactiveHelloWorld_String_Publisher_RxJava3_Test
         extends ReactiveHelloWorld__Publisher__Test<ReactiveHelloWorldStringPublisher, String> {
 
     ReactiveHelloWorld_String_Publisher_RxJava3_Test() {
-        super(service -> new ReactiveHelloWorldStringPublisher(
-                new ReactiveHelloWorldArrayPublisher(
-                        new ReactiveHelloWorldBytePublisher(service)
-                )
-        ));
+        super(ReactiveHelloWorldStringPublisher::from);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -49,11 +51,29 @@ class ReactiveHelloWorld_String_Publisher_RxJava3_Test
     }
 
     @Test
+    @DisplayName("TestSubscriber: request(1) → exactly 1 element, no onComplete")
+    @SuppressWarnings({"java:S2925"})
+    void __exactly1() throws InterruptedException {
+        // ------------------------------------------------------------------------------ given/when
+        final var subscriber = new TestSubscriber<String>(0L);
+        Flowable.fromPublisher(publisher()).subscribe(subscriber);
+        subscriber.request(1L);
+        subscriber.awaitCount(1);
+        Thread.sleep(200L);
+        // ------------------------------------------------------------------------------------ then
+        subscriber.assertValueCount(1).assertNotComplete().assertNoErrors();
+        Assertions.assertEquals(
+                HelloWorldTestUtils.hello_world_string(),
+                subscriber.values().get(0)
+        );
+    }
+
+    @Test
     @DisplayName("concurrent request(1) and cancel → no terminal signal")
     @SuppressWarnings({"java:S2925"})
     void __cancel() throws InterruptedException {
         // ----------------------------------------------------------------------------------- given
-        final var lock = new ReentrantLock();              // Rule 2.7
+        final var lock = new ReentrantLock();
         final var terminated = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();
@@ -65,13 +85,21 @@ class ReactiveHelloWorld_String_Publisher_RxJava3_Test
                 ReactiveHelloWorld__Publisher__TestUtils.sleep(Duration.ofSeconds(1L));
                 if (terminated.get() && ThreadLocalRandom.current().nextBoolean()) break;
                 lock.lock();
-                try { subscriber.request(1L); } finally { lock.unlock(); }
+                try {
+                    subscriber.request(1L);
+                } finally {
+                    lock.unlock();
+                }
             }
         }));
         canceller.set(Thread.ofVirtual().start(() -> {
             ReactiveHelloWorld__Publisher__TestUtils.sleep(1L, HelloWorld.BYTES);
             lock.lock();
-            try { subscriber.cancel(); } finally { lock.unlock(); }
+            try {
+                subscriber.cancel();
+            } finally {
+                lock.unlock();
+            }
             terminated.set(true);
         }));
         canceller.get().join(Duration.ofSeconds(20L).toMillis());

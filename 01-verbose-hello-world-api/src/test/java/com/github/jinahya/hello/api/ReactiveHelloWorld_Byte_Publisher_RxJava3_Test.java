@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,6 +21,12 @@ class ReactiveHelloWorld_Byte_Publisher_RxJava3_Test
 
     ReactiveHelloWorld_Byte_Publisher_RxJava3_Test() {
         super(ReactiveHelloWorldBytePublisher::new);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -58,11 +65,28 @@ class ReactiveHelloWorld_Byte_Publisher_RxJava3_Test
     }
 
     @Test
+    @DisplayName("TestSubscriber: request(12) → exactly 12 elements + onComplete")
+    void __exactly12() {
+        // ------------------------------------------------------------------------------ given/when
+        final var subscriber = new TestSubscriber<Byte>(0L);
+        Flowable.fromPublisher(publisher()).subscribe(subscriber);
+        subscriber.request(HelloWorld.BYTES);
+        subscriber.awaitDone(10L, TimeUnit.SECONDS).assertComplete().assertNoErrors();
+        // ------------------------------------------------------------------------------------ then
+        final var values = subscriber.values();
+        final var expected = HelloWorldTestUtils.hello_world_byte_array();
+        Assertions.assertEquals(expected.length, values.size());
+        for (var i = 0; i < expected.length; i++) {
+            Assertions.assertEquals(expected[i], values.get(i).byteValue());
+        }
+    }
+
+    @Test
     @DisplayName("concurrent request(1) and cancel → no terminal signal")
     @SuppressWarnings({"java:S2925"})
     void __cancel() throws InterruptedException {
         // ----------------------------------------------------------------------------------- given
-        final var lock = new ReentrantLock();              // Rule 2.7
+        final var lock = new ReentrantLock();
         final var terminated = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();

@@ -60,7 +60,7 @@ public final class ReactiveHelloWorldPublishers {
      */
     public static Publisher<byte[]> ofArrays(final HelloWorld service) {
         Objects.requireNonNull(service, "service is null");
-        return new ReactiveHelloWorldArrayPublisher(ofBytes(service));
+        return ReactiveHelloWorldArrayPublisher.from(service);
     }
 
     /**
@@ -76,7 +76,7 @@ public final class ReactiveHelloWorldPublishers {
      */
     public static Publisher<String> ofStrings(final HelloWorld service) {
         Objects.requireNonNull(service, "service is null");
-        return new ReactiveHelloWorldStringPublisher(ofArrays(service));
+        return ReactiveHelloWorldStringPublisher.from(service);
     }
 
     private ReactiveHelloWorldPublishers() {

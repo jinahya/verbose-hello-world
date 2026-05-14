@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.reactivestreams.FlowAdapters;
 
 import java.util.concurrent.Flow;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,16 +13,20 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <strong>Note</strong>: {@code __cancel} is omitted — see
- * {@link ReactiveHelloWorld_Byte_Publisher_Helidon_Test the Byte variant} for the rationale.
+ * {@link HelloWorld_Byte_FlowPublisher_Helidon_Test the Byte variant} for the rationale.
  */
 @Slf4j
-class ReactiveHelloWorld_Array_Publisher_Helidon_Test
+class HelloWorld_Array_FlowPublisher_Helidon_Test
         extends HelloWorld__FlowPublisher__Test<Flow.Publisher<byte[]>, byte[]> {
 
-    ReactiveHelloWorld_Array_Publisher_Helidon_Test() {
-        super(service -> FlowAdapters.toFlowPublisher(
-                ReactiveHelloWorldPublishers.ofArrays(service)
-        ));
+    HelloWorld_Array_FlowPublisher_Helidon_Test() {
+        super(HelloWorldFlow::ofArrays);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
     }
 
     // ---------------------------------------------------------------------------------------------

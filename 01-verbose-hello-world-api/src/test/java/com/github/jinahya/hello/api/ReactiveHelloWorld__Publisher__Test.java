@@ -28,6 +28,12 @@ abstract class ReactiveHelloWorld__Publisher__Test<T extends Publisher<U>, U> {
         );
     }
 
+    // ---------------------------------------------------------------------------- java.lang.Object
+    @Override
+    public String toString() {
+        return super.toString().substring(getClass().getPackageName().length() + 1);
+    }
+
     // ---------------------------------------------------------------------------------------------
     @Accessors(fluent = true)
     @Getter(AccessLevel.PACKAGE)
