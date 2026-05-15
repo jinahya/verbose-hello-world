@@ -13,8 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lockAndRun;
-
 /**
  * A package-private {@link Publisher} of {@link String} elements — each decoded in
  * {@link StandardCharsets#US_ASCII US-ASCII} from a {@code byte[]} obtained from the upstream
@@ -124,14 +122,11 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
                     if (terminated.get()) { return; }
                     if (n <= 0L) {
                         if (terminated.compareAndSet(false, true)) {
-                            lockAndRun(lock, () -> {
-                                try {
-                                    downstreamSubscriber.onError(new IllegalArgumentException(
-                                            "n(" + n + ") is not positive"
-                                    ));
-                                } catch (final Throwable st) {
-                                }
-                            });
+                            try {
+                                downstreamSubscriber.onError(new IllegalArgumentException(
+                                        "n(" + n + ") is not positive"
+                                ));
+                            } catch (final Throwable st) { }
                             upstreamSubscription.cancel();
                         }
                         return;
@@ -152,24 +147,20 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
                        IntStream.range(0, element.length)
                                .mapToObj(i -> String.format("%02x'%c'", element[i], element[i]))
                                .collect(Collectors.joining(" ", "[", "]")), this);
-            lockAndRun(lock, () -> {
-                if (terminated.get()) { return; }
-                try {
-                    downstreamSubscriber.onNext(new String(element, StandardCharsets.US_ASCII));
-                } catch (final Throwable t) {
-                    terminated.set(true);
-                    upstreamSubscription.cancel();
-                }
-            }); // @formatter:on
+            if (terminated.get()) { return; }
+            try {
+                downstreamSubscriber.onNext(new String(element, StandardCharsets.US_ASCII));
+            } catch (final Throwable t) {
+                terminated.set(true);
+                upstreamSubscription.cancel();
+            } // @formatter:on
         }
 
         @Override
         public void onError(final Throwable t) { // @formatter:off
             logger.log(System.Logger.Level.DEBUG, "onError({0}) / {1}", t, this);
             if (terminated.compareAndSet(false, true)) {
-                lockAndRun(lock, () -> {
-                    try { downstreamSubscriber.onError(t); } catch (final Throwable st) { }
-                });
+                try { downstreamSubscriber.onError(t); } catch (final Throwable st) { }
             } // @formatter:on
         }
 
@@ -177,9 +168,7 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
         public void onComplete() { // @formatter:off
             logger.log(System.Logger.Level.DEBUG, "onComplete() / {0}", this);
             if (terminated.compareAndSet(false, true)) {
-                lockAndRun(lock, () -> {
-                    try { downstreamSubscriber.onComplete(); } catch (final Throwable st) { }
-                });
+                try { downstreamSubscriber.onComplete(); } catch (final Throwable st) { }
             } // @formatter:on
         }
 
@@ -187,8 +176,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
         private final Publisher<? extends byte[]> upstreamPublisher;
 
         private Subscription upstreamSubscription;
-
-        private final ReentrantLock lock = new ReentrantLock();
 
         private final AtomicBoolean terminated = new AtomicBoolean();
 
@@ -218,9 +205,7 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
     // ---------------------------------------------------------------------------- java.lang.Object
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '{' +
-               "publisher=" + publisher +
-               '}';
+        return getClass().getSimpleName() + '@' + Objects.hash(this);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.api;
 
-import com.github.jinahya.hello.api.ReactiveHelloWorld__Publisher__Tests.LoggingArraySubscriber;
+import com.github.jinahya.hello.api.ReactiveStreamTests.LoggingArraySubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
@@ -15,25 +15,28 @@ import org.reactivestreams.Subscription;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 
-import static com.github.jinahya.hello.api.ReactiveHelloWorld__Publisher__TestUtils.sleep;
-
+/**
+ * Subscription-level tests for {@link ReactiveHelloWorldArrayPublisher} — verifies the Reactive
+ * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation,
+ * …) using a {@link Mockito#spy(Object) spied} {@link LoggingArraySubscriber} from
+ * {@link ReactiveStreamTests}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
-class ReactiveHelloWorld_Array_Publisher__Test
-        extends ReactiveHelloWorld__Publisher__Test<ReactiveHelloWorldArrayPublisher, byte[]> {
+class ReactiveHelloWorldPublisher_Array_Test
+        extends ReactiveHelloWorldPublisher__Test<ReactiveHelloWorldArrayPublisher, byte[]> {
 
     // ---------------------------------------------------------------------------------------------
-    ReactiveHelloWorld_Array_Publisher__Test() {
+    ReactiveHelloWorldPublisher_Array_Test() {
         super(ReactiveHelloWorldArrayPublisher::from);
     }
 
     // ---------------------------------------------------------------------------------------------
     @Override
     public String toString() {
-        return super.toString().substring(getClass().getPackageName().length() + 1);
+        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -98,45 +101,5 @@ class ReactiveHelloWorld_Array_Publisher__Test
         for (final var element : elements) {
             Assertions.assertArrayEquals(expected, element);
         } // @formatter:on
-    }
-
-    @DisplayName("one thread request(1) with sleep, another thread cancel → no terminal signal")
-    @Test
-    @SuppressWarnings({
-            "java:S2925" // "Thread.sleep" should not be used in tests
-    })
-    void __cancel() throws InterruptedException { // @formatter:off
-        // ----------------------------------------------------------------------------------- given
-        final var lock = new ReentrantLock();        final var terminated = new AtomicBoolean();
-        final var requester = new AtomicReference<Thread>();
-        final var canceller = new AtomicReference<Thread>();
-        final var subscriber = Mockito.spy(new LoggingArraySubscriber() {
-            @Override public void onSubscribe(final Subscription s) {
-                super.onSubscribe(s);
-                requester.set(Thread.ofVirtual().start(() -> {
-                    for (var i = 0; i < HelloWorld.BYTES; i++) {
-                        sleep(Duration.ofSeconds(1L));
-                        if (terminated.get() && ThreadLocalRandom.current().nextBoolean()) {
-                            break;
-                        }
-                        lock.lock(); try { s.request(1L); } finally { lock.unlock(); }
-                    }
-                }));
-                canceller.set(Thread.ofVirtual().start(() -> {
-                    sleep(1L, HelloWorld.BYTES);
-                    lock.lock(); try { s.cancel(); } finally { lock.unlock(); }
-                    terminated.set(true);
-                }));
-            }
-        });
-        // ------------------------------------------------------------------------------------ when
-        publisher().subscribe(subscriber);
-        canceller.get().join(Duration.ofSeconds(20L).toMillis());
-        requester.get().join(Duration.ofSeconds(20L).toMillis());
-        // ------------------------------------------------------------------------------------ then
-        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
-        Mockito.verify(subscriber, Mockito.atMost(HelloWorld.BYTES)).onNext(ArgumentMatchers.any());
-        Mockito.verify(subscriber, Mockito.never()).onError(ArgumentMatchers.any());
-        Mockito.verify(subscriber, Mockito.never()).onComplete(); // @formatter:on
     }
 }

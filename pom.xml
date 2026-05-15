@@ -253,6 +253,14 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.pekko</groupId>
+        <artifactId>pekko-bom_3</artifactId>
+        <!-- https://central.sonatype.com/artifact/org.apache.pekko/pekko-bom_3/versions -->
+        <version>2.0.0-M2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
         <version>${version.org.aspectj}</version>

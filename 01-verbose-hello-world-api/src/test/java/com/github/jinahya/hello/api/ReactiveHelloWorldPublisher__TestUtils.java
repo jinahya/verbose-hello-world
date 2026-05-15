@@ -7,12 +7,12 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Utilities shared by {@link ReactiveHelloWorld__Publisher__Test} and its concrete subclasses.
+ * Utilities shared by {@link ReactiveHelloWorldPublisher__Test} and its concrete subclasses.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-final class ReactiveHelloWorld__Publisher__TestUtils {
+final class ReactiveHelloWorldPublisher__TestUtils {
 
     /**
      * Sleeps the current thread for the specified positive {@link Duration}.
@@ -74,7 +74,7 @@ final class ReactiveHelloWorld__Publisher__TestUtils {
         sleep(Duration.ofSeconds(seconds));
     }
 
-    private ReactiveHelloWorld__Publisher__TestUtils() {
+    private ReactiveHelloWorldPublisher__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

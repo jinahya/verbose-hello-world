@@ -330,7 +330,7 @@ It comprises three package-private `org.reactivestreams.Publisher` classes (`Byt
 === ReactiveHelloWorldBytePublisher
 
 * *Spec compliance*: Rules 1.3, 1.7, 3.5, 3.6, 3.7, 3.9, 3.12 verified by raw-RS tests
-(`ReactiveHelloWorld_Byte_Publisher__Test`).
+(`ReactiveHelloWorldPublisher_Byte_Test`).
 * *Lazy `byte[]` allocation*: source array is allocated inside the producer thread on the
 first iteration with demand, so a `subscribe()` + `cancel()` without ever requesting
 incurs no allocation cost.
@@ -424,7 +424,7 @@ The publisher trio is covered by *three axes* of tests:
 
 | *Raw RS*
 | Our publisher classes directly
-| Hand-rolled `Subscriber` (via shared `LoggingSubscriber` family)
+| Hand-rolled `Subscriber` (via shared `LoggingFlowSubscriber` family)
 | `ReactiveHelloWorld_(Byte\|Array\|String)_Publisher__Test`
 
 | *Library composition* (Axis A)

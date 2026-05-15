@@ -30,14 +30,14 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Reactive_Mutiny_Test extends HelloWorld_Reactive__Test {
+class ReactiveHelloWorld_Mutiny_Test extends ReactiveHelloWorld__Test {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
     @Override
     public String toString() {
-        return super.toString().substring(getClass().getPackageName().length() + 1);
+        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------

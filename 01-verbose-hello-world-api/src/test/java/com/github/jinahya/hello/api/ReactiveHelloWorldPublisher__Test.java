@@ -4,19 +4,32 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivestreams.Publisher;
 
 import java.util.Objects;
 import java.util.function.Function;
 
-@ExtendWith({MockitoExtension.class})
+/**
+ * An abstract base for tests that verify subscription-level behaviour of the three concrete
+ * {@code ReactiveHelloWorld<Type>Publisher} implementations against the Reactive Streams 1.0
+ * contract — demand, completion, the single-terminal-signal rule (1.7), cancellation, …
+ * <p>
+ * The constructor builds fresh per-test state: a {@link Mockito#mock(Class) mock}
+ * {@link HelloWorld} created with {@link Mockito#CALLS_REAL_METHODS CALLS_REAL_METHODS} (so the
+ * {@code default} methods on the interface stay live), and a {@link Mockito#spy(Object) spy} of
+ * the publisher produced by the constructor-supplied {@code initializer}.
+ * <p>
+ * Concrete subclasses are expected to be named {@code ReactiveHelloWorldPublisher_<Type>_Test}.
+ *
+ * @param <T> the {@link Publisher} implementation under test.
+ * @param <U> the element type emitted by the publisher.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
-abstract class ReactiveHelloWorld__Publisher__Test<T extends Publisher<U>, U> {
+abstract class ReactiveHelloWorldPublisher__Test<T extends Publisher<U>, U> {
 
-    ReactiveHelloWorld__Publisher__Test(
+    ReactiveHelloWorldPublisher__Test(
             final Function<? super HelloWorld, ? extends T> initializer) {
         super();
         service = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
@@ -31,7 +44,7 @@ abstract class ReactiveHelloWorld__Publisher__Test<T extends Publisher<U>, U> {
     // ---------------------------------------------------------------------------- java.lang.Object
     @Override
     public String toString() {
-        return super.toString().substring(getClass().getPackageName().length() + 1);
+        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------

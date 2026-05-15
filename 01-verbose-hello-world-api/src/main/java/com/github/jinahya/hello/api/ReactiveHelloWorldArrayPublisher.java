@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lockAndRun;
 
+
 /**
  * A package-private {@link Publisher} of {@code byte[]} elements — each a freshly assembled,
  * {@value HelloWorld#BYTES}-byte snapshot of the
@@ -120,6 +121,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
         Objects.requireNonNull(subscriber, "subscriber is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
+        final var pendingError = new AtomicReference<Throwable>();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
         final var subscription = new Subscription() {
@@ -130,15 +132,10 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 logger.log(System.Logger.Level.DEBUG, "request({0}) / {1}", n, this);
                 if (terminated.get()) { return; }
                 if (n <= 0L) {
+                    pendingError.compareAndSet(null, new IllegalArgumentException(
+                            "n(" + n + ") is not positive"));
                     if (terminated.compareAndSet(false, true)) {
-                        lockAndRun(lock, () -> {
-                            condition.signalAll();
-                            try {
-                                subscriber.onError(new IllegalArgumentException(
-                                        "n(" + n + ") is not positive"
-                                ));
-                            } catch (final Throwable st) { }
-                        });
+                        lockAndRun(lock, condition::signalAll);
                     }
                     return;
                 }
@@ -176,57 +173,59 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 } finally {
                     lock.unlock();
                 }
-                assert demand.get() > 0L || terminated.get();
-                if (terminated.get()) { break; }
+                if (terminated.get()) {
+                    final var err = pendingError.get();
+                    if (err != null) {
+                        try { subscriber.onError(err); } catch (final Throwable st) { }
+                    }
+                    return;
+                }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
-                Thread.ofVirtual().start(() -> {
-                    final var array = new byte[HelloWorld.BYTES];
-                    final var index = new AtomicInteger();
-                    final var error = new AtomicReference<Throwable>();
-                    final var latch = new CountDownLatch(1);
-                    publisher.subscribe(new Subscriber<>() {
-                        @Override public String toString() {
-                            return super.toString().substring(getClass().getPackageName().length() + 1);
-                        }
-                        @Override public void onSubscribe(final Subscription s) {
-                            logger.log(System.Logger.Level.DEBUG, "onSubscribe({0}) / {1}", s, this);
-                            s.request(HelloWorld.BYTES);
-                        }
-                        @Override public void onNext(final Byte b) {
-                            logger.log(System.Logger.Level.DEBUG, "onNext({0}) / {1}",
-                                       String.format("%02x'%c'", b, b), this);
-                            array[index.getAndIncrement()] = b;
-                        }
-                        @Override public void onError(final Throwable t) {
-                            logger.log(System.Logger.Level.DEBUG, "onError({0}) / {1}", t, this);
-                            error.set(t);
-                            latch.countDown();
-                        }
-                        @Override public void onComplete() {
-                            logger.log(System.Logger.Level.DEBUG, "onComplete() / {0}", this);
-                            latch.countDown();
-                        }
-                    });
-                    try { latch.await(); } catch (final InterruptedException _) {
-                        Thread.currentThread().interrupt();
-                        return;
+                final var array = new byte[HelloWorld.BYTES];
+                final var index = new AtomicInteger();
+                final var error = new AtomicReference<Throwable>();
+                final var latch = new CountDownLatch(1);
+                publisher.subscribe(new Subscriber<>() {
+                    @Override public String toString() {
+                        return super.toString().substring(getClass().getPackageName().length() + 1);
                     }
-                    final var t = error.get();
-                    if (t != null) {
-                        if (terminated.compareAndSet(false, true)) {
-                            lockAndRun(lock, () -> {
-                                try { subscriber.onError(t); } catch (final Throwable st) { }
-                            });
-                        }
-                        return;
+                    @Override public void onSubscribe(final Subscription s) {
+                        logger.log(System.Logger.Level.DEBUG, "onSubscribe({0}) / {1}", s, this);
+                        s.request(HelloWorld.BYTES);
                     }
-                    lockAndRun(lock, () -> {
-                        try { subscriber.onNext(array); } catch (final Throwable st) {
-                            terminated.set(true);
-                        }
-                    });
+                    @Override public void onNext(final Byte b) {
+                        logger.log(System.Logger.Level.DEBUG, "onNext({0}) / {1}",
+                                   String.format("%02x'%c'", b, b), this);
+                        array[index.getAndIncrement()] = b;
+                    }
+                    @Override public void onError(final Throwable t) {
+                        logger.log(System.Logger.Level.DEBUG, "onError({0}) / {1}", t, this);
+                        error.set(t);
+                        latch.countDown();
+                    }
+                    @Override public void onComplete() {
+                        logger.log(System.Logger.Level.DEBUG, "onComplete() / {0}", this);
+                        latch.countDown();
+                    }
                 });
+                try { latch.await(); } catch (final InterruptedException _) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                final var t = error.get();
+                if (t != null) {
+                    if (terminated.compareAndSet(false, true)) {
+                        try { subscriber.onError(t); } catch (final Throwable st) { }
+                    }
+                    return;
+                }
+                try {
+                    subscriber.onNext(array);
+                } catch (final Throwable st) {
+                    terminated.set(true);
+                    return;
+                }
             }
         }); // @formatter:on
     }

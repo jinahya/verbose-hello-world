@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,13 +29,13 @@ import java.util.stream.IntStream;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-final class ReactiveHelloWorld__Publisher__Tests {
+final class ReactiveStreamTests {
 
     abstract static class LoggingSubscription implements Subscription {
 
         @Override
         public String toString() {
-            return super.toString().substring(getClass().getPackageName().length() + 1);
+            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
         }
 
         @Override
@@ -59,7 +61,7 @@ final class ReactiveHelloWorld__Publisher__Tests {
 
         @Override
         public String toString() {
-            return super.toString().substring(getClass().getPackageName().length() + 1);
+            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
         }
 
         @Override
@@ -124,7 +126,21 @@ final class ReactiveHelloWorld__Publisher__Tests {
         }
     }
 
-    private ReactiveHelloWorld__Publisher__Tests() {
+    static class LoggingSubmissionPublisher<T> extends SubmissionPublisher<T> {
+
+        @Override
+        public String toString() {
+            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+        }
+
+        @Override
+        public void subscribe(final Flow.Subscriber<? super T> subscriber) {
+            log.debug("subscribe({} / {})", subscriber, this);
+            super.subscribe(subscriber);
+        }
+    }
+
+    private ReactiveStreamTests() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

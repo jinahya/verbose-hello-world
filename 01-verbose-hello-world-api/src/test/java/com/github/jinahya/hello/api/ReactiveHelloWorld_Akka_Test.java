@@ -32,13 +32,13 @@ import java.util.concurrent.TimeUnit;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Reactive_Akka_Test extends HelloWorld_Reactive__Test {
+class ReactiveHelloWorld_Akka_Test extends ReactiveHelloWorld__Test {
 
     private static ActorSystem system;
 
     @BeforeAll
     static void setUpSystem() {
-        system = ActorSystem.create("HelloWorld_Reactive_Akka_Test");
+        system = ActorSystem.create("ReactiveHelloWorld_Akka_Test");
     }
 
     @AfterAll
@@ -50,7 +50,7 @@ class HelloWorld_Reactive_Akka_Test extends HelloWorld_Reactive__Test {
     // ---------------------------------------------------------------------------------------------
     @Override
     public String toString() {
-        return super.toString().substring(getClass().getPackageName().length() + 1);
+        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------

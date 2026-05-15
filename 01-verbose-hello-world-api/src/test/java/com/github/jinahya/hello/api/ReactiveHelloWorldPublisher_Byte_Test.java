@@ -1,6 +1,6 @@
 package com.github.jinahya.hello.api;
 
-import com.github.jinahya.hello.api.ReactiveHelloWorld__Publisher__Tests.LoggingByteSubscriber;
+import com.github.jinahya.hello.api.ReactiveStreamTests.LoggingByteSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
@@ -20,14 +20,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.github.jinahya.hello.api.ReactiveHelloWorld__Publisher__TestUtils.sleep;
+import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisher__TestUtils.sleep;
 
+/**
+ * Subscription-level tests for {@link ReactiveHelloWorldBytePublisher} — verifies the Reactive
+ * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation, …)
+ * using a {@link Mockito#spy(Object) spied} {@link LoggingByteSubscriber} from
+ * {@link ReactiveStreamTests}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
-class ReactiveHelloWorld_Byte_Publisher__Test
-        extends ReactiveHelloWorld__Publisher__Test<ReactiveHelloWorldBytePublisher, Byte> {
+class ReactiveHelloWorldPublisher_Byte_Test
+        extends ReactiveHelloWorldPublisher__Test<ReactiveHelloWorldBytePublisher, Byte> {
 
     // ---------------------------------------------------------------------------------------------
-    ReactiveHelloWorld_Byte_Publisher__Test() {
+    ReactiveHelloWorldPublisher_Byte_Test() {
         super(ReactiveHelloWorldBytePublisher::new);
     }
 
@@ -48,14 +56,12 @@ class ReactiveHelloWorld_Byte_Publisher__Test
     @DisplayName("request(12) → exactly 12 elements + onComplete")
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = Mockito.spy(
-                new LoggingByteSubscriber() {
-                    @Override public void onSubscribe(final Subscription s) {
-                        super.onSubscribe(s);
-                        s.request(HelloWorld.BYTES);
-                    }
-                }
-        );
+        final var subscriber = Mockito.spy(new LoggingByteSubscriber() {
+            @Override public void onSubscribe(final Subscription s) {
+                super.onSubscribe(s);
+                s.request(HelloWorld.BYTES);
+            }
+        });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
         Awaitility.await().atMost(Duration.ofSeconds(10L)).untilAsserted(
@@ -81,14 +87,12 @@ class ReactiveHelloWorld_Byte_Publisher__Test
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
-        final var subscriber = Mockito.spy(
-                new LoggingByteSubscriber() {
-                    @Override public void onSubscribe(final Subscription s) {
-                        super.onSubscribe(s);
-                        s.request(n);
-                    }
-                }
-        );
+        final var subscriber = Mockito.spy(new LoggingByteSubscriber() {
+            @Override public void onSubscribe(final Subscription s) {
+                super.onSubscribe(s);
+                s.request(n);
+            }
+        });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
         Awaitility.await().atMost(Duration.ofSeconds(10L)).untilAsserted(

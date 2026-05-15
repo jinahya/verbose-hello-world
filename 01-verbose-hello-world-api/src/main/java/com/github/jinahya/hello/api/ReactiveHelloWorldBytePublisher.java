@@ -8,6 +8,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lockAndRun;
@@ -78,7 +79,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
     /**
      * {@inheritDoc}
      *
-     * @throws NullPointerException if the {@code subscriber} is {@code null}.
+     * @throws NullPointerException if the {@code s} is {@code null}.
      * @implSpec The default implementation invokes
      * {@link org.reactivestreams.Subscriber#onSubscribe(org.reactivestreams.Subscription)
      * onSubscribe} with a fresh control-surface
@@ -104,11 +105,12 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
      * 3.3</a>).
      */
     @Override
-    public void subscribe(final Subscriber<? super Byte> subscriber) { // @formatter:off
-        logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", subscriber, this);
-        Objects.requireNonNull(subscriber, "subscriber is null");
+    public void subscribe(final Subscriber<? super Byte> s) { // @formatter:off
+        logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", s, this);
+        Objects.requireNonNull(s, "s is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
+        final var pendingError = new AtomicReference<Throwable>();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
         final var subscription = new Subscription() {
@@ -119,15 +121,10 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 logger.log(System.Logger.Level.DEBUG, "request({0}) / {1}", n, this);
                 if (terminated.get()) { return; }
                 if (n <= 0L) {
+                    pendingError.compareAndSet(null, new IllegalArgumentException(
+                            "n(" + n + ") is not positive"));
                     if (terminated.compareAndSet(false, true)) {
-                        lockAndRun(lock, () -> {
-                            condition.signalAll();
-                            try {
-                                subscriber.onError(new IllegalArgumentException(
-                                        "n(" + n + ") is not positive"
-                                ));
-                            } catch (final Throwable st) { }
-                        });
+                        lockAndRun(lock, condition::signalAll);
                     }
                     return;
                 }
@@ -147,7 +144,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
             }
         };
         try {
-            subscriber.onSubscribe(subscription);
+            s.onSubscribe(subscription);
         } catch (final Throwable t) {
             terminated.set(true);
             return;
@@ -167,8 +164,13 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                         }
                     }
                 } finally { lock.unlock(); }
-                assert demand.get() > 0L || terminated.get();
-                if (terminated.get()) { break; }
+                if (terminated.get()) {
+                    final var err = pendingError.get();
+                    if (err != null) {
+                        try { s.onError(err); } catch (final Throwable st) { }
+                    }
+                    return;
+                }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
                 if (array == null) {
@@ -176,30 +178,29 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                         array = service.set(new byte[HelloWorld.BYTES]);
                     } catch (final Throwable t) {
                         if (terminated.compareAndSet(false, true)) {
-                            lockAndRun(lock, () -> {
-                                try { subscriber.onError(t); } catch (final Throwable st) { }
-                            });
+                            try { s.onError(t); } catch (final Throwable st) { }
                         }
                         return;
                     }
                 }
-                lock.lock();
                 try {
-                    try {
-                        subscriber.onNext(array[index++]);
-                    } catch (final Throwable t) {
-                        terminated.set(true);
-                        break;
+                    s.onNext(array[index]);
+                } catch (final Throwable t) {
+                    terminated.set(true);
+                    return;
+                }
+                index++;
+                if (index == HelloWorld.BYTES) {
+                    if (terminated.compareAndSet(false, true)) {
+                        try { s.onComplete(); } catch (final Throwable st) { }
+                    } else {
+                        final var err = pendingError.get();
+                        if (err != null) {
+                            try { s.onError(err); } catch (final Throwable st) { }
+                        }
                     }
-                } finally { lock.unlock(); }
-                if (index == HelloWorld.BYTES) { break; }
-            }
-            if (terminated.compareAndSet(false, true)) {
-                assert array != null;
-                assert index == array.length;
-                lockAndRun(lock, () -> {
-                    try { subscriber.onComplete(); } catch (final Throwable st) { }
-                });
+                    return;
+                }
             }
         }); // @formatter:on
     }
