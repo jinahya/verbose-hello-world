@@ -41,7 +41,7 @@ final class FlowTests {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override
@@ -63,7 +63,7 @@ final class FlowTests {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override
@@ -91,7 +91,7 @@ final class FlowTests {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override

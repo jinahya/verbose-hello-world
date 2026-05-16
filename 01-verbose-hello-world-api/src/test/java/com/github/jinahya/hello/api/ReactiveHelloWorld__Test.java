@@ -31,7 +31,7 @@ abstract class ReactiveHelloWorld__Test {
     // ---------------------------------------------------------------------------- java.lang.Object
     @Override
     public String toString() {
-        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+        return HelloWorldBookUtils.toSimplifiedString(super.toString());
     }
 
     // -------------------------------------------------------------------------- synchronousService

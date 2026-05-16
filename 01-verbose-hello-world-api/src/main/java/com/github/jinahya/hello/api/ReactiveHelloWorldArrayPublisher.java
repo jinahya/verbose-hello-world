@@ -4,7 +4,6 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,8 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lockAndRun;
 
 
 /**
@@ -55,10 +52,6 @@ import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lock
  * @see ReactiveHelloWorldStringPublisher
  */
 final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
-
-    private static final System.Logger logger = System.getLogger(
-            MethodHandles.lookup().lookupClass().getName()
-    );
 
     static ReactiveHelloWorldArrayPublisher from(final HelloWorld service) {
         return new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service));
@@ -117,11 +110,9 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
      */
     @Override
     public void subscribe(final Subscriber<? super byte[]> subscriber) { // @formatter:off
-        logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", subscriber, this);
         Objects.requireNonNull(subscriber, "subscriber is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
-        final var pendingError = new AtomicReference<Throwable>();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
         final var subscription = new Subscription() {
@@ -129,16 +120,8 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 return super.toString().substring(getClass().getPackageName().length() + 1);
             }
             @Override public void request(final long n) {
-                logger.log(System.Logger.Level.DEBUG, "request({0}) / {1}", n, this);
                 if (terminated.get()) { return; }
-                if (n <= 0L) {
-                    pendingError.compareAndSet(null, new IllegalArgumentException(
-                            "n(" + n + ") is not positive"));
-                    if (terminated.compareAndSet(false, true)) {
-                        lockAndRun(lock, condition::signalAll);
-                    }
-                    return;
-                }
+                assert n > 0L : "n(" + n + ") is not positive";
                 demand.accumulateAndGet(n, (cur, inc) -> {
                     try { return Math.addExact(cur, inc); }
                     catch (final ArithmeticException ae) { return Long.MAX_VALUE; }
@@ -146,12 +129,12 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 signal();
             }
             @Override public void cancel() {
-                logger.log(System.Logger.Level.DEBUG, "cancel() / {0}", this);
                 terminated.set(true);
                 signal();
             }
             private void signal() {
-                lockAndRun(lock, condition::signalAll);
+                lock.lock();
+                try { condition.signalAll(); } finally { lock.unlock(); }
             }
         };
         try { subscriber.onSubscribe(subscription); } catch (final Throwable t) {
@@ -173,13 +156,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 } finally {
                     lock.unlock();
                 }
-                if (terminated.get()) {
-                    final var err = pendingError.get();
-                    if (err != null) {
-                        try { subscriber.onError(err); } catch (final Throwable st) { }
-                    }
-                    return;
-                }
+                if (terminated.get()) { return; }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
                 final var array = new byte[HelloWorld.BYTES];
@@ -191,21 +168,16 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                         return super.toString().substring(getClass().getPackageName().length() + 1);
                     }
                     @Override public void onSubscribe(final Subscription s) {
-                        logger.log(System.Logger.Level.DEBUG, "onSubscribe({0}) / {1}", s, this);
                         s.request(HelloWorld.BYTES);
                     }
                     @Override public void onNext(final Byte b) {
-                        logger.log(System.Logger.Level.DEBUG, "onNext({0}) / {1}",
-                                   String.format("%02x'%c'", b, b), this);
                         array[index.getAndIncrement()] = b;
                     }
                     @Override public void onError(final Throwable t) {
-                        logger.log(System.Logger.Level.DEBUG, "onError({0}) / {1}", t, this);
                         error.set(t);
                         latch.countDown();
                     }
                     @Override public void onComplete() {
-                        logger.log(System.Logger.Level.DEBUG, "onComplete() / {0}", this);
                         latch.countDown();
                     }
                 });

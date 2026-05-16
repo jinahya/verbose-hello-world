@@ -35,7 +35,7 @@ final class ReactiveStreamTests {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override
@@ -61,7 +61,7 @@ final class ReactiveStreamTests {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override
@@ -130,7 +130,7 @@ final class ReactiveStreamTests {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override

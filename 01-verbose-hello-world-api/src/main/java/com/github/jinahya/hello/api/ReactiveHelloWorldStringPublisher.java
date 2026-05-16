@@ -5,13 +5,10 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * A package-private {@link Publisher} of {@link String} elements — each decoded in
@@ -49,10 +46,6 @@ import java.util.stream.IntStream;
  * @see Processor
  */
 final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
-
-    private static final System.Logger logger = System.getLogger(
-            MethodHandles.lookup().lookupClass().getName()
-    );
 
     // ---------------------------------------------------------------------------------------------
 
@@ -102,7 +95,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
         // -----------------------------------------------------------------------------------------
         @Override
         public void subscribe(final Subscriber<? super String> s) {
-            logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", s, this);
             Objects.requireNonNull(s, "s is null");
             downstreamSubscriber = s;
             upstreamPublisher.subscribe(this);   // upstream synchronously calls onSubscribe
@@ -111,14 +103,12 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
         // -----------------------------------------------------------------------------------------
         @Override
         public void onSubscribe(final Subscription s) { // @formatter:off
-            logger.log(System.Logger.Level.DEBUG, "onSubscribe({0}) / {1}", s, this);
             this.upstreamSubscription = s;
             downstreamSubscriber.onSubscribe(new Subscription() {
                 @Override public String toString() {
                     return super.toString().substring(getClass().getPackageName().length() + 1);
                 }
                 @Override public void request(final long n) {
-                    logger.log(System.Logger.Level.DEBUG, "request({0}) / {1}", n, this);
                     if (terminated.get()) { return; }
                     if (n <= 0L) {
                         if (terminated.compareAndSet(false, true)) {
@@ -134,7 +124,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
                     upstreamSubscription.request(n);                         // 1:1 passthrough
                 }
                 @Override public void cancel() {
-                    logger.log(System.Logger.Level.DEBUG, "cancel() / {0}", this);
                     terminated.set(true);
                     upstreamSubscription.cancel();
                 }
@@ -143,10 +132,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
 
         @Override
         public void onNext(final byte[] element) { // @formatter:off
-            logger.log(System.Logger.Level.DEBUG, "onNext({0}) / {1}",
-                       IntStream.range(0, element.length)
-                               .mapToObj(i -> String.format("%02x'%c'", element[i], element[i]))
-                               .collect(Collectors.joining(" ", "[", "]")), this);
             if (terminated.get()) { return; }
             try {
                 downstreamSubscriber.onNext(new String(element, StandardCharsets.US_ASCII));
@@ -158,7 +143,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
 
         @Override
         public void onError(final Throwable t) { // @formatter:off
-            logger.log(System.Logger.Level.DEBUG, "onError({0}) / {1}", t, this);
             if (terminated.compareAndSet(false, true)) {
                 try { downstreamSubscriber.onError(t); } catch (final Throwable st) { }
             } // @formatter:on
@@ -166,7 +150,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
 
         @Override
         public void onComplete() { // @formatter:off
-            logger.log(System.Logger.Level.DEBUG, "onComplete() / {0}", this);
             if (terminated.compareAndSet(false, true)) {
                 try { downstreamSubscriber.onComplete(); } catch (final Throwable st) { }
             } // @formatter:on
@@ -222,7 +205,6 @@ final class ReactiveHelloWorldStringPublisher implements Publisher<String> {
      */
     @Override
     public void subscribe(final Subscriber<? super String> subscriber) {
-        logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", subscriber, this);
         Objects.requireNonNull(subscriber, "subscriber is null");
         new StringEncoder(publisher).subscribe(subscriber);
     }

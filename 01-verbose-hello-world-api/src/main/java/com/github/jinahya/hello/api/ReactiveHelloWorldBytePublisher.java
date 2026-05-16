@@ -4,14 +4,10 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lockAndRun;
 
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
@@ -49,10 +45,6 @@ import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.lock
  * @see ReactiveHelloWorldArrayPublisher
  */
 final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
-
-    private static final System.Logger logger = System.getLogger(
-            MethodHandles.lookup().lookupClass().getName()
-    );
 
     // ---------------------------------------------------------------------------------------------
 
@@ -106,11 +98,9 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
      */
     @Override
     public void subscribe(final Subscriber<? super Byte> s) { // @formatter:off
-        logger.log(System.Logger.Level.DEBUG, "subscribe({0}) / {1}", s, this);
         Objects.requireNonNull(s, "s is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
-        final var pendingError = new AtomicReference<Throwable>();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
         final var subscription = new Subscription() {
@@ -118,16 +108,8 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 return super.toString().substring(getClass().getPackageName().length() + 1);
             }
             @Override public void request(final long n) {
-                logger.log(System.Logger.Level.DEBUG, "request({0}) / {1}", n, this);
                 if (terminated.get()) { return; }
-                if (n <= 0L) {
-                    pendingError.compareAndSet(null, new IllegalArgumentException(
-                            "n(" + n + ") is not positive"));
-                    if (terminated.compareAndSet(false, true)) {
-                        lockAndRun(lock, condition::signalAll);
-                    }
-                    return;
-                }
+                assert n > 0L : "n(" + n + ") is not positive";
                 demand.accumulateAndGet(n, (cur, inc) -> {
                     try { return Math.addExact(cur, inc); }
                     catch (final ArithmeticException ae) { return Long.MAX_VALUE; }
@@ -135,12 +117,12 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 signal();
             }
             @Override public void cancel() {
-                logger.log(System.Logger.Level.DEBUG, "cancel() / {0}", this);
                 terminated.set(true);
                 signal();
             }
             private void signal() {
-                lockAndRun(lock, condition::signalAll);
+                lock.lock();
+                try { condition.signalAll(); } finally { lock.unlock(); }
             }
         };
         try {
@@ -164,13 +146,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                         }
                     }
                 } finally { lock.unlock(); }
-                if (terminated.get()) {
-                    final var err = pendingError.get();
-                    if (err != null) {
-                        try { s.onError(err); } catch (final Throwable st) { }
-                    }
-                    return;
-                }
+                if (terminated.get()) { return; }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
                 if (array == null) {
@@ -193,11 +169,6 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 if (index == HelloWorld.BYTES) {
                     if (terminated.compareAndSet(false, true)) {
                         try { s.onComplete(); } catch (final Throwable st) { }
-                    } else {
-                        final var err = pendingError.get();
-                        if (err != null) {
-                            try { s.onError(err); } catch (final Throwable st) { }
-                        }
                     }
                     return;
                 }

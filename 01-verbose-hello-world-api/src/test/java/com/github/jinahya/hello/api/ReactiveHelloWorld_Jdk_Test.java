@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,14 +39,12 @@ class ReactiveHelloWorld_Jdk_Test extends ReactiveHelloWorld__Test {
 
     private static final long TIMEOUT = 10L;
 
-    private static final Duration DURATION = Duration.ofSeconds(TIMEOUT);
-
     private static final int N = 3;
 
     // ---------------------------------------------------------------------------------------------
     @Override
     public String toString() {
-        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+        return HelloWorldBookUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -79,13 +76,12 @@ class ReactiveHelloWorld_Jdk_Test extends ReactiveHelloWorld__Test {
 
         @Override
         public String toString() {
-            return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+            return HelloWorldBookUtils.toSimplifiedString(super.toString());
         }
 
         @Override
         public void onSubscribe(Flow.Subscription subscription) {
-            subscription = FlowTests.LoggingFlowSubscription.from(subscription);
-            log.debug("onSubscribe({}) / {}", subscription, this);
+            subscription = HelloWorldBookUtils.loggingSubscription(subscription);
             subscription.request(Long.MAX_VALUE);
         }
 
@@ -93,7 +89,7 @@ class ReactiveHelloWorld_Jdk_Test extends ReactiveHelloWorld__Test {
         public void onNext(final T item) {
             final String formatted;
             if (item instanceof byte[] array) {
-                formatted = ReactiveHelloWorldTestUtils.formatArray(array);
+                formatted = HelloWorldBookUtils.formatArray(array);
             } else {
                 formatted = String.valueOf(item);
             }

@@ -50,7 +50,7 @@ class ReactiveHelloWorld_Akka_Test extends ReactiveHelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @Override
     public String toString() {
-        return ReactiveHelloWorldTestUtils.toSimplifiedString(super.toString());
+        return HelloWorldBookUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------
