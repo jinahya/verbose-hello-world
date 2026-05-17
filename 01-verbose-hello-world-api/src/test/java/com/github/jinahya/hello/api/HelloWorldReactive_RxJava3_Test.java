@@ -28,13 +28,7 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class ReactiveHelloWorld_RxJava3_Test extends ReactiveHelloWorld__Test {
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
-    }
+class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach

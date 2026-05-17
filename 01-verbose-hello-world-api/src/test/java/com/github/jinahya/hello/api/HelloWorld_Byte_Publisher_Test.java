@@ -20,7 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Subscription-level tests for {@link HelloWorldBytePublisher} against the
+ * Subscription-level tests for {@link HelloWorldByteFlowPublisher} against the
  * {@link Flow.Publisher Flow.Publisher} contract.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -32,7 +32,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
 
     // ---------------------------------------------------------------------------------------------
     HelloWorld_Byte_Publisher_Test() {
-        super(HelloWorldBytePublisher::new);
+        super(HelloWorldByteFlowPublisher::new);
     }
 
     // ---------------------------------------------------------------------------------------------

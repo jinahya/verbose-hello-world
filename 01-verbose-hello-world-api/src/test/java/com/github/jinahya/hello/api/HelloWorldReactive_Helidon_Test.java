@@ -28,13 +28,7 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class ReactiveHelloWorld_Helidon_Test extends ReactiveHelloWorld__Test {
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
-    }
+class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach

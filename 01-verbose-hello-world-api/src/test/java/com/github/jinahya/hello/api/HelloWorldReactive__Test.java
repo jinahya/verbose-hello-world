@@ -18,20 +18,14 @@ import org.mockito.Mockito;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-abstract class ReactiveHelloWorld__Test {
+abstract class HelloWorldReactive__Test {
 
-    ReactiveHelloWorld__Test() {
+    HelloWorldReactive__Test() {
         super();
         this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
         this.asynchronousService = Mockito.spy(
                 new DefaultAsynchronousHelloWorld(synchronousService, Runnable::run)
         );
-    }
-
-    // ---------------------------------------------------------------------------- java.lang.Object
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
     }
 
     // -------------------------------------------------------------------------- synchronousService

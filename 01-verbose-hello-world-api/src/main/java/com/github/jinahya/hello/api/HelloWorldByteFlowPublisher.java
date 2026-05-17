@@ -17,9 +17,9 @@ import java.util.concurrent.SubmissionPublisher;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldBytePublisher implements Flow.Publisher<Byte> {
+class HelloWorldByteFlowPublisher implements Flow.Publisher<Byte> {
 
-    HelloWorldBytePublisher(final HelloWorld service) {
+    HelloWorldByteFlowPublisher(final HelloWorld service) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
     }

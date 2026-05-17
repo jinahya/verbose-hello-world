@@ -1,0 +1,655 @@
+= Processor
+
+:toc:
+:toclevels: 3
+
+리액티브 스트림즈의 `Processor<T, R>` 인터페이스에 대한 정리이다.
+인터페이스의 정의와 *왜 존재하는지* 를 짚고, 우리 책의 `Processor` 도입을 위한 두 가지 데모를 제안한다.
+
+* *데모 1 — `Processor<Byte, Byte>`*: *유한* 스트림 위에서 *Cold* (per-subscriber upstream) 패턴을 보여 준다.
+멀티캐스트 mediation 이 *없는* 가장 단순한 `Processor` 구현이다.
+* *데모 2 — `Processor<byte[], String>`*: *무한* 스트림 위에서 *Hot* (multicast) 패턴을 보여 준다.
+demand multiplexing 과 pace 문제, per-subscriber 백프레셔를 실제로 다룬다.
+
+`ReactiveHelloWorldBytePublisher` 와 `ReactiveHelloWorldArrayPublisher` 는 두 데모의 *업스트림* 으로만 사용되며 내부는 건드리지 않는다.
+
+'''
+
+== 1. `Processor` 인터페이스
+
+리액티브 스트림즈 1.0 의 `Processor<T, R>` 는 다음과 같이 정의된다.
+
+[%unbreakable]
+[source,java]
+----
+public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {
+}
+----
+
+스펙은 이를 "a processing stage which is both a `Subscriber` and a `Publisher` and obeys the contracts of both" 로 설명한다.
+업스트림으로부터 신호를 받는 `Subscriber` 측면과 다운스트림으로 신호를 보내는 `Publisher` 측면을 한 인스턴스가 모두 수행한다는 의미이다.
+
+[NOTE]
+====
+`Processor` 자체에는 추상 메서드가 없다.
+`Subscriber` 와 `Publisher` 양쪽 계약을 동시에 충족하면 자연스럽게 `Processor` 가 된다.
+관건은 "양쪽 계약을 동시에 어떻게 만족시키느냐" 이다.
+====
+
+'''
+
+== 2. `Processor` 의 핵심 — Demand multiplexer
+
+`Publisher` 계약상 한 `Publisher` 에 *여러 다운스트림 구독자* 가 붙을 수 있으며, 각 구독자는 *자신만의 `Subscription`* 을 받고 *자신의 `request(n)`* 으로 백프레셔를 제어한다 (Rule 1.10, 3.2).
+`Subscriber` 계약상 한 `Subscriber` 는 *하나의 업스트림* 에만 `onSubscribe` 될 수 있다 (Rule 2.12).
+
+`Processor` 한 인스턴스가 *Publisher 측에서 여러 다운스트림* 을 받으면서 *Subscriber 측에서 한 업스트림* 에 연결되면, 다음 비대칭이 발생한다.
+
+[%unbreakable]
+[source]
+----
+   subscriber A: request(5)   ─┐
+   subscriber B: request(3)   ─┼─► Processor  ─►  upstream.request(?)
+   subscriber C: request(100) ─┘                       ↑
+                                            one signal upstream
+                                            (which number?)
+
+                              upstream.onNext(T) ─►  Processor  ─►  ?
+                                  one element                       ↓     ↓    ↓
+                                                                   A     B    C
+                                                          (which of them get it?)
+----
+
+[quote]
+____
+A `Processor` is a *demand multiplexer*: it accepts independent backpressure signals from many downstream subscribers and produces a single backpressure signal to one upstream.
+
+`Processor` 는 *demand multiplexer* 이다.
+여러 다운스트림 구독자가 보내는 독립적인 백프레셔 신호를 모아, 하나의 업스트림 demand 신호로 변환한다.
+____
+
+이 다중화를 *어떻게* 수행하느냐가 모든 멀티캐스트 `Processor` 구현이 답해야 하는 질문이다.
+*다중화 자체를 회피하는 길* 도 있는데, 그것이 다음 절의 Cold 형태이다.
+
+'''
+
+== 3. 두 가지 형태 — Cold 와 Hot
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 형태 | 의미 | 다중화 mediation | 예시 라이브러리
+
+| *Cold* (per-subscriber)
+| 각 다운스트림 구독마다 업스트림 구독을 새로 만든다.
+변환 함수만 공유하고 상태와 업스트림 구독은 공유하지 않는다.
+| *없음* — 다운스트림과 업스트림이 1:1 로 짝지어진다.
+업스트림 demand 비대칭이 발생하지 않는다.
+| `Flux.map`, `Flowable.map`, `Multi.map`
+
+| *Hot* (multicast)
+| 하나의 업스트림 구독을 여러 다운스트림이 공유한다.
+한 번 발행된 요소가 모든 구독자에게 동일하게 전달된다.
+| *필요* — N 개의 `request(n)` 과 1 개의 `onNext` 사이의 비대칭을 정책으로 해결해야 한다.
+| `Flux.publish()`, `Flux.share()`, `Sinks.Many.multicast()`
+|===
+
+대략의 선택 기준은 다음과 같다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 업스트림 성격 | 권장 형태 | 이유
+
+| *유한 + 순서 있음* (예: 12 byte 의 "hello, world")
+| Cold
+| 페이로드가 작으므로 다운스트림마다 업스트림을 새로 만들어도 비용이 무시할만하다.
+멀티캐스트 mediation 의 복잡도가 정당화되지 않는다.
+
+| *무한 + 대칭적* (예: 반복 발행되는 동일한 `byte[]`)
+| Hot
+| 다운스트림마다 업스트림을 새로 만드는 것은 비용이 크다.
+한 스트림을 여러 구독자가 공유하는 것이 자연스럽다.
+"이전 요소를 놓치는" 문제는 모든 요소가 동일하므로 의미를 잃지 않는다.
+|===
+
+이 기준에 따라 두 데모를 구성한다.
+
+'''
+
+== 4. 데모 1 — `Processor<Byte, Byte>` (Cold, 유한)
+
+=== 4.1. 목적
+
+* 유한한 12 바이트 스트림에서 *per-subscriber 백프레셔* 와 *cancel 전파* 를 보여 준다.
+* 다중화 mediation 없이 *Cold* 패턴으로 `Processor` 인터페이스를 구현한다.
+* `Processor` 인터페이스의 *Subscriber 측면이 실제로는 사용되지 않는* 패턴을 명시적으로 짚는다.
+
+=== 4.2. 와이어링
+
+[%unbreakable]
+[source]
+----
+                          ┌─────────────────────────────────────┐
+                          │ ReactiveHelloWorldByteTapProcessor  │
+                          │       (Processor<Byte, Byte>)       │
+                          └─────────────────────────────────────┘
+                              │              │              │
+       subscribe(A)           ▼              ▼              ▼
+       ────────────►  bytePublisher_A   bytePublisher_B   bytePublisher_C
+                       (fresh)            (fresh)            (fresh)
+                              │              │              │
+                              ▼              ▼              ▼
+                            [A]            [B]            [C]
+----
+
+각 `subscribe(d)` 호출마다 *새로운* `ReactiveHelloWorldBytePublisher` 인스턴스가 만들어지고, 그 새 업스트림이 다운스트림 `d` 와 1:1 로 연결된다.
+업스트림 구독은 *공유되지 않는다*.
+
+=== 4.3. 구현 — inner anonymous `Subscriber<Byte>`
+
+[%unbreakable]
+[source,java]
+----
+final class ReactiveHelloWorldByteTapProcessor implements Processor<Byte, Byte> {
+
+    static ReactiveHelloWorldByteTapProcessor from(final HelloWorld service) {
+        return new ReactiveHelloWorldByteTapProcessor(service);
+    }
+
+    ReactiveHelloWorldByteTapProcessor(final HelloWorld service) {
+        this.service = Objects.requireNonNull(service, "service is null");
+    }
+
+    @Override
+    public void subscribe(final Subscriber<? super Byte> downstream) {
+        Objects.requireNonNull(downstream, "downstream is null");
+        // per-subscribe 새 업스트림. Cold.
+        new ReactiveHelloWorldBytePublisher(service).subscribe(new Subscriber<Byte>() {
+            private @Nullable Subscription upstream;
+            private final AtomicBoolean terminated = new AtomicBoolean();
+
+            @Override public void onSubscribe(final Subscription s) {
+                upstream = s;
+                downstream.onSubscribe(new Subscription() {
+                    @Override public void request(final long n) {
+                        if (terminated.get()) return;
+                        assert n > 0L;
+                        upstream.request(n);                       // 1:1 passthrough
+                    }
+                    @Override public void cancel() {
+                        terminated.set(true);
+                        upstream.cancel();                          // 업스트림 종료 → 가상 스레드도 종료
+                    }
+                });
+            }
+            @Override public void onNext(final Byte b) {
+                if (terminated.get()) return;
+                downstream.onNext(b);                               // pass-through, no transform
+            }
+            @Override public void onError(final Throwable t) {
+                if (terminated.compareAndSet(false, true)) downstream.onError(t);
+            }
+            @Override public void onComplete() {
+                if (terminated.compareAndSet(false, true)) downstream.onComplete();
+            }
+        });
+    }
+
+    // Subscriber 측면 — `Processor` 인터페이스의 요구를 충족하기 위한 메서드.
+    // *실제로는 호출되지 않는다*; 업스트림과의 결합은 위 inner subscriber 가 처리한다.
+    @Override public void onSubscribe(final Subscription s) { throw new UnsupportedOperationException(); }
+    @Override public void onNext(final Byte b)              { throw new UnsupportedOperationException(); }
+    @Override public void onError(final Throwable t)        { throw new UnsupportedOperationException(); }
+    @Override public void onComplete()                       { throw new UnsupportedOperationException(); }
+
+    private final HelloWorld service;
+}
+----
+
+=== 4.4. 이 패턴의 특징
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 항목 | Cold 패턴에서의 모습
+
+| 업스트림 구독
+| 다운스트림 *한 명당 하나*. 공유되지 않음.
+
+| `service.set(...)` 호출
+| 다운스트림 한 명당 한 번 (각 BytePublisher 가 자신의 호출을 함)
+
+| per-subscriber 백프레셔
+| 자연스럽게 성립.
+다운스트림의 `request(n)` 이 업스트림으로 그대로 전달된다.
+
+| late subscriber
+| 자기만의 12 byte 스트림을 처음부터 받는다.
+
+| cancel 전파
+| 자기 업스트림 구독을 취소한다.
+다른 구독자에게 영향 없다.
+
+| 가상 스레드
+| 다운스트림 한 명당 *하나* (각 BytePublisher 가 자신의 가상 스레드를 시작).
+12 byte 모두 발행하면 *자연 종료* 한다 (AutoCloseable 불필요).
+
+| pace 문제
+| *발생하지 않음*. 1:1 짝짓기이므로 multiplex mediation 없음.
+
+| `Processor` 의 `Subscriber` 측면
+| *실제로는 사용되지 않음*. 인터페이스 충족을 위한 시그니처일 뿐.
+|===
+
+마지막 행이 중요하다.
+`Cold` 형태의 `Processor` 는 인터페이스를 *시그니처 수준* 에서 구현하지만, *Subscriber 메서드는 실제로 호출되지 않는다*.
+실 라이브러리 (`Flux.map`, `Flowable.map`) 가 `Processor` 인터페이스를 *명시적으로 구현하지 않는* 이유와 일맥상통한다.
+
+=== 4.5. 테스트 시나리오
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 시나리오 | 구독자 A | 구독자 B | 구독자 C | 검증
+
+| Per-subscriber pace
+| `request(12)`
+| `request(1)` 반복
+| `request(3)` 후 `request(9)`
+| 셋 다 12 byte + `onComplete` (각자 자기 속도로)
+
+| 중간 cancel
+| `request(12)`
+| `request(6)` 후 `cancel()`
+| `request(12)`
+| A 와 C 는 12 byte + `onComplete`, B 는 6 byte 까지만, B 의 업스트림 BytePublisher 도 종료
+
+| Late join
+| `request(12)`
+| A 가 5 byte 받은 후 합류, `request(12)`
+| —
+| 둘 다 자기만의 12 byte + `onComplete` 를 받는다 (A 가 진행 중이어도 B 의 스트림은 처음부터)
+|===
+
+'''
+
+== 5. 데모 2 — `Processor<byte[], String>` (Hot, 무한)
+
+=== 5.1. 목적
+
+* 무한한 `byte[]` 업스트림 위에서 *멀티캐스트* 와 *변환* 을 보여 준다.
+* 단일 업스트림 구독을 여러 다운스트림이 공유하는 *진짜* `Processor` 패턴을 구현한다.
+* demand multiplexing, pace 정책, per-subscriber 큐와 가상 스레드를 도입한다.
+
+=== 5.2. 와이어링
+
+[%unbreakable]
+[source]
+----
+ReactiveHelloWorldArrayPublisher (unlimited byte[])
+                  │
+                  ▼
+ReactiveHelloWorldStringProcessor    ← Processor<byte[], String>
+        │           │           │
+        ▼           ▼           ▼
+       [A]         [B]         [C]
+----
+
+업스트림 `subscribe(processor)` 은 *한 번* 호출된다.
+다운스트림 `processor.subscribe(...)` 은 *여러 번* 호출되며, 같은 업스트림 스트림을 공유한다.
+
+=== 5.3. per-subscriber 상태
+
+[%unbreakable]
+[source,java]
+----
+private static final class State {
+    final Subscriber<? super String> downstream;
+    final BlockingQueue<String> queue;
+    final AtomicLong demand = new AtomicLong();
+    final AtomicBoolean cancelled = new AtomicBoolean();
+    final ReentrantLock lock = new ReentrantLock();
+    final Condition workAvailable = lock.newCondition();
+    Thread worker;
+    State(final Subscriber<? super String> d, final int capacity) {
+        this.downstream = d;
+        this.queue = new ArrayBlockingQueue<>(capacity);
+    }
+}
+----
+
+각 구독자는 자기 큐, 자기 demand 카운터, 자기 워커 가상 스레드를 가진다.
+*per-subscriber 백프레셔* 가 자연스럽게 작동하는 메커니즘이다.
+
+=== 5.4. Encoder 자체의 상태
+
+[%unbreakable]
+[source,java]
+----
+private final CopyOnWriteArrayList<State> subscribers = new CopyOnWriteArrayList<>();
+private final AtomicLong upstreamRequested = new AtomicLong();
+private final AtomicBoolean terminated = new AtomicBoolean();
+private @Nullable Throwable terminalError;
+private @Nullable Subscription upstream;
+----
+
+=== 5.5. Subscriber 측면 — 업스트림이 호출
+
+[%unbreakable]
+[source,java]
+----
+@Override
+public void onSubscribe(final Subscription s) {
+    this.upstream = Objects.requireNonNull(s, "s is null");
+}
+
+@Override
+public void onNext(final byte[] e) {
+    final String item = new String(e, StandardCharsets.US_ASCII);    // 한 번만 변환
+    for (final var state : subscribers) {
+        if (state.cancelled.get()) continue;
+        state.queue.offer(item);                                       // §5.8 의 불변식에 따라 항상 성공
+        signal(state);
+    }
+}
+
+@Override
+public void onError(final Throwable t) {
+    if (!terminated.compareAndSet(false, true)) return;
+    terminalError = t;
+    for (final var state : subscribers) signal(state);
+}
+
+@Override
+public void onComplete() {
+    if (!terminated.compareAndSet(false, true)) return;
+    for (final var state : subscribers) signal(state);
+}
+----
+
+업스트림은 무한 스트림이므로 `onComplete` 는 자연 발생하지 않는다.
+`onError` 는 업스트림 자체 오류 시에만 발생한다.
+
+=== 5.6. Publisher 측면 — 다운스트림이 여러 번 호출
+
+[%unbreakable]
+[source,java]
+----
+@Override
+public void subscribe(final Subscriber<? super String> d) {
+    Objects.requireNonNull(d, "d is null");
+    final var state = new State(d, 16);
+    subscribers.add(state);
+    state.worker = Thread.ofVirtual().start(() -> runWorker(state));
+    d.onSubscribe(new Subscription() {
+        @Override public void request(final long n) {
+            if (state.cancelled.get()) return;
+            assert n > 0L;
+            state.demand.addAndGet(n);
+            signal(state);
+            recomputeAndPullUpstream();
+        }
+        @Override public void cancel() {
+            if (state.cancelled.compareAndSet(false, true)) {
+                signal(state);
+                subscribers.remove(state);
+                if (subscribers.isEmpty()) upstream.cancel();          // 마지막 다운스트림 → 업스트림 종료
+            }
+        }
+    });
+}
+----
+
+=== 5.7. per-subscriber 워커 루프
+
+[%unbreakable]
+[source,java]
+----
+private void runWorker(final State state) {
+    while (true) {
+        state.lock.lock();
+        try {
+            while (!state.cancelled.get()
+                   && (state.demand.get() == 0L || state.queue.isEmpty())) {
+                if (terminated.get() && state.queue.isEmpty()) {
+                    if (terminalError != null) state.downstream.onError(terminalError);
+                    else                       state.downstream.onComplete();
+                    return;
+                }
+                state.workAvailable.awaitUninterruptibly();
+            }
+            if (state.cancelled.get()) return;
+        } finally { state.lock.unlock(); }
+        state.demand.decrementAndGet();
+        state.downstream.onNext(state.queue.poll());
+    }
+}
+
+private void signal(final State state) {
+    state.lock.lock();
+    try { state.workAvailable.signalAll(); } finally { state.lock.unlock(); }
+}
+----
+
+워커는 *자기 State 만* 다룬다.
+가상 스레드 생성으로 인한 비용 부담은 무시할 수 있다.
+
+=== 5.8. 업스트림 demand 조정 — slowest free space
+
+[%unbreakable]
+[source,java]
+----
+private void recomputeAndPullUpstream() {
+    long minFree = subscribers.stream()
+            .filter(s -> !s.cancelled.get())
+            .mapToLong(s -> s.queue.remainingCapacity())
+            .min().orElse(0L);
+    long delta = minFree - upstreamRequested.get();
+    if (delta > 0L) {
+        upstreamRequested.addAndGet(delta);
+        upstream.request(delta);
+    }
+}
+----
+
+업스트림에 요청하는 양은 *모든 활성 구독자 큐의 남은 공간 중 최소값* 이다.
+어느 큐도 가득 차지 않으므로 §5.5 의 `offer` 가 항상 성공한다.
+
+핵심 불변식.
+
+[quote]
+____
+At the moment of an upstream `onNext`, every active subscriber has free queue capacity `>= 1`.
+
+업스트림 `onNext` 시점에 활성 구독자 전원의 큐 여유 공간은 1 이상이다.
+____
+
+가장 느린 구독자가 전체 흡입 속도를 결정한다는 점에서 *slowest-paces* 의 변형이지만, 버퍼 용량 (16) 만큼은 빠른 구독자가 앞서 갈 수 있다.
+
+=== 5.9. 테스트 시나리오
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 시나리오 | 구독자 행동 | 검증
+
+| Bounded consumption
+| A, B, C 가 각각 `request(5)`, `request(10)`, `request(3)` 후 `cancel`
+| A=5, B=10, C=3 개의 `String` 수신.
+업스트림은 마지막 cancel 시 종료.
+모든 `onNext(String)` 의 내용은 동일.
+
+| Per-subscriber pace
+| A: `request(Long.MAX_VALUE)`, B: 1 초 sleep 후 `request(1)` 반복
+| A 는 버퍼 16 만큼 앞서 가다가 B 가 따라잡을 때마다 1 씩 받는다.
+slowest-free-space pace 가 확인된다.
+
+| Late join
+| A 진행 중, B 합류 후 `request(3)`, B 즉시 `cancel()`
+| A 는 자기 demand 까지 계속 수신.
+B 는 합류 *이후* 의 3 개만 받고 종료.
+A 의 스트림에는 영향 없음.
+
+| 변환 일관성
+| 어느 시나리오든
+| 모든 구독자의 `onNext(String)` 은 동일한 문자열 ("hello, world").
+변환은 업스트림 onNext 당 *한 번* 만 수행됨.
+|===
+
+'''
+
+== 6. Pace 문제 (Demo 2 만)
+
+데모 1 에서는 *발생하지 않는다*.
+1:1 짝짓기 (Cold) 이기 때문에 다중화 mediation 이 없다.
+
+데모 2 (Hot) 에서만 업스트림 `onNext(byte[])` 가 도착했을 때 다음 두 질문이 떠오른다.
+
+. *누구에게 전달할 것인가?* — 모든 구독자에게? `demand > 0` 인 구독자에게만? 일부는 보관해 두었다가 나중에?
+. *그 `onNext` 자체를 받기 위해 업스트림에 얼마를 요청했는가?* — 가장 빠른 구독자의 demand 만큼? 가장 느린 구독자의 demand 만큼? 합산?
+
+두 질문은 분리할 수 없다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 정책 | 업스트림에 요청 | 다운스트림으로 전달 | 트레이드오프
+
+| *Slowest-paces*
+| `min(activeDemand)`
+| 모든 활성 구독자 (모두 `demand >= 1` 이 보장됨)
+| 가장 느린 구독자가 전체 속도를 결정한다.
+버퍼 없음, 손실 없음, Rule 1.1 위반 없음.
+
+| *Slowest-free-space* (Demo 2 채택)
+| `min(queue free space)`
+| 모든 활성 구독자에게 큐를 통해 전달.
+워커가 자기 속도로 꺼내 다운스트림에 전달.
+| 빠른 구독자가 큐 용량 만큼 앞서 갈 수 있다.
+가장 느린 구독자의 큐가 차면 전체가 정지한다.
+손실 없음.
+
+| *Buffer (무한)*
+| `max(activeDemand)`
+| `demand > 0` 인 구독자에게 즉시, 나머지는 무한 큐에 보관
+| 빠른 구독자가 기다리지 않는다.
+*메모리 비용* 이 무한이 될 수 있다.
+
+| *Drop*
+| `max(activeDemand)`
+| `demand > 0` 인 구독자에게만, 나머지는 *손실*
+| 단순하지만 데이터 손실 발생.
+Rule 1.1 의 정신을 위반한다.
+|===
+
+Demo 2 는 *Slowest-free-space* 를 채택한다.
+
+[NOTE]
+====
+pace 문제는 *Hot 멀티캐스트의 본질적 속성* 이며 회피할 수 없다.
+세 가지 정책 (slowest-paces / buffer / drop) 중 하나를 *반드시 선택* 해야 한다.
+Cold 형태 (Demo 1) 가 pace 문제를 *회피* 하는 이유는, 업스트림 비대칭 자체가 발생하지 않기 때문이다.
+====
+
+'''
+
+== 7. Late-subscriber 시맨틱
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 데모 | late subscriber 의 의미 | 처리 방식
+
+| 데모 1 (Cold)
+| 새로운 업스트림 구독이 생성되므로 *처음부터* 받는다.
+| 자연스럽다.
+별도의 캐시나 replay 가 필요 없다.
+
+| 데모 2 (Hot, 무한)
+| 합류 시점 *이후* 의 요소만 받는다 (Live).
+| 모든 요소가 동일한 "hello, world" 페이로드이므로 정보 손실이 없다.
+종료 신호 (`onError` / `onComplete`) 는 *재생* 한다 — 이미 종료된 인코더에 합류한 구독자는 즉시 동일 종료 신호를 받는다.
+|===
+
+'''
+
+== 8. 실제 라이브러리
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 라이브러리 | Cold 변환 (`map` 등) | Hot 멀티캐스트
+
+| Reactor
+| `Flux.map(fn)` — `FluxMap` Publisher + `MapSubscriber` (per-subscribe).
+*`Processor` 미구현*.
+| `Flux.publish()` / `Flux.share()` / `Sinks.Many.multicast()`.
+백프레셔 정책 명시적 선택.
+
+| RxJava 3
+| `Flowable.map(fn)` — `FlowableMap` + per-subscribe subscriber.
+*`Processor` 미구현*.
+| `Flowable.publish()` / `.share()` / `PublishProcessor`.
+
+| Mutiny
+| `Multi.map(fn)` — per-subscribe inner subscriber.
+*`Processor` 미구현*.
+| `Multi.broadcast().toAllSubscribers()`.
+
+| Akka Streams
+| `Source.map(fn)` — stage graph, run 마다 재구성.
+*`Processor` 미구현*.
+| `BroadcastHub.sink()`.
+|===
+
+`Cold` 변환에 `Processor` 인터페이스를 *명시적으로* 구현하는 라이브러리는 없다.
+어차피 인터페이스의 `Subscriber` 측면이 실제로 사용되지 않으므로, 라이브러리는 그저 `Publisher` 래퍼로 만든다.
+
+`Hot` 멀티캐스트만이 `Processor` 인터페이스를 *진짜로* 활용한다.
+
+[NOTE]
+====
+production 라이브러리는 멀티캐스트 구현에 *단일 drain 스레드 + CAS-WIP* 패턴을 쓴다.
+우리 책 (데모 2) 은 *per-subscriber 가상 스레드 + bounded `BlockingQueue`* 모델을 쓴다.
+이는 production-grade 가 아니라 *교육적 단순화* 를 위한 선택이다.
+====
+
+'''
+
+== 9. 책에서의 도입 순서 제안
+
+. *`ReactiveHelloWorldBytePublisher`, `ReactiveHelloWorldArrayPublisher`* — 단순 `Publisher` 두 개를 먼저 도입한다.
+. *`Processor` 인터페이스* — 정의를 소개한다.
+*`Subscriber + Publisher`* 결합이라는 *형태* 와, *demand multiplexer* 라는 *역할* 두 가지로 설명한다.
+. *데모 1 — Cold `Processor<Byte, Byte>`* — *per-subscriber upstream* 패턴을 도입한다.
+inner anonymous `Subscriber<Byte>` 가 핵심이다.
+`Processor` 의 `Subscriber` 측면이 *실제로는 사용되지 않는* 점, 실 라이브러리도 이 패턴을 `Processor` 가 아닌 `Publisher` 래퍼로 구현한다는 점을 짚는다.
+. *Cold vs Hot 의 분기* — pace 문제가 *왜* 발생하는지를 위 비대칭 그림 (§2) 으로 설명한다.
+. *데모 2 — Hot `Processor<byte[], String>`* — 진짜 멀티캐스트 `Processor` 를 도입한다.
+per-subscriber 상태, 큐, 가상 스레드 워커, slowest-free-space pace 정책.
+. *Pace 정책 비교* — 세 정책 (slowest-paces, buffer, drop) 을 비교하고 우리 채택을 정당화한다.
+. *Late-subscriber 시맨틱* — 두 데모에서 어떻게 다르게 다뤄지는지 비교한다.
+. *실제 라이브러리* — Reactor / RxJava3 / Mutiny / Akka 의 Cold/Hot 처리 방식과 단일 drain 모델을 소개한다.
+
+'''
+
+== 10. 교훈
+
+. *`Processor` 는 demand multiplexer 이다.*
+여러 다운스트림의 독립적인 백프레셔를 모아 하나의 업스트림 백프레셔로 변환한다.
+이 다중화가 *진짜로* 필요한가에 따라 Cold / Hot 이 갈린다.
+. *Cold 변환은 `Processor` 인터페이스가 필요 없다.*
+인터페이스를 구현하더라도 `Subscriber` 측면이 실제로 호출되지 않는다.
+실 라이브러리도 이 경우 `Processor` 를 *명시적으로* 구현하지 않는다.
+. *Hot 변환에서만 `Processor` 가 본 가치를 갖는다.*
+한 업스트림을 여러 다운스트림에 fan-out 하는 멀티캐스트가 인터페이스가 전제한 시맨틱이다.
+. *Pace 문제는 Hot 의 본질적 속성이다.*
+세 가지 정책 (slowest-paces, buffer, drop) 중 어떤 것을 택하든 *반드시 선택해야* 한다.
+. *유한 + 순서 페이로드 → Cold. 무한 + 대칭 페이로드 → Hot.*
+이 휴리스틱이 두 데모의 분기 기준이다.
+. *Per-subscriber 가상 스레드 모델은 교육적으로 단순하다.*
+`BlockingQueue` 가 백프레셔의 핵심 메커니즘을 자연스럽게 표현하며, 가상 스레드가 스레드 비용 문제를 사라지게 한다.
+. *Production 라이브러리는 단일 drain 모델을 쓴다.*
+교육과 실 사용은 다르다는 점을 책에서 명시한다.
+
+'''
+
+== 11. 참고
+
+* https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#4-processor-code[Reactive Streams Specification — 4. Processor]
+* https://projectreactor.io/docs/core/release/reference/#processors[Reactor — Processors and Sinks]
+* https://github.com/ReactiveX/RxJava/wiki/What%27s-different-in-3.0#processor-removal[RxJava 3 — Processor removal]
+* `_THE_DEADLOCK.asciidoc` — `Processor` 가 락을 잡은 채 다운스트림 시그널을 호출하는 안티패턴

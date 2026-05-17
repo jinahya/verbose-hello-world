@@ -20,7 +20,7 @@ import java.util.concurrent.SubmissionPublisher;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldStringProcessor
+class HelloWorldStringFlowProcessor
         implements Flow.Processor<byte[], String> {
 
     private static final System.Logger logger = System.getLogger(
@@ -28,7 +28,7 @@ class HelloWorldStringProcessor
     );
 
     // ---------------------------------------------------------------------------------------------
-    HelloWorldStringProcessor() {
+    HelloWorldStringFlowProcessor() {
         super();
     }
 

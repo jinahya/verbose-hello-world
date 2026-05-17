@@ -1,11 +1,11 @@
 package com.github.jinahya.hello.api;
 
-import akka.actor.ActorSystem;
-import akka.stream.javadsl.Sink;
-import akka.stream.javadsl.Source;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.stream.javadsl.Sink;
+import org.apache.pekko.stream.javadsl.Source;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,39 +18,36 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A pedagogical tour of <a href="https://doc.akka.io/docs/akka/current/stream/">Akka Streams</a>'s
- * own publisher-creation idioms — each test creates a {@link Source Source&lt;byte[],?&gt;}
- * that pulls the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from
- * either {@link #synchronousService() the synchronous service} or
+ * A pedagogical tour of <a href="https://pekko.apache.org/docs/pekko/current/stream/">Apache Pekko
+ * Streams</a>'s own publisher-creation idioms — each test creates a {@link Source
+ * Source&lt;byte[],?&gt;} that pulls the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
+ * {@link #synchronousService() the synchronous service} or
  * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
  * Streams publisher).
  * <p>
- * Akka has only a single source type, so the nested split is by <em>terminal sink</em>:
- * single-value sinks ({@link Sink#head()}) versus multi-value sinks ({@link Sink#seq()}).
+ * Pekko is the Apache Software Foundation fork of Akka 2.6 (kept under Apache-2.0 after
+ * Lightbend's relicensing) and is API-compatible with the Akka tests; the nested split is by
+ * <em>terminal sink</em>: single-value sinks ({@link Sink#head()}) versus multi-value sinks
+ * ({@link Sink#seq()}).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class ReactiveHelloWorld_Akka_Test extends ReactiveHelloWorld__Test {
+class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
 
     private static ActorSystem system;
 
     @BeforeAll
     static void setUpSystem() {
-        system = ActorSystem.create("ReactiveHelloWorld_Akka_Test");
+        system = ActorSystem.create("ReactiveHelloWorld_Pekko_Test");
     }
 
     @AfterAll
     static void shutDownSystem() {
         system.terminate();
         system.getWhenTerminated().toCompletableFuture().orTimeout(10L, TimeUnit.SECONDS).join();
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
     }
 
     // ---------------------------------------------------------------------------------------------

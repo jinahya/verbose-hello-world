@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingSubscription;
+
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, in order.
@@ -25,23 +27,25 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@code onNext}/{@code onError}/{@code onComplete}; the subscription's {@code request}/
  * {@code cancel} run on whichever thread the subscriber calls them from.
  * <p>
- * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> Every subscriber-signal site — the
- * producer's {@code onNext} and {@code onComplete}, the producer's {@code onError} from a failed
- * {@link HelloWorld#set(byte[]) service.set(...)}, and {@code onError} from
- * {@link Subscription#request(long) request(n &le; 0)} on the caller's thread — is wrapped in the
- * same {@link ReentrantLock}, satisfying <a
+ * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> The producer virtual thread is the
+ * sole sender of {@code onNext} and {@code onComplete}, so signals are naturally serialized (<a
  * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a>. Terminal sites additionally CAS the {@code terminated} flag, satisfying <a
- * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
- * 1.7</a> — at most one of {@code onError}/{@code onComplete} ever fires.
+ * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.7</a> — at most one terminal ever fires.
  * <p>
  * <strong>Lifetime.</strong> The stream completes naturally after all {@value HelloWorld#BYTES}
- * bytes have been emitted ({@code onComplete}); a {@code request(n &le; 0)} call or a failed
- * {@code service.set(...)} terminates it early with {@code onError}; downstream {@code cancel()}
- * stops emission without a terminal signal (Rule 3.12).
+ * bytes have been emitted ({@code onComplete}); downstream {@code cancel()} stops emission without
+ * a terminal signal (Rule 3.12).
+ * <p>
+ * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive Streams
+ * workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
+ * {@code assert} rather than routed to {@code onError}, and exceptions thrown by
+ * {@link HelloWorld#set(byte[]) service.set(...)} are <em>not</em> caught — they propagate out of
+ * the producer thread. A production-grade publisher would handle both as terminal {@code onError}
+ * signals.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see ReactiveHelloWorldPublishers#ofBytes(HelloWorld)
  * @see ReactiveHelloWorldArrayPublisher
  */
 final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
@@ -60,12 +64,6 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
         this.service = Objects.requireNonNull(service, "service is null");
     }
 
-    // ---------------------------------------------------------------------------- java.lang.Object
-    @Override
-    public String toString() {
-        return super.toString().substring(getClass().getPackageName().length() + 1);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     /**
@@ -81,7 +79,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
      *       or the subscription is terminated,</li>
      *   <li>on the first iteration with demand, lazily calls
      *       {@link HelloWorld#set(byte[]) service.set(new byte[HelloWorld.BYTES])} to obtain the
-     *       payload (any thrown exception is routed to {@code onError}),</li>
+     *       payload,</li>
      *   <li>emits one {@link Byte} per iteration via
      *       {@link org.reactivestreams.Subscriber#onNext(Object) onNext}, decrementing demand,</li>
      *   <li>breaks out and signals
@@ -103,17 +101,11 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        final var subscription = new Subscription() {
-            @Override public String toString() {
-                return super.toString().substring(getClass().getPackageName().length() + 1);
-            }
+        final var subscription = loggingSubscription(new Subscription() {
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
                 assert n > 0L : "n(" + n + ") is not positive";
-                demand.accumulateAndGet(n, (cur, inc) -> {
-                    try { return Math.addExact(cur, inc); }
-                    catch (final ArithmeticException ae) { return Long.MAX_VALUE; }
-                });
+                demand.addAndGet(n);
                 signal();
             }
             @Override public void cancel() {
@@ -124,13 +116,8 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        };
-        try {
-            s.onSubscribe(subscription);
-        } catch (final Throwable t) {
-            terminated.set(true);
-            return;
-        }
+        });
+        s.onSubscribe(subscription);
         Thread.ofVirtual().start(() -> {
             byte[] array = null;
             int index = 0;
@@ -150,25 +137,12 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
                 if (array == null) {
-                    try {
-                        array = service.set(new byte[HelloWorld.BYTES]);
-                    } catch (final Throwable t) {
-                        if (terminated.compareAndSet(false, true)) {
-                            try { s.onError(t); } catch (final Throwable st) { }
-                        }
-                        return;
-                    }
+                    array = service.set(new byte[HelloWorld.BYTES]);
                 }
-                try {
-                    s.onNext(array[index]);
-                } catch (final Throwable t) {
-                    terminated.set(true);
-                    return;
-                }
-                index++;
+                s.onNext(array[index++]);
                 if (index == HelloWorld.BYTES) {
                     if (terminated.compareAndSet(false, true)) {
-                        try { s.onComplete(); } catch (final Throwable st) { }
+                        s.onComplete();
                     }
                     return;
                 }

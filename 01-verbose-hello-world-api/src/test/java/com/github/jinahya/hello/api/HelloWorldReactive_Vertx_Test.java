@@ -33,13 +33,7 @@ import java.util.concurrent.TimeUnit;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class ReactiveHelloWorld_Vertx_Test extends ReactiveHelloWorld__Test {
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
-    }
+class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach

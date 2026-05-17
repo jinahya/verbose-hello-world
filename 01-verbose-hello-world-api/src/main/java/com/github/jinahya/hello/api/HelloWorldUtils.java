@@ -25,6 +25,7 @@ import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Convenience methods that produce the
@@ -57,22 +58,51 @@ public final class HelloWorldUtils {
     }
 
     /**
-     * Returns a fresh {@link ByteBuffer} of capacity {@value HelloWorld#BYTES} containing the
+     * Returns a {@link ByteBuffer} containing the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by invoking
-     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} on the specified service and then
-     * {@linkplain ByteBuffer#flip() flipping} the result.
+     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} on the specified service with a buffer
+     * obtained from the specified supplier, and then {@linkplain ByteBuffer#flip() flipping} the
+     * result.
      * <p>
-     * The returned buffer is ready for reading — {@code position} is {@code 0} and {@code limit}
-     * is {@value HelloWorld#BYTES}.
+     * The buffer returned by {@code supplier.get()} is passed straight through to the service; this
+     * method does not inspect or validate it. Whatever the supplier returns — {@code null}, a
+     * buffer with fewer or more than {@value HelloWorld#BYTES}
+     * {@linkplain ByteBuffer#remaining() remaining} bytes, a read-only buffer, etc. — is the
+     * service's concern, and any resulting exception propagates from
+     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} unchanged.
+     *
+     * @param service  the {@link HelloWorld} service that produces the bytes.
+     * @param supplier a supplier of the {@link ByteBuffer} to pass to the service.
+     * @return the {@link ByteBuffer} returned by the service, after
+     * {@linkplain ByteBuffer#flip() flipping}.
+     * @throws NullPointerException if the {@code service} is {@code null}, or the {@code supplier}
+     *                              is {@code null}.
+     * @see HelloWorld#put(ByteBuffer)
+     */
+    public static ByteBuffer buffer(final HelloWorld service,
+                                    final Supplier<? extends ByteBuffer> supplier) {
+        Objects.requireNonNull(service, "service is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return service.put(supplier.get()).flip();
+    }
+
+    /**
+     * Returns a fresh {@link ByteBuffer} of capacity {@value HelloWorld#BYTES} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, by delegating to
+     * {@link #buffer(HelloWorld, Supplier) buffer(service, supplier)} with a supplier that
+     * {@linkplain ByteBuffer#allocate(int) allocates} a new {@value HelloWorld#BYTES}-byte buffer.
+     * <p>
+     * The returned buffer is ready for reading — {@code position} is {@code 0} and {@code limit} is
+     * {@value HelloWorld#BYTES}.
      *
      * @param service the {@link HelloWorld} service that produces the bytes.
      * @return a new {@link ByteBuffer} containing the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, ready for reading.
      * @throws NullPointerException if the {@code service} is {@code null}.
-     * @see HelloWorld#put(ByteBuffer)
+     * @see #buffer(HelloWorld, Supplier)
      */
     public static ByteBuffer buffer(final HelloWorld service) {
-        return service.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip();
+        return buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES));
     }
 
     /**

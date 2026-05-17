@@ -1,7 +1,6 @@
 package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,29 +27,31 @@ import static org.mockito.Mockito.verify;
  * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation, …)
  * using a {@link Mockito#spy(Object) spied} {@link Subscriber} wrapped in a logging proxy via
  * {@link HelloWorldBookUtils#loggingProxy(Class, Object)}.
+ * <p>
+ * The constructor passes {@link ReactiveHelloWorldArrayPublisher#from(HelloWorld)
+ * ReactiveHelloWorldArrayPublisher::from} to {@link ReactiveHelloWorld__PublisherTest super},
+ * which builds the mock {@link HelloWorld} service and the logging-wrapped publisher. The mock
+ * is stubbed by the inherited {@code @BeforeEach} hook in the base class — see
+ * {@link ReactiveHelloWorld__PublisherTest#stubService()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see ReactiveHelloWorld__PublisherTest
+ * @see ReactiveHelloWorldArrayPublisher
  */
 @Slf4j
-class ReactiveHelloWorldPublisher_Array_Test
-        extends ReactiveHelloWorldPublisher__Test<byte[]> {
+class ReactiveHelloWorld_Array_PublisherTest
+        extends ReactiveHelloWorld__PublisherTest<byte[]> {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
-    ReactiveHelloWorldPublisher_Array_Test() {
+    ReactiveHelloWorld_Array_PublisherTest() {
         super(ReactiveHelloWorldArrayPublisher::from);
     }
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-    }
-
-    // ---------------------------------------------------------------------------------------------
     @Test
-    @DisplayName("request(1) → exactly 1 element, no onComplete")
+    @DisplayName("request(1) → 1 element, no onComplete")
     void __exactly1() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = loggingSpy(new Subscriber<byte[]>() {
@@ -61,9 +62,7 @@ class ReactiveHelloWorldPublisher_Array_Test
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await()
-                .atMost(TIMEOUT)
-                .untilAsserted(() -> verify(subscriber, times(1)).onNext(any()));
+        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onNext(any()));
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
@@ -74,7 +73,7 @@ class ReactiveHelloWorldPublisher_Array_Test
     }
 
     @Test
-    @DisplayName("request(n), n > 0 → exactly n elements, no onComplete")
+    @DisplayName("request(n), n > 0 → n elements, no onComplete")
     void __random() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 8);

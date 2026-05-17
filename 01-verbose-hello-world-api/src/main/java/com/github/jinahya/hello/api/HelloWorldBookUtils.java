@@ -37,7 +37,8 @@ final class HelloWorldBookUtils {
             MethodHandles.lookup().lookupClass().getName()
     );
 
-    static String toHascodeString(Object object) {
+    // ---------------------------------------------------------------------------------------------
+    static String toHascodeString(final Object object) {
         return String.format("@%08x", System.identityHashCode(object));
     }
 
@@ -46,10 +47,30 @@ final class HelloWorldBookUtils {
             return "";
         }
         return Arrays.stream(args)
-//                .map(String::valueOf)
-//                .map(HelloWorldBookUtils::toSimplifiedString)
-                .map(HelloWorldBookUtils::toHascodeString)
+                .map(HelloWorldBookUtils::format)
                 .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * Renders the given value in a log-friendly form, type-dispatched:
+     * <ul>
+     *   <li>{@code null} → {@code "null"}</li>
+     *   <li>{@link Byte} → {@link #formatByte(byte)} (e.g. {@code 68'h'})</li>
+     *   <li>{@code byte[]} → {@link #formatArray(byte[])} (e.g. {@code [68'h' 65'e' …]})</li>
+     *   <li>{@link Number} (int, long, …) → its {@code toString}, as is</li>
+     *   <li>{@link CharSequence} → the string content, unquoted (identifier-like)</li>
+     *   <li>anything else → {@link #toHascodeString(Object)} (identity hash)</li>
+     * </ul>
+     */
+    static String format(final @Nullable Object value) {
+        return switch (value) {
+            case null -> "null";
+            case Byte b -> formatByte(b);
+            case byte[] a -> formatArray(a);
+            case Number n -> n.toString();
+            case CharSequence s -> s.toString();
+            default -> toHascodeString(value);
+        };
     }
 
     /**

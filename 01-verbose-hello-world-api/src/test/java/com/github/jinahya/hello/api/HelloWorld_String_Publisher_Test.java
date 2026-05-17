@@ -23,7 +23,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * Subscription-level tests for {@link HelloWorldStringPublisher} against the
+ * Subscription-level tests for {@link HelloWorldStringFlowPublisher} against the
  * {@link Flow.Publisher Flow.Publisher} contract.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -35,7 +35,7 @@ class HelloWorld_String_Publisher_Test extends HelloWorld__Publisher_Test<String
 
     // ---------------------------------------------------------------------------------------------
     HelloWorld_String_Publisher_Test() {
-        super(HelloWorldStringPublisher::from);
+        super(HelloWorldStringFlowPublisher::from);
     }
 
     // ---------------------------------------------------------------------------------------------

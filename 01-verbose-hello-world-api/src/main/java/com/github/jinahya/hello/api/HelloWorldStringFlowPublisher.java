@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A {@link Flow.Publisher} of {@link String} elements built on top of a
- * {@link HelloWorldArrayPublisher upstream array publisher}, with the {@code byte[] → String}
+ * {@link HelloWorldArrayBytePublisher upstream array publisher}, with the {@code byte[] → String}
  * conversion performed by a private {@link Flow.Subscriber} that forwards each decoded string into
  * a wrapped {@link SubmissionPublisher} for multicast delivery.
  * <p>
@@ -18,19 +18,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldStringPublisher implements Flow.Publisher<String>, AutoCloseable {
+class HelloWorldStringFlowPublisher implements Flow.Publisher<String>, AutoCloseable {
 
     private static final System.Logger logger = System.getLogger(
             MethodHandles.lookup().lookupClass().getName()
     );
 
     // ---------------------------------------------------------------------------------------------
-    static HelloWorldStringPublisher from(final HelloWorld service) {
-        return new HelloWorldStringPublisher(HelloWorldArrayPublisher.from(service));
+    static HelloWorldStringFlowPublisher from(final HelloWorld service) {
+        return new HelloWorldStringFlowPublisher(HelloWorldArrayBytePublisher.from(service));
     }
 
     // ---------------------------------------------------------------------------------------------
-    HelloWorldStringPublisher(final HelloWorldArrayPublisher source) {
+    HelloWorldStringFlowPublisher(final HelloWorldArrayBytePublisher source) {
         super();
         this.source = Objects.requireNonNull(source, "source is null");
     }
@@ -63,7 +63,7 @@ class HelloWorldStringPublisher implements Flow.Publisher<String>, AutoCloseable
         source.close();
     }
 
-    private final HelloWorldArrayPublisher source;
+    private final HelloWorldArrayBytePublisher source;
 
     private final SubmissionPublisher<String> inner = new SubmissionPublisher<>();
 

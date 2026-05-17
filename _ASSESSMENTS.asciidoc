@@ -330,7 +330,7 @@ It comprises three package-private `org.reactivestreams.Publisher` classes (`Byt
 === ReactiveHelloWorldBytePublisher
 
 * *Spec compliance*: Rules 1.3, 1.7, 3.5, 3.6, 3.7, 3.9, 3.12 verified by raw-RS tests
-(`ReactiveHelloWorldPublisher_Byte_Test`).
+(`ReactiveHelloWorld_Byte_PublisherTest`).
 * *Lazy `byte[]` allocation*: source array is allocated inside the producer thread on the
 first iteration with demand, so a `subscribe()` + `cancel()` without ever requesting
 incurs no allocation cost.
@@ -367,7 +367,7 @@ is invariant.
 
 === ReactiveHelloWorldStringPublisher
 
-* *1:1 Processor*: each `subscribe()` constructs a fresh single-use `StringEncoder`
+* *1:1 Processor*: each `subscribe()` constructs a fresh single-use `HelloWorldStringEncoder`
 {`Processor<byte[], String>`} that wraps the upstream byte-array publisher.
 Demand is forwarded 1:1 — no prefetch, no buffering.
 * *No producer thread*: signals run on whichever thread the upstream emits on.

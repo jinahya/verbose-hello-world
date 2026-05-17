@@ -19,13 +19,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>
  * Typical wiring:
  * <pre>{@code
- *     final var encoder = new StringEncoder();
+ *     final var encoder = new HelloWorldStringEncoder();
  *     upstream.subscribe(encoder);       // upstream calls encoder.onSubscribe(upstreamSubscription)
  *     encoder.subscribe(downstream);     // downstream gets its Subscription via onSubscribe
  * }</pre>
  * Or, for {@link java.util.concurrent.Flow} upstream/downstream, adapt via {@link FlowAdapters}:
  * <pre>{@code
- *     final var flow = FlowAdapters.toFlowProcessor(new StringEncoder());
+ *     final var flow = HelloWorldStringEncoder.ofFlow();
  *     flowUpstream.subscribe(flow);
  *     flow.subscribe(flowDownstream);
  * }</pre>
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-final class StringEncoder implements Processor<byte[], String> {
+final class HelloWorldStringEncoder implements Processor<byte[], String> {
 
     // -----------------------------------------------------------------------------------------
     @Override
@@ -97,13 +97,13 @@ final class StringEncoder implements Processor<byte[], String> {
     private final AtomicBoolean terminated = new AtomicBoolean();
 
     /**
-     * Wraps a new {@link StringEncoder} as a {@link Flow.Processor} via
+     * Wraps a new {@link HelloWorldStringEncoder} as a {@link Flow.Processor} via
      * {@link FlowAdapters#toFlowProcessor(Processor)}. Convenience for the {@code java.util.concurrent.Flow}
      * side.
      *
-     * @return a fresh, single-use {@link Flow.Processor} backed by a new {@link StringEncoder}.
+     * @return a fresh, single-use {@link Flow.Processor} backed by a new {@link HelloWorldStringEncoder}.
      */
     static Flow.Processor<byte[], String> ofFlow() {
-        return FlowAdapters.toFlowProcessor(new StringEncoder());
+        return FlowAdapters.toFlowProcessor(new HelloWorldStringEncoder());
     }
 }

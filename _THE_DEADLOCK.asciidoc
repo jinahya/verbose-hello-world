@@ -61,7 +61,7 @@ Main         WAITING  at ReentrantLock.lock()
 | 스레드 | 보유 | 대기
 
 | `Worker #155`
-| `Array` 락 + `StringEncoder` 락
+| `Array` 락 + `HelloWorldStringEncoder` 락
 | `AssertSubscriber` 모니터
 
 | `Main`

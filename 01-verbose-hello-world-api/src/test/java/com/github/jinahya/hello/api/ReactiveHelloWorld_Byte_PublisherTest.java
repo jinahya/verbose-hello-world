@@ -1,7 +1,6 @@
 package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,8 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
-import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisher__TestUtils.sleep;
+import static com.github.jinahya.hello.api.ReactiveHelloWorld__PublisherTestUtils.sleep;
 import static java.util.Arrays.copyOf;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,29 +33,32 @@ import static org.mockito.Mockito.verify;
  * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation, …)
  * using a {@link Mockito#spy(Object) spied} {@link Subscriber} wrapped in a logging proxy via
  * {@link HelloWorldBookUtils#loggingProxy(Class, Object)}.
+ * <p>
+ * The constructor passes {@link ReactiveHelloWorldBytePublisher#ReactiveHelloWorldBytePublisher(HelloWorld)
+ * new ReactiveHelloWorldBytePublisher(service)} (as a method reference) to
+ * {@link ReactiveHelloWorld__PublisherTest super}, which builds the mock {@link HelloWorld}
+ * service and the logging-wrapped publisher. The mock is stubbed by the inherited
+ * {@code @BeforeEach} hook in the base class — see
+ * {@link ReactiveHelloWorld__PublisherTest#stubService()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see ReactiveHelloWorld__PublisherTest
+ * @see ReactiveHelloWorldBytePublisher
  */
 @Slf4j
-class ReactiveHelloWorldPublisher_Byte_Test
-        extends ReactiveHelloWorldPublisher__Test<Byte> {
+class ReactiveHelloWorld_Byte_PublisherTest
+        extends ReactiveHelloWorld__PublisherTest<Byte> {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     // ---------------------------------------------------------------------------------------------
-    ReactiveHelloWorldPublisher_Byte_Test() {
+    ReactiveHelloWorld_Byte_PublisherTest() {
         super(ReactiveHelloWorldBytePublisher::new);
     }
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        set_array_sets_actual_hello_world_bytes(service());
-    }
-
-    // ---------------------------------------------------------------------------------------------
     @Test
-    @DisplayName("request(12) → exactly 12 elements + onComplete")
+    @DisplayName("request(12) → 12 elements, onComplete")
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = loggingSpy(new Subscriber<Byte>() {
@@ -85,7 +86,7 @@ class ReactiveHelloWorldPublisher_Byte_Test
     }
 
     @Test
-    @DisplayName("request(n), n ∈ [1, 12) → only n elements, no onComplete")
+    @DisplayName("request(n), n ∈ [1, 12) → n elements, no onComplete")
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
@@ -113,7 +114,7 @@ class ReactiveHelloWorldPublisher_Byte_Test
     }
 
     @Test
-    @DisplayName("request(n), n > 12 → exactly 12 elements + onComplete")
+    @DisplayName("request(n), n > 12 → 12 elements, onComplete")
     void __requestMoreThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextLong(HelloWorld.BYTES + 1L, 1024L);
@@ -141,7 +142,7 @@ class ReactiveHelloWorldPublisher_Byte_Test
         } // @formatter:on
     }
 
-    @DisplayName("one thread request(1) with sleep, another thread cancel → no terminal signal")
+    @DisplayName("request(1) repeatedly with concurrent cancel → no onError, no onComplete")
     @Test
     void __cancel() throws InterruptedException { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -154,16 +155,15 @@ class ReactiveHelloWorldPublisher_Byte_Test
                 requester.set(Thread.ofVirtual().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {
                         sleep(Duration.ofSeconds(1L));
-                        if (terminated.get() && ThreadLocalRandom.current().nextBoolean()) {
-                            break;
-                        }
-                        lock.lock(); try { s.request(1L); } finally { lock.unlock(); }
+                        lock.lock();
+                        try { if (terminated.get()) { break; } s.request(1L);
+                        } finally { lock.unlock(); }
                     }
                 }));
                 canceller.set(Thread.ofVirtual().start(() -> {
-                    sleep(1L, HelloWorld.BYTES);
-                    lock.lock(); try { s.cancel(); } finally { lock.unlock(); }
-                    terminated.set(true);
+                    sleep(3L, 6L);
+                    lock.lock();
+                    try { s.cancel(); terminated.set(true); } finally { lock.unlock(); }
                 }));
             }
             @Override public void onNext(final Byte b) { }

@@ -14,7 +14,7 @@ import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingSubscriber
  * A {@link Flow.Publisher} of {@code byte[]} elements — each a freshly assembled,
  * {@value HelloWorld#BYTES}-byte snapshot of the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, composed on top of a
- * {@link HelloWorldBytePublisher upstream byte publisher} and multicast through a wrapped
+ * {@link HelloWorldByteFlowPublisher upstream byte publisher} and multicast through a wrapped
  * {@link SubmissionPublisher}.
  * <p>
  * On the first {@link #subscribe(Flow.Subscriber) subscribe}, a single producer virtual thread is
@@ -26,19 +26,19 @@ import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingSubscriber
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldArrayPublisher implements Flow.Publisher<byte[]>, AutoCloseable {
+class HelloWorldArrayBytePublisher implements Flow.Publisher<byte[]>, AutoCloseable {
 
     private static final System.Logger logger = System.getLogger(
             MethodHandles.lookup().lookupClass().getName()
     );
 
     // ---------------------------------------------------------------------------------------------
-    static HelloWorldArrayPublisher from(final HelloWorld service) {
-        return new HelloWorldArrayPublisher(new HelloWorldBytePublisher(service));
+    static HelloWorldArrayBytePublisher from(final HelloWorld service) {
+        return new HelloWorldArrayBytePublisher(new HelloWorldByteFlowPublisher(service));
     }
 
     // ---------------------------------------------------------------------------------------------
-    HelloWorldArrayPublisher(final HelloWorldBytePublisher source) {
+    HelloWorldArrayBytePublisher(final HelloWorldByteFlowPublisher source) {
         super();
         this.source = Objects.requireNonNull(source, "source is null");
     }
@@ -94,7 +94,7 @@ class HelloWorldArrayPublisher implements Flow.Publisher<byte[]>, AutoCloseable 
         inner.close();
     }
 
-    private final HelloWorldBytePublisher source;
+    private final HelloWorldByteFlowPublisher source;
 
     private final SubmissionPublisher<byte[]> inner = new SubmissionPublisher<>();
 

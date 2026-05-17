@@ -30,15 +30,9 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
+class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
-    }
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
@@ -82,7 +76,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
                     .collectList()
                     .block(TIMEOUT);
             Assertions.assertEquals(N, list.size());
-            list.forEach(ReactiveHelloWorld_Reactor_Test::assertPayload);
+            list.forEach(HelloWorldReactive_Reactor_Test::assertPayload);
         }
 
         @Test
@@ -103,7 +97,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
                     .collectList()
                     .block(TIMEOUT);
             Assertions.assertEquals(N, list.size());
-            list.forEach(ReactiveHelloWorld_Reactor_Test::assertPayload);
+            list.forEach(HelloWorldReactive_Reactor_Test::assertPayload);
         }
     }
 
@@ -116,7 +110,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
         @DisplayName("Mono.just(byte[]) → eager single value")
         void __just() {
             StepVerifier.create(Mono.just(HelloWorldUtils.array(synchronousService())))
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -127,7 +121,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
             StepVerifier.create(
                             Mono.fromSupplier(() -> HelloWorldUtils.array(synchronousService()))
                     )
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -138,7 +132,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
             StepVerifier.create(
                             Mono.fromCallable(() -> HelloWorldUtils.array(synchronousService()))
                     )
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -150,7 +144,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
                             Mono.fromCompletionStage(() -> asynchronousService()
                                     .applyAsync(HelloWorldUtils::array))
                     )
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -177,7 +171,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
         void __just_single() {
             StepVerifier.create(
                             Flux.just(HelloWorldUtils.array(synchronousService())))
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -189,9 +183,9 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
                             HelloWorldUtils.array(synchronousService()),
                             HelloWorldUtils.array(synchronousService()),
                             HelloWorldUtils.array(synchronousService())))
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -202,8 +196,8 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
             StepVerifier.create(Flux.fromIterable(List.of(
                             HelloWorldUtils.array(synchronousService()),
                             HelloWorldUtils.array(synchronousService()))))
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -216,8 +210,8 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
                         sink.next(HelloWorldUtils.array(synchronousService()));
                         sink.complete();
                     }))
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }
@@ -240,7 +234,7 @@ class ReactiveHelloWorld_Reactor_Test extends ReactiveHelloWorld__Test {
             StepVerifier.create(Flux.from(
                             Mono.fromCompletionStage(() -> asynchronousService().applyAsync(
                                     HelloWorldUtils::array))))
-                    .assertNext(ReactiveHelloWorld_Reactor_Test::assertPayload)
+                    .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
         }

@@ -21,7 +21,6 @@ package com.github.jinahya.hello.api._java_util_concurrent;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldFlow;
 import com.github.jinahya.hello.api.HelloWorldTest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -35,17 +35,11 @@ import java.util.stream.IntStream;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class ReactiveHelloWorld_Jdk_Test extends ReactiveHelloWorld__Test {
+class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
 
     private static final long TIMEOUT = 10L;
 
     private static final int N = 3;
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    public String toString() {
-        return HelloWorldBookUtils.toSimplifiedString(super.toString());
-    }
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
@@ -144,7 +138,7 @@ class ReactiveHelloWorld_Jdk_Test extends ReactiveHelloWorld__Test {
             done.get(TIMEOUT, TimeUnit.SECONDS);
         }
         Assertions.assertEquals(N, items.size());
-        items.forEach(ReactiveHelloWorld_Jdk_Test::assertPayload); // @formatter:on
+        items.forEach(HelloWorldReactive_Jdk_Test::assertPayload); // @formatter:on
     }
 
     @Test
@@ -182,6 +176,6 @@ class ReactiveHelloWorld_Jdk_Test extends ReactiveHelloWorld__Test {
             done.get(TIMEOUT, TimeUnit.SECONDS);
         }
         Assertions.assertEquals(N, items.size());
-        items.forEach(ReactiveHelloWorld_Jdk_Test::assertPayload); // @formatter:on
+        items.forEach(HelloWorldReactive_Jdk_Test::assertPayload); // @formatter:on
     }
 }
