@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingProxy;
 
 /**
  * A package-private <em>cycle-batched multicast</em> {@link Processor} of {@link Byte} elements.
@@ -27,38 +29,43 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * Three concurrent moving parts:
  * <ol>
- *   <li>A lazily-started <strong>outer</strong> virtual thread that loops:
+ *   <li>A lazily-started <strong>outer</strong> platform thread (DCL-guarded on {@link #thread})
+ *       that loops:
  *       <ol>
- *         <li>{@code statesQueue.take()} blocks until at least one downstream subscriber is
- *             waiting,</li>
- *         <li>reset cycle state, then {@code upstreamPublisher.subscribe(this)} — which
- *             synchronously calls {@link #onSubscribe(Subscription) this.onSubscribe} (where
- *             {@code request(12)} happens),</li>
- *         <li>wait for the cycle to complete (signaled by the 12th {@code onNext} or by
- *             {@code onError}),</li>
- *         <li>loop.</li>
+ *         <li>waits on {@link #lock} / {@link #condition} until the shared state queue
+ *             ({@link #queue}) is non-empty (i.e. at least one downstream subscriber has
+ *             registered),</li>
+ *         <li>resets the cycle buffer index ({@link #index} = 0), then
+ *             {@code publisher.subscribe(this)} — which synchronously calls
+ *             {@link #onSubscribe(Subscription) this.onSubscribe} (where {@code request(12)}
+ *             happens),</li>
+ *         <li>acquires the cycle semaphore ({@link #semaphore}), blocking until
+ *             {@link #onComplete()} releases it at the end of the 12-byte cycle,</li>
+ *         <li>loops.</li>
  *       </ol>
  *   </li>
- *   <li>One <strong>worker</strong> virtual thread per downstream subscriber, started by
- *       {@link #subscribe(Subscriber)}. The worker calls {@code downstream.onSubscribe(...)},
- *       offers its {@code State} onto {@code statesQueue} (waking the outer), and then loops on
- *       its own per-subscriber {@link BlockingQueue}{@code <Byte>} delivering bytes as
- *       {@code request(n)} demands.</li>
- *   <li>The producer virtual thread <em>inside</em> the byte publisher (one per cycle) — emits the
+ *   <li>One <strong>worker</strong> platform thread per downstream subscriber, started by
+ *       {@link #subscribe(Subscriber)}. The worker loops on its own per-subscriber
+ *       {@link BlockingQueue}{@code <Byte>} (capacity 12), delivering bytes as
+ *       {@code request(n)} demands, and calls {@code downstream.onComplete()} when the queue
+ *       drains.</li>
+ *   <li>The producer thread <em>inside</em> the byte publisher (one per cycle) — emits the
  *       12 bytes and self-terminates.</li>
  * </ol>
  * Subscribers who join while a cycle is in flight all share that cycle's 12-byte payload (because
- * the outer drains {@code statesQueue} at the 12th {@code onNext} moment, pulling in everyone who
- * joined since the cycle started). Subscribers who join between cycles trigger the next cycle when
- * the outer next reaches {@code take()}.
+ * {@link #onComplete()} drains the entire state queue at the 12th-{@code onNext} moment, copying
+ * the cycle buffer to everyone who joined since the cycle started). Subscribers who join between
+ * cycles trigger the next cycle when the outer next wakes from its wait.
  * <p>
  * {@link #subscribe(Subscriber) subscribe} is non-blocking: it constructs a fresh {@code State},
- * starts the worker thread, and returns immediately. The {@code downstream.onSubscribe}, the
- * offer into {@code statesQueue}, and the subsequent delivery all happen on the worker thread.
+ * calls {@code downstream.onSubscribe(...)} on the calling thread, starts the per-subscriber
+ * worker, lazily starts the shared outer thread on the first call, and offers the {@code State}
+ * onto the shared state queue before returning. All subsequent {@code onNext} / {@code onComplete}
+ * deliveries to the downstream happen on its worker thread.
  * <p>
  * <strong>Spec caveat (Rule 2.12).</strong> Because the outer loops, the same instance
- * ({@code this}) is subscribed to {@code upstreamPublisher} more than once across cycles —
- * which spec Rule 2.12 forbids ("a Subscriber must not be subscribed more than once").
+ * ({@code this}) is subscribed to {@link #publisher} more than once across cycles — which spec
+ * Rule 2.12 forbids ("a Subscriber must not be subscribed more than once").
  * {@link ReactiveHelloWorldBytePublisher} does not enforce that rule, so it works in practice,
  * but a strict spec-conformant implementation would use a fresh {@code Subscriber<Byte>} per
  * cycle instead.
@@ -66,18 +73,24 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldBytePublisher
  */
-final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
+final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte>, AutoCloseable {
 
     private static final class State implements Runnable {
 
-        State(final Subscriber<? super Byte> downstream) {
+        State(final Subscriber<? super Byte> downstream, final ReentrantLock lock) {
             super();
             this.downstream = downstream;
+            this.lock = lock;
+            this.condition = lock.newCondition();
         }
 
         private void signal() { // @formatter:off
             lock.lock();
-            try { condition.signalAll(); } finally { lock.unlock(); } // @formatter:on
+            try {
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            } // @formatter:on
         }
 
         @Override
@@ -98,7 +111,9 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
                 } finally { lock.unlock(); }
                 if (terminated.get()) { return; }
                 demand.decrementAndGet();
-                downstream.onNext(queue.poll());
+                final var polled = queue.poll();
+                assert polled != null;
+                downstream.onNext(polled);
             }
             downstream.onComplete(); // @formatter:on
         }
@@ -112,14 +127,9 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
 
         private final AtomicBoolean terminated = new AtomicBoolean();
 
-        private final ReentrantLock lock = new ReentrantLock();
+        private final ReentrantLock lock;
 
-        private final Condition condition = lock.newCondition();
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    static ReactiveHelloWorldByteProcessor from(final HelloWorld service) {
-        return new ReactiveHelloWorldByteProcessor(service);
+        private final Condition condition;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -131,14 +141,12 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onSubscribe(final Subscription s) {
-        assert s != null;
         s.request(HelloWorld.BYTES);
     }
 
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onNext(final Byte t) {
-        assert t != null;
         assert index < array.length;
         array[index++] = t;
     }
@@ -159,8 +167,7 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
             }
             state.signal();
         }
-        assert latch != null;
-        latch.countDown(); // @formatter:on
+        semaphore.release(); // @formatter:on
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -169,16 +176,18 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
      * {@inheritDoc}
      *
      * @throws NullPointerException if the {@code s} is {@code null}.
-     * @implSpec This method constructs a fresh {@link State} and starts a per-subscriber worker
-     * virtual thread, then returns immediately. The worker calls {@code s.onSubscribe(...)}, offers
-     * its {@code State} to the shared {@code statesQueue} (waking the outer thread), and loops on
-     * its own queue delivering to {@code s}.
+     * @implSpec This method constructs a fresh {@link State}, calls {@code s.onSubscribe(...)} on
+     * the calling thread, starts a per-subscriber worker platform thread, lazily starts the shared
+     * outer thread on the first call, and offers the {@code State} onto the shared state queue
+     * ({@link #queue}) before returning. The worker loops on its own queue delivering bytes to
+     * {@code s} as {@code request(n)} demands, then calls {@code s.onComplete()} when the queue
+     * drains.
      */
     @Override
     public void subscribe(final Subscriber<? super Byte> s) { // @formatter:off
         Objects.requireNonNull(s, "s is null");
-        final var state = new State(s);
-        s.onSubscribe(new Subscription() {
+        final var state = new State(s, lock);
+        s.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
             @Override public void request(final long n) {
                 assert n > 0L;
                 if (state.terminated.get()) { return; }
@@ -189,24 +198,26 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
                 state.terminated.set(true);
                 state.signal();
             }
-        });
-        Thread.ofVirtual().start(state);
+        }));
+        Thread.ofPlatform().start(state);
         if (thread == null) {
             synchronized (this) {
                 if (thread == null) {
-                    thread = Thread.ofVirtual().start(() -> {
-                        while (true) {
+                    thread = Thread.ofPlatform().start(() -> {
+                        while (!closed.get()) {
                             lock.lock();
                             try {
-                                while (queue.isEmpty()) {
+                                while (!closed.get() && queue.isEmpty()) {
                                     condition.awaitUninterruptibly();
                                 }
                             } finally { lock.unlock(); }
+                            if (closed.get()) { return; }
                             index = 0;
-                            latch = new CountDownLatch(1);
                             publisher.subscribe(this);
-                            try { latch.await(); }
-                            catch (final InterruptedException _) { }
+                            try { semaphore.acquire(); }
+                            catch (final InterruptedException _) {
+                                Thread.currentThread().interrupt(); return;
+                            }
                         }
                     });
                 }
@@ -217,7 +228,24 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
             final var offered = queue.offer(state);
             assert offered;
             condition.signalAll();
-        } finally { lock.unlock(); } // @formatter:on
+        } finally {
+            lock.unlock();
+        } // @formatter:on
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public void close() {
+        if (!closed.compareAndSet(false, true)) {
+            return;
+        }
+        semaphore.release();
+        lock.lock();
+        try {
+            condition.signalAll();
+        } finally {
+            lock.unlock();
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -235,5 +263,7 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte> {
 
     private int index = 0;
 
-    private volatile @Nullable CountDownLatch latch;
+    private final Semaphore semaphore = new Semaphore(0);
+
+    private final AtomicBoolean closed = new AtomicBoolean();
 }
