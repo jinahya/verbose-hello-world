@@ -5,8 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Package-private utilities shared by the Reactive Streams publisher implementations
- * ({@link ReactiveHelloWorldBytePublisher}, {@link ReactiveHelloWorldArrayPublisher}, and
- * {@link ReactiveHelloWorldStringPublisher}).
+ * ({@link ReactiveHelloWorldBytePublisher}, and {@link ReactiveHelloWorldArrayPublisher}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

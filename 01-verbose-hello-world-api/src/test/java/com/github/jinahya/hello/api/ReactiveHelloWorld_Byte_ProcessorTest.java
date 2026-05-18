@@ -28,12 +28,12 @@ import static org.mockito.Mockito.verify;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class ReactiveHelloWorld_Byte_Processor_Test {
+class ReactiveHelloWorld_Byte_ProcessorTest {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(30L);
 
     // ---------------------------------------------------------------------------------------------
-    ReactiveHelloWorld_Byte_Processor_Test() {
+    ReactiveHelloWorld_Byte_ProcessorTest() {
         super();
         service = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
     }

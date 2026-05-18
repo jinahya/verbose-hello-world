@@ -17,13 +17,14 @@ import java.util.concurrent.SubmissionPublisher;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-class HelloWorldByteFlowPublisher implements Flow.Publisher<Byte> {
+class HelloWorldBytePublisher implements Flow.Publisher<Byte> {
 
-    HelloWorldByteFlowPublisher(final HelloWorld service) {
+    HelloWorldBytePublisher(final HelloWorld service) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Override
     public void subscribe(final Flow.Subscriber<? super Byte> subscriber) {
         final var inner = new SubmissionPublisher<Byte>();
@@ -39,5 +40,6 @@ class HelloWorldByteFlowPublisher implements Flow.Publisher<Byte> {
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
     private final HelloWorld service;
 }

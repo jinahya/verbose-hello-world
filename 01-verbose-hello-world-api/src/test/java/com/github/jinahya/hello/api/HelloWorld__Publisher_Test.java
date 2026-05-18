@@ -4,14 +4,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import java.util.concurrent.Flow;
 import java.util.function.Function;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingPublisher;
-import static java.util.Objects.requireNonNull;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -36,18 +35,27 @@ abstract class HelloWorld__Publisher_Test<U> {
             final Function<? super HelloWorld, ? extends Flow.Publisher<U>> initializer) {
         super();
         service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        delegate = requireNonNull(
-                requireNonNull(initializer, "initializer is null").apply(service),
-                "null initialized"
-        );
-        publisher = loggingPublisher(delegate);
+        this.initializer = initializer;
     }
 
     // ---------------------------------------------------------------------------------------------
-    @AfterEach
-    void closeIfCloseable() throws Exception {
-        if (delegate instanceof AutoCloseable closeable) {
-            closeable.close();
+    @BeforeEach
+    void stubService() {
+        set_array_sets_actual_hello_world_bytes(service());
+    }
+
+    // ------------------------------------------------------------------------------------- service
+
+    // --------------------------------------------------------------------------------- initializer
+    <R> R applyPublisher(final Function<? super Flow.Publisher<U>, ? extends R> function)
+            throws Exception {
+        final var publisher = initializer.apply(service);
+        try {
+            return function.apply(publisher);
+        } finally {
+            if (publisher instanceof AutoCloseable closeable) {
+                closeable.close();
+            }
         }
     }
 
@@ -56,9 +64,5 @@ abstract class HelloWorld__Publisher_Test<U> {
     @Getter(AccessLevel.PACKAGE)
     private final HelloWorld service;
 
-    private final Flow.Publisher<U> delegate;
-
-    @Accessors(fluent = true)
-    @Getter(AccessLevel.PACKAGE)
-    private final Flow.Publisher<U> publisher;
+    private final Function<? super HelloWorld, ? extends Flow.Publisher<U>> initializer;
 }

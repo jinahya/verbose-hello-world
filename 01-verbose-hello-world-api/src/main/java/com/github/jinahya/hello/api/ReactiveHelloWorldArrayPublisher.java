@@ -12,23 +12,27 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingProxy;
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingSubscriber;
+import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.addDemand;
+
 /**
  * A package-private {@link Publisher} of {@code byte[]} elements — each a freshly assembled,
  * {@value HelloWorld#BYTES}-byte snapshot of the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
  * <p>
  * Unlike {@link ReactiveHelloWorldBytePublisher} which sources from a {@link HelloWorld} directly,
- * this publisher is composed on top of another {@link Publisher} of {@link Byte} elements. For
- * each unit of downstream demand, the producer virtual thread <em>sequentially</em> opens a fresh
+ * this publisher is composed on top of another {@link Publisher} of {@link Byte} elements. For each
+ * unit of downstream demand, the producer virtual thread <em>sequentially</em> opens a fresh
  * subscription to the upstream byte publisher, accumulates {@value HelloWorld#BYTES} bytes into a
  * {@code byte[]}, and — once the upstream {@code onComplete}s — emits the assembled array
  * downstream via {@code onNext}.
  * <p>
  * <strong>Threading.</strong> Each {@link #subscribe(Subscriber) subscribe} call allocates fresh
  * per-subscriber state (demand counter, terminated flag, lock) and starts a single dedicated
- * producer <em>virtual</em> thread that parks on demand. Virtual threads are always daemon
- * threads, so an abandoned subscriber cannot block JVM shutdown. Upstream subscriptions run
- * sequentially — one per demand unit — never concurrently.
+ * producer <em>virtual</em> thread that parks on demand. Virtual threads are always daemon threads,
+ * so an abandoned subscriber cannot block JVM shutdown. Upstream subscriptions run sequentially —
+ * one per demand unit — never concurrently.
  * <p>
  * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> The producer virtual thread is the sole
  * sender of downstream signals, so signals are naturally serialized (<a
@@ -42,15 +46,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * <strong>Lifetime.</strong> The stream is open-ended — it does not naturally complete; downstream
  * {@code cancel()} stops emission without a terminal signal (Rule 3.12).
  * <p>
- * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive Streams
- * workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
+ * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive
+ * Streams workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
  * {@code assert} rather than routed to {@code onError}, and exceptions thrown by upstream signals
  * or by the downstream subscriber are <em>not</em> caught — they propagate out of the producer
  * thread. A production-grade publisher would handle both as terminal {@code onError} signals.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldBytePublisher
- * @see ReactiveHelloWorldStringPublisher
  */
 final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
 
@@ -110,14 +113,10 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        final var subscription = new Subscription() {
-            @Override public String toString() {
-                return super.toString().substring(getClass().getPackageName().length() + 1);
-            }
+        subscriber.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
-                assert n > 0L : "n(" + n + ") is not positive";
-                demand.addAndGet(n);
+                addDemand(demand, n);
                 signal();
             }
             @Override public void cancel() {
@@ -128,8 +127,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        };
-        subscriber.onSubscribe(subscription);
+        }));
         Thread.ofVirtual().start(() -> {
             while (true) {
                 lock.lock();
@@ -152,7 +150,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 final var index = new AtomicInteger();
                 final var error = new AtomicReference<Throwable>();
                 final var latch = new CountDownLatch(1);
-                publisher.subscribe(new Subscriber<>() {
+                publisher.subscribe(loggingSubscriber(new Subscriber<>() {
                     @Override public String toString() {
                         return super.toString().substring(getClass().getPackageName().length() + 1);
                     }
@@ -169,7 +167,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                     @Override public void onComplete() {
                         latch.countDown();
                     }
-                });
+                }));
                 try { latch.await(); } catch (final InterruptedException _) {
                     Thread.currentThread().interrupt();
                     return;

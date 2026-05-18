@@ -34,12 +34,12 @@ import static org.mockito.Mockito.verify;
  * using a {@link Mockito#spy(Object) spied} {@link Subscriber} wrapped in a logging proxy via
  * {@link HelloWorldBookUtils#loggingProxy(Class, Object)}.
  * <p>
- * The constructor passes {@link ReactiveHelloWorldBytePublisher#ReactiveHelloWorldBytePublisher(HelloWorld)
- * new ReactiveHelloWorldBytePublisher(service)} (as a method reference) to
- * {@link ReactiveHelloWorld__PublisherTest super}, which builds the mock {@link HelloWorld}
- * service and the logging-wrapped publisher. The mock is stubbed by the inherited
- * {@code @BeforeEach} hook in the base class — see
- * {@link ReactiveHelloWorld__PublisherTest#stubService()}.
+ * The constructor passes
+ * {@link ReactiveHelloWorldBytePublisher#ReactiveHelloWorldBytePublisher(HelloWorld) new
+ * ReactiveHelloWorldBytePublisher(service)} (as a method reference) to
+ * {@link ReactiveHelloWorld__PublisherTest super}, which builds the mock {@link HelloWorld} service
+ * and the logging-wrapped publisher. The mock is stubbed by the inherited {@code @BeforeEach} hook
+ * in the base class — see {@link ReactiveHelloWorld__PublisherTest#stubService()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorld__PublisherTest
@@ -62,7 +62,9 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = loggingSpy(new Subscriber<Byte>() {
-            @Override public void onSubscribe(final Subscription s) { s.request(HelloWorld.BYTES); }
+            @Override public void onSubscribe(final Subscription s) {
+                s.request(HelloWorld.BYTES);
+            }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
             @Override public void onComplete() { }

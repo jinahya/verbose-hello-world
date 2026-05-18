@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A pedagogical tour of <a href="https://vertx.io/docs/">Vert.x</a>'s own
- * publisher-creation idioms — each test creates a {@link Future Future&lt;byte[]&gt;} that pulls
- * the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
+ * A pedagogical tour of <a href="https://vertx.io/docs/">Vert.x</a>'s own publisher-creation idioms
+ * — each test creates a {@link Future Future&lt;byte[]&gt;} that pulls the <a
+ * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
  * {@link #synchronousService() the synchronous service} or
  * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
  * Streams publisher).
@@ -34,12 +33,6 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
-
-    // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
-    }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
@@ -74,7 +67,8 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
         }
 
         @Test
-        @DisplayName("Future.fromCompletionStage(AsynchronousHelloWorld#applyAsync) → from CompletionStage")
+        @DisplayName(
+                "Future.fromCompletionStage(AsynchronousHelloWorld#applyAsync) → from CompletionStage")
         void __fromCompletionStage() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var array = Future.fromCompletionStage(

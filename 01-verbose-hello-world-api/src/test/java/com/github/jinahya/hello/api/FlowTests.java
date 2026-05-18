@@ -7,8 +7,8 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 
 /**
- * Shared test fixtures for the JDK {@link Flow} side of the {@code ReactiveHelloWorld*} test
- * suite — the {@link Flow}-flavoured counterpart to {@link ReactiveStreamTests}.
+ * Shared test fixtures for the JDK {@link Flow} side of the {@code ReactiveHelloWorld*} test suite
+ * — the {@link Flow}-flavoured counterpart to {@link ReactiveStreamTests}.
  * <p>
  * Currently three nested classes:
  * <ul>

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingSubscription;
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingProxy;
 
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
@@ -38,8 +38,8 @@ import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingSubscripti
  * bytes have been emitted ({@code onComplete}); downstream {@code cancel()} stops emission without
  * a terminal signal (Rule 3.12).
  * <p>
- * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive Streams
- * workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
+ * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive
+ * Streams workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
  * {@code assert} rather than routed to {@code onError}, and exceptions thrown by
  * {@link HelloWorld#set(byte[]) service.set(...)} are <em>not</em> caught — they propagate out of
  * the producer thread. A production-grade publisher would handle both as terminal {@code onError}
@@ -101,11 +101,10 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        final var subscription = loggingSubscription(new Subscription() {
+        s.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
-                assert n > 0L : "n(" + n + ") is not positive";
-                demand.addAndGet(n);
+                ReactiveHelloWorldPublisherUtils.addDemand(demand, n);
                 signal();
             }
             @Override public void cancel() {
@@ -116,8 +115,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        });
-        s.onSubscribe(subscription);
+        }));
         Thread.ofVirtual().start(() -> {
             byte[] array = null;
             int index = 0;

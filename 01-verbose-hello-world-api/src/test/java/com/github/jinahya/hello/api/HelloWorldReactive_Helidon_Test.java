@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,12 +28,6 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
-
-    // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
-    }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
@@ -121,7 +114,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             final var n = 5;
             final var list = Multi.create(Stream.generate(
                                     () -> HelloWorldUtils.array(synchronousService()))
-                            .limit(n))
+                                                  .limit(n))
                     .collectList()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then

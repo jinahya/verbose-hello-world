@@ -23,27 +23,25 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Conformance tests for {@link ReactiveHelloWorldBytePublisher},
- * {@link ReactiveHelloWorldArrayPublisher}, and {@link ReactiveHelloWorldStringPublisher} — each
- * consumed through a different Reactive-Streams-compatible library (or a hand-rolled subscriber,
- * for libraries that do not expose a collect idiom).
+ * Conformance tests for {@link ReactiveHelloWorldBytePublisher} and
+ * {@link ReactiveHelloWorldArrayPublisher} — each consumed through a different
+ * Reactive-Streams-compatible library (or a hand-rolled subscriber, for libraries that do not
+ * expose a collect idiom).
  * <p>
- * Each library is a {@link Nested} class. Inside, three tests subscribe the library's collector
- * (or, for Vert.x and the JDK, a minimal hand-rolled subscriber) to each of the three publisher
- * shapes and assert that the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload arrives intact —
- * twelve {@link Byte} elements for {@link ReactiveHelloWorldBytePublisher} (which completes
- * naturally), and {@value #N} copies of the payload for the open-ended
- * {@link ReactiveHelloWorldArrayPublisher} and {@link ReactiveHelloWorldStringPublisher} (each
- * with a library-side {@code take(N)}).
+ * Each library is a {@link Nested} class. Inside, two tests subscribe the library's collector (or,
+ * for Vert.x and the JDK, a minimal hand-rolled subscriber) to each of the two publisher shapes
+ * and assert that the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload
+ * arrives intact — twelve {@link Byte} elements for {@link ReactiveHelloWorldBytePublisher} (which
+ * completes naturally), and {@value #N} copies of the payload for the open-ended
+ * {@link ReactiveHelloWorldArrayPublisher} (with a library-side {@code take(N)} /
+ * {@code limit(N)} / cancel-after-{@value #N}).
  * <p>
  * This is the exact scenario that surfaced the {@code subscriber.onNext(...)}-under-publisher-lock
- * AB-BA deadlock against subscribers that re-enter the publisher while holding their own
- * monitor or lock — Mutiny's {@code AssertSubscriber} ({@code synchronized(this)} around both
+ * AB-BA deadlock against subscribers that re-enter the publisher while holding their own monitor
+ * or lock — Mutiny's {@code AssertSubscriber} ({@code synchronized(this)} around both
  * {@code request} and {@code onItem}) and Helidon's {@code Multi.collectList()} (internal lock
  * after a {@code Long.MAX_VALUE} request). With the publishers now signalling outside their
- * internal lock (or, in the case of {@link ReactiveHelloWorldStringPublisher}, without an internal
- * lock at all), every library × every publisher finishes within {@value #TIMEOUT_SECONDS}
+ * internal lock, every library × every publisher finishes within {@value #TIMEOUT_SECONDS}
  * seconds.
  * <p>
  * The {@link HelloWorld} service is mocked once per test method by this class's constructor —
@@ -53,7 +51,6 @@ import java.util.concurrent.TimeUnit;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldBytePublisher
  * @see ReactiveHelloWorldArrayPublisher
- * @see ReactiveHelloWorldStringPublisher
  */
 class ReactiveHelloWorldPublishers_Conformance_Test {
 
@@ -61,7 +58,9 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(TIMEOUT_SECONDS);
 
-    /** Number of items taken from the open-ended {@code ofArrays} / {@code ofStrings} streams. */
+    /**
+     * Number of items taken from the open-ended {@code ofArrays} / {@code ofStrings} streams.
+     */
     private static final int N = 3;
 
     // ---------------------------------------------------------------------------------------------
@@ -98,7 +97,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
     private final HelloWorld service;
 
-
     // ============================================================================================
     @Nested
     @DisplayName("Project Reactor")
@@ -121,16 +119,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .collectList()
                     .block(TIMEOUT);
             assertArrays(list);
-        }
-
-        @Test
-        @DisplayName("ofStrings → Flux.from(pub).take(N).collectList() → N strings")
-        void ofStrings__() {
-            final var list = Flux.from(ReactiveHelloWorldStringPublisher.from(service))
-                    .take(N)
-                    .collectList()
-                    .block(TIMEOUT);
-            assertStrings(list);
         }
     }
 
@@ -156,16 +144,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .toList()
                     .blockingGet();
             assertArrays(list);
-        }
-
-        @Test
-        @DisplayName("ofStrings → Flowable.fromPublisher(pub).take(N).toList() → N strings")
-        void ofStrings__() {
-            final var list = Flowable.fromPublisher(ReactiveHelloWorldStringPublisher.from(service))
-                    .take(N)
-                    .toList()
-                    .blockingGet();
-            assertStrings(list);
         }
     }
 
@@ -201,18 +179,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .await().atMost(TIMEOUT);
             assertArrays(list);
         }
-
-        @Test
-        @DisplayName("ofStrings → Multi.createFrom().publisher(...).select().first(N) → N strings")
-        void ofStrings__() {
-            final var list = io.smallrye.mutiny.Multi.createFrom()
-                    .publisher(FlowAdapters.toFlowPublisher(
-                            ReactiveHelloWorldStringPublisher.from(service)))
-                    .select().first(N)
-                    .collect().asList()
-                    .await().atMost(TIMEOUT);
-            assertStrings(list);
-        }
     }
 
     // ============================================================================================
@@ -244,17 +210,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .collectList()
                     .await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             assertArrays(list);
-        }
-
-        @Test
-        @DisplayName("ofStrings → Multi.create(Flow.Publisher).limit(N).collectList() → N strings")
-        void ofStrings__() {
-            final var list = Multi.create(FlowAdapters.toFlowPublisher(
-                            ReactiveHelloWorldStringPublisher.from(service)))
-                    .limit(N)
-                    .collectList()
-                    .await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertStrings(list);
         }
     }
 
@@ -300,18 +255,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .toCompletableFuture()
                     .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             assertArrays(list);
-        }
-
-        @Test
-        @DisplayName("ofStrings → Source.fromPublisher(pub).take(N).runWith(Sink.seq()) → N strings")
-        void ofStrings__() throws Exception {
-            final var list = akka.stream.javadsl.Source
-                    .fromPublisher(ReactiveHelloWorldStringPublisher.from(service))
-                    .take(N)
-                    .runWith(akka.stream.javadsl.Sink.<String>seq(), system)
-                    .toCompletableFuture()
-                    .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertStrings(list);
         }
     }
 
@@ -359,26 +302,14 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             assertArrays(list);
         }
-
-        @Test
-        @DisplayName("ofStrings → Source.fromPublisher(pub).take(N).runWith(Sink.seq()) → N strings")
-        void ofStrings__() throws Exception {
-            final var list = org.apache.pekko.stream.javadsl.Source
-                    .fromPublisher(ReactiveHelloWorldStringPublisher.from(service))
-                    .take(N)
-                    .runWith(org.apache.pekko.stream.javadsl.Sink.<String>seq(), system)
-                    .toCompletableFuture()
-                    .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            assertStrings(list);
-        }
     }
 
     // ============================================================================================
 
     /**
-     * Vert.x exposes a {@link Publisher} as a Vert.x {@link io.vertx.core.streams.ReadStream
-     * ReadStream} via {@link ReactiveReadStream}; this is the only way to consume a Reactive Streams
-     * source through Vert.x's stream model.
+     * Vert.x exposes a {@link Publisher} as a Vert.x
+     * {@link io.vertx.core.streams.ReadStream ReadStream} via {@link ReactiveReadStream}; this is
+     * the only way to consume a Reactive Streams source through Vert.x's stream model.
      */
     @Nested
     @DisplayName("Vert.x (vertx-reactive-streams)")
@@ -390,7 +321,9 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             final var done = new CompletableFuture<List<T>>();
             rs.exceptionHandler(done::completeExceptionally);
             rs.handler(item -> {
-                if (done.isDone()) { return; }
+                if (done.isDone()) {
+                    return;
+                }
                 collected.add(item);
                 if (max > 0 && collected.size() >= max) {
                     done.complete(collected);
@@ -413,12 +346,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         void ofArrays__() throws Exception {
             assertArrays(collect(ReactiveHelloWorldArrayPublisher.from(service), N));
         }
-
-        @Test
-        @DisplayName("ofStrings → ReactiveReadStream → first N strings")
-        void ofStrings__() throws Exception {
-            assertStrings(collect(ReactiveHelloWorldStringPublisher.from(service), N));
-        }
     }
 
     // ============================================================================================
@@ -437,24 +364,30 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             final var done = new CompletableFuture<List<T>>();
             FlowAdapters.toFlowPublisher(publisher).subscribe(new Flow.Subscriber<>() {
                 private Flow.Subscription subscription;
+
                 @Override
                 public void onSubscribe(final Flow.Subscription s) {
                     subscription = s;
                     s.request(Long.MAX_VALUE);
                 }
+
                 @Override
                 public void onNext(final T item) {
-                    if (done.isDone()) { return; }
+                    if (done.isDone()) {
+                        return;
+                    }
                     collected.add(item);
                     if (max > 0 && collected.size() >= max) {
                         subscription.cancel();
                         done.complete(collected);
                     }
                 }
+
                 @Override
                 public void onError(final Throwable t) {
                     done.completeExceptionally(t);
                 }
+
                 @Override
                 public void onComplete() {
                     done.complete(collected);
@@ -473,12 +406,6 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("ofArrays → Flow.Subscriber cancel-after-N → N byte[]")
         void ofArrays__() throws Exception {
             assertArrays(collect(ReactiveHelloWorldArrayPublisher.from(service), N));
-        }
-
-        @Test
-        @DisplayName("ofStrings → Flow.Subscriber cancel-after-N → N strings")
-        void ofStrings__() throws Exception {
-            assertStrings(collect(ReactiveHelloWorldStringPublisher.from(service), N));
         }
     }
 }

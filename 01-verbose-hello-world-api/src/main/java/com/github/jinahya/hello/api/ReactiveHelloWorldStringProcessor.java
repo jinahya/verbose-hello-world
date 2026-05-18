@@ -199,8 +199,8 @@ final class ReactiveHelloWorldStringProcessor implements Processor<byte[], Strin
      * the state as a per-subscriber worker platform thread, and then calls
      * {@code s.onSubscribe(...)} on the calling thread before returning. The worker (i.e.
      * {@link State#run()}) waits until it has {@code demand > 0} and its queue is non-empty, then
-     * delivers one {@code String} to {@code s} and loops. The shared outer thread that fetches
-     * from upstream is started once by the constructor, not here.
+     * delivers one {@code String} to {@code s} and loops. The shared outer thread that fetches from
+     * upstream is started once by the constructor, not here.
      */
     @Override
     public void subscribe(final Subscriber<? super String> s) { // @formatter:off

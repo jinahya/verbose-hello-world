@@ -42,10 +42,6 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
     private static final int N = 3;
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
-    }
 
     private static void assertPayload(final byte[] array) {
         Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);

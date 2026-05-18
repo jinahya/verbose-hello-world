@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,11 +16,15 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
+import static com.github.jinahya.hello.api.HelloWorldUtils.array;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 /**
  * A pedagogical tour of <a href="https://doc.akka.io/docs/akka/current/stream/">Akka Streams</a>'s
- * own publisher-creation idioms — each test creates a {@link Source Source&lt;byte[],?&gt;}
- * that pulls the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from
- * either {@link #synchronousService() the synchronous service} or
+ * own publisher-creation idioms — each test creates a {@link Source Source&lt;byte[],?&gt;} that
+ * pulls the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
+ * {@link #synchronousService() the synchronous service} or
  * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
  * Streams publisher).
  * <p>
@@ -48,10 +51,6 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
-    }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
@@ -62,13 +61,13 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
         @DisplayName("Source.single(byte[]).runWith(Sink.head()) → first element")
         void __single() {
             // -------------------------------------------------------------------------- given/when
-            final var array = Source.single(HelloWorldUtils.array(synchronousService()))
+            final var array = Source.single(array(synchronousService()))
                     .runWith(Sink.head(), system)
                     .toCompletableFuture()
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @Test
@@ -76,17 +75,18 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
         void __lazySingle() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.lazySingle(
-                            () -> HelloWorldUtils.array(synchronousService()))
+                            () -> array(synchronousService()))
                     .runWith(Sink.head(), system)
                     .toCompletableFuture()
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @Test
-        @DisplayName("Source.completionStage(AsynchronousHelloWorld#applyAsync).runWith(Sink.head())")
+        @DisplayName(
+                "Source.completionStage(AsynchronousHelloWorld#applyAsync).runWith(Sink.head())")
         void __completionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.completionStage(
@@ -96,7 +96,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
     }
 
@@ -110,9 +110,9 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
         void __from_iterable() {
             // -------------------------------------------------------------------------- given/when
             final var list = Source.from(List.of(
-                            HelloWorldUtils.array(synchronousService()),
-                            HelloWorldUtils.array(synchronousService()),
-                            HelloWorldUtils.array(synchronousService())
+                            array(synchronousService()),
+                            array(synchronousService()),
+                            array(synchronousService())
                     ))
                     .runWith(Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
@@ -121,7 +121,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                assertArrayEquals(hello_world_byte_array(), element);
             }
         }
 
@@ -131,7 +131,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
             final var list = Source.range(0, n - 1)
-                    .map(i -> HelloWorldUtils.array(synchronousService()))
+                    .map(i -> array(synchronousService()))
                     .runWith(Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
                     .orTimeout(10L, TimeUnit.SECONDS)
@@ -139,7 +139,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                assertArrayEquals(hello_world_byte_array(), element);
             }
         }
 
@@ -148,7 +148,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
         void __repeat_take() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
-            final var list = Source.repeat(HelloWorldUtils.array(synchronousService()))
+            final var list = Source.repeat(array(synchronousService()))
                     .take(n)
                     .runWith(Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
@@ -157,7 +157,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                assertArrayEquals(hello_world_byte_array(), element);
             }
         }
     }

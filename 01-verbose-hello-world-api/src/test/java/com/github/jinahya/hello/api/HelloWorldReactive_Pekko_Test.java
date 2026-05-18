@@ -9,7 +9,6 @@ import org.apache.pekko.stream.javadsl.Source;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,15 +18,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A pedagogical tour of <a href="https://pekko.apache.org/docs/pekko/current/stream/">Apache Pekko
- * Streams</a>'s own publisher-creation idioms — each test creates a {@link Source
- * Source&lt;byte[],?&gt;} that pulls the
+ * Streams</a>'s own publisher-creation idioms — each test creates a
+ * {@link Source Source&lt;byte[],?&gt;} that pulls the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
  * {@link #synchronousService() the synchronous service} or
  * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
  * Streams publisher).
  * <p>
- * Pekko is the Apache Software Foundation fork of Akka 2.6 (kept under Apache-2.0 after
- * Lightbend's relicensing) and is API-compatible with the Akka tests; the nested split is by
+ * Pekko is the Apache Software Foundation fork of Akka 2.6 (kept under Apache-2.0 after Lightbend's
+ * relicensing) and is API-compatible with the Akka tests; the nested split is by
  * <em>terminal sink</em>: single-value sinks ({@link Sink#head()}) versus multi-value sinks
  * ({@link Sink#seq()}).
  *
@@ -48,12 +47,6 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
     static void shutDownSystem() {
         system.terminate();
         system.getWhenTerminated().toCompletableFuture().orTimeout(10L, TimeUnit.SECONDS).join();
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -89,7 +82,8 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
         }
 
         @Test
-        @DisplayName("Source.completionStage(AsynchronousHelloWorld#applyAsync).runWith(Sink.head())")
+        @DisplayName(
+                "Source.completionStage(AsynchronousHelloWorld#applyAsync).runWith(Sink.head())")
         void __completionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.completionStage(

@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,8 @@ import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.util.List;
+
+import static com.github.jinahya.hello.api.HelloWorldUtils.array;
 
 /**
  * A pedagogical tour of <a href="https://projectreactor.io/">Project Reactor</a>'s own
@@ -35,11 +36,6 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
-    }
-
     private static void assertPayload(final byte[] array) {
         Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
     }
@@ -62,8 +58,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @Test
         @DisplayName("HelloWorld → single byte[]")
         void __sync_single() {
-            final var array = Mono.fromSupplier(
-                            () -> HelloWorldUtils.array(synchronousService()))
+            final var array = Mono
+                    .fromSupplier(() -> array(synchronousService()))
                     .block(TIMEOUT);
             assertPayload(array);
         }
@@ -72,7 +68,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("HelloWorld → N byte[]")
         void __sync_multiple() {
             final var list = Flux.range(0, N)
-                    .map(i -> HelloWorldUtils.array(synchronousService()))
+                    .map(i -> array(synchronousService()))
                     .collectList()
                     .block(TIMEOUT);
             Assertions.assertEquals(N, list.size());
@@ -83,7 +79,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("AsynchronousHelloWorld → single byte[]")
         void __async_single() {
             final var array = Mono.fromCompletionStage(
-                            () -> asynchronousService().applyAsync(HelloWorldUtils::array))
+                            () -> asynchronousService().applyAsync(HelloWorldUtils::array)
+                    )
                     .block(TIMEOUT);
             assertPayload(array);
         }
@@ -109,7 +106,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @Test
         @DisplayName("Mono.just(byte[]) → eager single value")
         void __just() {
-            StepVerifier.create(Mono.just(HelloWorldUtils.array(synchronousService())))
+            StepVerifier.create(Mono.just(array(synchronousService())))
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
@@ -119,7 +116,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Mono.fromSupplier(Supplier) → lazy single value")
         void __fromSupplier() {
             StepVerifier.create(
-                            Mono.fromSupplier(() -> HelloWorldUtils.array(synchronousService()))
+                            Mono.fromSupplier(() -> array(synchronousService()))
                     )
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
@@ -130,7 +127,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Mono.fromCallable(Callable) → lazy single value, may throw")
         void __fromCallable() {
             StepVerifier.create(
-                            Mono.fromCallable(() -> HelloWorldUtils.array(synchronousService()))
+                            Mono.fromCallable(() -> array(synchronousService()))
                     )
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
@@ -153,7 +150,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Mono.fromSupplier(...).map(...) → transform")
         void __map() {
             StepVerifier.create(
-                            Mono.fromSupplier(() -> HelloWorldUtils.array(synchronousService()))
+                            Mono.fromSupplier(() -> array(synchronousService()))
                                     .map(a -> a.length))
                     .expectNext(HelloWorld.BYTES)
                     .expectComplete()
@@ -170,7 +167,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Flux.just(byte[]) → one item + onComplete")
         void __just_single() {
             StepVerifier.create(
-                            Flux.just(HelloWorldUtils.array(synchronousService())))
+                            Flux.just(array(synchronousService())))
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
                     .verify(TIMEOUT);
@@ -180,9 +177,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Flux.just(byte[]...) → varargs stream + onComplete")
         void __just_varargs() {
             StepVerifier.create(Flux.just(
-                            HelloWorldUtils.array(synchronousService()),
-                            HelloWorldUtils.array(synchronousService()),
-                            HelloWorldUtils.array(synchronousService())))
+                            array(synchronousService()),
+                            array(synchronousService()),
+                            array(synchronousService())))
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
@@ -194,8 +191,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Flux.fromIterable(List) → from existing collection")
         void __fromIterable() {
             StepVerifier.create(Flux.fromIterable(List.of(
-                            HelloWorldUtils.array(synchronousService()),
-                            HelloWorldUtils.array(synchronousService()))))
+                            array(synchronousService()),
+                            array(synchronousService()))))
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
                     .expectComplete()
@@ -206,8 +203,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
         @DisplayName("Flux.create(FluxSink) → manual push sink")
         void __create() {
             StepVerifier.create(Flux.<byte[]>create(sink -> {
-                        sink.next(HelloWorldUtils.array(synchronousService()));
-                        sink.next(HelloWorldUtils.array(synchronousService()));
+                        sink.next(array(synchronousService()));
+                        sink.next(array(synchronousService()));
                         sink.complete();
                     }))
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
@@ -222,7 +219,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             final var n = 5;
             StepVerifier.create(
                             Flux.range(0, n)
-                                    .map(i -> HelloWorldUtils.array(synchronousService())))
+                                    .map(i -> array(synchronousService())))
                     .expectNextCount(n)
                     .expectComplete()
                     .verify(TIMEOUT);

@@ -35,10 +35,6 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void stubService() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
-    }
 
     // ---------------------------------------------------------------------------------------------
     @Nested

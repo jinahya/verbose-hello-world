@@ -4,7 +4,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
 
 /**
  * An abstract base for tests that demonstrate a reactive library's <em>own</em> publisher-creation
@@ -26,6 +29,12 @@ abstract class HelloWorldReactive__Test {
         this.asynchronousService = Mockito.spy(
                 new DefaultAsynchronousHelloWorld(synchronousService, Runnable::run)
         );
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeEach
+    void stubService() {
+        set_array_sets_actual_hello_world_bytes(synchronousService);
     }
 
     // -------------------------------------------------------------------------- synchronousService
