@@ -44,6 +44,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -74,7 +75,7 @@ interface HelloWorldRevisited
         assert array != null;
         assert index >= 0;
         assert index + BYTES <= array.length;
-        final var src = HelloWorldUtils.hello_world_bytes();
+        final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(src, 0, array, index, src.length);
         return array;
     }

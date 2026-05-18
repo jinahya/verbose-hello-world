@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,7 @@ class HelloWorld_Append_File_Using_DataOutput_Test
         // stub: <service.write(DataOutput)> will write <hello, world> bytes.
         Mockito.doAnswer(i -> {
             final var output = i.getArgument(0, DataOutput.class);
-            output.write(new_hello_world_array());
+            output.write(HelloWorldTestUtils.hello_world_byte_array());
             return output;
         }).when(service).write(ArgumentMatchers.<DataOutput>notNull());
         // prepare: create a temp file, and write some dummy bytes

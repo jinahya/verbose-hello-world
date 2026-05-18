@@ -103,7 +103,7 @@ class HelloWorld_Write_FilterOutputStream_Test
         final var service = service();
         Mockito.doAnswer(i -> {
                     final var stream = i.getArgument(0, OutputStream.class);
-                    stream.write(new_hello_world_array());
+                    stream.write(HelloWorldTestUtils.hello_world_byte_array());
                     return stream;
                 })
                 .when(service)

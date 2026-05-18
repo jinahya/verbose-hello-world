@@ -23,7 +23,6 @@ package com.github.jinahya.hello.api;
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -36,10 +35,6 @@ import java.util.function.Supplier;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class HelloWorldUtils {
-
-    @Deprecated(forRemoval = true)
-    private static final byte[] HELLO_WORLD_BYTES = HelloWorldConstants.HELLO_WORLD_STRING.getBytes(
-            HelloWorldConstants.HELLO_WORLD_CHARSET);
 
     /**
      * Returns a fresh {@value HelloWorld#BYTES}-byte array containing the
@@ -103,55 +98,6 @@ public final class HelloWorldUtils {
      */
     public static ByteBuffer buffer(final HelloWorld service) {
         return buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES));
-    }
-
-    /**
-     * Returns a fresh {@link String} containing the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded in
-     * {@link StandardCharsets#US_ASCII US-ASCII}, constructed via
-     * {@link String#String(byte[], java.nio.charset.Charset) new String(byte[], Charset)} from
-     * {@link #array(HelloWorld) array(service)}.
-     *
-     * @param service the {@link HelloWorld} service that produces the bytes.
-     * @return a new {@link String} equal to {@code "hello, world"}.
-     * @throws NullPointerException if the {@code service} is {@code null}.
-     * @see #array(HelloWorld)
-     * @see #stringFromBuffer(HelloWorld)
-     */
-    public static String stringFromArray(final HelloWorld service) {
-        return new String(array(service), StandardCharsets.US_ASCII);
-    }
-
-    /**
-     * Returns a fresh {@link String} containing the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded in
-     * {@link StandardCharsets#US_ASCII US-ASCII}, produced via
-     * {@link java.nio.charset.Charset#decode(ByteBuffer) Charset.decode(buffer)} on
-     * {@link #buffer(HelloWorld) buffer(service)}.
-     *
-     * @param service the {@link HelloWorld} service that produces the bytes.
-     * @return a new {@link String} equal to {@code "hello, world"}.
-     * @throws NullPointerException if the {@code service} is {@code null}.
-     * @see #buffer(HelloWorld)
-     * @see #stringFromArray(HelloWorld)
-     */
-    public static String stringFromBuffer(final HelloWorld service) {
-        return StandardCharsets.US_ASCII.decode(buffer(service)).toString();
-    }
-
-    static byte[] hello_world_bytes() {
-        return HelloWorldConstants.HELLO_WORLD_STRING
-                .getBytes(HelloWorldConstants.HELLO_WORLD_CHARSET);
-    }
-
-    static void copyHelloWorldBytes(final byte[] target, final int a) {
-        System.arraycopy(
-                HELLO_WORLD_BYTES,
-                0,
-                target,
-                a,
-                HELLO_WORLD_BYTES.length
-        );
     }
 
     // ---------------------------------------------------------------------------------------------

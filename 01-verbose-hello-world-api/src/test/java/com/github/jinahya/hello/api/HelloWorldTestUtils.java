@@ -63,7 +63,33 @@ import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 /**
- * Utilities for testing {@link HelloWorld} service classes.
+ * A collection of test-side helpers shared across the {@link HelloWorld} service test classes.
+ * <p>
+ * The class groups three kinds of utilities:
+ * <ul>
+ *   <li><strong>Reference payload constructors</strong> — {@link #hello_world_byte_array()},
+ *       {@link #hello_world_string()}, {@link #hello_world_byte_buffer()}, and
+ *       {@link #hello_world_char_array()} return fresh copies of the canonical
+ *       {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload in different shapes for
+ *       assertion comparisons.</li>
+ *   <li><strong>Mock stubbing helpers</strong> — the {@code <verb>_<argType>_<does>(service)}
+ *       methods (e.g., {@link #set_array_returns_the_array(HelloWorld)},
+ *       {@link #put_buffer_will_increase_buffer_position_by_12(HelloWorld)},
+ *       {@link #write_outputstream_writes_hello_world_bytes(HelloWorld)}) stub a single
+ *       {@link HelloWorld} method on a {@linkplain Mockito#mock(Class) mock} service to perform
+ *       the most common "actual hello-world bytes" behaviour, then return the same service for
+ *       chaining. Each helper validates that the passed-in object is a mock via
+ *       {@link #requireMock(HelloWorld)}.</li>
+ *   <li><strong>Mock verification helpers</strong> — methods named
+ *       {@code <verb>_<argType>_invoked_once(service)} (e.g.,
+ *       {@link #set_array12_invoked_once(HelloWorld)},
+ *       {@link #put_buffer12_invoked_once(HelloWorld)}) verify a single invocation occurred on
+ *       the mock and return the captured argument for further assertions.</li>
+ * </ul>
+ * The class also exposes small support utilities for HTTP-server-backed tests
+ * ({@link #executeWithHttpServerStarted(IntFunction)}), file pre-population
+ * ({@link #writeSome(File)}, {@link #writeSome(Path)}), and Awaitility waits
+ * ({@link #awaitFor(Duration)}, {@link #awaitForOneSecond()}).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -74,9 +100,15 @@ import java.util.stream.IntStream;
 public final class HelloWorldTestUtils {
 
     /**
-     * Starts an HTTP server which responds requested content, and executes the specified function.
+     * Starts a {@link WireMockServer} on a dynamic port that echoes every request back as the
+     * response (status {@code 200}, same {@code Content-Type}, body equal to the request body —
+     * via WireMock's response templating), then invokes {@code function.apply(port).execute()}
+     * with the live port. Each request is logged to {@link System#out}. The server is stopped in
+     * a {@code finally} block; thrown {@code Throwable}s are logged but not rethrown.
      *
-     * @param function the function to execute.
+     * @param function a factory that takes the chosen port and returns the
+     *                 {@link Executable test action} to run against it; must not be {@code null}.
+     * @throws NullPointerException if the {@code function} is {@code null}.
      */
     public static void executeWithHttpServerStarted(
             final IntFunction<? extends Executable> function) {
@@ -127,14 +159,34 @@ public final class HelloWorldTestUtils {
         return HelloWorldTestConstants.HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
     }
 
+    /**
+     * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a
+     * {@link String}, US-ASCII decoded from {@link #hello_world_byte_array()}.
+     *
+     * @return the canonical payload as a {@link String}.
+     */
     public static String hello_world_string() {
         return new String(hello_world_byte_array(), StandardCharsets.US_ASCII);
     }
 
+    /**
+     * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a
+     * fresh, read-write {@link ByteBuffer} backed by a new {@code byte[]} — position {@code 0},
+     * limit and capacity {@value HelloWorld#BYTES}.
+     *
+     * @return the canonical payload as a {@link ByteBuffer}.
+     */
     public static ByteBuffer hello_world_byte_buffer() {
         return ByteBuffer.wrap(hello_world_byte_array());
     }
 
+    /**
+     * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a
+     * fresh {@code char[]} of length {@value HelloWorld#BYTES}, with each byte widened to
+     * {@code char}.
+     *
+     * @return the canonical payload as a {@code char[]}.
+     */
     public static char[] hello_world_char_array() {
         final var bytes = hello_world_byte_array();
         final var chars = new char[bytes.length];
@@ -145,6 +197,18 @@ public final class HelloWorldTestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Asserts that the specified object is a Mockito mock and returns it; throws
+     * {@link IllegalArgumentException} otherwise. Used by every stubbing helper to refuse to
+     * stub a non-mock service (which would silently fail to take effect).
+     *
+     * @param object the object to check.
+     * @param <T>    the {@link HelloWorld} subtype.
+     * @return the given {@code object}, unchanged.
+     * @throws NullPointerException     if the {@code object} is {@code null}.
+     * @throws IllegalArgumentException if the {@code object} is not a Mockito mock.
+     */
     public static <T extends HelloWorld> T requireMock(final T object) {
         Objects.requireNonNull(object, "object is null");
         if (!Mockito.mockingDetails(object).isMock()) {
@@ -153,6 +217,17 @@ public final class HelloWorldTestUtils {
         return object;
     }
 
+    /**
+     * Asserts that the specified service is <em>not</em> a Mockito mock and returns it; throws
+     * {@link IllegalArgumentException} otherwise. Used by helpers that exercise a real
+     * implementation and would be misled by a mock.
+     *
+     * @param service the service to check.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}, unchanged.
+     * @throws NullPointerException     if the {@code service} is {@code null}.
+     * @throws IllegalArgumentException if the {@code service} is a Mockito mock.
+     */
     public static <T extends HelloWorld> T requireNotMock(final T service) {
         Objects.requireNonNull(service, "service is null");
         if (Mockito.mockingDetails(service).isMock()) {
@@ -183,6 +258,18 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#set(byte[]) set(array)} method to fill
+     * the entire {@code array} with {@linkplain ThreadLocalRandom random bytes} and return it.
+     * Useful when an assertion only cares that <em>some</em> 12 bytes were written, not what
+     * they are.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @see #set_array_returns_the_array(HelloWorld)
+     * @see #set_array_sets_actual_hello_world_bytes(HelloWorld)
+     */
     public static <T extends HelloWorld> T set_array_sets_random_bytes(final T service) {
         requireMock(service);
         Mockito.doAnswer(i -> {
@@ -232,6 +319,18 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------- java.io
+
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#append(File) append(file)} method to
+     * append the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes to the given
+     * file via a {@link FileOutputStream} (append mode), and return the file.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException if an I/O error occurs (declared for stubbing convenience; the lambda
+     *                     itself rethrows).
+     */
     public static <T extends HelloWorld> T append_file_appends_hello_world(final T service)
             throws IOException {
         requireMock(service);
@@ -246,6 +345,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#write(DataOutput) write(output)}
+     * method to write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes to
+     * the given {@link DataOutput} and return it.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_dataoutput_writes_hello_world_bytes(final T service) throws IOException {
         requireMock(service);
@@ -257,6 +366,18 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#write(OutputStream) write(stream)}
+     * method to write exactly {@value HelloWorld#BYTES} zero bytes (a {@code new
+     * byte[HelloWorld.BYTES]}) to the stream and return it. Useful when an assertion only cares
+     * that 12 bytes were written, not what they are.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     * @see #write_outputstream_writes_hello_world_bytes(HelloWorld)
+     */
     public static <T extends HelloWorld>
     T write_stream_will_write_12_bytes(final T service) throws IOException {
         requireMock(service);
@@ -270,6 +391,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#write(OutputStream) write(stream)}
+     * method to write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes to
+     * the stream and return it.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_outputstream_writes_hello_world_bytes(final T service) throws IOException {
         requireMock(service);
@@ -281,6 +412,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Alias of {@link #write_outputstream_writes_hello_world_bytes(HelloWorld)} kept for older
+     * call sites: stubs {@link HelloWorld#write(OutputStream) write(stream)} to write the actual
+     * hello-world bytes.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_stream_will_write_actual_hello_world_bytes(final T service) throws IOException {
         requireMock(service);
@@ -292,6 +433,15 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Verifies that the specified mock service's {@link HelloWorld#write(OutputStream)
+     * write(stream)} method was invoked exactly once, and returns the captured non-{@code null}
+     * {@link OutputStream} argument.
+     *
+     * @param service the mock service.
+     * @return the captured {@link OutputStream} argument.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static OutputStream write_stream_invoked_once(final HelloWorld service)
             throws IOException {
         requireMock(service);
@@ -324,6 +474,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#write(Writer) write(writer)} method
+     * to write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} characters (via
+     * {@link #hello_world_char_array()}) to the writer and return it.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_writer_writes_hello_world_string(final T service) throws IOException {
         requireMock(service);
@@ -336,6 +496,17 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------ java.net
+
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#send(Socket) send(socket)} method to
+     * write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes to the socket's
+     * {@link Socket#getOutputStream() output stream} and return the socket.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld> T send_socket_sends_hello_world_bytes(final T service)
             throws IOException {
         requireMock(service);
@@ -403,6 +574,19 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
+     * when the buffer is non-{@code null} and has at least {@value HelloWorld#BYTES} remaining,
+     * to put {@value HelloWorld#BYTES} freshly generated random bytes into the buffer, forward
+     * the same {@code byte[]} to the given {@code consumer} for capture, and return the buffer.
+     *
+     * @param service  the mock service.
+     * @param consumer a consumer that receives the random bytes actually written (for later
+     *                 assertion); must not be {@code null}.
+     * @param <T>      the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws NullPointerException if the {@code consumer} is {@code null}.
+     */
     public static <T extends HelloWorld>
     T put_buffer_will_put_12_random_bytes(final T service,
                                           final Consumer<? super byte[]> consumer) {
@@ -423,6 +607,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
+     * when the buffer is non-{@code null} and has at least {@value HelloWorld#BYTES} remaining,
+     * to put the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes into the
+     * buffer and return it.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     */
     public static <T extends HelloWorld>
     T put_buffer_will_put_actual_hello_world_bytes(final T service) {
         requireMock(service);
@@ -438,6 +632,14 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Verifies that the specified mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)}
+     * method was invoked exactly once with a non-{@code null} {@link ByteBuffer} of capacity
+     * {@value HelloWorld#BYTES}, and returns the captured buffer for further assertion.
+     *
+     * @param service the mock service.
+     * @return the captured {@link ByteBuffer} argument.
+     */
     public static ByteBuffer put_buffer12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
@@ -448,6 +650,17 @@ public final class HelloWorldTestUtils {
         return buffer;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#append(Appendable) append(appendable)}
+     * method to append exactly {@value HelloWorld#BYTES} {@code '0'} characters to the
+     * {@link Appendable}, and return it. Useful when an assertion only cares that 12 chars were
+     * appended, not what they are.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T append_appendable_appends_12_chars(final T service) throws IOException {
         requireMock(service);
@@ -495,6 +708,18 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's
+     * {@link HelloWorld#send(DatagramChannel, SocketAddress) send(channel, target)} method to
+     * loop {@link DatagramChannel#send(ByteBuffer, SocketAddress) channel.send(buffer, target)}
+     * until a non-zero count is returned (i.e., the {@value HelloWorld#BYTES}-byte datagram is
+     * actually accepted by the OS), and then return the channel.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T send_datagramchannel_socketaddress_sends_hello_world_buffer(final T service)
             throws IOException {
@@ -515,6 +740,17 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#write(DatagramChannel) write(channel)}
+     * method, when the channel is non-{@code null} and {@linkplain DatagramChannel#isConnected()
+     * connected}, to write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes
+     * in a write-until-drained loop, and return the channel.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_datagramchannel_writes_hello_world_buffer(final T service) throws IOException {
         requireMock(service);
@@ -531,6 +767,18 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#write(AsynchronousByteChannel)
+     * write(channel)} method to {@linkplain AsynchronousByteChannel#write(ByteBuffer)
+     * channel.write(buffer)} until the {@value HelloWorld#BYTES}-byte source is fully drained,
+     * blocking on each {@link java.util.concurrent.Future#get() Future.get()}.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws ExecutionException   declared for stubbing convenience.
+     * @throws InterruptedException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_asynchornousbytechannel_writes_hello_world(final T service)
             throws ExecutionException, InterruptedException {
@@ -545,6 +793,20 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Stubs the specified mock service's
+     * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method to
+     * write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes starting at the
+     * given file {@code position}, advancing {@code position} by each
+     * {@link java.util.concurrent.Future#get() Future.get()} result until the source is drained,
+     * and return the channel.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws ExecutionException   declared for stubbing convenience.
+     * @throws InterruptedException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_asynchornousfilechannel_position_writes_hello_world(final T service)
             throws ExecutionException, InterruptedException {
@@ -564,6 +826,19 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------ java.nio.files
+
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#append(Path) append(path)} method to
+     * append the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes to the given
+     * {@link Path}, opening a {@link FileChannel} with
+     * {@link StandardOpenOption#CREATE CREATE}{@code +}{@link StandardOpenOption#APPEND APPEND},
+     * forcing to disk on close, and returning the path.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld> T append_path_appends_hello_world(final T service)
             throws IOException {
         requireMock(service);
@@ -582,6 +857,17 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------- java.security
+
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#update(Signature) update(signature)}
+     * method to call {@link Signature#update(byte[]) signature.update(...)} with the actual
+     * {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes and return the signature.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws SignatureException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld> T update_signature_updates_hello_world_bytes(
             final T service)
             throws SignatureException {
@@ -615,6 +901,17 @@ public final class HelloWorldTestUtils {
         return path;
     }
 
+    /**
+     * Writes a random number of zero bytes ({@code 0..127}) to the given {@link File}, choosing
+     * between a {@link FileOutputStream}-based path and a {@link FileChannel}-based path with
+     * even probability. Used to pre-populate temp files with non-empty content before exercising
+     * the append/write methods.
+     *
+     * @param file the file to write to.
+     * @param <T>  the {@link File} subtype.
+     * @return the given {@code file}.
+     * @throws IOException if an I/O error occurs.
+     */
     @SuppressWarnings({"unchecked"})
     public static <T extends File> T writeSome(final T file) throws IOException {
         Objects.requireNonNull(file, "file is null");
@@ -624,6 +921,17 @@ public final class HelloWorldTestUtils {
         return writeSome_(file);
     }
 
+    /**
+     * Writes a random number of zero bytes ({@code 0..127}) to the given {@link Path}, choosing
+     * between a {@link FileOutputStream}-based path and a {@link FileChannel}-based path with
+     * even probability. Used to pre-populate temp files with non-empty content before exercising
+     * the append/write methods.
+     *
+     * @param path the path to write to.
+     * @param <T>  the {@link Path} subtype.
+     * @return the given {@code path}.
+     * @throws IOException if an I/O error occurs.
+     */
     @SuppressWarnings({"unchecked"})
     public static <T extends Path> T writeSome(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
@@ -634,6 +942,16 @@ public final class HelloWorldTestUtils {
     }
 
     // ---------------------------------------------------------------------------------- Awaitility
+
+    /**
+     * Sleeps for at least the specified {@link Duration} using Awaitility's
+     * {@link org.awaitility.core.ConditionFactory#pollDelay(Duration) pollDelay} —
+     * the assertion always succeeds, so the call returns exactly when the delay elapses. Useful
+     * to pause a test thread for a specific wall-clock interval without using
+     * {@link Thread#sleep(long)} (which would require handling {@link InterruptedException}).
+     *
+     * @param duration the duration to wait; must not be {@code null}.
+     */
     public static void awaitFor(final Duration duration) {
         log.debug("awaiting for {}...", duration);
         Awaitility.await()
@@ -642,10 +960,21 @@ public final class HelloWorldTestUtils {
                 .untilAsserted(() -> Assertions.assertTrue(true));
     }
 
+    /**
+     * Convenience overload of {@link #awaitFor(Duration)} that takes a {@code (amount, unit)}
+     * pair.
+     *
+     * @param amount the duration amount.
+     * @param unit   the duration {@link TemporalUnit}.
+     */
     public static void awaitFor(final long amount, final TemporalUnit unit) {
         awaitFor(Duration.of(amount, unit));
     }
 
+    /**
+     * Shortcut for {@link #awaitFor(long, TemporalUnit) awaitFor(1L, ChronoUnit.SECONDS)} — a
+     * one-second sleep.
+     */
     public static void awaitForOneSecond() {
         awaitFor(1L, ChronoUnit.SECONDS);
     }

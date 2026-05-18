@@ -25,15 +25,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.
@@ -44,32 +40,9 @@ import java.nio.charset.StandardCharsets;
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith({MockitoExtension.class})
-@TestInstance(TestInstance.Lifecycle.PER_METHOD) // default, implicitly.
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public abstract class HelloWorldTest {
-
-    /**
-     * Returns an array of bytes contains {@code hello, world}.
-     *
-     * @return an array of bytes contains {@code hello, world}.
-     */
-    protected static byte[] new_hello_world_array() {
-        final var array = "hello, world".getBytes(StandardCharsets.US_ASCII);
-        assert array.length == HelloWorld.BYTES;
-        return array;
-    }
-
-    /**
-     * Returns a read-only byte buffer wraps {@link #new_hello_world_array()}.
-     *
-     * @return a read-only byte buffer wraps {@link #new_hello_world_array()}.
-     */
-    protected static ByteBuffer new_hello_world_buffer() {
-        final var buffer = ByteBuffer.wrap(new_hello_world_array());
-        assert buffer.remaining() == HelloWorld.BYTES;
-        return buffer.asReadOnlyBuffer();
-    }
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 

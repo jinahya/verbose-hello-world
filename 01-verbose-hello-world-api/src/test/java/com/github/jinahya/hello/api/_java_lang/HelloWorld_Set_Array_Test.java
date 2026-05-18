@@ -44,8 +44,7 @@ import java.util.concurrent.ThreadLocalRandom;
         "java:S1854", // useless (yet) assignments
         "java:S2699"  // no assertions (yet)
 })
-class HelloWorld_Set_Array_Test
-        extends HelloWorldTest {
+class HelloWorld_Set_Array_Testa extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a

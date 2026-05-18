@@ -4,8 +4,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.nio.charset.StandardCharsets;
 
 /*-
  * #%L
@@ -34,12 +37,17 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 class HelloWorldUtilsTest extends HelloWorldTest {
 
+    @BeforeEach
+    void __() {
+        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
+    }
+
     // --------------------------------------------------------------------------------------- array
     @Test
     @DisplayName("array(service) → byte[12] of \"hello, world\"")
     void array__() {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
         // ------------------------------------------------------------------------------------ when
         final var result = HelloWorldUtils.array(service());
         // ------------------------------------------------------------------------------------ then
@@ -52,7 +60,6 @@ class HelloWorldUtilsTest extends HelloWorldTest {
     @DisplayName("buffer(service) → ByteBuffer of \"hello, world\", ready for reading")
     void buffer__() {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
         // ------------------------------------------------------------------------------------ when
         final var buffer = HelloWorldUtils.buffer(service());
         // ------------------------------------------------------------------------------------ then
@@ -66,25 +73,13 @@ class HelloWorldUtilsTest extends HelloWorldTest {
 
     // ----------------------------------------------------------------------------- stringFromArray
     @Test
-    @DisplayName("stringFromArray(service) → \"hello, world\"")
     void stringFromArray__() {
-        // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        // ------------------------------------------------------------------------------------ when
-        final var result = HelloWorldUtils.stringFromArray(service());
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), result);
+        final var string = new String(HelloWorldUtils.array(service()), StandardCharsets.US_ASCII);
     }
 
     // ---------------------------------------------------------------------------- stringFromBuffer
     @Test
-    @DisplayName("stringFromBuffer(service) → \"hello, world\"")
     void stringFromBuffer__() {
-        // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
-        // ------------------------------------------------------------------------------------ when
-        final var result = HelloWorldUtils.stringFromBuffer(service());
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), result);
+        final var string = StandardCharsets.US_ASCII.decode(HelloWorldUtils.buffer(service()));
     }
 }

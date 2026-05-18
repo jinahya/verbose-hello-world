@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,7 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
         // stub: <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         Mockito.doAnswer(i -> {
             final var file = i.getArgument(0, RandomAccessFile.class);
-            file.write(new_hello_world_array());
+            file.write(HelloWorldTestUtils.hello_world_byte_array());
             return file;
         }).when(service).write(ArgumentMatchers.<RandomAccessFile>notNull());
         // prepare: create a temp file
