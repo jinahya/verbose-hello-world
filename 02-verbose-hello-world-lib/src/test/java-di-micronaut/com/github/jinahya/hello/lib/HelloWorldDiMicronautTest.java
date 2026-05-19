@@ -20,24 +20,37 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
+import com.github.jinahya.hello.api.HelloWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ * A test class which injects {@link HelloWorld} instances using Micronaut Inject.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://micronaut.io/">Micronaut</a>
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@io.micronaut.context.annotation.Prototype
 @Slf4j
-class HelloWorldDiHk2Test extends HelloWorldDiTest {
+class HelloWorldDiMicronautTest extends HelloWorldDiTest {
 
     @BeforeEach
-    void inject() {
-        final var binder = new HelloWorldDiHk2Binder();
-        final var locator = org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind(binder);
-        locator.inject(this);
+    void _beforeEach() {
+        beanContext = io.micronaut.context.BeanContext.run();
+        beanContext.inject(this);
     }
+
+    @AfterEach
+    void _afterEach() {
+        if (beanContext != null) {
+            beanContext.close();
+            beanContext = null;
+        }
+    }
+
+    private io.micronaut.context.BeanContext beanContext;
 }

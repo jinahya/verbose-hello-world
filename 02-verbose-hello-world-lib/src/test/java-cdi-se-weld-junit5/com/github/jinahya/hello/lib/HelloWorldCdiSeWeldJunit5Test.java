@@ -23,14 +23,12 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.jboss.weld.junit5.auto.EnableAutoWeld;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@AddBeanClasses({HelloWorldCdiFactory.class})
-@EnableAutoWeld
+@org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdiFactory.class})
+@org.jboss.weld.junit5.auto.EnableAutoWeld
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldCdiSeWeldJunit5Test extends HelloWorldDiTest {

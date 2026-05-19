@@ -23,7 +23,6 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.openwebbeans.junit5.Cdi;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -34,7 +33,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
  * @see <a href="<a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
  * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
-@Cdi(classes = {HelloWorldCdiFactory.class})
+@org.apache.openwebbeans.junit5.Cdi(classes = {HelloWorldCdiFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldCdiSeOpenWebBeansJunit5Test extends HelloWorldCdiSeTest {

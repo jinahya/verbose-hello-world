@@ -33,13 +33,13 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 /**
- * An abstract base for tests that exercise the {@link HelloWorld#set(byte[], int) set(array, index)}
- * contract against arbitrary {@link HelloWorld} implementations.
+ * An abstract base for tests that exercise the
+ * {@link HelloWorld#set(byte[], int) set(array, index)} contract against arbitrary
+ * {@link HelloWorld} implementations.
  * <p>
- * Concrete subclasses supply the implementations under test by overriding
- * {@link #services()}; this class supplies the four {@link TestFactory @TestFactory} methods
- * that verify, for every supplied service, the documented contract of
- * {@link HelloWorld#set(byte[], int)}:
+ * Concrete subclasses supply the implementations under test by overriding {@link #services()}; this
+ * class supplies the four {@link TestFactory @TestFactory} methods that verify, for every supplied
+ * service, the documented contract of {@link HelloWorld#set(byte[], int)}:
  * <ul>
  *   <li>{@link NullPointerException} when the {@code array} argument is {@code null}.</li>
  *   <li>{@link IndexOutOfBoundsException} when the {@code index} argument is negative.</li>

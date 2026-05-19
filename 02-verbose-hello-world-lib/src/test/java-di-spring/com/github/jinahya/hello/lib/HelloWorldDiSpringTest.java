@@ -24,7 +24,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -35,9 +34,10 @@ class HelloWorldDiSpringTest extends HelloWorldDiTest {
 
     @BeforeEach
     void autowireBean() {
-        final var context = new AnnotationConfigApplicationContext(
-                HelloWorldDiSpringConfiguration.class
-        );
+        final var context =
+                new org.springframework.context.annotation.AnnotationConfigApplicationContext(
+                        HelloWorldDiSpringConfiguration.class
+                );
         final var factory = context.getAutowireCapableBeanFactory();
         factory.autowireBean(this);
     }

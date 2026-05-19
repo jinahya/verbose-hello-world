@@ -69,6 +69,11 @@
     <version.maven-surefire>3.5.5</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
+    <version.io.avaje>12.5</version.io.avaje>
+    <!-- https://central.sonatype.com/artifact/io.micronaut.platform/micronaut-platform/versions -->
+    <version.io.micronaut.platform>4.10.14</version.io.micronaut.platform>
+    <!-- https://central.sonatype.com/artifact/io.quarkus.platform/quarkus-bom/versions -->
+    <version.io.quarkus.platform>3.35.3</version.io.quarkus.platform>
     <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
     <!--    <version.io.smallrye.reactive>3.1.1</version.io.smallrye.reactive>-->
     <version.io.smallrye.reactive>3.2.0</version.io.smallrye.reactive>
@@ -190,7 +195,7 @@
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-bom</artifactId>
         <!-- https://central.sonatype.com/artifact/io.avaje/avaje-inject-bom/versions -->
-        <version>12.5</version>
+        <version>${version.io.avaje}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -203,9 +208,23 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>io.micronaut.platform</groupId>
+        <artifactId>micronaut-platform</artifactId>
+        <version>${version.io.micronaut.platform}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-bom</artifactId>
         <version>2025.0.5</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkus.platform</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${version.io.quarkus.platform}</version> <!-- Match your desired Quarkus stream version -->
         <type>pom</type>
         <scope>import</scope>
       </dependency>

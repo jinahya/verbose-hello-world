@@ -20,24 +20,40 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
+import com.github.jinahya.hello.api.HelloWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * A test class injects using Guice.
+ * A test class which injects {@link HelloWorld} instances using Avaje Inject.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://github.com/google/guice">Guice</a>
+ * @see <a href="https://avaje.io/inject/">Avaje Inject</a>
  */
+//@io.avaje.inject.test.InjectTest
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiGuiceTest extends HelloWorldDiTest {
+class HelloWorldDiAvajeTest extends HelloWorldDiTest {
 
     @BeforeEach
     void _beforeEach() {
-        final var injector = com.google.inject.Guice.createInjector(new HelloWorldDiGuiceModule());
-        injector.injectMembers(this);
+        beanScope = io.avaje.inject.BeanScope.builder().modules(new LibModule()).build();
+        namedDemo = beanScope.get(HelloWorld.class, HelloWorldDiConstants._NAME_DEMO);
+        namedImpl = beanScope.get(HelloWorld.class, HelloWorldDiConstants._NAME_IMPL);
+        qualifiedDemo = beanScope.get(HelloWorld.class, __QualifiedDemo.class.getSimpleName());
+        qualifiedImpl = beanScope.get(HelloWorld.class, __QualifiedImpl.class.getSimpleName());
     }
+
+    @AfterEach
+    void _afterEach() {
+        if (beanScope != null) {
+            beanScope.close();
+            beanScope = null;
+        }
+    }
+
+    private io.avaje.inject.BeanScope beanScope;
 }
