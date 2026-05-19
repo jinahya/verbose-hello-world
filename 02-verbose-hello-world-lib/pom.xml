@@ -57,7 +57,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.5</version>
+        <version>${version.io.avaje}</version>
         <executions>
           <execution>
             <?m2e execute?>
@@ -650,7 +650,7 @@
                     <path>
                       <groupId>io.micronaut</groupId>
                       <artifactId>micronaut-inject-java</artifactId>
-                      <version>4.10.23</version>
+                      <version>${version.io.micronaut}</version>
                     </path>
                     <path>
                       <groupId>org.projectlombok</groupId>

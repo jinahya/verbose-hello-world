@@ -70,6 +70,8 @@
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
     <version.io.avaje>12.5</version.io.avaje>
+    <!-- https://central.sonatype.com/artifact/io.micronaut/micronaut-core/versions -->
+    <version.io.micronaut>4.10.23</version.io.micronaut>
     <!-- https://central.sonatype.com/artifact/io.micronaut.platform/micronaut-platform/versions -->
     <version.io.micronaut.platform>4.10.14</version.io.micronaut.platform>
     <!-- https://central.sonatype.com/artifact/io.quarkus.platform/quarkus-bom/versions -->
@@ -375,6 +377,11 @@
         <groupId>org.reactivestreams</groupId>
         <artifactId>reactive-streams</artifactId>
         <version>${version.org.reactivestreams}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams-flow-adapters</artifactId>
+        <version>1.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
