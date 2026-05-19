@@ -3,17 +3,24 @@ package com.github.jinahya.hello.api;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.concurrent.Flow;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -36,7 +43,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     // ---------------------------------------------------------------------------------------------
     @Test
     @DisplayName("request(12) → exactly 12 elements + onComplete")
-    void __exactly12() throws Exception { // @formatter:off
+    void __singleExactly12() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
@@ -65,5 +72,119 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         for (int i = 0; i < elements.size(); i++) {
             assertEquals(expected[i], elements.get(i));
         } // @formatter:on
+    }
+
+    @Test
+    @DisplayName("multiple subscribers, each request(n) in [1, 24) → "
+                 + "each gets min(n, 12) elements (+ onComplete if n ≥ 12)")
+    void __multiRandom1To24() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var count = ThreadLocalRandom.current().nextInt(2, 5);
+        final var demands = new int[count];
+        final var subscribers = new ArrayList<Flow.Subscriber<Byte>>(count);
+        for (int i = 0; i < count; i++) {
+            final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES << 1); // [1, 24)
+            demands[i] = n;
+            subscribers.add(loggingSpy(new Flow.Subscriber<>() {
+                @Override public void onSubscribe(final Flow.Subscription subscription) {
+                    subscription.request(n);
+                }
+                @Override public void onNext(final Byte item) { }
+                @Override public void onError(final Throwable throwable) { }
+                @Override public void onComplete() { }
+            }));
+        }
+        log.debug("count: {}", count);
+        log.debug("demands: {}", demands);
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(p -> {
+            for (final var subscriber : subscribers) {
+                p.subscribe(subscriber);
+            }
+            await().atMost(TIMEOUT).untilAsserted(() -> {
+                for (int i = 0; i < count; i++) {
+                    final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
+                    final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
+                    verify(subscribers.get(i), times(expectedNext)).onNext(any());
+                    verify(subscribers.get(i), times(expectedComplete)).onComplete();
+                }
+            });
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        final var expected = hello_world_byte_array();
+        for (int i = 0; i < count; i++) {
+            final var subscriber = subscribers.get(i);
+            final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
+            final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
+            verify(subscriber, times(1)).onSubscribe(notNull());
+            verify(subscriber, never()).onError(any());
+            verify(subscriber, times(expectedComplete)).onComplete();
+            final var elementCaptor = forClass(Byte.class);
+            verify(subscriber, times(expectedNext)).onNext(elementCaptor.capture());
+            final var elements = elementCaptor.getAllValues();
+            assertEquals(expectedNext, elements.size());
+            for (int j = 0; j < elements.size(); j++) {
+                assertEquals(expected[j], elements.get(j));
+            }
+        } // @formatter:on
+    }
+
+    @Test
+    @DisplayName("service.set throws → subscriber gets onError, no onNext, no onComplete")
+    void __serviceThrows() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var error = new RuntimeException("simulated set(byte[]) failure");
+        Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
+        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+            @Override public void onSubscribe(final Flow.Subscription subscription) {
+                subscription.request(Long.MAX_VALUE);
+            }
+            @Override public void onNext(final Byte item) { }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(publisher -> {
+            publisher.subscribe(subscriber);
+            await().atMost(TIMEOUT)
+                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        final var errorCaptor = forClass(Throwable.class);
+        verify(subscriber, times(1)).onSubscribe(notNull());
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, times(1)).onError(errorCaptor.capture());
+        verify(subscriber, never()).onComplete();
+        assertSame(error, errorCaptor.getValue()); // @formatter:on
+    }
+
+    @Test
+    @DisplayName("subscriber.onSubscribe throws → SubmissionPublisher delivers onError, "
+                 + "subscribe returns normally")
+    void __onSubscribeThrows() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var error = new RuntimeException("simulated onSubscribe failure");
+        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+            @Override public void onSubscribe(final Flow.Subscription subscription) {
+                throw error;
+            }
+            @Override public void onNext(final Byte item) { }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(publisher -> {
+            publisher.subscribe(subscriber);                  // returns normally
+            await().atMost(TIMEOUT)
+                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        verify(subscriber, times(1)).onSubscribe(notNull());
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, times(1)).onError(notNull());
+        verify(subscriber, never()).onComplete(); // @formatter:on
     }
 }

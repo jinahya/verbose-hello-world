@@ -21,7 +21,6 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.lib.util.JavaLangObjectUtils;
 
 import java.util.Objects;
 
@@ -33,23 +32,18 @@ import java.util.Objects;
 public class HelloWorldImpl implements HelloWorld {
 
     @Override
-    public String toString() {
-        return JavaLangObjectUtils.toSimpleString(this);
-    }
-
-    @Override
     public byte[] set(final byte[] array, final int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("index(" + index + ") is negative");
         }
-        if (index + BYTES > array.length) {
+        if (array.length < index + BYTES) {
             throw new IndexOutOfBoundsException(
-                    "index(" + index + ") + " + HelloWorld.BYTES +
-                    " > array.length(" + array.length + ")"
+                    "array.length(" + array.length + ")" +
+                    " < index(" + index + ") + " + HelloWorld.BYTES
             );
         }
-        array[index] = 0x68; // 'h'
+        array[index] = 0x68;      // 'h'
         array[index + 0b1] = 'e'; // ?
         array[index + 0x2] = 'l';
         array[index + 0x3] = 'l';

@@ -3,6 +3,8 @@ package com.github.jinahya.hello.api;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -14,10 +16,12 @@ import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +38,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
 
     // ---------------------------------------------------------------------------------------------
     HelloWorld_Array_Publisher_Test() {
-        super(HelloWorldArrayPublisher::from);
+        super(HelloWorldArrayPublisher::new);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -73,7 +77,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
 
     @Test
     @DisplayName("multiple subscribers, each request(n) → each gets its own n elements")
-    void __multipleRandom() throws Exception { // @formatter:off
+    void __multiRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var count = ThreadLocalRandom.current().nextInt(2, 5);
         final var demands = new int[count];
@@ -117,5 +121,35 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
                 assertArrayEquals(expected, element);
             }
         } // @formatter:on
+    }
+
+    @Test
+    @DisplayName("service.set throws → subscriber gets onError, no further signals")
+    void __serviceThrows() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var error = new RuntimeException("simulated set(byte[]) failure");
+        Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
+        final var subscriber = loggingSpy(new Flow.Subscriber<byte[]>() {
+            @Override public void onSubscribe(final Flow.Subscription subscription) {
+                subscription.request(Long.MAX_VALUE);
+            }
+            @Override public void onNext(final byte[] item) { }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(publisher -> {
+            publisher.subscribe(subscriber);
+            await().atMost(TIMEOUT)
+                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        final var errorCaptor = forClass(Throwable.class);
+        verify(subscriber, times(1)).onSubscribe(notNull());
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, times(1)).onError(errorCaptor.capture());
+        verify(subscriber, never()).onComplete();
+        assertSame(error, errorCaptor.getValue()); // @formatter:on
     }
 }
