@@ -38,6 +38,11 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 @Slf4j
 class HelloWorldCdiSeOpenWebBeansJunit5Test extends HelloWorldCdiSeTest {
 
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
+
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.
      *

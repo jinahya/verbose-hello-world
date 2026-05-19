@@ -9,6 +9,7 @@ profiles=(
   di-dagger
   di-guice
   di-hk2
+  di-micronaut
   di-spring
 )
 for profile in "${profiles[@]}"; do

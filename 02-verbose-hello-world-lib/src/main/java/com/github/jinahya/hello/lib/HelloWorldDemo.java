@@ -22,6 +22,8 @@ package com.github.jinahya.hello.lib;
 
 import com.github.jinahya.hello.api.HelloWorld;
 
+import java.util.Objects;
+
 /**
  * A class, for demonstration purposes only, implements the {@link HelloWorld} interface.
  *
@@ -31,6 +33,11 @@ class HelloWorldDemo implements HelloWorld {
 
     HelloWorldDemo() {
         super();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '@' + String.format("%08x", hashCode());
     }
 
     @Override

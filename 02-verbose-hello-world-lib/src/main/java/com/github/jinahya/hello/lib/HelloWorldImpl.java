@@ -36,6 +36,11 @@ public class HelloWorldImpl implements HelloWorld {
     }
 
     @Override
+    public String toString() {
+        return getClass().getSimpleName() + '@' + String.format("%08x", hashCode());
+    }
+
+    @Override
     public byte[] set(final byte[] array, final int index) {
         Objects.requireNonNull(array, "array is null");
         if (index < 0) {

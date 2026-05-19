@@ -21,7 +21,6 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -43,12 +42,7 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
 
     @Override
     public String toString() {
-        return super.toString() + '{' +
-               "namedDemo=" + namedDemo +
-               ",namedImpl=" + namedImpl +
-               ",qualifiedDemo=" + qualifiedDemo +
-               ",qualifiedImpl=" + qualifiedImpl +
-               '}';
+        return getClass().getSimpleName() + '@' + String.format("%08x", hashCode());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -64,19 +58,19 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @Named(HelloWorldDiConstants._NAME_DEMO)
-    @Inject
+    @jakarta.inject.Inject
     protected HelloWorld namedDemo;
 
     @Named(HelloWorldDiConstants._NAME_IMPL)
-    @Inject
+    @jakarta.inject.Inject
     protected HelloWorld namedImpl;
 
     // ---------------------------------------------------------------------------------------------
     @__QualifiedDemo
-    @Inject
+    @jakarta.inject.Inject
     protected HelloWorld qualifiedDemo;
 
     @__QualifiedImpl
-    @Inject
+    @jakarta.inject.Inject
     protected HelloWorld qualifiedImpl;
 }

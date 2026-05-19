@@ -21,10 +21,6 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.enterprise.inject.Disposes;
-import jakarta.enterprise.inject.Produces;
-import jakarta.enterprise.inject.spi.InjectionPoint;
-import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 
@@ -36,6 +32,18 @@ import org.junit.jupiter.api.Assertions;
 @Slf4j
 class HelloWorldCdiFactory {
 
+    private static void logProducing(
+            final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint,
+            final Object bean) {
+        log.debug("producing [{}]\tfor [{}]", bean, injectionPoint.getMember().getName());
+    }
+
+    private static void logDisposing(final Object bean) {
+        log.debug("disposing [{}]", bean);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * Produces an instance of {@link HelloWorld} qualified with
      * {@link HelloWorldDiConstants#_NAME_DEMO}.
@@ -43,11 +51,11 @@ class HelloWorldCdiFactory {
      * @param injectionPoint the injection point to be injected
      * @return an instance of {@link HelloWorld}.
      */
-    @Named(HelloWorldDiConstants._NAME_DEMO)
-    @Produces
-    HelloWorld produceNamedDemo(final InjectionPoint injectionPoint) {
+    @jakarta.inject.Named(HelloWorldDiConstants._NAME_DEMO)
+    @jakarta.enterprise.inject.Produces
+    HelloWorld produceNamedDemo(final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         final var bean = new HelloWorldDemo();
-        log.debug("producing {} for {}", bean, injectionPoint);
+        logProducing(injectionPoint, bean);
         return bean;
     }
 
@@ -58,8 +66,9 @@ class HelloWorldCdiFactory {
      * @param bean the {@link HelloWorld} instance to dispose
      */
     void disposeNamedDemo(
-            @Named(HelloWorldDiConstants._NAME_DEMO) @Disposes final HelloWorld bean) {
-        log.debug("disposing {}", bean);
+            @jakarta.inject.Named(HelloWorldDiConstants._NAME_DEMO)
+            @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+        logDisposing(bean);
         Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
     }
 
@@ -72,11 +81,11 @@ class HelloWorldCdiFactory {
      * @param injectionPoint the injection point to be injected.
      * @return an instance of {@link HelloWorldImpl}
      */
-    @Named(HelloWorldDiConstants._NAME_IMPL)
-    @Produces
-    HelloWorld produceNamedImpl(final InjectionPoint injectionPoint) {
+    @jakarta.inject.Named(HelloWorldDiConstants._NAME_IMPL)
+    @jakarta.enterprise.inject.Produces
+    HelloWorld produceNamedImpl(final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         final var bean = new HelloWorldImpl();
-        log.debug("producing {} for {}", bean, injectionPoint);
+        logProducing(injectionPoint, bean);
         return bean;
     }
 
@@ -87,8 +96,9 @@ class HelloWorldCdiFactory {
      * @param bean the {@link HelloWorld} instance to dispose.
      */
     void disposeNamedImpl(
-            @Named(HelloWorldDiConstants._NAME_IMPL) @Disposes final HelloWorld bean) {
-        log.debug("disposing {}", bean);
+            @jakarta.inject.Named(HelloWorldDiConstants._NAME_IMPL)
+            @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+        logDisposing(bean);
         Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
     }
 
@@ -101,10 +111,11 @@ class HelloWorldCdiFactory {
      * @return an instance of {@link HelloWorld}
      */
     @__QualifiedDemo
-    @Produces
-    HelloWorld produceQualifiedDemo(final InjectionPoint injectionPoint) {
+    @jakarta.enterprise.inject.Produces
+    HelloWorld produceQualifiedDemo(
+            final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         final var bean = new HelloWorldDemo();
-        log.debug("producing {} for {}", bean, injectionPoint);
+        logProducing(injectionPoint, bean);
         return bean;
     }
 
@@ -113,8 +124,9 @@ class HelloWorldCdiFactory {
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedDemo(@__QualifiedDemo @Disposes final HelloWorld bean) {
-        log.debug("disposing {}", bean);
+    void disposeQualifiedDemo(
+            @__QualifiedDemo @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+        logDisposing(bean);
         Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
     }
 
@@ -127,10 +139,11 @@ class HelloWorldCdiFactory {
      * @return an instance of {@link HelloWorld}
      */
     @__QualifiedImpl
-    @Produces
-    HelloWorld produceQualifiedImpl(final InjectionPoint injectionPoint) {
+    @jakarta.enterprise.inject.Produces
+    HelloWorld produceQualifiedImpl(
+            final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         final var bean = new HelloWorldImpl();
-        log.debug("producing {} for {}", bean, injectionPoint);
+        logProducing(injectionPoint, bean);
         return bean;
     }
 
@@ -139,8 +152,9 @@ class HelloWorldCdiFactory {
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
-    void disposeQualifiedImpl(@__QualifiedImpl @Disposes final HelloWorld bean) {
-        log.debug("disposing {}", bean);
+    void disposeQualifiedImpl(
+            @__QualifiedImpl @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+        logDisposing(bean);
         Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
     }
 }

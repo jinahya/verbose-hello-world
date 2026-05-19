@@ -13,6 +13,11 @@ abstract class HelloWorldServiceProvider_ implements HelloWorldServiceProvider {
     }
 
     @Override
+    public String toString() {
+        return getClass().getSimpleName() + '@' + String.format("%08x", hashCode());
+    }
+
+    @Override
     public HelloWorld getService() {
         var result = service;
         if (result == null) {
