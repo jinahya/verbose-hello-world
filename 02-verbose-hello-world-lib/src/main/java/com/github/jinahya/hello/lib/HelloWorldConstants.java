@@ -20,24 +20,11 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import jakarta.inject.Qualifier;
+final class HelloWorldConstants {
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+    static final String HELLO_WORLD_STRING = "hello, world";
 
-/**
- * An injection qualifier for {@link HelloWorldWrap}.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@Documented
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface __QualifiedWrap {
-
+    private HelloWorldConstants() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 }

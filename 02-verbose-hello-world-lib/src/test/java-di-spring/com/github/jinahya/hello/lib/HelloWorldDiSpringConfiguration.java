@@ -25,53 +25,39 @@ import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * A configuration for providing {@link HelloWorld} beans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Configuration
+@org.springframework.context.annotation.Configuration
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDiSpringConfiguration {
 
     @Named(HelloWorldDiConstants._NAME_DEMO)
-    @Bean
+    @org.springframework.context.annotation.Bean
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
     @Named(HelloWorldDiConstants._NAME_IMPL)
-    @Bean
+    @org.springframework.context.annotation.Bean
     HelloWorld namedImpl() {
         return new HelloWorldImpl();
     }
 
-    @Named(HelloWorldDiConstants._NAME_WRAP)
-    @Bean
-    HelloWorld namedWrap() {
-        return new HelloWorldWrap();
-    }
-
     // -----------------------------------------------------------------------------------------------------------------
     @__QualifiedDemo
-    @Bean
+    @org.springframework.context.annotation.Bean
     HelloWorld qualifiedDemo() {
         return new HelloWorldDemo();
     }
 
     @__QualifiedImpl
-    @Bean
+    @org.springframework.context.annotation.Bean
     HelloWorld qualifiedImpl() {
         return new HelloWorldImpl();
-    }
-
-    @__QualifiedWrap
-    @Bean
-    HelloWorld qualifiedWrap() {
-        return new HelloWorldWrap();
     }
 }

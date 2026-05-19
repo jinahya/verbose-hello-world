@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.github.jinahya</groupId>
+    <groupId>io.github.jinahya</groupId>
     <artifactId>verbose-hello-world-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
@@ -16,7 +16,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.jinahya</groupId>
+      <groupId>io.github.jinahya</groupId>
       <artifactId>verbose-hello-world-lib</artifactId>
       <scope>compile</scope>
     </dependency>

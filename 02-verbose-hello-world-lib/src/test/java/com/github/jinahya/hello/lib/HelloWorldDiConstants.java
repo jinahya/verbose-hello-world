@@ -38,11 +38,6 @@ final class HelloWorldDiConstants {
      */
     static final String _NAME_IMPL = "impl";
 
-    /**
-     * An injection qualifier for {@link HelloWorldWrap}.
-     */
-    static final String _NAME_WRAP = "wrap";
-
     private HelloWorldDiConstants() {
         throw new AssertionError("instantiation is not allowed");
     }

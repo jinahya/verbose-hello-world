@@ -27,27 +27,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A program whose {@link #main(String[])} method prints {@code hello, world} to
- * {@link System#out}.
+ * A program whose {@link #main()} method prints {@code hello, world} to {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@SuppressWarnings({
-        "java:S106" // Standard outputs should not be used directly to log anything
-})
-class HelloWorldMain {
+public class HelloWorldMain {
 
     /**
      * The main method of this program which prints {@code hello, world} to {@link System#out}
      * followed by a system-dependent line separator.
      *
-     * @param args an array of command line arguments
      * @throws IOException if an I/O error occurs.
      * @see HelloWorldImpl
      * @see HelloWorld#write(OutputStream)
      * @see System#lineSeparator()
      */
-    public static void main(final String[] args) throws IOException {
+    static void main() throws IOException {
         final var service = new HelloWorldImpl();
         final var array = service.set(new byte[HelloWorld.BYTES]);
         System.out.write(array);
@@ -57,7 +52,7 @@ class HelloWorldMain {
     /**
      * Creates a new instance, which is not possible.
      */
-    private HelloWorldMain() {
-        throw new AssertionError("instantiation is not allowed");
+    HelloWorldMain() {
+        super();
     }
 }

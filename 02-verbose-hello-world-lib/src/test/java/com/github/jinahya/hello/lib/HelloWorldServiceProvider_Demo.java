@@ -20,19 +20,14 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
+class HelloWorldServiceProvider_Demo extends HelloWorldServiceProvider_ {
 
-/**
- * A {@link HelloWorldServiceProvider} for {@link HelloWorldDemo}.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-class HelloWorldServiceProvider_Demo extends HelloWorldServiceProvider_<HelloWorldDemo> {
-
-    /**
-     * Creates a new instance.
-     */
     HelloWorldServiceProvider_Demo() {
         super(HelloWorldDemo.class);
+    }
+
+    @Override
+    public boolean isQualified() {
+        return false;
     }
 }

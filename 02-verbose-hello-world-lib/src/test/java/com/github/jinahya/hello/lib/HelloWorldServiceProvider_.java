@@ -5,52 +5,32 @@ import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 
 import java.util.Objects;
 
-/**
- * An abstract class for implementing {@link HelloWorldServiceProvider} interface.
- *
- * @param <T> service type parameter
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-abstract class HelloWorldServiceProvider_<T extends HelloWorld>
-        implements HelloWorldServiceProvider {
+abstract class HelloWorldServiceProvider_ implements HelloWorldServiceProvider {
 
-    // -------------------------------------------------------------------------------- CONSTRUCTORS
-
-    /**
-     * Creates a new instance with the specified service class.
-     *
-     * @param serviceClass the service class.
-     */
-    HelloWorldServiceProvider_(final Class<T> serviceClass) {
+    HelloWorldServiceProvider_(final Class<? extends HelloWorld> clazz) {
         super();
-        this.serviceClass = Objects.requireNonNull(serviceClass, "serviceClass is null");
+        this.clazz = Objects.requireNonNull(clazz, "clazz is null");
     }
 
-    // ------------------------------------------------------------------- HelloWorldServiceProvider
     @Override
     public HelloWorld getService() {
-        var result = serviceInstance;
+        var result = service;
         if (result == null) {
-            result = serviceInstance = newServiceInstance();
+            try {
+                final var constructor = clazz.getDeclaredConstructor();
+                if (!constructor.canAccess(this)) {
+                    constructor.setAccessible(true);
+                }
+                result = service = constructor.newInstance();
+            } catch (final ReflectiveOperationException roe) {
+                throw new RuntimeException("failed initialize " + clazz, roe);
+            }
         }
         return result;
     }
 
-    // -------------------------------------------------------------------------------- serviceClass
-    private T newServiceInstance() {
-        try {
-            final var constructor = serviceClass.getDeclaredConstructor();
-            if (!constructor.canAccess(null)) {
-                constructor.setAccessible(true);
-            }
-            return constructor.newInstance();
-        } catch (final ReflectiveOperationException roe) {
-            throw new RuntimeException("failed to instantiate " + serviceClass, roe);
-        }
-    }
-
     // ---------------------------------------------------------------------------------------------
-    private final Class<T> serviceClass;
+    private final Class<? extends HelloWorld> clazz;
 
-    private T serviceInstance;
+    private volatile HelloWorld service;
 }

@@ -31,6 +31,10 @@ import java.util.Objects;
  */
 public class HelloWorldImpl implements HelloWorld {
 
+    public HelloWorldImpl() {
+        super();
+    }
+
     @Override
     public byte[] set(final byte[] array, final int index) {
         Objects.requireNonNull(array, "array is null");

@@ -46,10 +46,8 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
         return super.toString() + '{' +
                "namedDemo=" + namedDemo +
                ",namedImpl=" + namedImpl +
-               ",namedWrap=" + namedWrap +
                ",qualifiedDemo=" + qualifiedDemo +
                ",qualifiedImpl=" + qualifiedImpl +
-               ",qualifiedWrap=" + qualifiedWrap +
                '}';
     }
 
@@ -59,10 +57,8 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
         return Stream.of(
                 namedDemo,
                 namedImpl,
-                namedWrap,
                 qualifiedDemo,
-                qualifiedImpl,
-                qualifiedWrap
+                qualifiedImpl
         );
     }
 
@@ -75,10 +71,6 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
     @Inject
     protected HelloWorld namedImpl;
 
-    @Named(HelloWorldDiConstants._NAME_WRAP)
-    @Inject
-    protected HelloWorld namedWrap;
-
     // ---------------------------------------------------------------------------------------------
     @__QualifiedDemo
     @Inject
@@ -87,8 +79,4 @@ abstract class HelloWorldDiTest extends __HelloWorld__Test {
     @__QualifiedImpl
     @Inject
     protected HelloWorld qualifiedImpl;
-
-    @__QualifiedWrap
-    @Inject
-    protected HelloWorld qualifiedWrap;
 }

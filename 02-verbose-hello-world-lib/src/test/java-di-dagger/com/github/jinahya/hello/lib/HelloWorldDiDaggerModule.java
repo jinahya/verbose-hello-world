@@ -21,8 +21,6 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import dagger.Module;
-import dagger.Provides;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,7 +31,7 @@ import java.lang.annotation.Annotation;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Module
+@dagger.Module
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 public class HelloWorldDiDaggerModule {
@@ -44,21 +42,15 @@ public class HelloWorldDiDaggerModule {
     }
 
     @Named(HelloWorldDiConstants._NAME_DEMO)
-    @Provides
+    @dagger.Provides
     static HelloWorld provideNamedDemo() {
         return provideNamed(HelloWorldDiConstants._NAME_DEMO, new HelloWorldDemo());
     }
 
     @Named(HelloWorldDiConstants._NAME_IMPL)
-    @Provides
+    @dagger.Provides
     static HelloWorld provideNamedImpl() {
         return provideNamed(HelloWorldDiConstants._NAME_IMPL, new HelloWorldImpl());
-    }
-
-    @Named(HelloWorldDiConstants._NAME_WRAP)
-    @Provides
-    static HelloWorld provideNamedWrap() {
-        return provideNamed(HelloWorldDiConstants._NAME_WRAP, new HelloWorldWrap());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -69,20 +61,14 @@ public class HelloWorldDiDaggerModule {
     }
 
     @__QualifiedDemo
-    @Provides
+    @dagger.Provides
     static HelloWorld provideQualifiedDemo() {
         return provideQualified(new HelloWorldDemo(), __QualifiedDemo.class);
     }
 
     @__QualifiedImpl
-    @Provides
+    @dagger.Provides
     static HelloWorld provideQualifiedImpl() {
         return provideQualified(new HelloWorldImpl(), __QualifiedImpl.class);
-    }
-
-    @__QualifiedWrap
-    @Provides
-    static HelloWorld provideQualifiedWrap() {
-        return provideQualified(new HelloWorldWrap(), __QualifiedWrap.class);
     }
 }

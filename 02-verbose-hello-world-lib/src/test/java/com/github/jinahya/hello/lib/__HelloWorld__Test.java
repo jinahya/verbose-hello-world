@@ -33,7 +33,24 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 /**
- * An abstract class for testing classes implement {@link HelloWorld} interface.
+ * An abstract base for tests that exercise the {@link HelloWorld#set(byte[], int) set(array, index)}
+ * contract against arbitrary {@link HelloWorld} implementations.
+ * <p>
+ * Concrete subclasses supply the implementations under test by overriding
+ * {@link #services()}; this class supplies the four {@link TestFactory @TestFactory} methods
+ * that verify, for every supplied service, the documented contract of
+ * {@link HelloWorld#set(byte[], int)}:
+ * <ul>
+ *   <li>{@link NullPointerException} when the {@code array} argument is {@code null}.</li>
+ *   <li>{@link IndexOutOfBoundsException} when the {@code index} argument is negative.</li>
+ *   <li>{@link IndexOutOfBoundsException} when {@code array.length} is less than
+ *       {@code index + }{@value HelloWorld#BYTES}.</li>
+ *   <li>Successful execution writes the
+ *       <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to {@code array}
+ *       starting at {@code index} and returns the same {@code array}.</li>
+ * </ul>
+ * Each verification is emitted as a {@link DynamicTest} per service so test reports show one row
+ * per (test &times; service) pair.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -42,17 +59,23 @@ import java.util.stream.Stream;
 abstract class __HelloWorld__Test {
 
     /**
-     * Returns a stream of instances of {@link HelloWorld} interface to test.
+     * Returns the stream of {@link HelloWorld} implementations to test. Each emitted instance is
+     * used as a parameter for every {@link TestFactory @TestFactory} verification defined in this
+     * class, producing one {@link DynamicTest} per (test &times; service) pair.
      *
-     * @return a stream of instances of {@link HelloWorld} interface.
+     * @return a non-{@code null} stream of {@link HelloWorld} instances; must be consumable.
      */
     abstract Stream<HelloWorld> services();
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws a
-     * {@link NullPointerException} when the {@code array} argument is {@code null}.
+     * Verifies that, for each service from {@link #services()},
+     * {@link HelloWorld#set(byte[], int) set(array, index)} throws a {@link NullPointerException}
+     * when the {@code array} argument is {@code null}. The {@code index} argument is a random
+     * non-negative {@code int}.
+     *
+     * @return a stream of dynamic tests, one per service.
      */
     @DisplayName("""
             should throw a <NullPointerException>
@@ -79,8 +102,13 @@ abstract class __HelloWorld__Test {
     }
 
     /**
-     * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
-     * {@link IndexOutOfBoundsException} when the {@code index} argument is negative.
+     * Verifies that, for each service from {@link #services()},
+     * {@link HelloWorld#set(byte[], int) set(array, index)} throws an
+     * {@link IndexOutOfBoundsException} when the {@code index} argument is negative. The
+     * {@code array} argument is a zero-length {@code byte[]} so the negative-index check fires
+     * before any length-based check could.
+     *
+     * @return a stream of dynamic tests, one per service.
      */
     @DisplayName("""
             should throw an <IndexOutOfBoundsException>
@@ -108,9 +136,14 @@ abstract class __HelloWorld__Test {
     }
 
     /**
-     * Verifies {@link HelloWorld#set(byte[], int) set(array, index)} method throws an
-     * {@link IndexOutOfBoundsException} when the {@code array.length} is less than
-     * ({@code index + }{@value HelloWorld#BYTES}).
+     * Verifies that, for each service from {@link #services()},
+     * {@link HelloWorld#set(byte[], int) set(array, index)} throws an
+     * {@link IndexOutOfBoundsException} when {@code array.length} is strictly less than
+     * {@code index + }{@value HelloWorld#BYTES} — i.e., the array is too short to hold the
+     * {@value HelloWorld#BYTES}-byte payload starting at {@code index}. The {@code index} and
+     * {@code array.length} pair is randomized but constrained so the precondition holds.
+     *
+     * @return a stream of dynamic tests, one per service.
      */
     @DisplayName("""
             should throw an <IndexOutOfBoundsException>
@@ -142,9 +175,14 @@ abstract class __HelloWorld__Test {
     }
 
     /**
-     * Verifies {@link HelloWorldImpl#set(byte[], int) set(array, index)} method sets the
-     * <em>hello-world-bytes</em> on {@code array} starting at {@code index}, and returns the
-     * {@code array}.
+     * Verifies that, for each service from {@link #services()},
+     * {@link HelloWorld#set(byte[], int) set(array, index)} writes the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> into {@code array}
+     * starting at {@code index}, and returns the same {@code array} reference. The {@code array}
+     * and {@code index} pair is randomized but constrained so
+     * {@code array.length >= index + }{@value HelloWorld#BYTES}.
+     *
+     * @return a stream of dynamic tests, one per service.
      */
     @DisplayName("should set <hello-world-bytes> on <array> starting at <index>")
     @TestFactory

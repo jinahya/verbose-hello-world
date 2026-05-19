@@ -49,21 +49,4 @@ class HelloWorldCdiSeTestInstanceFactory implements TestInstanceFactory {
             return seContainer.select(testClass).get();
         }
     }
-
-//    @Override
-//    public Object createTestInstance(final TestInstanceFactoryContext factoryContext,
-//                                     final ExtensionContext extensionContext)
-//            throws TestInstantiationException {
-//        final var testClass = factoryContext.getTestClass();
-//        log.debug("testClass: {}", testClass);
-//        final var seContainerInitializer = SeContainerInitializer.newInstance()
-//                .addBeanClasses(HelloWorldCdiFactory.class, testClass);
-//        log.debug("seContainerInitializer: {}", seContainerInitializer);
-//        final var seContainer = seContainerInitializer.initialize();
-//        log.debug("seContainer: {}", seContainer);
-//        extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)
-//                .put(testClass.getName() + ".seContainer",
-//                     (ExtensionContext.Store.CloseableResource) seContainer::close);
-//        return seContainer.select(testClass).get();
-//    }
 }

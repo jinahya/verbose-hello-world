@@ -20,15 +20,11 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
 import com.google.inject.Guice;
-import jakarta.inject.Inject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-
-import java.util.stream.Stream;
 
 /**
  * A test class injects using Guice.
@@ -45,29 +41,4 @@ class HelloWorldDiGuiceTest extends HelloWorldDiTest {
         final var injector = Guice.createInjector(new HelloWorldDiGuiceModule());
         injector.injectMembers(this);
     }
-
-    // ---------------------------------------------------------------------------------------------
-    @Override
-    Stream<HelloWorld> services() {
-        return Stream.concat(
-                super.services(),
-                Stream.of(
-                        bindingQualifiedDemo,
-                        bindingQualifiedImpl
-                )
-        );
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    @___BindingQualifiedDemo
-    @Inject
-    private HelloWorld bindingQualifiedDemo;
-
-    @___BindingQualifiedImpl
-    @Inject
-    private HelloWorld bindingQualifiedImpl;
-
-    @___BindingQualifiedWrap
-    @Inject
-    private HelloWorld bindingQualifiedWrap;
 }

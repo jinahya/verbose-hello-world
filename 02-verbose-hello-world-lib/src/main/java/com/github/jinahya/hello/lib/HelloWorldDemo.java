@@ -21,9 +21,6 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.lib.util.JavaLangObjectUtils;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * A class, for demonstration purposes only, implements the {@link HelloWorld} interface.
@@ -32,27 +29,19 @@ import java.nio.charset.StandardCharsets;
  */
 class HelloWorldDemo implements HelloWorld {
 
-    private static final String STRING = "hello, world";
-
-    private static final byte[] ARRAY = STRING.getBytes(StandardCharsets.US_ASCII);
-
-    // ---------------------------------------------------------------------------- java.lang.Object
-    @Override
-    public String toString() {
-        return JavaLangObjectUtils.toSimpleString(this);
+    HelloWorldDemo() {
+        super();
     }
 
-    // ---------------------------------------------------------------------------------- HelloWorld
     @Override
     public byte[] set(final byte[] array, final int index) {
-        final var src = STRING.getBytes(StandardCharsets.US_ASCII);
-        System.arraycopy(
+        HelloWorldUtils.acceptHelloWorldBytes(src -> System.arraycopy(
                 src,       // <src>
                 0,         // <srcPos>
                 array,     // <dest>
                 index,     // <destPos>
                 src.length // <length>
-        );
+        ));
         return array;
     }
 }

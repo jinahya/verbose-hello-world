@@ -39,15 +39,18 @@ import java.util.stream.StreamSupport;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldSpiTest extends __HelloWorld__Test {
+class HelloWorldSpi_Qualified_Test extends __HelloWorld__Test {
 
     @Override
     Stream<HelloWorld> services() {
-        // see /META-INF/services/com.github.jinahya.hello.api.spi.HelloWorldServiceProvider
-        final var provider = ServiceLoader.load(HelloWorldServiceProvider.class);
-        final var iterator = provider.iterator();
-        final var spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
-        final var stream = StreamSupport.stream(spliterator, false);
-        return stream.map(HelloWorldServiceProvider::getService);
+        return StreamSupport.stream(
+                        Spliterators.spliteratorUnknownSize(
+                                ServiceLoader.load(HelloWorldServiceProvider.class).iterator(),
+                                Spliterator.ORDERED
+                        ),
+                        false
+                )
+                .filter(HelloWorldServiceProvider::isQualified)
+                .map(HelloWorldServiceProvider::getService);
     }
 }

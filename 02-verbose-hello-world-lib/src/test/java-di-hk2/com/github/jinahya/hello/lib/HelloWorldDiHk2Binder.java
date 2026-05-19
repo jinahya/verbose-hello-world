@@ -24,8 +24,6 @@ import com.github.jinahya.hello.api.HelloWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.glassfish.hk2.api.AnnotationLiteral;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import java.io.Serial;
 import java.lang.annotation.Annotation;
@@ -39,10 +37,10 @@ import java.lang.annotation.Annotation;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiHk2Binder extends AbstractBinder {
+class HelloWorldDiHk2Binder extends org.glassfish.hk2.utilities.binding.AbstractBinder {
 
     private static class __QualifiedDemo_Literal
-            extends AnnotationLiteral<__QualifiedDemo>
+            extends org.glassfish.hk2.api.AnnotationLiteral<__QualifiedDemo>
             implements __QualifiedDemo {
 
         @Serial
@@ -50,19 +48,11 @@ class HelloWorldDiHk2Binder extends AbstractBinder {
     }
 
     private static class __QualifiedImpl_Literal
-            extends AnnotationLiteral<__QualifiedImpl>
+            extends org.glassfish.hk2.api.AnnotationLiteral<__QualifiedImpl>
             implements __QualifiedImpl {
 
         @Serial
         private static final long serialVersionUID = 9084623087464727990L;
-    }
-
-    private static class __QualifiedWrap_Literal
-            extends AnnotationLiteral<__QualifiedWrap>
-            implements __QualifiedWrap {
-
-        @Serial
-        private static final long serialVersionUID = 6283966703912042049L;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -88,10 +78,8 @@ class HelloWorldDiHk2Binder extends AbstractBinder {
     protected void configure() {
         bindNamed(HelloWorldDemo.class, HelloWorldDiConstants._NAME_DEMO);
         bindNamed(HelloWorldImpl.class, HelloWorldDiConstants._NAME_IMPL);
-        bindNamed(HelloWorldWrap.class, HelloWorldDiConstants._NAME_WRAP);
         // -----------------------------------------------------------------------------------------
         bindQualified(HelloWorldDemo.class, new __QualifiedDemo_Literal());
         bindQualified(HelloWorldImpl.class, new __QualifiedImpl_Literal());
-        bindQualified(HelloWorldWrap.class, new __QualifiedWrap_Literal());
     }
 }

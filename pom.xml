@@ -62,20 +62,22 @@
     <!-- https://central.sonatype.com/artifact/com.google.dagger/dagger/versions -->
     <version.com.google.dagger>2.59.2</version.com.google.dagger>
     <!--    <version.com.google.guava>33.3.1-jre</version.com.google.guava>-->
-    <version.com.google.guava>33.5.0-jre</version.com.google.guava>
+    <version.com.google.guava>33.6.0-jre</version.com.google.guava>
     <!-- https://central.sonatype.com/artifact/com.google.errorprone/error_prone_core/versions -->
     <version.com.google.errorprone>2.49.0</version.com.google.errorprone>
     <version.com.uber.nullaway>0.13.4</version.com.uber.nullaway>
-    <version.maven-surefire>3.5.4</version.maven-surefire>
+    <version.maven-surefire>3.5.5</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
     <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
     <!--    <version.io.smallrye.reactive>3.1.1</version.io.smallrye.reactive>-->
     <version.io.smallrye.reactive>3.2.0</version.io.smallrye.reactive>
     <!-- https://central.sonatype.com/artifact/org.apache.openwebbeans/openwebbeans-junit5/versions -->
-    <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>
+<!--    <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>-->
+    <version.org.apache.openwebbeans>4.1.0</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.25.1</version.org.aspectj>
-    <version.org.glassfish.hk2>4.0.0-M3</version.org.glassfish.hk2>
+    <!-- https://central.sonatype.com/artifact/org.glassfish.hk2/hk2/versions -->
+    <version.org.glassfish.hk2>4.0.1</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
     <!--    <version.org.jboss.weld-junit>4.0.3.Final</version.org.jboss.weld-junit> &lt;!&ndash; weld-se-core &ndash;&gt;-->
@@ -96,7 +98,7 @@
     <version.org.springframework>7.0.7</version.org.springframework>
     <version.org.springframework.boot>4.0.6</version.org.springframework.boot>
     <!-- https://central.sonatype.com/artifact/io.vertx/vertx-reactive-streams -->
-    <version.org.vertx>5.0.11</version.org.vertx>
+    <version.org.vertx>5.0.12</version.org.vertx>
   </properties>
 
   <dependencyManagement>
@@ -286,7 +288,7 @@
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-lts8on</artifactId>
         <!-- https://central.sonatype.com/artifact/org.bouncycastle/bcprov-lts8on/versions -->
-        <version>2.73.10</version>
+        <version>2.73.11</version>
       </dependency>
       <dependency>
         <groupId>org.duckdb</groupId>
@@ -378,7 +380,7 @@
       <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
-        <version>3.51.2.0</version>
+        <version>3.53.1.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -464,11 +466,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.9.8.2</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>3.2.0</version>
@@ -529,7 +526,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.6.2</version>
+          <version>3.6.3</version>
           <executions>
             <execution>
               <id>enforce-dependency-convergence</id>
@@ -640,7 +637,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.6.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -680,7 +677,7 @@
           <artifactId>license-maven-plugin</artifactId>
           <version>2.7.1</version>
           <configuration>
-            <licenseName>apachcee_v2</licenseName>
+            <licenseName>apache_v2</licenseName>
           </configuration>
         </plugin>
         <plugin>

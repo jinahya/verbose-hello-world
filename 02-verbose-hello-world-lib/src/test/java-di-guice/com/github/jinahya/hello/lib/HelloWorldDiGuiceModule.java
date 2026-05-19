@@ -21,13 +21,13 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
+
+;
 
 /**
  * A module for injecting {@link HelloWorld} instances.
@@ -36,13 +36,13 @@ import java.lang.annotation.Annotation;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiGuiceModule extends AbstractModule {
+class HelloWorldDiGuiceModule extends com.google.inject.AbstractModule {
 
     private void bindNamed(final String name, final Class<? extends HelloWorld> serviceClass) {
         log.debug("binding {} annotated with '{}' to {}", HelloWorld.class.getSimpleName(),
                   name, serviceClass.getSimpleName());
         bind(HelloWorld.class)
-                .annotatedWith(Names.named(name))
+                .annotatedWith(com.google.inject.name.Names.named(name))
                 .to(serviceClass);
     }
 
@@ -60,14 +60,8 @@ class HelloWorldDiGuiceModule extends AbstractModule {
         // -----------------------------------------------------------------------------------------
         bindNamed(HelloWorldDiConstants._NAME_DEMO, HelloWorldDemo.class);
         bindNamed(HelloWorldDiConstants._NAME_IMPL, HelloWorldImpl.class);
-        bindNamed(HelloWorldDiConstants._NAME_WRAP, HelloWorldWrap.class);
         // -----------------------------------------------------------------------------------------
         bindAnnotated(__QualifiedDemo.class, HelloWorldDemo.class);
         bindAnnotated(__QualifiedImpl.class, HelloWorldImpl.class);
-        bindAnnotated(__QualifiedWrap.class, HelloWorldWrap.class);
-        // -----------------------------------------------------------------------------------------
-        bindAnnotated(___BindingQualifiedDemo.class, HelloWorldDemo.class);
-        bindAnnotated(___BindingQualifiedImpl.class, HelloWorldImpl.class);
-        bindAnnotated(___BindingQualifiedWrap.class, HelloWorldWrap.class);
     }
 }
