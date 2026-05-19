@@ -34,7 +34,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.params.shadow.de.siegmar.fastcsv.util.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

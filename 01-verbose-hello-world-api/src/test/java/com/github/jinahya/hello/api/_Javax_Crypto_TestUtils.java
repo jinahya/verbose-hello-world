@@ -21,7 +21,7 @@ package com.github.jinahya.hello.api;
  */
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.params.shadow.de.siegmar.fastcsv.util.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
