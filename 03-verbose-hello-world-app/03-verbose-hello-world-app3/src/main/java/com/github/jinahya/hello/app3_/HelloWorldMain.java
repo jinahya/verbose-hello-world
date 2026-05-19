@@ -21,43 +21,45 @@ package com.github.jinahya.hello.app3_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.HelloWorldUtils;
 import com.google.inject.Guice;
 import jakarta.inject.Inject;
 
-import java.io.IOException;
-
 /**
- * A program whose {@link #main(String[])} method prints {@code hello, world} to
- * {@link System#out}.
+ * A program whose {@link #main()} method obtains a {@link HelloWorld} through
+ * <a href="https://github.com/google/guice">Guice</a> dependency injection and prints
+ * {@code hello, world} to {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorldModule
  */
 class HelloWorldMain {
 
     /**
-     * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a system-dependent line separator.
-     *
-     * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
+     * Creates a Guice {@link com.google.inject.Injector Injector} configured by
+     * {@link HelloWorldModule}, injects {@link #service} into a fresh instance of this class via
+     * {@link com.google.inject.Injector#injectMembers(Object)}, formats the injected service with
+     * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
+     * system-dependent line separator via {@link IO#println(Object)}.
      */
-    public static void main(final String... args) throws IOException {
+    static void main() {
         final var injector = Guice.createInjector(new HelloWorldModule());
         final var instance = new HelloWorldMain();
         injector.injectMembers(instance);
-        assert instance.service != null;
-        instance.service
-                .write(System.out)
-                .println();
+        IO.println(HelloWorldUtils.string(instance.service));
     }
 
     /**
-     * Creates a new instance.
+     * Suppresses external instantiation; only {@link #main()} constructs an instance through this
+     * private constructor for Guice member injection.
      */
     private HelloWorldMain() {
         super();
     }
 
+    /**
+     * A {@link HelloWorld} bound by {@link HelloWorldModule}, injected by Guice.
+     */
     @Inject
     HelloWorld service;
 }

@@ -1,0 +1,106 @@
+= TODO
+:toc:
+:toclevels: 3
+
+Pending design / implementation work, grouped by topic. Each topic breaks down
+into the modules it touches (`api` / `lib` / `app`).
+
+'''
+
+== JPMS SPI (`provides … with …`)
+
+Add a JPMS-style `ServiceLoader` registration channel alongside the existing
+classpath `META-INF/services/…` mechanism, so the book can contrast the two
+registration channels using the *same* `ServiceLoader.load(…)` API call.
+
+Discovery rules in JDK 25:
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| Provider lives in… | Registered via… | Found when running…
+
+| classpath JAR | `META-INF/services/X` | classpath or module-path (as automatic / unnamed module)
+| named module  | `provides X with …` in `module-info` | module-path only
+| named module  | `META-INF/services/X` inside the JAR | *ignored* — module system requires `provides`
+|===
+
+=== api
+
+In place:
+
+* `com.github.jinahya.hello.api.spi.HelloWorldServiceProvider` interface defined.
+* `01-verbose-hello-world-api/src/main/java/module-info.java` already exports the
+  `spi` package.
+
+To-do:
+
+* Confirm the `spi` package is exported unconditionally (no qualified
+  `exports … to …`) so any consumer module can `uses` the service.
+* (Optional) Extend the javadoc on `HelloWorldServiceProvider` to note that the
+  same interface is reachable via both registration channels and that
+  `ServiceLoader.load(HelloWorldServiceProvider.class)` is the single API call
+  for either.
+
+=== lib
+
+In place:
+
+* `02-verbose-hello-world-lib/src/main/java/module-info.java` declares
+  `uses HelloWorldServiceProvider;` (the consumer side).
+* Two providers in test sources:
+  `HelloWorldServiceProvider_Demo`, `HelloWorldServiceProvider_Impl`.
+* `02-verbose-hello-world-lib/src/test/resources/META-INF/services/com.github.jinahya.hello.api.spi.HelloWorldServiceProvider`
+  registers both providers via the classpath channel.
+
+Missing — add a JPMS registration channel. Pick one:
+
+. *Promote the two providers from `src/test/java` to `src/main/java`* and add
+  `provides com.github.jinahya.hello.api.spi.HelloWorldServiceProvider
+  with HelloWorldServiceProvider_Impl, HelloWorldServiceProvider_Demo;`
+  to the existing main `module-info`. Keep the existing
+  `META-INF/services` file so both channels coexist in a single JAR. *Simplest;
+  recommended.*
+. *New sibling Maven module* (e.g. `02b-verbose-hello-world-lib-spi-jpms`) whose
+  `module-info` declares `provides …` and whose only source is the two
+  providers. The existing classpath-SPI test stays untouched; a new test in this
+  side module loads providers via the module-path. Best separation, more
+  boilerplate.
+. *Surefire `--patch-module`* — inject a synthetic `module-info` with
+  `provides …` for the JPMS test run only. Avoids restructuring sources but the
+  mechanism is invisible to a reader of the source tree (poor fit for a teaching
+  codebase).
+
+After option 1, add a test pair (same `ServiceLoader.load(…)` body, two
+Surefire executions):
+
+* `HelloWorldServiceProvider_Classpath_Test` — runs with the lib JAR on the
+  classpath; asserts both providers are resolved via `META-INF/services`.
+* `HelloWorldServiceProvider_ModulePath_Test` — runs with the lib JAR on the
+  module-path (forked JVM); asserts both providers are resolved via the
+  `provides` clause.
+
+=== app
+
+In place:
+
+* `app2_.HelloWorldMain` already consumes the service via
+  `ServiceLoader.load(HelloWorld.class).iterator().next()` — classpath SPI.
+* `app1` / `app3` / `app4` use other obtain mechanisms (direct / Guice / CDI),
+  unrelated to SPI.
+
+Missing — illustrate the JPMS-path SPI at the application level:
+
+. *Modular variant of `app2`*: restore a `module-info.java` for
+  `02-verbose-hello-world-app2` declaring
+  `requires com.github.jinahya.hello.api;` plus
+  `uses com.github.jinahya.hello.api.HelloWorld;`. Add a second launch script
+  pair (`app2-mp.sh` / `app2-mp.ps1`) that runs via
+  `java --module-path … -m com.github.jinahya.hello.app2_/com.github.jinahya.hello.app2_.HelloWorldMain`,
+  keeping the existing `app2.sh` for the classpath launch. *Same main source,
+  two launch modes;* recommended.
+. *New `app5` module* dedicated to the JPMS path. Cleaner separation, more
+  files and a separate `HelloWorldMain` to maintain.
+
+Recommendation: option 1 — same main class, two run scripts
+(`app2-cp` / `app2-mp`) make the classpath-vs-module-path contrast directly
+visible to the reader.

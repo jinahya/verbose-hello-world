@@ -21,8 +21,6 @@ package com.github.jinahya.hello.app4_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.enterprise.inject.Disposes;
-import jakarta.enterprise.inject.Produces;
 
 import java.util.ServiceLoader;
 
@@ -40,7 +38,7 @@ class HelloWorldProvider {
      * @see #dispose(HelloWorld)
      */
     @HelloWorldQualifier
-    @Produces
+    @jakarta.enterprise.inject.Produces
     HelloWorld produce() {
         return ServiceLoader.load(HelloWorld.class).iterator().next();
     }
@@ -51,7 +49,7 @@ class HelloWorldProvider {
      * @param bean the instance of {@link HelloWorld} interface to dispose.
      * @see #produce()
      */
-    void dispose(@HelloWorldQualifier @Disposes final HelloWorld bean) {
+    void dispose(@HelloWorldQualifier @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
         // empty
     }
 }

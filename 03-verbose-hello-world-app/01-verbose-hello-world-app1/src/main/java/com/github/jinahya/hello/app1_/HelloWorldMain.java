@@ -21,38 +21,38 @@ package com.github.jinahya.hello.app1_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.HelloWorldUtils;
 import com.github.jinahya.hello.lib.HelloWorldImpl;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A program whose {@link #main()} method prints {@code hello, world} to {@link System#out}.
+ * A program whose {@link #main()} method obtains a {@link HelloWorld} by directly instantiating
+ * {@link HelloWorldImpl} and prints {@code hello, world} to {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorldImpl
  */
-public class HelloWorldMain {
+class HelloWorldMain {
 
     /**
-     * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a system-dependent line separator.
-     *
-     * @throws IOException if an I/O error occurs.
-     * @see HelloWorldImpl
-     * @see HelloWorld#write(OutputStream)
-     * @see System#lineSeparator()
+     * Instantiates a {@link HelloWorldImpl} directly, formats the result with
+     * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
+     * system-dependent line separator via {@link IO#println(Object)}.
      */
-    static void main() throws IOException {
-        final var service = new HelloWorldImpl();
-        final var array = service.set(new byte[HelloWorld.BYTES]);
-        System.out.write(array);
-        System.out.println();
+    static void main() {
+        IO.println(
+                HelloWorldUtils.string(
+                        new HelloWorldImpl()
+                )
+        );
     }
 
     /**
-     * Creates a new instance, which is not possible.
+     * Suppresses external instantiation; always throws an {@link AssertionError}.
      */
-    HelloWorldMain() {
-        super();
+    private HelloWorldMain() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

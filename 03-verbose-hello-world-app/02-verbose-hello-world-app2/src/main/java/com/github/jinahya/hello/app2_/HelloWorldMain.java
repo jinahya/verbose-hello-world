@@ -21,35 +21,37 @@ package com.github.jinahya.hello.app2_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.HelloWorldUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ServiceLoader;
 
 /**
- * A program whose {@link #main(String[])} method prints {@code hello, world} to
+ * A program whose {@link #main()} method obtains a {@link HelloWorld} via the
+ * {@link ServiceLoader Service Provider Interface} and prints {@code hello, world} to
  * {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see ServiceLoader#load(Class)
  */
 class HelloWorldMain {
 
     /**
-     * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a system-dependent line separator.
+     * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, formats
+     * it with {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed
+     * by a system-dependent line separator via {@link IO#println(Object)}.
      *
-     * @param args an array of command line arguments
-     * @see java.util.ServiceLoader#load(Class)
+     * @see ServiceLoader#load(Class)
      */
-    public static void main(final String... args) {
-        final var loader = ServiceLoader.load(HelloWorld.class);
-        final var service = loader.iterator().next(); // NoSuchElementException
-        final var array = service.set(new byte[HelloWorld.BYTES]);
-        final var string = new String(array, StandardCharsets.US_ASCII);
-        System.out.printf("%1$s%n", string);
+    public static void main() {
+        IO.println(
+                HelloWorldUtils.string(
+                        ServiceLoader.load(HelloWorld.class).iterator().next()
+                )
+        );
     }
 
     /**
-     * Creates a new instance, which is not possible.
+     * Suppresses external instantiation; always throws an {@link AssertionError}.
      */
     private HelloWorldMain() {
         throw new AssertionError("instantiation is not allowed");

@@ -23,6 +23,7 @@ package com.github.jinahya.hello.api;
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -98,6 +99,11 @@ public final class HelloWorldUtils {
      */
     public static ByteBuffer buffer(final HelloWorld service) {
         return buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    public static String string(final HelloWorld service) {
+        return new String(array(service), StandardCharsets.US_ASCII);
     }
 
     // ---------------------------------------------------------------------------------------------

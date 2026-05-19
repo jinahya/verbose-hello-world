@@ -21,7 +21,6 @@ package com.github.jinahya.hello.app4_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.inject.Qualifier;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -35,7 +34,7 @@ import java.lang.annotation.Target;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Documented
-@Qualifier
+@jakarta.inject.Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
          ElementType.ANNOTATION_TYPE})

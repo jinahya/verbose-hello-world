@@ -6,6 +6,7 @@ $profiles = @(
     'cdi-se-openwebbeans-junit5',
     'cdi-se-weld',
     'cdi-se-weld-junit5',
+    'di-avaje',
     'di-dagger',
     'di-guice',
     'di-hk2',

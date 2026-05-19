@@ -21,19 +21,21 @@ package com.github.jinahya.hello.app4_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.HelloWorldUtils;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * A program whose {@link #main(String[])} method prints {@code hello, world} to
- * {@link System#out}.
+ * A program whose {@link #main()} method obtains a {@link HelloWorld} through
+ * <a href="https://jakarta.ee/specifications/cdi/">Jakarta CDI</a> and prints
+ * {@code hello, world} to {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see SeContainerInitializer#newInstance()
  */
 @SuppressWarnings({
         "java:S106",  // Standard outputs should not be used directly to log anything
@@ -41,30 +43,39 @@ import java.nio.channels.Channels;
 })
 class HelloWorldMain {
 
+    static {
+        Logger.getLogger("org.jboss.weld").setLevel(Level.WARNING);
+    }
+
     /**
-     * The main method of this program which prints {@code hello, world} to {@link System#out}
-     * followed by a platform-specific line separator.
-     *
-     * @param args an array of command line arguments
-     * @throws IOException if an I/O error occurs.
+     * Bootstraps a CDI SE container via {@link SeContainerInitializer#initialize()}, selects an
+     * instance of this class managed by the container, formats the injected {@link #service} with
+     * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
+     * system-dependent line separator via {@link IO#println(Object)}.
      */
-    public static void main(final String... args) throws IOException {
+    static void main() {
         try (var container = SeContainerInitializer.newInstance().initialize()) {
             final var instance = CDI.current().select(HelloWorldMain.class).get();
-            final var channel = instance.service.write(Channels.newChannel(System.out));
-            for (var b = ByteBuffer.wrap(System.lineSeparator().getBytes()); b.hasRemaining(); ) {
-                final var written = channel.write(b);
-                assert written >= 0;
-            }
+            final var string = HelloWorldUtils.string(instance.service);
+            IO.println(string);
         }
     }
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
+
+    /**
+     * Suppresses external instantiation; the CDI container constructs instances of this class
+     * reflectively through this private constructor.
+     */
     private HelloWorldMain() {
         super();
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * A {@link HelloWorld} qualified with {@link HelloWorldQualifier}, injected by CDI.
+     */
     @HelloWorldQualifier
     @Inject
     private HelloWorld service;
