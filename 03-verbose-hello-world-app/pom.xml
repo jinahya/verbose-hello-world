@@ -57,7 +57,7 @@
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>com.github.jinahya.hello.app2_.HelloWorldMain</mainClass>
+                  <mainClass>${mainClass}</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -185,21 +185,6 @@
                       <mainClass>${mainClass}</mainClass>
                     </transformer>
                   </transformers>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>repackage</goal>
-                </goals>
-                <configuration>
-                  <classifier>spring-boot</classifier>
-                  <mainClass>${mainClass}</mainClass>
                 </configuration>
               </execution>
             </executions>
