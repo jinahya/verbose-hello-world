@@ -179,14 +179,15 @@ public interface HelloWorld {
      * Array Access</a> (Java Language Specification)
      */
     default byte[] set(final byte[] array) {
-        if (array == null) {
-            throw new NullPointerException("array is null");
-        }
-        if (array.length < BYTES) {
-            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
-        }
-        set(array, 0);
-        return array;
+//        if (array == null) {
+//            throw new NullPointerException("array is null");
+//        }
+//        if (array.length < BYTES) {
+//            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
+//        }
+//        set(array, 0);
+//        return array;
+        return null;
     }
 
     /**
