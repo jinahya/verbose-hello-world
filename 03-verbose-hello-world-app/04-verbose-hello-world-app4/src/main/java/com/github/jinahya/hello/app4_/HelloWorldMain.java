@@ -24,7 +24,6 @@ import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldUtils;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,6 +76,6 @@ class HelloWorldMain {
      * A {@link HelloWorld} qualified with {@link HelloWorldQualifier}, injected by CDI.
      */
     @HelloWorldQualifier
-    @Inject
+    @jakarta.inject.Inject
     private HelloWorld service;
 }

@@ -39,6 +39,7 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>mockwebserver</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
@@ -115,10 +116,6 @@
       <artifactId>pekko-stream_3</artifactId> <!-- Use _2.13 for Scala 2.13 -->
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-    </dependency>
     <!--    <dependency>-->
     <!--      <groupId>org.awaitility</groupId>-->
     <!--      <artifactId>awaitility</artifactId>-->
@@ -147,13 +144,11 @@
     <dependency>
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
-      <scope>provided</scope>
-      <!--      <scope>compile</scope>-->
     </dependency>
     <dependency>
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams-flow-adapters</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
