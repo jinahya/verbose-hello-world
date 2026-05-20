@@ -36,26 +36,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class HelloWorldDiSpringConfiguration {
 
-    @Named(HelloWorldDiConstants._NAME_DEMO)
+    @Named(HelloWorldDi_Constants._NAME_DEMO)
     @org.springframework.context.annotation.Bean
     HelloWorld namedDemo() {
         return new HelloWorldDemo();
     }
 
-    @Named(HelloWorldDiConstants._NAME_IMPL)
+    @Named(HelloWorldDi_Constants._NAME_IMPL)
     @org.springframework.context.annotation.Bean
     HelloWorld namedImpl() {
         return new HelloWorldImpl();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    @__QualifiedDemo
+    @HelloWorld_Qualified_Demo
     @org.springframework.context.annotation.Bean
     HelloWorld qualifiedDemo() {
         return new HelloWorldDemo();
     }
 
-    @__QualifiedImpl
+    @HelloWorld_Qualified_Impl
     @org.springframework.context.annotation.Bean
     HelloWorld qualifiedImpl() {
         return new HelloWorldImpl();

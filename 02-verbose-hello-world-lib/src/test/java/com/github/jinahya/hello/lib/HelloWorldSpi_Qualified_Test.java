@@ -21,36 +21,35 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ServiceLoader;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
- * A class for testing {@link HelloWorldImpl} using Service Provider Interface.
+ * Runs the {@link HelloWorld#set(byte[], int) set(array, index)} contract inherited from
+ * {@link HelloWorld__Test} against every <em>qualified</em> {@link HelloWorld} — i.e. services
+ * supplied by providers whose
+ * {@link HelloWorldServiceProvider#isServiceQualified() isServiceQualified()} returns {@code true}
+ * ({@link HelloWorldImpl}) — filtering the stream returned by the base class's
+ * {@link HelloWorldSpi__Test#providers() providers()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldSpi_Qualified_Test extends __HelloWorld__Test {
+class HelloWorldSpi_Qualified_Test extends HelloWorldSpi__Test {
+
+    static Stream<HelloWorldServiceProvider> providers() {
+        return HelloWorldSpi__Test.providers()
+                .filter(HelloWorldServiceProvider::isServiceQualified);
+    }
 
     @Override
     Stream<HelloWorld> services() {
-        return StreamSupport.stream(
-                        Spliterators.spliteratorUnknownSize(
-                                ServiceLoader.load(HelloWorldServiceProvider.class).iterator(),
-                                Spliterator.ORDERED
-                        ),
-                        false
-                )
-                .filter(HelloWorldServiceProvider::isQualified)
-                .map(HelloWorldServiceProvider::getService);
+        return providers()
+                .map(HelloWorldServiceProvider::getService)
+                .peek(s -> log.debug("service: {}", s));
     }
 }

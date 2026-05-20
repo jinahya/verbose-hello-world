@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Optional;
@@ -31,8 +29,9 @@ import java.util.stream.Collectors;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 public final class JavaLangReflectUtils {
+
+    private static final System.Logger log = System.getLogger(JavaLangReflectUtils.class.getName());
 
     public static Object loggingProxy(final Set<Class<?>> interfaceClasses, final Object obj) {
         return Proxy.newProxyInstance(
@@ -45,7 +44,7 @@ public final class JavaLangReflectUtils {
                                 .map(v -> Arrays.stream(v).map(Object::toString)
                                         .collect(Collectors.joining(", ")))
                                 .orElse("");
-                        log.debug("{}.{}({})", obj, m.getName(), s);
+                        log.log(System.Logger.Level.DEBUG, "{0}.{1}({2})", obj, m.getName(), s);
                     }
                     return m.invoke(obj, a);
                 }

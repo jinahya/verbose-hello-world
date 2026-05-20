@@ -33,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiGuiceTest extends HelloWorldDiTest {
+class HelloWorldDiGuiceTest extends HelloWorldDi_Test {
 
     @BeforeEach
     void _beforeEach() {

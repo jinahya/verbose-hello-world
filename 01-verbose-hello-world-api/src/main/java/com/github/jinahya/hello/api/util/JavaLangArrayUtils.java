@@ -20,14 +20,11 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Objects;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 public final class JavaLangArrayUtils {
 
     public static void requireValidStart(final byte[] array, final int offset, final String name) {

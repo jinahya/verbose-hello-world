@@ -46,17 +46,17 @@ class HelloWorldDiMicronautFactory {
     }
 
     @io.micronaut.context.annotation.Bean
-    @Named(HelloWorldDiConstants._NAME_DEMO)
+    @Named(HelloWorldDi_Constants._NAME_DEMO)
     @Singleton
     HelloWorld provideNamedDemo() {
-        return provideNamed(HelloWorldDiConstants._NAME_DEMO, new HelloWorldDemo());
+        return provideNamed(HelloWorldDi_Constants._NAME_DEMO, new HelloWorldDemo());
     }
 
     @io.micronaut.context.annotation.Bean
-    @Named(HelloWorldDiConstants._NAME_IMPL)
+    @Named(HelloWorldDi_Constants._NAME_IMPL)
     @Singleton
     HelloWorld provideNamedImpl() {
-        return provideNamed(HelloWorldDiConstants._NAME_IMPL, new HelloWorldImpl());
+        return provideNamed(HelloWorldDi_Constants._NAME_IMPL, new HelloWorldImpl());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -67,16 +67,16 @@ class HelloWorldDiMicronautFactory {
     }
 
     @io.micronaut.context.annotation.Bean
-    @__QualifiedDemo
+    @HelloWorld_Qualified_Demo
     @Singleton
     HelloWorld provideQualifiedDemo() {
-        return provideQualified(new HelloWorldDemo(), __QualifiedDemo.class);
+        return provideQualified(new HelloWorldDemo(), HelloWorld_Qualified_Demo.class);
     }
 
     @io.micronaut.context.annotation.Bean
-    @__QualifiedImpl
+    @HelloWorld_Qualified_Impl
     @Singleton
     HelloWorld provideQualifiedImpl() {
-        return provideQualified(new HelloWorldImpl(), __QualifiedImpl.class);
+        return provideQualified(new HelloWorldImpl(), HelloWorld_Qualified_Impl.class);
     }
 }

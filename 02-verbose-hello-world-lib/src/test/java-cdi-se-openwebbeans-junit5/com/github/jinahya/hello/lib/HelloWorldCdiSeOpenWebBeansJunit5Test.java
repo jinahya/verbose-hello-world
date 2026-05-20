@@ -27,16 +27,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * A class extends {@link HelloWorldCdiSeTest} for Apache OpenWebBeans.
+ * A class extends {@link HelloWorldCdiSe_Test} for Apache OpenWebBeans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="<a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
  * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
-@org.apache.openwebbeans.junit5.Cdi(classes = {HelloWorldCdiFactory.class})
+@org.apache.openwebbeans.junit5.Cdi(classes = {HelloWorldCdi_Producer.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeOpenWebBeansJunit5Test extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeOpenWebBeansJunit5Test extends HelloWorldCdiSe_Test {
 
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();

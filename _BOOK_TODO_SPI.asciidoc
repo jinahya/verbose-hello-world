@@ -1,0 +1,126 @@
+= TODO — Introduce SPI (with and without JPMS) in the book
+
+NOTE: This file is a hand-off note for a separate Claude Code session.
+It is written in English on purpose (working language of the AI
+session). The actual book content to be produced is Korean.
+
+== Task
+
+In this book (verbose-hello-world-book, Korean asciidoc), add a new
+subsection (or `[sidebar]` block — pick whichever fits the flow of the
+host chapter better) introducing the Java SPI mechanism, with two
+configuration variants: classpath-based (`META-INF/services`) and
+module-based (`module-info.java`'s `uses` / `provides ... with`).
+
+== Where to place it
+
+The book discusses `HelloWorldServiceProvider` /
+`ServiceLoader.load(...)` in the lib-module tests (see
+`02-verbose-hello-world-lib/src/test/java/com/github/jinahya/hello/lib/
+HelloWorldSpi*` and any chapter section that quotes them). Find the
+chapter section that first introduces
+`ServiceLoader.load(HelloWorldServiceProvider.class)` and append the
+new material immediately after the existing prose / source block —
+before the section moves on to the next topic. If no such section
+exists yet, add this as a new `===` subsection under the chapter that
+introduces `HelloWorldServiceProvider`.
+
+== What to cover (3 short parts)
+
+=== 1. SPI interface visibility (`public`)
+
+- Why the service interface must be `public` (loaded reflectively
+  across module / class-loader boundaries by `ServiceLoader`;
+  package-private types cannot be instantiated from outside their
+  package).
+- Show the actual `HelloWorldServiceProvider` declaration (read it
+  fresh from disk — do NOT paraphrase) with `public interface ...` and
+  explain that provider implementations must also have an accessible
+  (`public`) zero-arg constructor *or* a `public static provider()`
+  method.
+
+=== 2. Classpath configuration — `META-INF/services/<FQCN>`
+
+- A plain text file at
+  `META-INF/services/com.github.jinahya.hello.lib.HelloWorldServiceProvider`
+  whose lines are the fully qualified class names of providers.
+- Works without any `module-info.java`; this is the original Java 6+
+  mechanism.
+- Show a 1–2 line example of the file content.
+- Run command form: `java -cp ... MainClass`.
+
+=== 3. Module-path configuration — `module-info.java`
+
+- Consumer side:
+  `uses com.github.jinahya.hello.lib.HelloWorldServiceProvider;`
+  in the module that calls `ServiceLoader.load(...)`. Without it, the
+  JVM throws:
++
+[%unbreakable]
+----
+java.util.ServiceConfigurationError: ...
+    module X does not declare `uses`
+----
++
+Mention this exact error so the reader can recognize it.
+- Provider side:
+  `provides com.github.jinahya.hello.lib.HelloWorldServiceProvider
+   with com.github.jinahya.hello.lib.HelloWorldServiceProvider_Impl;`
+  in the module that contains the implementation. When `provides` is
+  declared in `module-info.java`, the `META-INF/services/...` file is
+  not required.
+- Run command form:
+  `java --module-path ... --module <module>/<MainClass>`.
+
+=== Closing paragraph
+
+End with a one-paragraph note that the two mechanisms can coexist
+(a modular consumer can still discover classpath providers via
+`META-INF/services` if the provider lives in the unnamed module), and
+that this project's lib-module tests rely on the classpath mechanism
+at test time via surefire's `<useModulePath>false</useModulePath>` —
+see `_ISSUES.asciidoc` for the rationale.
+
+== Conventions to follow (from CLAUDE.md)
+
+- Korean prose. No em-dash glue between clauses.
+- All delimited blocks (`[source,...]`, `....`, sidebar, example) use
+  `[%unbreakable]`.
+- Java source blocks use the two-line attribute form:
++
+[%unbreakable]
+----
+[%unbreakable]
+[source,java]
+----
+...
+----
+----
++
+Non-Java listings (the `META-INF/services` file, shell commands) may
+use `[%unbreakable,source]` without a language, or
+`[%unbreakable,source,bash]` for shell.
+- Tables (if any) use:
+  `[%unbreakable%autowidth.stretch,frame="none",grid="rows"]`.
+- No bold (`*...*`) emphasis — write plain Korean prose.
+- When quoting Java source, read the actual files from disk first
+  (`02-verbose-hello-world-lib/src/test/java/com/github/jinahya/hello/
+  lib/HelloWorldServiceProvider.java`,
+  `HelloWorldServiceProvider_Impl.java`, etc.) and copy verbatim.
+  Strip `@DisplayName`, `logger.log(...)`, and
+  `// @formatter:on` / `// @formatter:off` per the project
+  conventions.
+- Do NOT run the asciidoctor build to verify. End the turn by telling
+  the user to run `./mvnw generate-resources` themselves.
+
+== Length budget
+
+One subsection (or one sidebar) totaling roughly 60–120 lines of
+asciidoc, including the three short code/config blocks. Concise, not
+exhaustive — link out (with
+`{javadoc-lts}/java.base/java/util/ServiceLoader.html` etc.) for full
+API details.
+
+== When done
+
+Delete this file (`_BOOK_TODO_SPI.asciidoc`).

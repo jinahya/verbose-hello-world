@@ -20,14 +20,37 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-class HelloWorldServiceProvider_Demo extends HelloWorldServiceProvider_ {
+import com.github.jinahya.hello.api.HelloWorld;
 
-    HelloWorldServiceProvider_Demo() {
-        super(HelloWorldDemo.class);
+/**
+ * A {@link HelloWorldServiceProvider} that supplies {@link HelloWorldDemo} instances. The
+ * supplied service is classified as <em>unqualified</em> ({@link #isServiceQualified()} returns
+ * {@code false}).
+ *
+ * <p>{@code public} so {@link java.util.ServiceLoader ServiceLoader}'s classpath-mode
+ * reflection can invoke its implicit no-arg constructor.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+public class HelloWorldServiceProvider_Demo implements HelloWorldServiceProvider {
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@code false}.
+     */
+    @Override
+    public boolean isServiceQualified() {
+        return false;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return a new {@link HelloWorldDemo} instance.
+     */
     @Override
-    public boolean isQualified() {
-        return false;
+    public HelloWorld getService() {
+        return new HelloWorldDemo();
     }
 }

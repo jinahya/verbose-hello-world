@@ -2,7 +2,7 @@ package com.github.jinahya.hello.lib.util;
 
 /*-
  * #%L
- * verbose-hello-world-api
+ * verbose-hello-world-lib
  * %%
  * Copyright (C) 2018 - 2023 Jinahya, Inc.
  * %%
@@ -20,17 +20,29 @@ package com.github.jinahya.hello.lib.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * Utilities for {@link Object}, primarily for rendering an instance as a stable
+ * {@code <simple-name>@<identity-hex>} string suitable for log lines.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 public final class JavaLangObjectUtils {
 
+    /**
+     * Returns a string of the form {@code <simple-name>@<identity-hex>} for the given object, or
+     * {@code "null"} when {@code obj} is {@code null}. The simple-name component is taken from the
+     * runtime class of {@code obj} when available, falling back to {@code cls.getSimpleName()} for
+     * anonymous classes whose own simple name is empty.
+     *
+     * @param cls the reference type used both for the fallback simple name and for null-safety;
+     *            never {@code null}
+     * @param obj the object to render; may be {@code null}
+     * @param <T> the reference type
+     * @return a stable per-instance label
+     */
     public static <T> String toSimpleString(final Class<T> cls, final T obj) {
         Objects.requireNonNull(cls, "cls is null");
         if (obj == null) {
@@ -46,6 +58,13 @@ public final class JavaLangObjectUtils {
         return toSimpleString(Objects.requireNonNull(cls, "cls is null"), cls.cast(obj));
     }
 
+    /**
+     * Renders {@code obj} via {@link #toSimpleString(Class, Object)} using its own runtime class as
+     * the reference type.
+     *
+     * @param obj the object to render; must not be {@code null}
+     * @return {@code toSimpleString(obj.getClass(), obj)}
+     */
     public static String toSimpleString(final Object obj) {
         return toSimpleStringHelper(obj.getClass(), obj);
     }

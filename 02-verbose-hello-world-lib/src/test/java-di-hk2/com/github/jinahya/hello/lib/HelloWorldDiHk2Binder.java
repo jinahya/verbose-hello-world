@@ -39,17 +39,17 @@ import java.lang.annotation.Annotation;
 @Slf4j
 class HelloWorldDiHk2Binder extends org.glassfish.hk2.utilities.binding.AbstractBinder {
 
-    private static class __QualifiedDemo_Literal
-            extends org.glassfish.hk2.api.AnnotationLiteral<__QualifiedDemo>
-            implements __QualifiedDemo {
+    private static class HelloWorld_Qualified_Demo_Literal
+            extends org.glassfish.hk2.api.AnnotationLiteral<HelloWorld_Qualified_Demo>
+            implements HelloWorld_Qualified_Demo {
 
         @Serial
         private static final long serialVersionUID = 8947668889394516822L;
     }
 
-    private static class __QualifiedImpl_Literal
-            extends org.glassfish.hk2.api.AnnotationLiteral<__QualifiedImpl>
-            implements __QualifiedImpl {
+    private static class HelloWorld_Qualified_Impl_Literal
+            extends org.glassfish.hk2.api.AnnotationLiteral<HelloWorld_Qualified_Impl>
+            implements HelloWorld_Qualified_Impl {
 
         @Serial
         private static final long serialVersionUID = 9084623087464727990L;
@@ -76,10 +76,10 @@ class HelloWorldDiHk2Binder extends org.glassfish.hk2.utilities.binding.Abstract
     // ---------------------------------------------------------------------------------------------
     @Override
     protected void configure() {
-        bindNamed(HelloWorldDemo.class, HelloWorldDiConstants._NAME_DEMO);
-        bindNamed(HelloWorldImpl.class, HelloWorldDiConstants._NAME_IMPL);
+        bindNamed(HelloWorldDemo.class, HelloWorldDi_Constants._NAME_DEMO);
+        bindNamed(HelloWorldImpl.class, HelloWorldDi_Constants._NAME_IMPL);
         // -----------------------------------------------------------------------------------------
-        bindQualified(HelloWorldDemo.class, new __QualifiedDemo_Literal());
-        bindQualified(HelloWorldImpl.class, new __QualifiedImpl_Literal());
+        bindQualified(HelloWorldDemo.class, new HelloWorld_Qualified_Demo_Literal());
+        bindQualified(HelloWorldImpl.class, new HelloWorld_Qualified_Impl_Literal());
     }
 }

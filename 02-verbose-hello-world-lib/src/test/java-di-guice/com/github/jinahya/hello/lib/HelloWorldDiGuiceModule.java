@@ -58,10 +58,10 @@ class HelloWorldDiGuiceModule extends com.google.inject.AbstractModule {
     @Override
     protected void configure() {
         // -----------------------------------------------------------------------------------------
-        bindNamed(HelloWorldDiConstants._NAME_DEMO, HelloWorldDemo.class);
-        bindNamed(HelloWorldDiConstants._NAME_IMPL, HelloWorldImpl.class);
+        bindNamed(HelloWorldDi_Constants._NAME_DEMO, HelloWorldDemo.class);
+        bindNamed(HelloWorldDi_Constants._NAME_IMPL, HelloWorldImpl.class);
         // -----------------------------------------------------------------------------------------
-        bindAnnotated(__QualifiedDemo.class, HelloWorldDemo.class);
-        bindAnnotated(__QualifiedImpl.class, HelloWorldImpl.class);
+        bindAnnotated(HelloWorld_Qualified_Demo.class, HelloWorldDemo.class);
+        bindAnnotated(HelloWorld_Qualified_Impl.class, HelloWorldImpl.class);
     }
 }

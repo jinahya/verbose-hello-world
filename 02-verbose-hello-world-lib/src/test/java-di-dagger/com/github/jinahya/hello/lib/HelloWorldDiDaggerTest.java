@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiDaggerTest extends HelloWorldDiTest {
+class HelloWorldDiDaggerTest extends HelloWorldDi_Test {
 
     @BeforeEach
     void injectMembers() {

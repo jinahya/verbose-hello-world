@@ -18,7 +18,6 @@
  * #L%
  */
 module com.github.jinahya.hello.api {
-    requires static lombok;
     requires transitive org.jspecify;
     requires transitive org.slf4j;
 //    requires jakarta.validation;
@@ -30,5 +29,4 @@ module com.github.jinahya.hello.api {
     requires java.desktop;
 //    requires org.apache.commons.lang3;
     exports com.github.jinahya.hello.api;
-    exports com.github.jinahya.hello.api.spi;
 }

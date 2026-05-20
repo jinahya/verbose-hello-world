@@ -25,12 +25,21 @@ import com.github.jinahya.hello.api.HelloWorld;
 import java.util.Objects;
 
 /**
- * A class implements the {@link HelloWorld} interface.
+ * A {@link HelloWorld} whose {@link #set(byte[], int) set(array, index)} writes the {@value
+ * HelloWorld#BYTES} {@code US-ASCII} bytes of {@code "hello, world"} into {@code array} starting at
+ * {@code index}, byte-by-byte via direct array assignments.
+ *
+ * <p>Validates its arguments before writing: throws {@link NullPointerException} when
+ * {@code array} is {@code null}, and {@link IndexOutOfBoundsException} when {@code index} is
+ * negative or when {@code array.length < index + }{@value HelloWorld#BYTES}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public class HelloWorldImpl implements HelloWorld {
 
+    /**
+     * Creates a new instance.
+     */
     public HelloWorldImpl() {
         super();
     }

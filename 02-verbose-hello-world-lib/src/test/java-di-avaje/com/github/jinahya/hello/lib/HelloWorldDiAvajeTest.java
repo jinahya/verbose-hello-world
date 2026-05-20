@@ -36,15 +36,15 @@ import org.junit.jupiter.api.BeforeEach;
 //@io.avaje.inject.test.InjectTest
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiAvajeTest extends HelloWorldDiTest {
+class HelloWorldDiAvajeTest extends HelloWorldDi_Test {
 
     @BeforeEach
     void _beforeEach() {
         beanScope = io.avaje.inject.BeanScope.builder().modules(new LibModule()).build();
-        namedDemo = beanScope.get(HelloWorld.class, HelloWorldDiConstants._NAME_DEMO);
-        namedImpl = beanScope.get(HelloWorld.class, HelloWorldDiConstants._NAME_IMPL);
-        qualifiedDemo = beanScope.get(HelloWorld.class, __QualifiedDemo.class.getSimpleName());
-        qualifiedImpl = beanScope.get(HelloWorld.class, __QualifiedImpl.class.getSimpleName());
+        namedDemo = beanScope.get(HelloWorld.class, HelloWorldDi_Constants._NAME_DEMO);
+        namedImpl = beanScope.get(HelloWorld.class, HelloWorldDi_Constants._NAME_IMPL);
+        qualifiedDemo = beanScope.get(HelloWorld.class, HelloWorld_Qualified_Demo.class.getSimpleName());
+        qualifiedImpl = beanScope.get(HelloWorld.class, HelloWorld_Qualified_Impl.class.getSimpleName());
     }
 
     @AfterEach

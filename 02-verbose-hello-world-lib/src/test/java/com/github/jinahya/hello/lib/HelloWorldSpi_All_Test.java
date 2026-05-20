@@ -21,32 +21,29 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.spi.HelloWorldServiceProvider;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ServiceLoader;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
- * A class for testing {@link HelloWorldImpl} using Service Provider Interface.
+ * Runs the {@link HelloWorld#set(byte[], int) set(array, index)} contract inherited from
+ * {@link HelloWorld__Test} against every {@link HelloWorld} supplied by every
+ * {@link HelloWorldServiceProvider} discovered through the base class's
+ * {@link HelloWorldSpi__Test#providers() providers()} — i.e. both {@link HelloWorldDemo}
+ * (unqualified) and {@link HelloWorldImpl} (qualified), without filtering.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldSpi_All_Test extends __HelloWorld__Test {
+class HelloWorldSpi_All_Test extends HelloWorldSpi__Test {
 
     @Override
     Stream<HelloWorld> services() {
-        final var provider = ServiceLoader.load(HelloWorldServiceProvider.class);
-        final var iterator = provider.iterator();
-        final var spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
-        return StreamSupport.stream(spliterator, false)
-                .map(HelloWorldServiceProvider::getService);
+        return providers()
+                .map(HelloWorldServiceProvider::getService)
+                .peek(s -> log.debug("service: {}", s));
     }
 }

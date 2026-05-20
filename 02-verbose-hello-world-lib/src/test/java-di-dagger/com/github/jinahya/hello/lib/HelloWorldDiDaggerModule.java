@@ -41,16 +41,16 @@ public class HelloWorldDiDaggerModule {
         return bean;
     }
 
-    @Named(HelloWorldDiConstants._NAME_DEMO)
+    @Named(HelloWorldDi_Constants._NAME_DEMO)
     @dagger.Provides
     static HelloWorld provideNamedDemo() {
-        return provideNamed(HelloWorldDiConstants._NAME_DEMO, new HelloWorldDemo());
+        return provideNamed(HelloWorldDi_Constants._NAME_DEMO, new HelloWorldDemo());
     }
 
-    @Named(HelloWorldDiConstants._NAME_IMPL)
+    @Named(HelloWorldDi_Constants._NAME_IMPL)
     @dagger.Provides
     static HelloWorld provideNamedImpl() {
-        return provideNamed(HelloWorldDiConstants._NAME_IMPL, new HelloWorldImpl());
+        return provideNamed(HelloWorldDi_Constants._NAME_IMPL, new HelloWorldImpl());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -60,15 +60,15 @@ public class HelloWorldDiDaggerModule {
         return bean;
     }
 
-    @__QualifiedDemo
+    @HelloWorld_Qualified_Demo
     @dagger.Provides
     static HelloWorld provideQualifiedDemo() {
-        return provideQualified(new HelloWorldDemo(), __QualifiedDemo.class);
+        return provideQualified(new HelloWorldDemo(), HelloWorld_Qualified_Demo.class);
     }
 
-    @__QualifiedImpl
+    @HelloWorld_Qualified_Impl
     @dagger.Provides
     static HelloWorld provideQualifiedImpl() {
-        return provideQualified(new HelloWorldImpl(), __QualifiedImpl.class);
+        return provideQualified(new HelloWorldImpl(), HelloWorld_Qualified_Impl.class);
     }
 }

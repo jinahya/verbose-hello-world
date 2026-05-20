@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiSpringTest extends HelloWorldDiTest {
+class HelloWorldDiSpringTest extends HelloWorldDi_Test {
 
     @BeforeEach
     void autowireBean() {

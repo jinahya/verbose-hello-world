@@ -36,7 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @io.micronaut.context.annotation.Prototype
 @Slf4j
-class HelloWorldDiMicronautTest extends HelloWorldDiTest {
+class HelloWorldDiMicronautTest extends HelloWorldDi_Test {
 
     @BeforeEach
     void _beforeEach() {

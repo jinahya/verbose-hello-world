@@ -45,15 +45,15 @@ class HelloWorldDiAvajeFactory {
     }
 
     @io.avaje.inject.Bean
-    @Named(HelloWorldDiConstants._NAME_DEMO)
+    @Named(HelloWorldDi_Constants._NAME_DEMO)
     HelloWorld provideNamedDemo() {
-        return provideNamed(HelloWorldDiConstants._NAME_DEMO, new HelloWorldDemo());
+        return provideNamed(HelloWorldDi_Constants._NAME_DEMO, new HelloWorldDemo());
     }
 
     @io.avaje.inject.Bean
-    @Named(HelloWorldDiConstants._NAME_IMPL)
+    @Named(HelloWorldDi_Constants._NAME_IMPL)
     HelloWorld provideNamedImpl() {
-        return provideNamed(HelloWorldDiConstants._NAME_IMPL, new HelloWorldImpl());
+        return provideNamed(HelloWorldDi_Constants._NAME_IMPL, new HelloWorldImpl());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -64,14 +64,14 @@ class HelloWorldDiAvajeFactory {
     }
 
     @io.avaje.inject.Bean
-    @__QualifiedDemo
+    @HelloWorld_Qualified_Demo
     HelloWorld provideQualifiedDemo() {
-        return provideQualified(new HelloWorldDemo(), __QualifiedDemo.class);
+        return provideQualified(new HelloWorldDemo(), HelloWorld_Qualified_Demo.class);
     }
 
     @io.avaje.inject.Bean
-    @__QualifiedImpl
+    @HelloWorld_Qualified_Impl
     HelloWorld provideQualifiedImpl() {
-        return provideQualified(new HelloWorldImpl(), __QualifiedImpl.class);
+        return provideQualified(new HelloWorldImpl(), HelloWorld_Qualified_Impl.class);
     }
 }

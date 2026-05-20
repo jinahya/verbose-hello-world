@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
@@ -40,8 +38,9 @@ import java.util.stream.Collectors;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 public final class JavaLangUtils {
+
+    private static final System.Logger log = System.getLogger(JavaLangUtils.class.getName());
 
     static final Map<Class<?>, Class<?>> WRAPPER_CLASSES = Map.of(
             boolean.class, Boolean.class,
@@ -104,14 +103,14 @@ public final class JavaLangUtils {
                     }
                 }
             } catch (IOException ioe) {
-                log.error("failed to read line", ioe);
+                log.log(System.Logger.Level.ERROR, "failed to read line", ioe);
             }
             try {
                 callable.call();
             } catch (final InterruptedException ie) {
                 Thread.currentThread().interrupt();
             } catch (final Exception e) {
-                log.error("failed to call {}", callable, e);
+                log.log(System.Logger.Level.ERROR, () -> "failed to call " + callable, e);
             }
         });
     }

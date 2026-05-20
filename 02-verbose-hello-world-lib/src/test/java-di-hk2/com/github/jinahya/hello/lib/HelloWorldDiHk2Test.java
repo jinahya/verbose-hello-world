@@ -26,13 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * An extended {@link HelloWorldDiTest} which uses {@link HelloWorldDiHk2Binder} as a binder.
+ * An extended {@link HelloWorldDi_Test} which uses {@link HelloWorldDiHk2Binder} as a binder.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiHk2Test extends HelloWorldDiTest {
+class HelloWorldDiHk2Test extends HelloWorldDi_Test {
 
     @BeforeEach
     void inject() {

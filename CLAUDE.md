@@ -121,7 +121,6 @@ The `generate-executables` profile (active by default) produces multiple artifac
 - Null safety: JSpecify annotations (`@NullMarked`, `@Nullable`)
 - Custom annotations `@屋上架屋` and `@屋下架屋` are used as code documentation markers
 - Logging: SLF4J API with Logback runtime, plus `jul-to-slf4j` bridge
-- **No static imports**: This codebase is educational material for books/lectures; explicit qualified names (e.g., `HelloWorld.BYTES`, `Assertions.assertEquals`) improve readability for learners
 
 ## Javadoc Conventions
 

@@ -1,0 +1,130 @@
+= 알려진 이슈
+
+이 문서는 빌드/테스트 환경에서 발생하는, 코드 변경으로 해결할 수 없거나 외부(IDE·플러그인) 원인으로 인한 이슈를 기록한다.
+
+각 이슈는 영역(IDE / 빌드 / 런타임 등) 별로 묶고, 영역 안에서 개별 항목을 하위 절(`===`)로 둔다.
+
+== IDE
+
+=== IntelliJ IDEA 가 `maven-surefire-plugin` 의 `<useModulePath>false</useModulePath>` 를 무시한다
+
+==== 증상
+
+`02-verbose-hello-world-lib` 모듈의 테스트(예: `HelloWorldSpi_All_Test`)를 IntelliJ 의 실행 버튼(▶)으로 직접 실행하면 다음과 같은 예외가 발생한다.
+
+[%unbreakable]
+----
+java.util.ServiceConfigurationError: com.github.jinahya.hello.lib.HelloWorldServiceProvider:
+    module com.github.jinahya.hello.lib does not declare `uses`
+
+    at java.base/java.util.ServiceLoader.fail(ServiceLoader.java:559)
+    at java.base/java.util.ServiceLoader.checkCaller(ServiceLoader.java:545)
+    at java.base/java.util.ServiceLoader.<init>(ServiceLoader.java:480)
+    at java.base/java.util.ServiceLoader.load(ServiceLoader.java:1547)
+    at com.github.jinahya.hello.lib/com.github.jinahya.hello.lib.HelloWorldSpi__Test.providers(...)
+----
+
+스택 트레이스의 `com.github.jinahya.hello.lib/...` 접두사는 테스트 클래스가 명명 모듈(named module) 의 구성원으로 로딩되었음을 의미한다. 즉 IntelliJ 가 테스트를 모듈 경로(module path)에서 실행했다는 뜻이다.
+
+반면 동일한 테스트를 Maven 으로 실행하면 정상적으로 통과한다.
+
+[%unbreakable]
+[source,bash]
+----
+./mvnw -pl 02-verbose-hello-world-lib -Dtest=HelloWorldSpi_All_Test test
+----
+
+==== 원인
+
+`02-verbose-hello-world-lib/pom.xml` 의 surefire 설정.
+
+[%unbreakable]
+[source,xml]
+----
+<plugin>
+  <artifactId>maven-surefire-plugin</artifactId>
+  <configuration>
+    <useModulePath>false</useModulePath>
+  </configuration>
+</plugin>
+----
+
+이 설정은 surefire 에게 "테스트를 모듈 경로가 아닌 클래스 경로(class path)로 실행하라" 고 지시한다. 클래스 경로에서는 JPMS 의 `requires` / `exports` / `uses` / `opens` 규칙이 모두 무시되므로, `ServiceLoader.load(...)` 호출 시 요구되는 `uses` 선언이 없어도 동작한다.
+
+문제는 IntelliJ 가 이 설정을 무시하고 테스트를 항상 모듈 경로에서 실행한다는 점이다. 따라서 동일한 `module-info.java` 에 대해 두 실행 환경이 서로 다른 규칙을 적용하게 된다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 실행 환경 | 클래스/모듈 경로 | JPMS 규칙 검사 | 결과
+
+| `./mvnw test`
+| 클래스 경로 (surefire 설정 적용)
+| 무시
+| 통과
+
+| IntelliJ ▶ (기본값)
+| 모듈 경로
+| 적용
+| `does not declare \`uses\`` 실패
+|===
+
+==== 관련 JetBrains 이슈
+
+https://youtrack.jetbrains.com/issue/IDEA-290669[IDEA-290669 — Honor maven surefire plugin useModulePath=false when running tests]
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 항목 | 값
+
+| 상태       | Submitted (담당자 미배정)
+| 우선순위   | Normal
+| 등록일     | 2022-03-17
+| 최근 업데이트 | 2025-12-09
+| 투표 수    | 15
+| JetBrains 공식 응답 | 없음
+|===
+
+Testcontainers, AssertJ, Spring Boot AOT(GraalVM native) 등 다양한 프로젝트가 동일한 문제를 보고하고 있으나, 이슈는 약 4년 가까이 미해결 상태로 남아 있다.
+
+==== 우회 방법
+
+===== 방법 1. 실행 구성별 비활성화
+
+특정 테스트 실행 구성에서만 모듈 경로를 사용하지 않도록 설정한다.
+
+. Run → Edit Configurations… 를 연다.
+. 대상 JUnit 실행 구성을 선택한다.
+. Modify options → Java → Do not use module-path 를 체크한다.
+
+새로 실행 구성이 생성될 때마다 반복해야 하므로 실용성이 낮다.
+
+===== 방법 2. JUnit 템플릿에서 일괄 비활성화 (권장)
+
+프로젝트 단위로 한 번만 설정하면 이후 자동 생성되는 모든 JUnit 실행 구성에 적용된다.
+
+. Run → Edit Configurations… 를 연다.
+. 좌측 하단 Edit configuration templates… 를 클릭한다.
+. JUnit 템플릿을 선택한다.
+. Modify options → Java → Do not use module-path 를 체크한다.
+
+이 프로젝트의 lib 모듈 테스트는 모두 클래스 경로 실행을 전제로 하므로 (Maven 동작과 일치), 방법 2 가 가장 합리적이다.
+
+===== 방법 3. 테스트용 `module-info.java` 추가 (비권장)
+
+`src/test/java/module-info.java` 를 별도로 두고 테스트 전용 `uses` / `requires` / `opens` 를 선언하면 IntelliJ 와 Maven 양쪽 모두에서 모듈 경로 실행이 가능해진다. 그러나 이 프로젝트는 다음과 같은 이유로 비용이 크다.
+
+* 본 모듈의 모든 `requires` 를 재선언해야 한다 (테스트 디스크립터는 병합이 아닌 대체이다).
+* JUnit, Mockito, AssertJ, Awaitility, JSpecify 등 모든 테스트 의존성에 대해 `requires` 를 추가해야 한다.
+* Mockito / JUnit 의 리플렉션 대상이 되는 모든 패키지에 `opens` 를 선언해야 한다.
+* 프로파일별로 활성화되는 8 개의 보조 테스트 소스 트리 (`java-cdi-se-openwebbeans`, `java-di-dagger`, ...) 각각에 대해 의존성 집합이 달라지므로 단일 디스크립터로 표현하기 어렵다.
+* Dagger, Avaje 등 애노테이션 프로세서가 생성하는 테스트 클래스도 모듈 경로 배치 대상이 된다.
+
+따라서 단일 테스트 트리를 가진 단순 모듈에는 적합하나, 이 프로젝트에는 권장하지 않는다.
+
+== 빌드 / 테스트
+
+(추후 항목 추가)
+
+== 런타임 / JDK
+
+(추후 항목 추가)

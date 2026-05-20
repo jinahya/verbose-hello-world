@@ -28,16 +28,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * A class extends {@link HelloWorldCdiSeTest} for Apache OpenWebBeans.
+ * A class extends {@link HelloWorldCdiSe_Test} for Apache OpenWebBeans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="<a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
  * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
-@ExtendWith({HelloWorldCdiSeTestInstanceFactory.class})
+@ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSeTest {
+class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSe_Test {
 
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.
