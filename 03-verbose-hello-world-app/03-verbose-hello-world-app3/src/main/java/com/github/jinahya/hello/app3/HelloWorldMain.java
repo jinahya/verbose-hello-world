@@ -20,53 +20,108 @@ package com.github.jinahya.hello.app3;
  * #L%
  */
 
+import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldUtils;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import jakarta.inject.Inject;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 /**
- * A program whose {@link #main()} method obtains a {@link HelloWorld} through
- * <a href="https://github.com/google/guice">Guice</a> dependency injection and prints
- * {@code hello, world} to {@link System#out}.
+ * A program whose {@link #main()} method obtains an {@link AsynchronousHelloWorld} through
+ * <a href="https://github.com/google/guice">Guice</a> constructor injection, asynchronously
+ * appends {@code hello, world} to a temp file on {@link ForkJoinPool#commonPool()}, reads the file
+ * back, and prints it to {@link System#out}. The returned future is joined so the program does not
+ * exit before the chain completes.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorldModule
+ * @see Guice#createInjector(com.google.inject.Module...)
  */
+@SuppressWarnings({
+        "java:S106" // Standard outputs should not be used directly to log anything
+})
 class HelloWorldMain {
 
     /**
-     * Creates a Guice {@link com.google.inject.Injector Injector} configured by
-     * {@link HelloWorldModule}, injects {@link #service} into a fresh instance of this class via
-     * {@link com.google.inject.Injector#injectMembers(Object)}, formats the injected service with
-     * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
-     * system-dependent line separator via {@link IO#println(Object)}.
+     * Creates a Guice {@link com.google.inject.Injector Injector} configured with an inline
+     * {@link AbstractModule} that binds {@link AsynchronousHelloWorld} to a provider which wraps
+     * the first {@link ServiceLoader}-registered {@link HelloWorld} via
+     * {@link AsynchronousHelloWorld#from(HelloWorld, java.util.concurrent.Executor)
+     * from(helloWorld, executor)} using {@link ForkJoinPool#commonPool()} as the executor, obtains
+     * a fully-injected {@link HelloWorldMain} instance from the injector via
+     * {@link com.google.inject.Injector#getInstance(Class)}, invokes {@link #print()} on it, and
+     * {@linkplain CompletableFuture#join() joins} the returned future so the asynchronous append +
+     * read + print chain completes before this method returns.
      */
-    static void main() throws IOException {
-        final var injector = Guice.createInjector(new HelloWorldModule());
-        final var instance = injector.getInstance(HelloWorldMain.class);
-        injector.injectMembers(instance);
-        instance.print();
+    static void main() {
+        Guice.createInjector(new HelloWorldModule())
+                .getInstance(HelloWorldMain.class)
+                .print()
+                .join();
     }
 
     /**
-     * Suppresses external instantiation; only {@link #main()} constructs an instance through this
-     * private constructor for Guice member injection.
+     * Creates a new instance with the given {@link AsynchronousHelloWorld} service. Invoked by
+     * Guice through constructor injection when
+     * {@link com.google.inject.Injector#getInstance(Class)} is called for this class.
+     *
+     * @param service the {@link AsynchronousHelloWorld} service to print with; must not be
+     *                {@code null}.
      */
-    @jakarta.inject.Inject
+    @Inject
     private HelloWorldMain(final HelloWorld service) {
         super();
-        this.service = Objects.requireNonNull(service, "service is null");
-    }
-
-    void print() throws IOException {
-        service.write(System.out).println();
+        this.service = AsynchronousHelloWorld.from(
+                Objects.requireNonNull(service, "service is null"),
+                ForkJoinPool.commonPool()
+        );
     }
 
     /**
-     * A {@link HelloWorld} bound by {@link HelloWorldModule}, injected by Guice.
+     * Creates a temp file,
+     * {@linkplain AsynchronousHelloWorld#append(java.nio.file.Path, Object) asynchronously appends}
+     * the {@value HelloWorld#BYTES} bytes of {@code hello, world} to it via the injected
+     * {@link AsynchronousHelloWorld}, then reads the file via
+     * {@link Files#readString(java.nio.file.Path, java.nio.charset.Charset)} and prints it to
+     * {@link System#out}.
+     *
+     * @return a {@link CompletableFuture} that completes after the append finishes and the line has
+     * been printed; the caller must {@linkplain CompletableFuture#join() join} (or otherwise wait
+     * on) it if the JVM might exit before {@link ForkJoinPool#commonPool()} runs the scheduled
+     * task.
      */
-    private final HelloWorld service;
+    CompletableFuture<Void> print() {
+        return CompletableFuture
+                .supplyAsync(() -> {
+                    try {
+                        final var path = Files.createTempFile(null, null);
+                        path.toFile().deleteOnExit();
+                        return path;
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                })
+                .thenCompose(p -> service.append(p, p))
+                .thenAccept(p -> {
+                    try {
+                        IO.println(Files.readString(p, StandardCharsets.US_ASCII));
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                });
+    }
+
+    /**
+     * The {@link AsynchronousHelloWorld} service to print with; injected by Guice through the
+     * constructor.
+     */
+    private final AsynchronousHelloWorld service;
 }

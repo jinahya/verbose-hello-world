@@ -23,33 +23,43 @@ package com.github.jinahya.hello.app2;
 import com.github.jinahya.hello.api.HelloWorld;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.ServiceLoader;
 
 /**
  * A program whose {@link #main()} method obtains a {@link HelloWorld} via the
- * {@link ServiceLoader Service Provider Interface} and prints {@code hello, world} to
- * {@link System#out}.
+ * {@link ServiceLoader Service Provider Interface} and writes {@code hello, world} to
+ * {@link System#out} through {@link HelloWorld#write(WritableByteChannel) write(channel)}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ServiceLoader#load(Class)
+ * @see HelloWorld#write(WritableByteChannel)
  */
+@SuppressWarnings({
+        "java:S106" // Standard outputs should not be used directly to log anything
+})
 class HelloWorldMain {
 
     /**
-     * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, writes
-     * {@code hello, world} to {@link System#out} via
-     * {@link HelloWorld#write(java.io.OutputStream) write(stream)}, and terminates the line with
-     * {@link java.io.PrintStream#println() println()}.
+     * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, wraps
+     * {@link System#out} into a {@link WritableByteChannel} via
+     * {@link Channels#newChannel(java.io.OutputStream)}, writes {@code hello, world} to that
+     * channel via {@link HelloWorld#write(WritableByteChannel) write(channel)} (which returns
+     * the channel), and then writes the {@link System#lineSeparator() line separator} bytes by
+     * chaining a {@link WritableByteChannel#write(ByteBuffer)} call on the returned channel.
      *
-     * @throws IOException if an I/O error occurs while writing to {@link System#out}.
+     * @throws IOException if an I/O error occurs while writing.
      * @see ServiceLoader#load(Class)
+     * @see HelloWorld#write(WritableByteChannel)
      */
     public static void main() throws IOException {
         ServiceLoader.load(HelloWorld.class)
                 .iterator()
                 .next()
-                .write(System.out)
-                .println();
+                .write(Channels.newChannel(System.out))
+                .write(ByteBuffer.wrap(System.lineSeparator().getBytes()));
     }
 
     /**
