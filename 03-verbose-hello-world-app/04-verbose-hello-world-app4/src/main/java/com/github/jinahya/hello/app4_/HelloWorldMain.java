@@ -91,10 +91,8 @@ class HelloWorldMain implements Flow.Subscriber<byte[]> {
      * emits.
      */
     CompletableFuture<Void> print() {
-        try (var publisher = new HelloWorldArrayPublisher(service)) {
-            publisher.subscribe(this);
-            return future;
-        }
+        new HelloWorldArrayPublisher(service).subscribe(this);
+        return future;
     }
 
     // ----------------------------------------------------------------------------- Flow.Subscriber

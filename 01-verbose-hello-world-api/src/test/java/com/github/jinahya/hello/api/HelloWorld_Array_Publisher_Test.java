@@ -69,10 +69,15 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         final var n = ThreadLocalRandom.current().nextInt(1, 10);
         log.debug("n: {}", n);
         final var subscriber = loggingSpy(new Flow.Subscriber<byte[]>() {
-            @Override public void onSubscribe(final Flow.Subscription subscription) {
-                subscription.request(n);
+            private Flow.Subscription subscription;
+            private int received;
+            @Override public void onSubscribe(final Flow.Subscription s) {
+                subscription = s;
+                s.request(n);
             }
-            @Override public void onNext(final byte[] item) { }
+            @Override public void onNext(final byte[] item) {
+                if (++received == n) subscription.cancel();
+            }
             @Override public void onError(final Throwable throwable) { }
             @Override public void onComplete() { }
         });
@@ -106,10 +111,15 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
             final var n = ThreadLocalRandom.current().nextInt(1, 10);
             demands[i] = n;
             subscribers.add(loggingSpy(new Flow.Subscriber<byte[]>() {
-                @Override public void onSubscribe(final Flow.Subscription subscription) {
-                    subscription.request(n);
+                private Flow.Subscription subscription;
+                private int received;
+                @Override public void onSubscribe(final Flow.Subscription s) {
+                    subscription = s;
+                    s.request(n);
                 }
-                @Override public void onNext(final byte[] item) { }
+                @Override public void onNext(final byte[] item) {
+                    if (++received == n) subscription.cancel();
+                }
                 @Override public void onError(final Throwable throwable) { }
                 @Override public void onComplete() { }
             }));
