@@ -32,6 +32,9 @@ import java.io.IOException;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorldImpl
  */
+@SuppressWarnings({
+        "java:S106" // Standard outputs should not be used directly to log anything
+})
 class HelloWorldMain {
 
     /**

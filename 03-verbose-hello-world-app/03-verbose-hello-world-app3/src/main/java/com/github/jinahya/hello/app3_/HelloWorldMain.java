@@ -23,7 +23,9 @@ package com.github.jinahya.hello.app3_;
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldUtils;
 import com.google.inject.Guice;
-import jakarta.inject.Inject;
+
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A program whose {@link #main()} method obtains a {@link HelloWorld} through
@@ -42,24 +44,29 @@ class HelloWorldMain {
      * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
      * system-dependent line separator via {@link IO#println(Object)}.
      */
-    static void main() {
+    static void main() throws IOException {
         final var injector = Guice.createInjector(new HelloWorldModule());
-        final var instance = new HelloWorldMain();
+        final var instance = injector.getInstance(HelloWorldMain.class);
         injector.injectMembers(instance);
-        IO.println(HelloWorldUtils.string(instance.service));
+        instance.print();
     }
 
     /**
      * Suppresses external instantiation; only {@link #main()} constructs an instance through this
      * private constructor for Guice member injection.
      */
-    private HelloWorldMain() {
+    @jakarta.inject.Inject
+    private HelloWorldMain(final HelloWorld service) {
         super();
+        this.service = Objects.requireNonNull(service, "service is null");
+    }
+
+    void print() throws IOException {
+        service.write(System.out).println();
     }
 
     /**
      * A {@link HelloWorld} bound by {@link HelloWorldModule}, injected by Guice.
      */
-    @Inject
-    HelloWorld service;
+    private final HelloWorld service;
 }

@@ -21,8 +21,8 @@ package com.github.jinahya.hello.app2_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldUtils;
 
+import java.io.IOException;
 import java.util.ServiceLoader;
 
 /**
@@ -36,18 +36,20 @@ import java.util.ServiceLoader;
 class HelloWorldMain {
 
     /**
-     * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, formats
-     * it with {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed
-     * by a system-dependent line separator via {@link IO#println(Object)}.
+     * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, writes
+     * {@code hello, world} to {@link System#out} via
+     * {@link HelloWorld#write(java.io.OutputStream) write(stream)}, and terminates the line with
+     * {@link java.io.PrintStream#println() println()}.
      *
+     * @throws IOException if an I/O error occurs while writing to {@link System#out}.
      * @see ServiceLoader#load(Class)
      */
-    public static void main() {
-        IO.println(
-                HelloWorldUtils.string(
-                        ServiceLoader.load(HelloWorld.class).iterator().next()
-                )
-        );
+    public static void main() throws IOException {
+        ServiceLoader.load(HelloWorld.class)
+                .iterator()
+                .next()
+                .write(System.out)
+                .println();
     }
 
     /**
