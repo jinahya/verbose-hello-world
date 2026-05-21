@@ -423,7 +423,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
     <!--    <dependency>-->
     <!--      <groupId>jakarta.validation</groupId>-->
@@ -474,14 +474,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <!--      <scope>compile</scope>-->
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk-platform-logging</artifactId>
       <version>${version.org.slf4j}</version>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
