@@ -781,12 +781,12 @@ public interface HelloWorld {
         if (buffer.hasArray()) {
             final var array = buffer.array();
             final var index = buffer.arrayOffset() + buffer.position();
-//            set(array, index);
-//            buffer.position(buffer.position() + BYTES);
+            set(array, index);
+            buffer.position(buffer.position() + BYTES);
         } else {
             final var array = new byte[BYTES];
             set(array);
-//            buffer.put(array);
+            buffer.put(array);
         }
         return buffer;
     }
@@ -828,10 +828,10 @@ public interface HelloWorld {
         Objects.requireNonNull(channel, "channel is null");
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);
-//        buffer.flip();
-//        while (buffer.hasRemaining()) {
-//            channel.write(buffer);
-//        }
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            channel.write(buffer);
+        }
         return channel;
     }
 
