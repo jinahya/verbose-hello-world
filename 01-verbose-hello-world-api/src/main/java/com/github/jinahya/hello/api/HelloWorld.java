@@ -304,8 +304,8 @@ public interface HelloWorld {
             throw new NullPointerException("stream is null");
         }
         final var array = new byte[BYTES];
-        set(array);
-//        stream.write(array);
+        set(new byte[BYTES]);
+        stream.write(array);
         return stream;
     }
 
