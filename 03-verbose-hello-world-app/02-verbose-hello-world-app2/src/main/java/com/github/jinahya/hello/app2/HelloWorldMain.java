@@ -1,8 +1,8 @@
-package com.github.jinahya.hello.app1_;
+package com.github.jinahya.hello.app2;
 
 /*-
  * #%L
- * verbose-hello-world-app1
+ * verbose-hello-world-app2
  * %%
  * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
@@ -21,31 +21,33 @@ package com.github.jinahya.hello.app1_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.lib.HelloWorldImpl;
 
 import java.io.IOException;
+import java.util.ServiceLoader;
 
 /**
- * A program whose {@link #main()} method obtains a {@link HelloWorld} by directly instantiating
- * {@link HelloWorldImpl} and prints {@code hello, world} to {@link System#out}.
+ * A program whose {@link #main()} method obtains a {@link HelloWorld} via the
+ * {@link ServiceLoader Service Provider Interface} and prints {@code hello, world} to
+ * {@link System#out}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see HelloWorldImpl
+ * @see ServiceLoader#load(Class)
  */
-@SuppressWarnings({
-        "java:S106" // Standard outputs should not be used directly to log anything
-})
 class HelloWorldMain {
 
     /**
-     * Instantiates a {@link HelloWorldImpl} directly, writes {@code hello, world} to
-     * {@link System#out} via {@link HelloWorld#write(java.io.OutputStream) write(stream)}, and
-     * terminates the line with {@link java.io.PrintStream#println() println()}.
+     * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, writes
+     * {@code hello, world} to {@link System#out} via
+     * {@link HelloWorld#write(java.io.OutputStream) write(stream)}, and terminates the line with
+     * {@link java.io.PrintStream#println() println()}.
      *
      * @throws IOException if an I/O error occurs while writing to {@link System#out}.
+     * @see ServiceLoader#load(Class)
      */
-    static void main() throws IOException {
-        new HelloWorldImpl()
+    public static void main() throws IOException {
+        ServiceLoader.load(HelloWorld.class)
+                .iterator()
+                .next()
                 .write(System.out)
                 .println();
     }

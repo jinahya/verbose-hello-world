@@ -23,7 +23,7 @@
 
   <properties>
     <generateExecutables>true</generateExecutables>
-    <mainClass>com.github.jinahya.hello.app2_.HelloWorldMain</mainClass>
+    <mainClass>com.github.jinahya.hello.app2.HelloWorldMain</mainClass>
   </properties>
 
   <dependencyManagement>

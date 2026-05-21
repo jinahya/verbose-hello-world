@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.app3_;
+package com.github.jinahya.hello.app3;
 
 /*-
  * #%L
