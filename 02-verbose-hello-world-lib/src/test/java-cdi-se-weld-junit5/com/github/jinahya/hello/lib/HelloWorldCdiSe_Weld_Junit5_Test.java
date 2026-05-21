@@ -20,28 +20,18 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * String constants used as {@link jakarta.inject.Named &#64;Named} qualifier values throughout the
- * DI / CDI tests.
- *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@SuppressWarnings({
-        "java:S115" // Constant names should comply with a naming convention
-})
-final class HelloWorldDi_Constants {
+@org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdi_Producer.class})
+@org.jboss.weld.junit5.auto.AddEnabledInterceptors({HelloWorld_LoggingInterceptor.class})
+@org.jboss.weld.junit5.auto.EnableAutoWeld
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldCdiSe_Weld_Junit5_Test extends HelloWorldCdiSe__Test {
 
-    /**
-     * Name binding to a {@link HelloWorldDemo} producer / instance: {@value}.
-     */
-    static final String _DEMO = "demo";
-
-    /**
-     * Name binding to a {@link HelloWorldImpl} producer / instance: {@value}.
-     */
-    static final String _IMPL = "impl";
-
-    private HelloWorldDi_Constants() {
-        throw new AssertionError("instantiation is not allowed");
-    }
 }

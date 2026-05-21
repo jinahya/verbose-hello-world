@@ -23,15 +23,21 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
+ * An extended {@link HelloWorldDi__Test} which uses {@link HelloWorldDi_Hk2_Binder} as a binder.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdi_Producer.class})
-@org.jboss.weld.junit5.auto.AddEnabledInterceptors({HelloWorld_LoggingInterceptor.class})
-@org.jboss.weld.junit5.auto.EnableAutoWeld
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeWeldJunit5Test extends HelloWorldDi_Test {
+class HelloWorldDi_Hk2_Test extends HelloWorldDi__Test {
 
+    @BeforeEach
+    void inject() {
+        final var binder = new HelloWorldDi_Hk2_Binder();
+        final var locator = org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind(binder);
+        locator.inject(this);
+    }
 }

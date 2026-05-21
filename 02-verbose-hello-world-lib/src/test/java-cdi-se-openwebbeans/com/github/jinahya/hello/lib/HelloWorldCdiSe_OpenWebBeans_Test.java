@@ -23,21 +23,31 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * A test class injects using Guice.
+ * A class extends {@link HelloWorldCdiSe__Test} for Apache OpenWebBeans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://github.com/google/guice">Guice</a>
+ * @see <a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
+ * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
+@ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiGuiceTest extends HelloWorldDi_Test {
+class HelloWorldCdiSe_OpenWebBeans_Test extends HelloWorldCdiSe__Test {
 
-    @BeforeEach
-    void _beforeEach() {
-        final var injector = com.google.inject.Guice.createInjector(new HelloWorldDiGuiceModule());
-        injector.injectMembers(this);
+    /**
+     * Removes handlers from the root logger and installs SLF4J bridge handler.
+     *
+     * @see SLF4JBridgeHandler#removeHandlersForRootLogger()
+     * @see SLF4JBridgeHandler#install()
+     */
+    @BeforeAll
+    static void _beforeAll() {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
     }
 }

@@ -21,43 +21,36 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
- * A configuration for providing {@link HelloWorld} beans.
+ * A test class which injects {@link HelloWorld} instances using Micronaut Inject.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://micronaut.io/">Micronaut</a>
  */
-@org.springframework.context.annotation.Configuration
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@io.micronaut.context.annotation.Prototype
 @Slf4j
-class HelloWorldDiSpringConfiguration {
+class HelloWorldDi_Micronaut_Test extends HelloWorldDi__Test {
 
-    @Named(HelloWorldDi_Constants._NAME_DEMO)
-    @org.springframework.context.annotation.Bean
-    HelloWorld namedDemo() {
-        return new HelloWorldDemo();
+    @BeforeEach
+    void _beforeEach() {
+        beanContext = io.micronaut.context.BeanContext.run();
+        beanContext.inject(this);
     }
 
-    @Named(HelloWorldDi_Constants._NAME_IMPL)
-    @org.springframework.context.annotation.Bean
-    HelloWorld namedImpl() {
-        return new HelloWorldImpl();
+    @AfterEach
+    void _afterEach() {
+        if (beanContext != null) {
+            beanContext.close();
+            beanContext = null;
+        }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    @HelloWorld_Qualified_Demo
-    @org.springframework.context.annotation.Bean
-    HelloWorld qualifiedDemo() {
-        return new HelloWorldDemo();
-    }
-
-    @HelloWorld_Qualified_Impl
-    @org.springframework.context.annotation.Bean
-    HelloWorld qualifiedImpl() {
-        return new HelloWorldImpl();
-    }
+    private io.micronaut.context.BeanContext beanContext;
 }

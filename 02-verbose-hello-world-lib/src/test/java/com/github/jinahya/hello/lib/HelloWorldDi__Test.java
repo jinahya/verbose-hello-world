@@ -21,6 +21,7 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,6 +29,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.stream.Stream;
+
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
 
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.
@@ -38,7 +42,7 @@ import java.util.stream.Stream;
 @Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-abstract class HelloWorldDi_Test extends HelloWorld__Test {
+abstract class HelloWorldDi__Test extends HelloWorld__Test {
 
     @Override
     public String toString() {
@@ -57,20 +61,20 @@ abstract class HelloWorldDi_Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @Named(HelloWorldDi_Constants._NAME_DEMO)
-    @jakarta.inject.Inject
+    @Named(_DEMO)
+    @Inject
     protected HelloWorld namedDemo;
 
-    @Named(HelloWorldDi_Constants._NAME_IMPL)
-    @jakarta.inject.Inject
+    @Named(_IMPL)
+    @Inject
     protected HelloWorld namedImpl;
 
     // ---------------------------------------------------------------------------------------------
-    @HelloWorld_Qualified_Demo
-    @jakarta.inject.Inject
+    @_Demo
+    @Inject
     protected HelloWorld qualifiedDemo;
 
-    @HelloWorld_Qualified_Impl
-    @jakarta.inject.Inject
+    @_Impl
+    @Inject
     protected HelloWorld qualifiedImpl;
 }

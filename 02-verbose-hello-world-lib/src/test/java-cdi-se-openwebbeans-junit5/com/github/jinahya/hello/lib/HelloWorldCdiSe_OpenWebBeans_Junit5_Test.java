@@ -24,20 +24,24 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * A class extends {@link HelloWorldCdiSe_Test} for Apache OpenWebBeans.
+ * A class extends {@link HelloWorldCdiSe__Test} for Apache OpenWebBeans.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="<a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
+ * @see <a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
  * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
-@ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})
+@org.apache.openwebbeans.junit5.Cdi(classes = {HelloWorldCdi_Producer.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldCdiSeOpenWebBeansTest extends HelloWorldCdiSe_Test {
+class HelloWorldCdiSe_OpenWebBeans_Junit5_Test extends HelloWorldCdiSe__Test {
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     /**
      * Removes handlers from the root logger and installs SLF4J bridge handler.

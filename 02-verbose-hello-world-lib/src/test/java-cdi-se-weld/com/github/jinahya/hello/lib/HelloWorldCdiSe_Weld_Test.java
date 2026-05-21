@@ -23,22 +23,14 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiSpringTest extends HelloWorldDi_Test {
+class HelloWorldCdiSe_Weld_Test extends HelloWorldCdiSe__Test {
 
-    @BeforeEach
-    void autowireBean() {
-        final var context =
-                new org.springframework.context.annotation.AnnotationConfigApplicationContext(
-                        HelloWorldDiSpringConfiguration.class
-                );
-        final var factory = context.getAutowireCapableBeanFactory();
-        factory.autowireBean(this);
-    }
 }

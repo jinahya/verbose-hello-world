@@ -28,12 +28,12 @@ import org.junit.jupiter.api.extension.TestInstanceFactoryContext;
 import org.junit.jupiter.api.extension.TestInstantiationException;
 
 /**
- * A test instance factory for {@link HelloWorldCdiSe_Test} class.
+ * A test instance factory for {@link HelloWorldCdiSe__Test} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorldCdiSe_TestInstanceFactory implements TestInstanceFactory {
+class HelloWorldCdiSe_TestInstanceFactory implements TestInstanceFactory { // @formatter:off
 
     @Override
     public Object createTestInstance(final TestInstanceFactoryContext factoryContext,
@@ -44,9 +44,9 @@ class HelloWorldCdiSe_TestInstanceFactory implements TestInstanceFactory {
         final var initializer = SeContainerInitializer.newInstance()
                 .addBeanClasses(HelloWorldCdi_Producer.class, testClass);
         log.debug("initializer: {}", initializer);
-        try (var seContainer = initializer.initialize()) {
-            log.debug("container: {}", seContainer);
-            return seContainer.select(testClass).get();
+        try (var container = initializer.initialize()) {
+            log.debug("container: {}", container);
+            return container.select(testClass).get();
         }
-    }
+    } // @formatter:off
 }

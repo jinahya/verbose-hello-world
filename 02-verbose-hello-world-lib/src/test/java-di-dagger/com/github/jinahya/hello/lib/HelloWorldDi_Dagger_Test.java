@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.lib;
 
+
 /*-
  * #%L
  * verbose-hello-world-lib
@@ -26,18 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * An extended {@link HelloWorldDi_Test} which uses {@link HelloWorldDiHk2Binder} as a binder.
- *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiHk2Test extends HelloWorldDi_Test {
+class HelloWorldDi_Dagger_Test extends HelloWorldDi__Test {
 
     @BeforeEach
-    void inject() {
-        final var binder = new HelloWorldDiHk2Binder();
-        final var locator = org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind(binder);
-        locator.inject(this);
+    void injectMembers() {
+        final var injector = DaggerHelloWorldDi_Dagger_MembersInjector.create();
+        injector.injectMembers(this);
     }
 }

@@ -1,6 +1,5 @@
 package com.github.jinahya.hello.lib;
 
-
 /*-
  * #%L
  * verbose-hello-world-lib
@@ -21,21 +20,24 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.inject.Qualifier;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * An injection qualifier for {@link HelloWorldDemo}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
-class HelloWorldDiDaggerTest extends HelloWorldDi_Test {
+@Documented
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
+         ElementType.ANNOTATION_TYPE})
+@interface _Demo {
 
-    @BeforeEach
-    void injectMembers() {
-        final var injector = DaggerHelloWorldDiDaggerMembersInjector.create();
-        injector.injectMembers(this);
-    }
 }

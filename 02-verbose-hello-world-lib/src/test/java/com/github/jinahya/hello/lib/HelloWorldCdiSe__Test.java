@@ -22,15 +22,16 @@ package com.github.jinahya.hello.lib;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
+ * An abstract base for tests that wire {@link HelloWorldDi__Test}'s injection points through a
+ * Jakarta CDI <em>SE</em> container (Weld SE, OpenWebBeans SE, ...). Concrete subclasses live
+ * under the {@code java-cdi-se-*} profile-specific test source trees and supply the container
+ * bootstrap.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
-class HelloWorldCdiSeWeldTest extends HelloWorldCdiSe_Test {
+abstract class HelloWorldCdiSe__Test extends HelloWorldDi__Test {
 
 }

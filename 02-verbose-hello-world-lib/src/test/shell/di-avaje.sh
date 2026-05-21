@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mvn -f "${script_dir}/../../../pom.xml" -q -Pdi-avaje -Dtest=HelloWorldDiAvajeTest clean test
+mvn -f "${script_dir}/../../../pom.xml" -q -Pdi-avaje -Dtest=HelloWorldDi_Avaje_Test clean test

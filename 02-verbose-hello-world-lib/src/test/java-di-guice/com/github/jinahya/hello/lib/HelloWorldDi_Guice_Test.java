@@ -20,24 +20,24 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import jakarta.inject.Qualifier;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
- * An injection qualifier for {@link HelloWorldDemo}.
+ * A test class injects using Guice.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://github.com/google/guice">Guice</a>
  */
-@Documented
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface HelloWorld_Qualified_Demo {
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldDi_Guice_Test extends HelloWorldDi__Test {
 
+    @BeforeEach
+    void _beforeEach() {
+        final var injector = com.google.inject.Guice.createInjector(new HelloWorldDi_Guice_Module());
+        injector.injectMembers(this);
+    }
 }

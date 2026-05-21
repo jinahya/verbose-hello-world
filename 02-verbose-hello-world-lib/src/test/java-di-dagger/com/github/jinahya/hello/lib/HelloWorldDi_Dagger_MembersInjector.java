@@ -20,24 +20,11 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import jakarta.inject.Qualifier;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * An injection qualifier for {@link HelloWorldImpl}.
- *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Documented
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-         ElementType.ANNOTATION_TYPE})
-@interface HelloWorld_Qualified_Impl {
+@dagger.Component(modules = {HelloWorldDi_Dagger_Module.class})
+interface HelloWorldDi_Dagger_MembersInjector
+        extends dagger.MembersInjector<HelloWorldDi_Dagger_Test> {
 
 }

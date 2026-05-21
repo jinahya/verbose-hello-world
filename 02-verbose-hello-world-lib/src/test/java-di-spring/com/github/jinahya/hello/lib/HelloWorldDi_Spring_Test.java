@@ -20,10 +20,25 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@dagger.Component(modules = {HelloWorldDiDaggerModule.class})
-interface HelloWorldDiDaggerMembersInjector extends dagger.MembersInjector<HelloWorldDiDaggerTest> {
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+class HelloWorldDi_Spring_Test extends HelloWorldDi__Test {
 
+    @BeforeEach
+    void autowireBean() {
+        final var context =
+                new org.springframework.context.annotation.AnnotationConfigApplicationContext(
+                        HelloWorldDi_Spring_Configuration.class
+                );
+        final var factory = context.getAutowireCapableBeanFactory();
+        factory.autowireBean(this);
+    }
 }

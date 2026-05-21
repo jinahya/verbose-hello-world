@@ -21,39 +21,38 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import jakarta.inject.Named;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
 
 /**
- * A test class which injects {@link HelloWorld} instances using Avaje Inject.
+ * A factory for providing {@link HelloWorld} instances via Avaje Inject.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://avaje.io/inject/">Avaje Inject</a>
  */
-//@io.avaje.inject.test.InjectTest
+@io.avaje.inject.Factory
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldDiAvajeTest extends HelloWorldDi_Test {
+class HelloWorldDi_Avaje_Factory { // @formatter:off
 
-    @BeforeEach
-    void _beforeEach() {
-        beanScope = io.avaje.inject.BeanScope.builder().modules(new LibModule()).build();
-        namedDemo = beanScope.get(HelloWorld.class, HelloWorldDi_Constants._NAME_DEMO);
-        namedImpl = beanScope.get(HelloWorld.class, HelloWorldDi_Constants._NAME_IMPL);
-        qualifiedDemo = beanScope.get(HelloWorld.class, HelloWorld_Qualified_Demo.class.getSimpleName());
-        qualifiedImpl = beanScope.get(HelloWorld.class, HelloWorld_Qualified_Impl.class.getSimpleName());
+    @Named(_DEMO) @io.avaje.inject.Bean HelloWorld provideNamedDemo() {
+        return new HelloWorldDemo();
     }
 
-    @AfterEach
-    void _afterEach() {
-        if (beanScope != null) {
-            beanScope.close();
-            beanScope = null;
-        }
+    @Named(_IMPL) @io.avaje.inject.Bean HelloWorld provideNamedImpl() {
+        return new HelloWorldImpl();
     }
 
-    private io.avaje.inject.BeanScope beanScope;
+    @_Demo @io.avaje.inject.Bean HelloWorld provideQualifiedDemo() {
+        return new HelloWorldDemo();
+    }
+
+    @_Impl @io.avaje.inject.Bean HelloWorld provideQualifiedImpl() {
+        return new HelloWorldImpl();
+    } // @formatter:on
 }

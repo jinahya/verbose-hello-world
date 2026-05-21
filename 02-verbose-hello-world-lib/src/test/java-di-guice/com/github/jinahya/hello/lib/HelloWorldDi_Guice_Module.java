@@ -24,33 +24,32 @@ import com.github.jinahya.hello.api.HelloWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
 
 /**
- * A test class which injects {@link HelloWorld} instances using Micronaut Inject.
+ * A module for injecting {@link HelloWorld} instances.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://micronaut.io/">Micronaut</a>
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@io.micronaut.context.annotation.Prototype
 @Slf4j
-class HelloWorldDiMicronautTest extends HelloWorldDi_Test {
+class HelloWorldDi_Guice_Module extends com.google.inject.AbstractModule {
 
-    @BeforeEach
-    void _beforeEach() {
-        beanContext = io.micronaut.context.BeanContext.run();
-        beanContext.inject(this);
+    @Override
+    protected void configure() {
+        bind(HelloWorld.class)
+                .annotatedWith(com.google.inject.name.Names.named(_DEMO))
+                .to(HelloWorldDemo.class);
+        bind(HelloWorld.class)
+                .annotatedWith(com.google.inject.name.Names.named(_IMPL))
+                .to(HelloWorldImpl.class);
+        bind(HelloWorld.class)
+                .annotatedWith(_Demo.class)
+                .to(HelloWorldDemo.class);
+        bind(HelloWorld.class)
+                .annotatedWith(_Impl.class)
+                .to(HelloWorldImpl.class);
     }
-
-    @AfterEach
-    void _afterEach() {
-        if (beanContext != null) {
-            beanContext.close();
-            beanContext = null;
-        }
-    }
-
-    private io.micronaut.context.BeanContext beanContext;
 }

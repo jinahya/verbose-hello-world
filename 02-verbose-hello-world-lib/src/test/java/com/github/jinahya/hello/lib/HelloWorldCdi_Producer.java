@@ -21,14 +21,18 @@ package com.github.jinahya.hello.lib;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
+import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
+
 /**
  * A CDI producer holding four {@link HelloWorld} producer / disposer pairs — two qualified by
- * {@link jakarta.inject.Named &#64;Named} ({@value HelloWorldDi_Constants#_NAME_DEMO} /
- * {@value HelloWorldDi_Constants#_NAME_IMPL}) and two qualified by custom annotations
- * ({@link HelloWorld_Qualified_Demo} / {@link HelloWorld_Qualified_Impl}).
+ * {@link Named &#64;Named} ({@value HelloWorldDi_Constants#_DEMO} /
+ * {@value HelloWorldDi_Constants#_IMPL}) and two qualified by custom annotations ({@link _Demo} /
+ * {@link _Impl}).
  *
  * <p>Annotated with {@link HelloWorld_Logging} at type level so every produce / dispose call is
  * traced by {@link HelloWorld_LoggingInterceptor}.
@@ -37,32 +41,28 @@ import org.junit.jupiter.api.Assertions;
  */
 @HelloWorld_Logging
 @Slf4j
-class HelloWorldCdi_Producer {
-
-    // -----------------------------------------------------------------------------------------------------------------
+class HelloWorldCdi_Producer { // @formatter:off
 
     /**
      * Produces a new {@link HelloWorldDemo} qualified with
-     * {@link HelloWorldDi_Constants#_NAME_DEMO}.
+     * {@link HelloWorldDi_Constants#_DEMO}.
      *
      * @param injectionPoint the injection point being satisfied
      * @return a new {@link HelloWorldDemo} instance
      */
-    @jakarta.inject.Named(HelloWorldDi_Constants._NAME_DEMO)
-    @jakarta.enterprise.inject.Produces
+    @Named(_DEMO) @jakarta.enterprise.inject.Produces
     HelloWorld produceNamedDemo(final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         return new HelloWorldDemo();
     }
 
     /**
      * Disposes specified {@link HelloWorld} instance qualified with
-     * {@link HelloWorldDi_Constants#_NAME_DEMO}.
+     * {@link HelloWorldDi_Constants#_DEMO}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
     void disposeNamedDemo(
-            @jakarta.inject.Named(HelloWorldDi_Constants._NAME_DEMO)
-            @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+            @Named(_DEMO) @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
         Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
     }
 
@@ -70,39 +70,36 @@ class HelloWorldCdi_Producer {
 
     /**
      * Produces a new {@link HelloWorldImpl} qualified with
-     * {@link HelloWorldDi_Constants#_NAME_IMPL}.
+     * {@link HelloWorldDi_Constants#_IMPL}.
      *
      * @param injectionPoint the injection point being satisfied
      * @return a new {@link HelloWorldImpl} instance
      */
-    @jakarta.inject.Named(HelloWorldDi_Constants._NAME_IMPL)
-    @jakarta.enterprise.inject.Produces
+    @Named(_IMPL) @jakarta.enterprise.inject.Produces
     HelloWorld produceNamedImpl(final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         return new HelloWorldImpl();
     }
 
     /**
      * Disposes specified {@link HelloWorld} instance qualified with
-     * {@link HelloWorldDi_Constants#_NAME_IMPL}.
+     * {@link HelloWorldDi_Constants#_IMPL}.
      *
      * @param bean the {@link HelloWorld} instance to dispose.
      */
     void disposeNamedImpl(
-            @jakarta.inject.Named(HelloWorldDi_Constants._NAME_IMPL)
-            @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+            @Named(_IMPL) @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
         Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Produces a new {@link HelloWorldDemo} qualified with {@link HelloWorld_Qualified_Demo}.
+     * Produces a new {@link HelloWorldDemo} qualified with {@link _Demo}.
      *
      * @param injectionPoint the injection point being satisfied
      * @return a new {@link HelloWorldDemo} instance
      */
-    @HelloWorld_Qualified_Demo
-    @jakarta.enterprise.inject.Produces
+    @_Demo @jakarta.enterprise.inject.Produces
     HelloWorld produceQualifiedDemo(
             final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         return new HelloWorldDemo();
@@ -110,25 +107,24 @@ class HelloWorldCdi_Producer {
 
     /**
      * Disposes specified {@link HelloWorld} instance qualified with
-     * {@link HelloWorld_Qualified_Demo}.
+     * {@link _Demo}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
     void disposeQualifiedDemo(
-            @HelloWorld_Qualified_Demo @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+            @_Demo @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
         Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Produces a new {@link HelloWorldImpl} qualified with {@link HelloWorld_Qualified_Impl}.
+     * Produces a new {@link HelloWorldImpl} qualified with {@link _Impl}.
      *
      * @param injectionPoint the injection point being satisfied
      * @return a new {@link HelloWorldImpl} instance
      */
-    @HelloWorld_Qualified_Impl
-    @jakarta.enterprise.inject.Produces
+    @_Impl @jakarta.enterprise.inject.Produces
     HelloWorld produceQualifiedImpl(
             final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
         return new HelloWorldImpl();
@@ -136,12 +132,12 @@ class HelloWorldCdi_Producer {
 
     /**
      * Disposes specified {@link HelloWorld} instance qualified with
-     * {@link HelloWorld_Qualified_Impl}.
+     * {@link _Impl}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
     void disposeQualifiedImpl(
-            @HelloWorld_Qualified_Impl @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+            @_Impl @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
         Assertions.assertInstanceOf(HelloWorldImpl.class, bean);
-    }
+    } // @formatter:off
 }

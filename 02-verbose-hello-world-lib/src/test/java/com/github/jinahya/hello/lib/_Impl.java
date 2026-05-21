@@ -20,18 +20,24 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import jakarta.inject.Qualifier;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An abstract base for tests that wire {@link HelloWorldDi_Test}'s injection points through a
- * Jakarta CDI <em>SE</em> container (Weld SE, OpenWebBeans SE, ...). Concrete subclasses live
- * under the {@code java-cdi-se-*} profile-specific test source trees and supply the container
- * bootstrap.
+ * An injection qualifier for {@link HelloWorldImpl}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-abstract class HelloWorldCdiSe_Test extends HelloWorldDi_Test {
+@Documented
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
+         ElementType.ANNOTATION_TYPE})
+@interface _Impl {
 
 }

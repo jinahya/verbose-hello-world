@@ -3,4 +3,4 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $pom = Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\pom.xml'
-mvn -f $pom -q -Pcdi-se-openwebbeans '-Dtest=HelloWorldCdiSeOpenWebBeansTest' test
+mvn -f $pom -q -Pcdi-se-openwebbeans '-Dtest=HelloWorldCdiSe_OpenWebBeans_Test' test
