@@ -22,28 +22,25 @@ package com.github.jinahya.hello.app3;
 
 import com.github.jinahya.hello.api.AsynchronousHelloWorld;
 import com.github.jinahya.hello.api.HelloWorld;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import jakarta.inject.Inject;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 
 /**
  * A program whose {@link #main()} method obtains an {@link AsynchronousHelloWorld} through
- * <a href="https://github.com/google/guice">Guice</a> constructor injection, asynchronously
- * appends {@code hello, world} to a temp file on {@link ForkJoinPool#commonPool()}, reads the file
- * back, and prints it to {@link System#out}. The returned future is joined so the program does not
- * exit before the chain completes.
+ * <a href="https://spring.io/projects/spring-framework">Spring</a> dependency injection,
+ * asynchronously appends {@code hello, world} to a temp file on {@link ForkJoinPool#commonPool()},
+ * reads the file back, and prints it to {@link System#out}. The returned future is joined so the
+ * program does not exit before the chain completes.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see Guice#createInjector(com.google.inject.Module...)
+ * @see AnnotationConfigApplicationContext
  */
 @SuppressWarnings({
         "java:S106" // Standard outputs should not be used directly to log anything
@@ -51,38 +48,31 @@ import java.util.concurrent.ForkJoinPool;
 class HelloWorldMain {
 
     /**
-     * Creates a Guice {@link com.google.inject.Injector Injector} configured with an inline
-     * {@link AbstractModule} that binds {@link AsynchronousHelloWorld} to a provider which wraps
-     * the first {@link ServiceLoader}-registered {@link HelloWorld} via
-     * {@link AsynchronousHelloWorld#from(HelloWorld, java.util.concurrent.Executor)
-     * from(helloWorld, executor)} using {@link ForkJoinPool#commonPool()} as the executor, obtains
-     * a fully-injected {@link HelloWorldMain} instance from the injector via
-     * {@link com.google.inject.Injector#getInstance(Class)}, invokes {@link #print()} on it, and
-     * {@linkplain CompletableFuture#join() joins} the returned future so the asynchronous append +
-     * read + print chain completes before this method returns.
+     * Bootstraps a Spring {@link AnnotationConfigApplicationContext} from
+     * {@link HelloWorldConfiguration}, looks up the container-managed {@link HelloWorldMain} bean,
+     * invokes {@link #print()} on it, and {@linkplain CompletableFuture#join() joins} the returned
+     * future so the asynchronous append + read + print chain completes before this method returns.
      */
     static void main() {
-        Guice.createInjector(new HelloWorldModule())
-                .getInstance(HelloWorldMain.class)
-                .print()
-                .join();
+        try (var context = new AnnotationConfigApplicationContext(HelloWorldConfiguration.class)) {
+            context.getBean(HelloWorldMain.class)
+                    .print()
+                    .join();
+        }
     }
 
     /**
-     * Creates a new instance with the given {@link AsynchronousHelloWorld} service. Invoked by
-     * Guice through constructor injection when
-     * {@link com.google.inject.Injector#getInstance(Class)} is called for this class.
+     * Creates a new instance with the given {@link AsynchronousHelloWorld} service. Invoked by the
+     * Spring container through the
+     * {@link HelloWorldConfiguration#helloWorldMain(AsynchronousHelloWorld) helloWorldMain} factory
+     * method.
      *
      * @param service the {@link AsynchronousHelloWorld} service to print with; must not be
      *                {@code null}.
      */
-    @Inject
-    private HelloWorldMain(final HelloWorld service) {
+    HelloWorldMain(final AsynchronousHelloWorld service) {
         super();
-        this.service = AsynchronousHelloWorld.from(
-                Objects.requireNonNull(service, "service is null"),
-                ForkJoinPool.commonPool()
-        );
+        this.service = Objects.requireNonNull(service, "service is null");
     }
 
     /**
@@ -110,9 +100,17 @@ class HelloWorldMain {
                     }
                 })
                 .thenCompose(p -> service.append(p, p))
-                .thenAccept(p -> {
+                .thenApply(p -> {
                     try {
                         IO.println(Files.readString(p, StandardCharsets.US_ASCII));
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                    return p;
+                })
+                .thenAccept(p -> {
+                    try {
+                        Files.deleteIfExists(p);
                     } catch (final IOException ioe) {
                         throw new UncheckedIOException(ioe);
                     }
@@ -120,7 +118,7 @@ class HelloWorldMain {
     }
 
     /**
-     * The {@link AsynchronousHelloWorld} service to print with; injected by Guice through the
+     * The {@link AsynchronousHelloWorld} service to print with; injected by Spring through the
      * constructor.
      */
     private final AsynchronousHelloWorld service;
