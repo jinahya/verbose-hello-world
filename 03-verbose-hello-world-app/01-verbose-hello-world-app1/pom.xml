@@ -21,6 +21,11 @@
   <dependencies>
     <dependency>
       <groupId>io.github.jinahya</groupId>
+      <artifactId>verbose-hello-world-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.jinahya</groupId>
       <artifactId>verbose-hello-world-lib</artifactId>
       <scope>compile</scope>
     </dependency>

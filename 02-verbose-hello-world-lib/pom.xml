@@ -20,7 +20,7 @@
       <groupId>io.github.jinahya</groupId>
       <artifactId>verbose-hello-world-api</artifactId>
       <version>${project.parent.version}</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.enterprise</groupId>
