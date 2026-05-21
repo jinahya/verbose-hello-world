@@ -23,7 +23,6 @@
 
   <properties>
     <generateExecutables>true</generateExecutables>
-    <mainClass>com.github.jinahya.hello.app2.HelloWorldMain</mainClass>
   </properties>
 
   <dependencyManagement>
@@ -41,6 +40,11 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>

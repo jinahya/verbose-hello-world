@@ -17,15 +17,17 @@
  * limitations under the License.
  * #L%
  */
+/**
+ * The Verbose Hello World API. Defines the {@code HelloWorld} interface — which produces the
+ * {@value com.github.jinahya.hello.api.HelloWorld#BYTES}-byte {@code "hello, world"} payload
+ * through every major Java I/O pathway in the JDK — together with its asynchronous counterpart
+ * {@code AsynchronousHelloWorld} and a handful of Reactive-Streams-based publishers and processors
+ * built on top of it.
+ */
 module com.github.jinahya.hello.api {
     requires transitive org.jspecify;
-//    requires jakarta.validation;
-    requires org.reactivestreams;
-    requires static jdk.httpserver;
-    requires static java.net.http;
+    requires java.net.http;
     requires java.sql;
-    requires java.sql.rowset;
     requires java.desktop;
-//    requires org.apache.commons.lang3;
     exports com.github.jinahya.hello.api;
 }
