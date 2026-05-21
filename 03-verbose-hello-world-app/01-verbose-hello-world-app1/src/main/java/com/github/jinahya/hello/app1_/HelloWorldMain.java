@@ -21,11 +21,9 @@ package com.github.jinahya.hello.app1_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldUtils;
 import com.github.jinahya.hello.lib.HelloWorldImpl;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * A program whose {@link #main()} method obtains a {@link HelloWorld} by directly instantiating
@@ -37,16 +35,16 @@ import java.io.OutputStream;
 class HelloWorldMain {
 
     /**
-     * Instantiates a {@link HelloWorldImpl} directly, formats the result with
-     * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
-     * system-dependent line separator via {@link IO#println(Object)}.
+     * Instantiates a {@link HelloWorldImpl} directly, writes {@code hello, world} to
+     * {@link System#out} via {@link HelloWorld#write(java.io.OutputStream) write(stream)}, and
+     * terminates the line with {@link java.io.PrintStream#println() println()}.
+     *
+     * @throws IOException if an I/O error occurs while writing to {@link System#out}.
      */
-    static void main() {
-        IO.println(
-                HelloWorldUtils.string(
-                        new HelloWorldImpl()
-                )
-        );
+    static void main() throws IOException {
+        new HelloWorldImpl()
+                .write(System.out)
+                .println();
     }
 
     /**
