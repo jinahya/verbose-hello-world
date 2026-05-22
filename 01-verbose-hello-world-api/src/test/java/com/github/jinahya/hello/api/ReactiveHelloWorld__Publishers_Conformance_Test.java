@@ -9,9 +9,9 @@ package com.github.jinahya.hello.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,20 +49,19 @@ import java.util.concurrent.TimeUnit;
  * expose a collect idiom).
  * <p>
  * Each library is a {@link Nested} class. Inside, two tests subscribe the library's collector (or,
- * for Vert.x and the JDK, a minimal hand-rolled subscriber) to each of the two publisher shapes
- * and assert that the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload
- * arrives intact — twelve {@link Byte} elements for {@link ReactiveHelloWorldBytePublisher} (which
+ * for Vert.x and the JDK, a minimal hand-rolled subscriber) to each of the two publisher shapes and
+ * assert that the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload arrives
+ * intact — twelve {@link Byte} elements for {@link ReactiveHelloWorldBytePublisher} (which
  * completes naturally), and {@value #N} copies of the payload for the open-ended
- * {@link ReactiveHelloWorldArrayPublisher} (with a library-side {@code take(N)} /
- * {@code limit(N)} / cancel-after-{@value #N}).
+ * {@link ReactiveHelloWorldArrayPublisher} (with a library-side {@code take(N)} / {@code limit(N)}
+ * / cancel-after-{@value #N}).
  * <p>
  * This is the exact scenario that surfaced the {@code subscriber.onNext(...)}-under-publisher-lock
- * AB-BA deadlock against subscribers that re-enter the publisher while holding their own monitor
- * or lock — Mutiny's {@code AssertSubscriber} ({@code synchronized(this)} around both
- * {@code request} and {@code onItem}) and Helidon's {@code Multi.collectList()} (internal lock
- * after a {@code Long.MAX_VALUE} request). With the publishers now signalling outside their
- * internal lock, every library × every publisher finishes within {@value #TIMEOUT_SECONDS}
- * seconds.
+ * AB-BA deadlock against subscribers that re-enter the publisher while holding their own monitor or
+ * lock — Mutiny's {@code AssertSubscriber} ({@code synchronized(this)} around both {@code request}
+ * and {@code onItem}) and Helidon's {@code Multi.collectList()} (internal lock after a
+ * {@code Long.MAX_VALUE} request). With the publishers now signalling outside their internal lock,
+ * every library × every publisher finishes within {@value #TIMEOUT_SECONDS} seconds.
  * <p>
  * The {@link HelloWorld} service is mocked once per test method by this class's constructor —
  * JUnit's default {@code PER_METHOD} test-instance lifecycle gives every test a fresh mock without

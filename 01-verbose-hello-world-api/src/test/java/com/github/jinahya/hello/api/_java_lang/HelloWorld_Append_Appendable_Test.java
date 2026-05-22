@@ -45,8 +45,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Append_Appendable_Test
-        extends HelloWorldTest {
+class HelloWorld_Append_Appendable_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#append(Appendable) append(appendable)} method throws a
@@ -84,12 +83,12 @@ class HelloWorld_Append_Appendable_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(i -> {                                // <1>
+        Mockito.doAnswer(i -> {
             final var array = i.getArgument(0, byte[].class);
             ThreadLocalRandom.current().nextBytes(array);
             return array;
-        }).when(service).set(ArgumentMatchers.<byte[]>notNull());
-        final var appendable = Mockito.mock(Appendable.class); // <2>
+        }).when(service).set(ArgumentMatchers.notNull());
+        final var appendable = Mockito.mock(Appendable.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.append(appendable);
         // ------------------------------------------------------------------------------------ then

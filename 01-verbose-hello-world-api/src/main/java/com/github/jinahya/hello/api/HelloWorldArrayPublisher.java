@@ -34,13 +34,14 @@ import java.util.concurrent.SubmissionPublisher;
  * {@link SubmissionPublisher} and starts a single virtual thread that feeds it. The wrapped
  * {@link SubmissionPublisher} handles all Reactive-Streams-spec machinery (demand accounting,
  * signal serialization, cancel semantics, {@code request(n &le; 0)} validation, terminal
- * deduplication); this class contributes only the producer loop. Because each subscription owns
- * its own {@link SubmissionPublisher} and producer thread, there is no shared state and no
- * multicast — subscribers are fully isolated.
+ * deduplication); this class contributes only the producer loop. Because each subscription owns its
+ * own {@link SubmissionPublisher} and producer thread, there is no shared state and no multicast —
+ * subscribers are fully isolated.
  * <p>
  * <strong>Lifecycle.</strong> The producer thread loops while the per-subscription
- * {@link SubmissionPublisher} reports {@link SubmissionPublisher#hasSubscribers() hasSubscribers()}.
- * Downstream {@link Flow.Subscription#cancel() cancel} removes the subscriber from the
+ * {@link SubmissionPublisher} reports
+ * {@link SubmissionPublisher#hasSubscribers() hasSubscribers()}. Downstream
+ * {@link Flow.Subscription#cancel() cancel} removes the subscriber from the
  * {@link SubmissionPublisher}; the next iteration of the producer loop observes the change, calls
  * {@link SubmissionPublisher#close() close}, and the virtual thread exits. No external close is
  * required, and this class deliberately does <em>not</em> implement {@link AutoCloseable}: its
@@ -78,13 +79,13 @@ public class HelloWorldArrayPublisher implements Flow.Publisher<byte[]> {
      * @param subscriber the subscriber to register; must not be {@code null}.
      * @throws NullPointerException if the {@code subscriber} is {@code null}.
      * @implSpec Allocates a fresh per-subscription {@link SubmissionPublisher}, registers the
-     * subscriber with it (firing
-     * {@link Flow.Subscriber#onSubscribe(Flow.Subscription) onSubscribe} synchronously on the
-     * caller's thread), and starts a dedicated virtual thread that loops while the
-     * {@link SubmissionPublisher} has the subscriber attached, on each iteration submitting a fresh
-     * {@code byte[HelloWorld.BYTES]} filled via {@link HelloWorld#set(byte[]) service.set(...)}.
-     * On {@link HelloWorld#set(byte[]) service.set(...)} throwing, the producer routes the failure
-     * via {@link SubmissionPublisher#closeExceptionally(Throwable) closeExceptionally(t)}.
+     * subscriber with it (firing {@link Flow.Subscriber#onSubscribe(Flow.Subscription) onSubscribe}
+     * synchronously on the caller's thread), and starts a dedicated virtual thread that loops while
+     * the {@link SubmissionPublisher} has the subscriber attached, on each iteration submitting a
+     * fresh {@code byte[HelloWorld.BYTES]} filled via
+     * {@link HelloWorld#set(byte[]) service.set(...)}. On
+     * {@link HelloWorld#set(byte[]) service.set(...)} throwing, the producer routes the failure via
+     * {@link SubmissionPublisher#closeExceptionally(Throwable) closeExceptionally(t)}.
      */
     @SuppressWarnings("resource")  // closed by the producer thread, not by a synchronous scope
     @Override

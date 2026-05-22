@@ -28,12 +28,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.Writer;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(Writer) write(writer)} method.
@@ -46,8 +49,7 @@ import java.io.Writer;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_Writer_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_Writer_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method throws a
@@ -63,11 +65,7 @@ class HelloWorld_Write_Writer_Test
         final var service = service();
         final var writer = (Writer) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert: <service.write(writer:null)> throws a <NullPointerException>
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(writer)
-        );
+        Assertions.assertThrows(NullPointerException.class, () -> service.write(writer));
     }
 
     /**
@@ -82,14 +80,12 @@ class HelloWorld_Write_Writer_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .append(ArgumentMatchers.any(Appendable.class));
-        final var writer = Mockito.mock(Writer.class);
+        doAnswer(returnsFirstArg()).when(service).append(any(Appendable.class));
+        final var writer = mock(Writer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
         // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1)).append(writer);
-        Assertions.assertSame(writer, result);
+//        verify(service, times(1)).append(writer);
+        assertSame(writer, result);
     }
 }

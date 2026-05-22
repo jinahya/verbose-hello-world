@@ -9,9 +9,9 @@ package com.github.jinahya.hello;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,32 +60,32 @@ class DataInputStream_Test {
     }
 
     @Test
-    void __DataInput() throws IOException {
+    void __bytecode() throws IOException {
         // -----------------------------------------------------------------------------------------
-        final var stream = new DataInputStream(new ByteArrayInputStream(bytecode()));
+        final var input = new DataInputStream(new ByteArrayInputStream(bytecode()));
         // -----------------------------------------------------------------------------------------
-        log.debug("magic: 0x{}", Integer.toHexString(stream.readInt()));
-        log.debug("minor_version: {}", stream.readUnsignedShort());
-        log.debug("major_version: {}", stream.readUnsignedShort());
+        log.debug("magic: 0x{}", Integer.toHexString(input.readInt()));
+        log.debug("minor_version: {}", input.readUnsignedShort());
+        log.debug("major_version: {}", input.readUnsignedShort());
         // -----------------------------------------------------------------------------------------
-        final var constantPoolCount = stream.readUnsignedShort();
+        final var constantPoolCount = input.readUnsignedShort();
         log.debug("constant_pool_count: {}", constantPoolCount);
         for (int i = 1; i < constantPoolCount; i++) {
-            switch (stream.readUnsignedByte()) {
+            switch (input.readUnsignedByte()) {
                 case 7 -> log.debug("  #{} CONSTANT_Class name_index={}", i,
-                                    stream.readUnsignedShort());
-                case 1 -> log.debug("  #{} CONSTANT_Utf8 \"{}\"", i, stream.readUTF());
+                                    input.readUnsignedShort());
+                case 1 -> log.debug("  #{} CONSTANT_Utf8 \"{}\"", i, input.readUTF());
                 default -> log.warn("  #{} unknown tag", i);
             }
         }
         // -----------------------------------------------------------------------------------------
-        log.debug("access_flags: 0x{}", Integer.toHexString(stream.readUnsignedShort()));
-        log.debug("this_class: #{}", stream.readUnsignedShort());
-        log.debug("super_class: #{}", stream.readUnsignedShort());
-        log.debug("interfaces_count: {}", stream.readUnsignedShort());
-        log.debug("fields_count: {}", stream.readUnsignedShort());
-        log.debug("methods_count: {}", stream.readUnsignedShort());
-        log.debug("attributes_count: {}", stream.readUnsignedShort());
+        log.debug("access_flags: 0x{}", Integer.toHexString(input.readUnsignedShort()));
+        log.debug("this_class: #{}", input.readUnsignedShort());
+        log.debug("super_class: #{}", input.readUnsignedShort());
+        log.debug("interfaces_count: {}", input.readUnsignedShort());
+        log.debug("fields_count: {}", input.readUnsignedShort());
+        log.debug("methods_count: {}", input.readUnsignedShort());
+        log.debug("attributes_count: {}", input.readUnsignedShort());
     }
 
     @Test

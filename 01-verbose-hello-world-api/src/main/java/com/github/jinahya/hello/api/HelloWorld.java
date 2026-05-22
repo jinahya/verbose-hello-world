@@ -472,10 +472,6 @@ public interface HelloWorld {
         return writer;
     }
 
-    default Reader reader() {
-        return new InputStreamReader(inputStream(), StandardCharsets.US_ASCII);
-    }
-
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a>, encoded with the specified
      * charset, to the end of the specified file, and returns the file.

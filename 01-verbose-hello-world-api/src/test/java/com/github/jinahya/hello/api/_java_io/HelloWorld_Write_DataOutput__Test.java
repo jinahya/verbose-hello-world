@@ -20,31 +20,35 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorld.BYTES;
+import static com.github.jinahya.hello.api.HelloWorldTestConstants.HELLO_WORLD_STRING;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.write_dataoutput_writes_hello_world_bytes;
+import static java.io.File.createTempFile;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.util.concurrent.ThreadLocalRandom.current;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Write_DataOutput_畵蛇添足_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_DataOutput__Test extends HelloWorldTest {
 
     @TempDir
     private static File tempDir;
@@ -52,18 +56,37 @@ class HelloWorld_Write_DataOutput_畵蛇添足_Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.write_dataoutput_writes_hello_world_bytes(service());
+        write_dataoutput_writes_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
-    class RandomAccessFileTest {
+    class DataOutputStream_Test {
+
+        @Test
+        void __() throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 var dos = new DataOutputStream(baos)) {
+                service().write((DataOutput) dos);
+                dos.flush();
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     var dais = new DataInputStream(bais)) {
+                    final var bytes = dais.readAllBytes();
+                    final var string = new String(bytes, US_ASCII);
+                    assertEquals(HELLO_WORLD_STRING, string);
+                }
+            }
+        }
+    }
+
+    @Nested
+    class RandomAccessFile_Test {
 
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
-            final var tempFile = File.createTempFile("tmp", "tmp", tempDir);
-            final var pos = ThreadLocalRandom.current().nextLong(0L, 128L);
+            final var tempFile = createTempFile("tmp", "tmp", tempDir);
+            final var pos = current().nextLong(0L, 128L);
             // -------------------------------------------------------------------------------- when
             try (var file = new RandomAccessFile(tempFile, "rw")) {
                 file.seek(pos);
@@ -71,12 +94,12 @@ class HelloWorld_Write_DataOutput_畵蛇添足_Test
                 file.getFD().sync();
             }
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(pos + HelloWorld.BYTES, tempFile.length());
+            assertEquals(pos + BYTES, tempFile.length());
             try (var file = new RandomAccessFile(tempFile, "r")) {
                 file.seek(pos);
-                final var b = new byte[HelloWorld.BYTES];
+                final var b = new byte[BYTES];
                 file.readFully(b);
-                log.debug("read: {}", new String(b, StandardCharsets.US_ASCII));
+                log.debug("read: {}", new String(b, US_ASCII));
             }
         }
     }

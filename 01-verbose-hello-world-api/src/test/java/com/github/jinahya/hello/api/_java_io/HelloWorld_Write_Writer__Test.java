@@ -20,16 +20,16 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
+import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
+import com.github.jinahya.hello.api.HelloWorldTestConstants;
 import com.github.jinahya.hello.api._Java_Nio_Charset_TestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,14 +43,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.stream.Stream;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.write_writer_writes_hello_world_string;
+import static java.io.File.createTempFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_Writer_畵蛇添足_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_Writer__Test extends HelloWorldTest {
 
     @TempDir
     private static File tempDir;
@@ -62,27 +66,43 @@ class HelloWorld_Write_Writer_畵蛇添足_Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.write_writer_writes_hello_world_string(service());
+        write_writer_writes_hello_world_string(service());
     }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
-    class OutputStreamWriterTest {
+    class OutputStreamWriter_Test {
 
         private static Stream<Charset> charsetStream() {
-            return HelloWorld_Write_Writer_畵蛇添足_Test.charsetStream();
+            return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
         @MethodSource({"charsetStream"})
         @ParameterizedTest
-        void __(final Charset cs) throws IOException {
+        void __(final Charset charset) throws IOException {
             try (var in = new ByteArrayOutputStream();
-                 var writer = new OutputStreamWriter(in, cs)) {
+                 var writer = new OutputStreamWriter(in, charset)) {
                 service().write(writer).flush();
-                try (var out = new ByteArrayInputStream(in.toByteArray());
-                     var reader = new InputStreamReader(out, cs)) {
+                final var buf = in.toByteArray();
+                log.debug("charset: {} ({})", String.format("%14s", charset), buf.length);
+                try (var out = new ByteArrayInputStream(buf);
+                     var reader = new InputStreamReader(out, charset)) {
                     final var string = reader.readAllAsString();
-                    Assertions.assertEquals("hello, world", string);
+                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                }
+            }
+        }
+
+        @Test
+        void __() throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 var writer = new OutputStreamWriter(baos, StandardCharsets.US_ASCII)) {
+                writer.write(HelloWorldTestConstants.HELLO_WORLD_STRING);
+                writer.flush();
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     final var reader = new InputStreamReader(bais, StandardCharsets.US_ASCII)) {
+                    final var string = reader.readAllAsString();
+                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -90,23 +110,36 @@ class HelloWorld_Write_Writer_畵蛇添足_Test
 
     // ---------------------------------------------------------------------------------------------
     @Nested
-    class FileWriterTest {
+    class FileWriter_Test {
 
         private static Stream<Charset> charsetStream() {
-            return HelloWorld_Write_Writer_畵蛇添足_Test.charsetStream();
+            return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
-            final var file = File.createTempFile("tmp", null, tempDir);
+            final var file = createTempFile("tmp", null, tempDir);
             try (var writer = new FileWriter(file, charset)) {
                 service().write(writer).flush();
             }
+            log.debug("charset: {} ({})", String.format("%14s", charset), file.length());
             try (var reader = new FileReader(file, charset)) {
                 final var string = reader.readAllAsString();
-                Assertions.assertEquals("hello, world", string);
+                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
             }
+        }
+
+        @Test
+        void __() throws IOException {
+            final var file = createTempFile("tmp", null, tempDir);
+            try (var writer = new FileWriter(file, StandardCharsets.US_ASCII, true)) {
+                writer.write(HelloWorldTestConstants.HELLO_WORLD_STRING);
+                writer.flush();
+            }
+            assertEquals(HelloWorld.BYTES, file.length());
+            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING,
+                         Files.readString(file.toPath()));
         }
     }
 }

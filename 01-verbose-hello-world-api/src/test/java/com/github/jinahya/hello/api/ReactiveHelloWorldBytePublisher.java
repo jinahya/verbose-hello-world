@@ -9,9 +9,9 @@ package com.github.jinahya.hello.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,8 +50,10 @@ import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingProxy;
  * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> The producer virtual thread is the
  * sole sender of {@code onNext} and {@code onComplete}, so signals are naturally serialized (<a
  * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag, satisfying
- * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag,
+ * satisfying
+ * <a
+ * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
  * 1.7</a> — at most one terminal ever fires.
  * <p>
  * <strong>Lifetime.</strong> The stream completes naturally after all {@value HelloWorld#BYTES}
