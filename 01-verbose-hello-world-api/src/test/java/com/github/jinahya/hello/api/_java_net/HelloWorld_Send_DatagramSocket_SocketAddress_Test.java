@@ -22,26 +22,29 @@ package com.github.jinahya.hello.api._java_net;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)}
@@ -53,8 +56,17 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_SocketAddress_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
+
+    static {
+        final var pin = new Runnable[] {
+                () -> ArgumentCaptor.forClass(Object.class),
+                () -> verify(null),
+                () -> times(0),
+                () -> assertNotNull(null),
+                () -> assertEquals(0, 1),
+                () -> assertSame(0, 1)};
+    }
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)}
@@ -70,7 +82,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final DatagramSocket socket = null;
-        final var target = Mockito.mock(SocketAddress.class);
+        final var target = mock(SocketAddress.class);
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
                 NullPointerException.class,
@@ -91,7 +103,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test
     void _ThrowNullPointerException_TargetIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var socket = Mockito.mock(DatagramSocket.class);
+        final var socket = mock(DatagramSocket.class);
         final SocketAddress target = null;
         // ------------------------------------------------------------------------------- when/then
         Assertions.assertThrows(
@@ -115,70 +127,21 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .append(Mockito.<DatagramPacket>any());
-        final var socket = Mockito.mock(DatagramSocket.class);
-        final var target = new InetSocketAddress(InetAddress.getLocalHost(), 1234);
+        doAnswer(returnsFirstArg()).when(service).append(Mockito.<DatagramPacket>any());
+        final var socket = mock(DatagramSocket.class);
+        final var target = new InetSocketAddress("127.0.0.1", 1234);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket, target);
         // ------------------------------------------------------------------------------------ then
 //        final var packetCaptor = ArgumentCaptor.forClass(DatagramPacket.class);
-//        Mockito.verify(service, Mockito.times(1)).append(packetCaptor.capture());
+//        verify(service, times(1)).append(packetCaptor.capture());
 //        final var packet = packetCaptor.getValue();
-//        Assertions.assertNotNull(packet);
-//        final var data = packet.getData();
-//        final var offset = packet.getOffset();
-//        final var length = packet.getLength();
-//        Assertions.assertEquals(HelloWorld.BYTES, data.length);
-//        Assertions.assertEquals(0, offset);
-//        Assertions.assertEquals(0, length);
-//        Assertions.assertEquals(target, packet.getSocketAddress());
-//        Mockito.verify(socket, Mockito.times(1)).send(packet);
-        Assertions.assertSame(socket, result);
-    }
-
-    @畵蛇添足
-    @Test
-    void _添足_畵蛇() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var socket = i.getArgument(0, DatagramSocket.class);
-            final var target = i.getArgument(1, SocketAddress.class);
-            final var buf = HelloWorldTestUtils.hello_world_byte_array();
-            final var packet = new DatagramPacket(buf, 0, buf.length, target);
-            socket.send(packet);
-            return socket;
-        }).when(service).send(ArgumentMatchers.<DatagramSocket>any(), ArgumentMatchers.any());
-        // ----------------------------------------------------------------------------- when / then
-        try (var server = new DatagramSocket(
-                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {
-            final var target = server.getLocalSocketAddress();
-            // ------------------------------------------------------------- start a receiver thread
-            Thread.ofPlatform().start(() -> {
-                try {
-                    final DatagramPacket packet = new DatagramPacket(
-                            new byte[HelloWorld.BYTES << 1],                       // <buf>
-                            ThreadLocalRandom.current().nextInt(HelloWorld.BYTES), // <offset>
-                            HelloWorld.BYTES                                       // <length>
-                    );
-                    server.receive(packet);
-                    final var decoded = new String(
-                            packet.getData(),         // <bytes>
-                            packet.getOffset(),       // <offset>
-                            packet.getLength(),       // <length>
-                            StandardCharsets.US_ASCII // <charset>
-                    );
-                    log.debug("received: {}", decoded);
-                } catch (final IOException ioe) {
-                    log.error("failed to receive", ioe);
-                }
-            });
-            // -------------------------------------------------- send to target (no connect needed)
-            try (var client = new DatagramSocket()) {
-                service.send(client, target);
-            }
-        }
+//        assertNotNull(packet);
+//        assertEquals(HelloWorld.BYTES, packet.getData().length);
+//        assertEquals(0, packet.getOffset());
+//        assertEquals(0, packet.getLength());
+//        assertEquals(target, packet.getSocketAddress());
+//        verify(socket, times(1)).send(packet);
+        assertSame(socket, result);
     }
 }
