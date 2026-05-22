@@ -22,7 +22,7 @@ All application modules share:
 </parent>
 
 <properties>
-<mainClass>com.github.jinahya.hello.app2_.HelloWorldMain</mainClass>
+<mainClass>com.github.jinahya.hello.app2.HelloWorldMain</mainClass>
 </properties>
 ```
 

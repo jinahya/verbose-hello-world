@@ -1,0 +1,93 @@
+package com.github.jinahya.hello.api._java_net;
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.HelloWorldTest;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doAnswer;
+
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+@SuppressWarnings({"java:S101"})
+class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorldTest {
+
+    @BeforeEach
+    void __stubService() throws IOException {
+        doAnswer(i -> {
+            final var socket = i.getArgument(0, DatagramSocket.class);
+            final var target = i.getArgument(1, SocketAddress.class);
+            final var buf = hello_world_byte_array();
+            final var packet = new DatagramPacket(buf, 0, buf.length, target);
+            socket.send(packet);
+            return socket;
+        }).when(service()).send(ArgumentMatchers.<DatagramSocket>notNull(), notNull());
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Test
+    void __() throws IOException {
+        try (var server = new DatagramSocket(
+                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {
+            final var target = server.getLocalSocketAddress();
+            Thread.ofPlatform().start(() -> {
+                try {
+                    final var packet = new DatagramPacket(
+                            new byte[HelloWorld.BYTES << 1],                       // <buf>
+                            ThreadLocalRandom.current().nextInt(HelloWorld.BYTES), // <offset>
+                            HelloWorld.BYTES                                       // <length>
+                    );
+                    server.receive(packet);
+                    final var decoded = new String(
+                            packet.getData(),         // <bytes>
+                            packet.getOffset(),       // <offset>
+                            packet.getLength(),       // <length>
+                            StandardCharsets.US_ASCII // <charset>
+                    );
+                    log.debug("received: {}", decoded);
+                } catch (final IOException ioe) {
+                    throw new UncheckedIOException(ioe);
+                }
+            });
+            try (var client = new DatagramSocket()) {
+                service().send(client, target);
+            }
+        }
+    }
+}

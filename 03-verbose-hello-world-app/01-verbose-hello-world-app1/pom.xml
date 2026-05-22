@@ -15,10 +15,15 @@
   <description>Verbose Hello World App1</description>
 
   <properties>
-    <mainClass>com.github.jinahya.hello.app1_.HelloWorldMain</mainClass>
+    <mainClass>com.github.jinahya.hello.app1.HelloWorldMain</mainClass>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>io.github.jinahya</groupId>
+      <artifactId>verbose-hello-world-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>io.github.jinahya</groupId>
       <artifactId>verbose-hello-world-lib</artifactId>

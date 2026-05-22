@@ -22,8 +22,8 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
+import com.github.jinahya.hello.api.HelloWorldTestConstants;
 import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,25 +35,36 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.write_outputstream_writes_hello_world_bytes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_OutputStream__Test
-        extends HelloWorldTest {
+class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
 
     @TempDir
     private static File tempDir;
@@ -61,78 +72,134 @@ class HelloWorld_Write_OutputStream__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.write_outputstream_writes_hello_world_bytes(service());
+        write_outputstream_writes_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
-    class ByteArrayOutputStreamTest {
+    class ByteArrayOutputStream_Test {
 
         @Test
         void __() throws IOException {
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
-            // -------------------------------------------------------------------------------- when
             try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES)) {
-                service.write(baos).flush();
-                Assertions.assertEquals(HelloWorld.BYTES, baos.size());
-                // ---------------------------------------------------------------------------- then
+                service().write(baos).flush();
+                assertEquals(HelloWorld.BYTES, baos.size());
                 try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
-                    final var bytes = bais.readNBytes(HelloWorld.BYTES);
-                    assert bytes.length == HelloWorld.BYTES;
-                    log.debug("read: {}", new String(bytes, StandardCharsets.US_ASCII));
+                    final var bytes = bais.readAllBytes();
+                    final var string = new String(bytes, StandardCharsets.US_ASCII);
+                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
     }
 
-    // ---------------------------------------------------------------------------------------------
+    @Nested
+    class FilterOutputStream_Test {
+
+        static class FunnelOutputStream extends FilterOutputStream { // @formatter:off
+
+            public FunnelOutputStream(final OutputStream out) { super(out); }
+
+            @Override public void write(final int b) throws IOException { super.write(b); }
+
+            @Override public final void write(final byte[] b) throws IOException { super.write(b); }
+
+            @Override
+            public final void write(final byte[] b, final int off, final int len)
+                    throws IOException { super.write(b, off, len); }
+        } // @formatter:on
+
+        static class FunnelInputStream extends FilterInputStream { // @formatter:off
+
+            protected FunnelInputStream(final InputStream in) { super(in); }
+
+            @Override public int read() throws IOException { return super.read(); }
+
+            @Override
+            public final int read(final byte[] b) throws IOException { return super.read(b); }
+
+            @Override
+            public final int read(final byte[] b, int off, final int len) throws IOException {
+                Objects.checkFromIndexSize(off, len, b.length);
+                if (len == 0) { return 0; }
+                var r = read();
+                if (r == -1) { return -1; }
+                b[off++] = (byte) r;
+                var i = 1;
+                for (; i < len; i++) {
+                    r = read();
+                    if (r == -1) { break; }
+                    b[off++] = (byte) r;
+                }
+                return i;
+            }
+
+            @Override
+            public final long skip(final long n) throws IOException {
+                long skipped = 0L;
+                while (skipped < n && read() != -1) { skipped++; }
+                return skipped;
+            }
+        }
+    } // @formatter:on
+
+    @Nested
+    class DataOutputStream_Test {
+
+        @Test
+        void __() throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 var dos = new DataOutputStream(baos)) {
+                service().write((OutputStream) dos).flush();
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     var dis = new DataInputStream(bais)) {
+                    final var bytes = dis.readAllBytes();
+                    final var string = new String(bytes, StandardCharsets.US_ASCII);
+                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                }
+            }
+        }
+    }
+
     @Nested
     class FileOutputStreamTest {
 
         @Test
         void __() throws IOException {
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
             final var file = File.createTempFile("tmp", null, tempDir);
-            // -------------------------------------------------------------------------------- when
             try (var stream = new FileOutputStream(file)) {
-                service.write(stream).flush();
+                service().write(stream).flush();
             }
-            Assertions.assertEquals(HelloWorld.BYTES, file.length());
-            // -------------------------------------------------------------------------------- then
+            assertEquals(HelloWorld.BYTES, file.length());
             try (var stream = new FileInputStream(file)) {
                 final var bytes = stream.readNBytes(HelloWorld.BYTES);
-                assert bytes.length == HelloWorld.BYTES;
-                log.debug("read: {}", new String(bytes, StandardCharsets.US_ASCII));
+                final var string = new String(bytes, StandardCharsets.US_ASCII);
+                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
             }
         }
     }
 
-    // ---------------------------------------------------------------------------------------------
     @Nested
-    class PipeOutputStreamTest {
+    class PipeOutputStream_Test {
 
         @Test
         void __EnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
             try (var pos = new PipedOutputStream();
                  var pis = new PipedInputStream(HelloWorld.BYTES)) {
                 pos.connect(pis);
                 // ---------------------------------------------------------------------------- when
-                service.write(pos).flush();
+                service().write(pos).flush();
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
-                assert bytes.length == HelloWorld.BYTES;
-                log.debug("read: {}", new String(bytes, StandardCharsets.US_ASCII));
+                final var string = new String(bytes, StandardCharsets.US_ASCII);
+                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
             }
         }
 
         @Test
         void __NotEnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
             final var pipeSize = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
             try (var pos = new PipedOutputStream();
                  var pis = new PipedInputStream(pipeSize)) {
@@ -140,54 +207,37 @@ class HelloWorld_Write_OutputStream__Test
                 // ---------------------------------------------------------------------------- when
                 Thread.ofPlatform().start(() -> {
                     try {
-                        service.write(pos).flush();
+                        service().write(pos).flush();
                     } catch (final IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
                 });
                 // ---------------------------------------------------------------------------- when
-                final var b = new byte[HelloWorld.BYTES];
-                var off = 0;
-                var len = b.length;
-                while (off < HelloWorld.BYTES) {
-                    final var r = pis.read(b, off, len);
-                    assert r != -1;
-                    off += r;
-                    len -= r;
-                }
-                log.debug("read: {}", new String(b, StandardCharsets.US_ASCII));
+                final var bytes = pis.readNBytes(HelloWorld.BYTES);
+                final var string = new String(bytes, StandardCharsets.US_ASCII);
+                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
             }
-        }
-    }
-
-    @畵蛇添足
-    @Test
-    void __DeflatorOutputStream() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils
-                .write_stream_will_write_actual_hello_world_bytes(service());
-        // -------------------------------------------------------------------------------- compress
-        final var baos = new ByteArrayOutputStream();
-        try (var zipos = new GZIPOutputStream(baos)) {
-            service.write(zipos);
-            zipos.flush();
-            zipos.finish(); // maybe redundant; DeflatorOutputStream#close() does this
-        }
-        final var compressed = baos.toByteArray();
-        log.debug("  compressed: {} ({})", HexFormat.of().formatHex(compressed), compressed.length);
-        // ------------------------------------------------------------------------------ decompress
-        try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
-            final var decompressed = gzipis.readAllBytes();
-            log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
-                      decompressed.length);
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
-                                         decompressed);
         }
     }
 
     // ------------------------------------------------------------------------------- java.util.zip
     @Nested
     class JavaUtilZipTest {
+
+        @Test
+        void __DeflaterOutputStream() throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 var dos = new DeflaterOutputStream(baos)) {
+                service().write(dos).flush();
+                dos.finish();
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     var iis = new InflaterInputStream(bais)) {
+                    final var bytes = iis.readAllBytes();
+                    final var string = new String(bytes, StandardCharsets.US_ASCII);
+                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                }
+            }
+        }
 
         @Test
         void __GZIPOutputStream() throws IOException {
@@ -202,7 +252,7 @@ class HelloWorld_Write_OutputStream__Test
             final var compressed = baos.toByteArray();
             log.debug("  compressed: {} ({})", HexFormat.of().formatHex(compressed),
                       compressed.length);
-            // ------------------------------------------------------------------------------ decompress
+            // -------------------------------------------------------------------------- decompress
             try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
                 final var decompressed = gzipis.readAllBytes();
                 log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),

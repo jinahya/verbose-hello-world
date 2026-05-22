@@ -83,14 +83,15 @@
     <!--    <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>-->
     <version.org.apache.openwebbeans>4.1.0</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.25.1</version.org.aspectj>
+    <version.org.assertj>4.0.0-M1</version.org.assertj>
     <!-- https://central.sonatype.com/artifact/org.glassfish.hk2/hk2/versions -->
     <version.org.glassfish.hk2>4.0.1</version.org.glassfish.hk2>
     <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
-    <!--    <version.org.jboss.weld-junit>4.0.3.Final</version.org.jboss.weld-junit> &lt;!&ndash; weld-se-core &ndash;&gt;-->
+    <!-- https://central.sonatype.com/artifact/org.jboss.weld/weld-junit5/versions -->
     <version.org.jboss.weld-junit>5.0.3.Final</version.org.jboss.weld-junit> <!-- weld-se-core -->
-    <!--    <version.org.jboss.weld.se>${version.org.jboss.weld}</version.org.jboss.weld.se> &lt;!&ndash; weld-se-core &ndash;&gt;-->
-    <version.org.jboss.weld.se>6.0.3.Final</version.org.jboss.weld.se> <!-- weld-se-core -->
+    <!-- https://central.sonatype.com/artifact/org.jboss.weld.se/weld-se-core/versions -->
+    <version.org.jboss.weld.se>6.0.4.Final</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.jspecify>1.0.0</version.org.jspecify>
     <!-- https://central.sonatype.com/artifact/org.junit/junit-bom/versions -->
     <version.org.junit>6.0.3</version.org.junit>
@@ -301,13 +302,13 @@
         <artifactId>aspectjtools</artifactId>
         <version>${version.org.aspectj}</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>org.assertj</groupId>-->
-      <!--        <artifactId>assertj-bom</artifactId>-->
-      <!--        <version>4.0.0-M1</version>-->
-      <!--        <type>pom</type>-->
-      <!--        <scope>import</scope>-->
-      <!--      </dependency>-->
+<!--      <dependency>-->
+<!--        <groupId>org.assertj</groupId>-->
+<!--        <artifactId>assertj-bom</artifactId>-->
+<!--        <version>${version.org.assertj}</version>-->
+<!--        <type>pom</type>-->
+<!--        <scope>import</scope>-->
+<!--      </dependency>-->
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
@@ -422,7 +423,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
     <!--    <dependency>-->
     <!--      <groupId>jakarta.validation</groupId>-->
@@ -452,10 +453,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jspecify</groupId>
-      <artifactId>jspecify</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
@@ -468,19 +465,18 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <!--      <scope>compile</scope>-->
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk-platform-logging</artifactId>
       <version>${version.org.slf4j}</version>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

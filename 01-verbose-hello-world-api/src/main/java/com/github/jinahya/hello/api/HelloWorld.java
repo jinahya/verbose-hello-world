@@ -472,10 +472,6 @@ public interface HelloWorld {
         return writer;
     }
 
-    default Reader reader() {
-        return new InputStreamReader(inputStream(), StandardCharsets.US_ASCII);
-    }
-
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a>, encoded with the specified
      * charset, to the end of the specified file, and returns the file.
@@ -536,16 +532,17 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     * packet:       0     &le; offset    &le; offset + length
+     * packet:       0     &le; offset    &le; offset + length1
      *               ↓       ↓           ↓
      * packet.data: | | | | |.|.|.|.|.|.| | | | | | | | | | | | | | | | |
+     *                      |&lt; length1 &gt;|
      *
      * Then, on successful return,
      *
-     * packet:       0     &le; offset                            &lt; offset + length'
+     * packet:       0     &le; offset                            &lt; offset + length2
      *               ↓       ↓                                   ↓
      * packet.data: | | | | |.|.|.|.|.|.|h|e|l|l|o|,| |w|o|r|l|d| | | | |
-     *                                                (length' = length + 12)
+     *                      |&lt; length2 = length1 + 12          &gt;|
      * </pre>
      *
      * @param packet the datagram packet to which bytes are appended.
@@ -571,8 +568,8 @@ public interface HelloWorld {
             throw new NullPointerException("packet is null");
         }
         final var data = packet.getData();
-        final var offset = packet.getOffset(); // the offset in the data
-        final var length = packet.getLength(); // the number of bytes to send from the offset
+        final var offset = packet.getOffset();
+        final var length = packet.getLength();
         if (offset + length + BYTES > data.length) {
             throw new IllegalArgumentException("packet.data is not enough");
         }

@@ -20,15 +20,12 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Slf4j
 public final class JavaLangObjectUtils {
 
     public static <T> String toSimpleString(final Class<T> cls, final T obj) {

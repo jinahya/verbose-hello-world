@@ -21,10 +21,15 @@ package com.github.jinahya.hello.app4_;
  */
 
 import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldUtils;
+import com.github.jinahya.hello.api.HelloWorldArrayPublisher;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Flow;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +45,7 @@ import java.util.logging.Logger;
         "java:S106",  // Standard outputs should not be used directly to log anything
         "java:S6813"  // Field dependency injection should be avoided
 })
-class HelloWorldMain {
+class HelloWorldMain implements Flow.Subscriber<byte[]> {
 
     static {
         Logger.getLogger("org.jboss.weld").setLevel(Level.WARNING);
@@ -48,15 +53,15 @@ class HelloWorldMain {
 
     /**
      * Bootstraps a CDI SE container via {@link SeContainerInitializer#initialize()}, selects an
-     * instance of this class managed by the container, formats the injected {@link #service} with
-     * {@link HelloWorldUtils#string(HelloWorld)}, and prints the resulting string followed by a
-     * system-dependent line separator via {@link IO#println(Object)}.
+     * instance of this class (which is itself the {@link Flow.Subscriber}) from the container,
+     * invokes {@link #print()} on it, and {@linkplain CompletableFuture#join() joins} the
+     * returned future so the JVM does not exit before the publisher has emitted (or terminated).
      */
     static void main() {
-        try (var container = SeContainerInitializer.newInstance().initialize()) {
-            final var instance = CDI.current().select(HelloWorldMain.class).get();
-            final var string = HelloWorldUtils.string(instance.service);
-            IO.println(string);
+        try (var _ = SeContainerInitializer.newInstance().initialize()) {
+            CDI.current().select(HelloWorldMain.class).get()
+                    .print()
+                    .join();
         }
     }
 
@@ -66,16 +71,63 @@ class HelloWorldMain {
      * Suppresses external instantiation; the CDI container constructs instances of this class
      * reflectively through this private constructor.
      */
-    private HelloWorldMain() {
+    @Inject
+    private HelloWorldMain(final HelloWorld service) {
         super();
+        this.service = Objects.requireNonNull(service, "service is null");
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * A {@link HelloWorld} qualified with {@link HelloWorldQualifier}, injected by CDI.
+     * Subscribes {@code this} to a {@link HelloWorldArrayPublisher} backed by the injected
+     * {@link HelloWorld} and returns a {@link CompletableFuture} that the subscriber's terminal
+     * callbacks complete: {@link #onNext(byte[])} completes it after the first emitted byte
+     * array has been printed, while {@link #onComplete()} / {@link #onError(Throwable)} complete
+     * it on upstream termination.
+     *
+     * @return a {@link CompletableFuture} the caller should
+     * {@linkplain CompletableFuture#join() join} so the JVM does not exit before the publisher
+     * emits.
      */
-    @HelloWorldQualifier
-    @jakarta.inject.Inject
-    private HelloWorld service;
+    CompletableFuture<Void> print() {
+        new HelloWorldArrayPublisher(service).subscribe(this);
+        return future;
+    }
+
+    // ----------------------------------------------------------------------------- Flow.Subscriber
+
+    @Override
+    public void onSubscribe(final Flow.Subscription subscription) {
+        this.subscription = subscription;
+        this.subscription.request(1);
+    }
+
+    @Override
+    public void onNext(final byte[] item) {
+        IO.println(new String(item, StandardCharsets.US_ASCII));
+        subscription.cancel();
+        future.complete(null);
+    }
+
+    @Override
+    public void onError(final Throwable throwable) {
+        future.completeExceptionally(throwable);
+    }
+
+    @Override
+    public void onComplete() {
+        future.complete(null);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * The {@link HelloWorld} service, injected by CDI.
+     */
+    private final HelloWorld service;
+
+    private Flow.Subscription subscription;
+
+    private final CompletableFuture<Void> future = new CompletableFuture<>();
 }

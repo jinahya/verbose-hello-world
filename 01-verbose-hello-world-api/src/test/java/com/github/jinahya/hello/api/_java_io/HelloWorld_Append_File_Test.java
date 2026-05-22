@@ -30,10 +30,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +39,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
@@ -51,8 +57,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Append_File_Test
-        extends HelloWorldTest {
+class HelloWorld_Append_File_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a
@@ -68,7 +73,6 @@ class HelloWorld_Append_File_Test
         final var service = service();
         final var file = (File) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert: <service.append(file:null)> will throw a <NullPointerException>
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> service.append(file)
@@ -92,24 +96,22 @@ class HelloWorld_Append_File_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .write(ArgumentMatchers.any(OutputStream.class));
-        final var file = Mockito.mock(File.class);
+        doAnswer(returnsFirstArg()).when(service).write(any(OutputStream.class));
+        final var file = mock(File.class);
         final MockedConstruction.MockInitializer<FileOutputStream> initializer = (m, c) -> {
             log.debug("mock: {}, context: {}", m, c);
         };
-        try (var construction = Mockito.mockConstruction(FileOutputStream.class, initializer)) {
+        try (var construction = mockConstruction(FileOutputStream.class, initializer)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file);
             // ---------------------------------------------------------------------------------then
 //            final var constructed = construction.constructed();
-//            Assertions.assertEquals(1, constructed.size());
+//            assertEquals(1, constructed.size());
 //            final var stream = constructed.getFirst();
-//            Mockito.verify(service, Mockito.times(1)).write(stream);
-//            Mockito.verify(stream, Mockito.times(1)).flush();
-//            Mockito.verify(stream, Mockito.times(1)).close();
-            Assertions.assertSame(file, result);
+//            verify(service, times(1)).write(stream);
+//            verify(stream, times(1)).flush();
+//            verify(stream, times(1)).close();
+            assertSame(file, result);
         }
     }
 
@@ -121,14 +123,14 @@ class HelloWorld_Append_File_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.append(file)> will append the <12> bytes, and will return the <file>
-        Mockito.doAnswer(i -> {
-                    var file = i.getArgument(0, File.class);
-                    try (var stream = new FileOutputStream(file, true)) {
-                        stream.write(new byte[HelloWorld.BYTES]);
-                        stream.flush();
-                    }
-                    return file;
-                })
+        doAnswer(i -> {
+            var file = i.getArgument(0, File.class);
+            try (var stream = new FileOutputStream(file, true)) {
+                stream.write(new byte[HelloWorld.BYTES]);
+                stream.flush();
+            }
+            return file;
+        })
                 .when(service)
                 .append(ArgumentMatchers.<File>argThat(File::isFile));
         // prepare: crate a temporary file, and write some bytes
@@ -146,11 +148,11 @@ class HelloWorld_Append_File_Test
         log.debug("length: {}", file.length());
         // ------------------------------------------------------------------------------------ then
         // assert: <file>'s <length> increased by <12>
-        Assertions.assertEquals(
+        assertEquals(
                 length + HelloWorld.BYTES,
                 file.length()
         );
         // assert: <result> is same as <file>
-        Assertions.assertSame(file, result);
+        assertSame(file, result);
     }
 }

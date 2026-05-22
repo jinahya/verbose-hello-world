@@ -272,3 +272,8 @@ a.out
 
 
 *.gz
+
+
+.claude
+
+_dependency_tree_*

@@ -28,7 +28,7 @@ Discovery rules in JDK 25:
 
 In place:
 
-* `com.github.jinahya.hello.api.spi.HelloWorldServiceProvider` interface defined.
+* `com.github.jinahya.hello.lib.HelloWorldServiceProvider` interface defined.
 * `01-verbose-hello-world-api/src/main/java/module-info.java` already exports the
   `spi` package.
 

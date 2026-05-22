@@ -22,19 +22,22 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.HelloWorld;
 import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.DataOutput;
 import java.io.IOException;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array12_invoked_once;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 /**
  * A class for testing {@link HelloWorld#write(DataOutput) write(output)} method.
@@ -80,15 +83,13 @@ class HelloWorld_Write_DataOutput_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .set(ArgumentMatchers.any(byte[].class));
-        final var output = Mockito.mock(DataOutput.class);
+        doAnswer(returnsFirstArg()).when(service).set(any(byte[].class));
+        final var output = mock(DataOutput.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(output);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-//        Mockito.verify(output, Mockito.times(1)).write(array);
-        Assertions.assertSame(output, result);
+        final var array = set_array12_invoked_once(service);
+//        verify(output, times(1)).write(array);
+        assertSame(output, result);
     }
 }

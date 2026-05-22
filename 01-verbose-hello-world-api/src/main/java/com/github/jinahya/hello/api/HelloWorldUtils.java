@@ -22,6 +22,9 @@ package com.github.jinahya.hello.api;
 
 import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
 
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -30,8 +33,8 @@ import java.util.function.Supplier;
 /**
  * Convenience methods that produce the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> in several common Java I/O
- * shapes — {@code byte[]}, {@link ByteBuffer}, and {@link String} — by delegating to a given
- * {@link HelloWorld} service.
+ * shapes — {@code byte[]}, {@link ByteBuffer}, {@link String}, and {@link DatagramPacket} — by
+ * delegating to the specified {@link HelloWorld} service.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -102,8 +105,79 @@ public final class HelloWorldUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Returns a new {@link String} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded as
+     * {@link StandardCharsets#US_ASCII US-ASCII}, produced by
+     * {@linkplain #array(HelloWorld) obtaining the byte array} from the specified service.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@value HelloWorld#BYTES}-character {@link String} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see #array(HelloWorld)
+     */
     public static String string(final HelloWorld service) {
         return new String(array(service), StandardCharsets.US_ASCII);
+    }
+
+    // ------------------------------------------------------------------------------------ java.net
+
+    /**
+     * Returns a new {@link DatagramPacket} of length {@value HelloWorld#BYTES} whose data buffer
+     * holds the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by
+     * {@linkplain #array(HelloWorld) obtaining the byte array} from the specified service.
+     * <p>
+     * The returned packet has no destination address; assign one before
+     * {@linkplain java.net.DatagramSocket#send(DatagramPacket) sending}.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@link DatagramPacket} of length {@value HelloWorld#BYTES}.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see #array(HelloWorld)
+     * @see DatagramPacket#DatagramPacket(byte[], int)
+     */
+    public static DatagramPacket packet(final HelloWorld service) {
+        return new DatagramPacket(array(service), HelloWorld.BYTES);
+    }
+
+    /**
+     * Returns a new {@link DatagramPacket} of length {@value HelloWorld#BYTES} addressed to the
+     * specified host/port whose data buffer holds the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by
+     * {@linkplain #array(HelloWorld) obtaining the byte array} from the specified service.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @param address the destination {@link InetAddress}.
+     * @param port    the destination port number.
+     * @return a new {@link DatagramPacket} of length {@value HelloWorld#BYTES} addressed to
+     * {@code address}:{@code port}.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see #array(HelloWorld)
+     * @see DatagramPacket#DatagramPacket(byte[], int, InetAddress, int)
+     */
+    public static DatagramPacket packet(final HelloWorld service, final InetAddress address,
+                                        final int port) {
+        return new DatagramPacket(array(service), HelloWorld.BYTES, address, port);
+    }
+
+    /**
+     * Returns a new {@link DatagramPacket} of length {@value HelloWorld#BYTES} addressed to the
+     * specified socket address whose data buffer holds the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by
+     * {@linkplain #array(HelloWorld) obtaining the byte array} from the specified service.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @param address the destination {@link InetSocketAddress}.
+     * @return a new {@link DatagramPacket} of length {@value HelloWorld#BYTES} addressed to
+     * {@code address}.
+     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see #array(HelloWorld)
+     * @see DatagramPacket#DatagramPacket(byte[], int, java.net.SocketAddress)
+     */
+    public static DatagramPacket packet(final HelloWorld service, final InetSocketAddress address) {
+        return new DatagramPacket(array(service), HelloWorld.BYTES, address);
     }
 
     // ---------------------------------------------------------------------------------------------

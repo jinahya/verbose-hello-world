@@ -1,0 +1,352 @@
+= AOP 도입 검토
+
+이 프로젝트에 AOP(Aspect-Oriented Programming, 관점 지향 프로그래밍)를 도입할 만한 자리는 충분하다.
+이미 갖춰진 구조에 자연스럽게 맞물리는 정도 순으로 세 가지 접근을 정리한다.
+
+== `@HelloWorld_Logging` 이 무엇인가
+
+본문에서 반복해 등장하는 `@HelloWorld_Logging` 은 표준 어노테이션이 아니라 *이 프로젝트가 직접 정의해 사용할 예제용 마커* 이다.
+이름과 의미는 임의로 택했고, 구체적으로는 다음과 같은 횡단 관심사를 표현한다.
+
+* 부착된 메서드가 호출될 때마다 호출 인자(예: `byte[] array`, `int index`)와 반환값을 로그로 남긴다.
+* HelloWorld 의 I/O 경로(`set(byte[], int)`, `set(byte[])`, `append(Appendable)`, `write(OutputStream)`, ...) 처럼 *값이 흘러가는 지점* 을 시각화하기 위한 도구이다.
+
+다시 말해 `@HelloWorld_Logging` 자체는 "어떤 동작을 할지" 를 직접 정의하지 않는다.
+프레임워크마다 그 동작을 다른 방식(인터셉터, 어드바이스, 메서드 인터셉터, 애스펙트 등) 으로 결합해 붙이게 된다.
+바로 그 *다른 결합 방식들* 을 보여주는 것이 이 문서의 목적이다.
+
+== 1. CDI 인터셉터 (가장 자연스러운 자리, 침습 최소)
+
+책은 이미 CDI 를 다루고 있다. `jakarta.enterprise.inject.spi.Interceptor` 와 `@InterceptorBinding` 은 CDI 4.x 명세의 일부이며, 현재 시연 중인 컨테이너(Weld, OpenWebBeans)가 그대로 제공한다.
+
+`@HelloWorld_Logging` 같은 인터셉터 바인딩을 정의해 `HelloWorld#set(byte[], int)` 호출(혹은 `HelloWorldCdi_Producer` 의 프로듀서 메서드)에 부착하면, 기존 `cdi-se-weld`, `cdi-se-weld-junit5`, `cdi-se-openwebbeans`, `cdi-se-openwebbeans-junit5` 프로파일이 *새 의존성 없이* 그대로 동작한다.
+
+"AOP 라이브러리 없이 표현하는 AOP" 라는 각도이며, 표준 명세만으로 횡단 관심사(cross-cutting concern)를 드러낸다.
+같은 프로듀서 코드가 갑자기 로그를 남기게 되는 흐름이라 한 챕터로 깔끔하게 풀린다.
+
+=== 샘플 코드 (총 세 조각)
+
+==== 1) `@HelloWorld_Logging` 인터셉터 바인딩
+
+`@InterceptorBinding` 메타 어노테이션을 단 사용자 정의 어노테이션.
+런타임 보존 정책이어야 컨테이너가 발견할 수 있다.
+
+.`HelloWorld_Logging`
+[%unbreakable]
+[source,java]
+----
+package com.github.jinahya.hello.lib;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Documented
+@jakarta.interceptor.InterceptorBinding
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+@interface HelloWorld_Logging {
+
+}
+----
+
+==== 2) `HelloWorld_LoggingInterceptor` 구현
+
+`@AroundInvoke` 메서드가 메서드 진입과 반환 양쪽을 가로챈다.
+`InvocationContext#proceed()` 호출이 실제 대상 메서드 실행이다.
+
+진입·반환 로그(`-> name(args)`, `<- name = result`)는 항상 남기고, 그 위에 CDI 의 두 가지 특수 케이스를 한 줄씩 더 찍는다.
+
+* 대상 메서드에 `@Produces` 가 붙어 있으면 `producing [<result>]` 로그를 추가한다.
+  인자 중 `InjectionPoint` 가 있으면 `producing [<result>]\tfor [<injection-point-name>]` 형태로 주입 대상까지 함께 적는다.
+* 어느 한 인자에 `@Disposes` 가 붙어 있으면 그 인자 값을 대상으로 `disposing [<bean>]` 로그를 추가한다.
+
+두 검사 모두 정적 헬퍼(`firstInjectionPoint`, `firstDisposed`)로 떼어 두어, 본 `intercept` 메서드는 "기본 로그 → 두 가지 케이스 조건 확인" 의 순서만 그대로 읽힌다.
+
+.`HelloWorld_LoggingInterceptor`
+[%unbreakable]
+[source,java]
+----
+package com.github.jinahya.hello.lib;
+
+import jakarta.annotation.Priority;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
+import jakarta.interceptor.InvocationContext;
+import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+@HelloWorld_Logging
+@Interceptor
+@Priority(Interceptor.Priority.APPLICATION)
+@Slf4j
+class HelloWorld_LoggingInterceptor {
+
+    @AroundInvoke
+    Object intercept(final InvocationContext context) throws Exception {
+        final var method = context.getMethod();
+        final var args = context.getParameters();
+        log.debug("  -> {}({})", method.getName(), Arrays.deepToString(args));
+        try {
+            final var result = context.proceed();
+            log.debug("  <- {} = {}", method.getName(), result);
+            if (method.isAnnotationPresent(jakarta.enterprise.inject.Produces.class)) {
+                final var ip = firstInjectionPoint(args);
+                if (ip != null) {
+                    log.debug("producing [{}]\tfor [{}]", result, ip.getMember().getName());
+                } else {
+                    log.debug("producing [{}]", result);
+                }
+            }
+            final var disposed = firstDisposed(method, args);
+            if (disposed != null) {
+                log.debug("disposing [{}]", disposed);
+            }
+            return result;
+        } catch (final Throwable t) {
+            log.debug("  <- {} threw", method.getName(), t);
+            throw t;
+        }
+    }
+
+    private static jakarta.enterprise.inject.spi.InjectionPoint firstInjectionPoint(
+            final Object[] args) {
+        for (final var arg : args) {
+            if (arg instanceof jakarta.enterprise.inject.spi.InjectionPoint ip) {
+                return ip;
+            }
+        }
+        return null;
+    }
+
+    private static Object firstDisposed(final Method method, final Object[] args) {
+        final var perParam = method.getParameterAnnotations();
+        for (int i = 0; i < perParam.length; i++) {
+            for (final var a : perParam[i]) {
+                if (a.annotationType() == jakarta.enterprise.inject.Disposes.class) {
+                    return args[i];
+                }
+            }
+        }
+        return null;
+    }
+}
+----
+
+==== 3) 대상에 부착
+
+CDI 인터셉터 바인딩은 메서드에도, 타입에도 붙일 수 있다.
+`HelloWorldCdi_Producer` 의 모든 메서드가 프로듀서 또는 디스포저이므로, *클래스 선언 한 줄* 에 `@HelloWorld_Logging` 을 달면 8 개 메서드(`produceNamedDemo`, `produceNamedImpl`, `produceQualifiedDemo`, `produceQualifiedImpl`, `disposeNamedDemo`, `disposeNamedImpl`, `disposeQualifiedDemo`, `disposeQualifiedImpl`)가 한꺼번에 인터셉트된다.
+이후 새로 추가되는 프로듀서·디스포저도 자동으로 결합되므로 부착을 빠뜨릴 위험이 없다.
+
+.`HelloWorldCdi_Producer` (발췌)
+[%unbreakable]
+[source,java]
+----
+@HelloWorld_Logging
+@Slf4j
+class HelloWorldCdi_Producer {
+
+    @jakarta.inject.Named(HelloWorldDi_Constants._NAME_DEMO)
+    @jakarta.enterprise.inject.Produces
+    HelloWorld produceNamedDemo(final jakarta.enterprise.inject.spi.InjectionPoint injectionPoint) {
+        return new HelloWorldDemo();
+    }
+
+    void disposeNamedDemo(
+            @jakarta.inject.Named(HelloWorldDi_Constants._NAME_DEMO)
+            @jakarta.enterprise.inject.Disposes final HelloWorld bean) {
+        Assertions.assertInstanceOf(HelloWorldDemo.class, bean);
+    }
+
+    // (나머지 _NAME_IMPL / @HelloWorld_Qualified_Demo / @HelloWorld_Qualified_Impl 쌍 생략)
+}
+----
+
+타입 레벨 바인딩은 그 빈의 모든 *비-`private`, 비-`static`* 메서드에 적용된다(`HelloWorldCdi_Producer` 의 메서드는 모두 패키지-프라이빗이라 그대로 잡힌다).
+일부 메서드만 선별적으로 가로채야 한다면 메서드 레벨로 달면 되지만, 이 예제처럼 *모든* 메서드가 대상이라면 타입 레벨이 더 깔끔하다.
+
+마지막 한 가지 - 인터셉터가 *발견* 되도록 `META-INF/beans.xml` 또는 `@Priority` 둘 중 하나가 필요하다.
+이 예제는 `@Priority(APPLICATION)` 을 달았으므로 별도의 `beans.xml` 항목 없이도 활성화된다.
+
+== 2. DI 프로파일별 네이티브 AOP (`HelloWorldDiTest` 와 같은 병렬 시연)
+
+기존 패턴을 그대로 따른다.
+추상 부모 `HelloWorldAopTest` 를 두고, 각 프레임워크별 서브클래스가 동일한 `set(...)` 호출 위에 자신의 AOP 메커니즘을 얹어 시연한다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 프로파일 | 메커니즘 | 주요 식별자
+
+| `di-spring`
+| Spring AOP - `@Aspect` 와 `@Around`
+| `org.aspectj.lang.annotation.*` (Spring 은 AspectJ 어노테이션을 런타임 메타데이터로만 사용)
+
+| `di-guice`
+| Guice - `bindInterceptor(Matchers.any(), ..., MyMethodInterceptor)`
+| AOP Alliance `MethodInterceptor`
+
+| `di-avaje`
+| Avaje - `@io.avaje.inject.aop.Aspect` (`avaje-inject-aop` 아티팩트)
+| 컴파일 타임 위빙
+
+| `di-micronaut`
+| Micronaut - `@Around` 와 `MethodInterceptor`
+| 컴파일 타임 위빙, Avaje 와 유사
+
+| `di-dagger`
+| 해당 없음
+| Dagger 는 AOP 를 지원하지 않는다. "왜 그러한가" 자체가 좋은 각주 거리
+
+| `di-hk2`
+| HK2 - `InterceptionService`
+| 런타임 위빙
+|===
+
+이 구성이 책 입장에서 가장 큰 수확을 준다.
+*같은 횡단 관심사가 여섯 가지 DI 환경에서 어떻게 표현되는지* 를 한눈에 보여줄 수 있고, 기존 "같은 DI 테스트를 여러 프레임워크로 풀어보는" 교수법과 정확히 짝을 이룬다.
+
+=== 샘플 코드 (프레임워크별 비교)
+
+같은 `@HelloWorld_Logging` 마커를 두고, 각 프레임워크가 *서로 다른 표현* 으로 같은 동작을 결합한다는 점을 보여준다.
+
+==== Spring AOP - `@Aspect`
+
+[%unbreakable]
+[source,java]
+----
+@org.aspectj.lang.annotation.Aspect
+@org.springframework.stereotype.Component
+public class HelloWorld_LoggingAspect {
+
+    private static final System.Logger log =
+            System.getLogger(HelloWorld_LoggingAspect.class.getName());
+
+    @org.aspectj.lang.annotation.Around(
+        "@annotation(com.github.jinahya.hello.lib.HelloWorld_Logging)")
+    public Object around(final org.aspectj.lang.ProceedingJoinPoint pjp) throws Throwable {
+        log.log(System.Logger.Level.DEBUG, "  -> {0}", pjp.getSignature());
+        final var result = pjp.proceed();
+        log.log(System.Logger.Level.DEBUG, "  <- {0} = {1}", pjp.getSignature(), result);
+        return result;
+    }
+}
+----
+
+==== Guice - `MethodInterceptor`
+
+[%unbreakable]
+[source,java]
+----
+class HelloWorld_LoggingInterceptor implements org.aopalliance.intercept.MethodInterceptor {
+
+    private static final System.Logger log =
+            System.getLogger(HelloWorld_LoggingInterceptor.class.getName());
+
+    @Override
+    public Object invoke(final org.aopalliance.intercept.MethodInvocation mi) throws Throwable {
+        log.log(System.Logger.Level.DEBUG, "  -> {0}", mi.getMethod().getName());
+        final var result = mi.proceed();
+        log.log(System.Logger.Level.DEBUG, "  <- {0} = {1}", mi.getMethod().getName(), result);
+        return result;
+    }
+}
+
+// 모듈에서 결합
+@Override
+protected void configure() {
+    bindInterceptor(
+            com.google.inject.matcher.Matchers.any(),
+            com.google.inject.matcher.Matchers.annotatedWith(HelloWorld_Logging.class),
+            new HelloWorld_LoggingInterceptor());
+}
+----
+
+==== Avaje Inject - `@Aspect`
+
+[%unbreakable]
+[source,java]
+----
+@io.avaje.inject.aop.Aspect
+public class HelloWorld_LoggingMethod
+        implements io.avaje.inject.aop.AspectProvider<HelloWorld_Logging> {
+
+    private static final System.Logger log =
+            System.getLogger(HelloWorld_LoggingMethod.class.getName());
+
+    @Override
+    public io.avaje.inject.aop.MethodInterceptor interceptor(
+            final java.lang.reflect.Method method, final HelloWorld_Logging annotation) {
+        return invocation -> {
+            log.log(System.Logger.Level.DEBUG, "  -> {0}", method.getName());
+            invocation.invoke();
+            log.log(System.Logger.Level.DEBUG, "  <- {0}", method.getName());
+        };
+    }
+}
+----
+
+같은 사용자 정의 `@HelloWorld_Logging` 이 *세 프레임워크에서 세 가지 방식으로 결합* 된다.
+어노테이션은 하나, 결합 메커니즘은 여럿이라는 그림이 챕터의 핵심 메시지가 된다.
+
+== 3. 순수 AspectJ ("DI 없는 AOP" 각도)
+
+루트 pom 의 `dependencyManagement` 에는 `aspectjrt` 와 `aspectjtools` 의 버전 핀이 이미 들어 있다 (라인 296~303 부근).
+현재로서는 사용처가 없는 죽은 선언이지만, `aspectj-maven-plugin` 을 활성화하면 빌드 시점에 애스펙트를 컴파일 후 위빙해 api 혹은 lib 모듈에 박아 넣을 수 있다.
+
+`HelloWorld_Logging.aj` 같은 애스펙트가 모든 `set(...)` 호출을 가로채는 진짜 AOP 데모이다.
+컴파일 타임 바이트코드 위빙이라 DI 컨테이너가 필요 없고, 구현체를 어떻게 생성했든 (직접 `new`, `ServiceLoader`, Guice, CDI) 일관되게 위빙된다.
+
+=== 샘플 코드 - 순수 AspectJ 애스펙트
+
+[%unbreakable]
+[source,java]
+----
+@org.aspectj.lang.annotation.Aspect
+public class HelloWorld_LoggingAspect {
+
+    private static final System.Logger log =
+            System.getLogger(HelloWorld_LoggingAspect.class.getName());
+
+    @org.aspectj.lang.annotation.Pointcut(
+        "execution(* com.github.jinahya.hello.api.HelloWorld+.set(..))")
+    void anySet() {
+    }
+
+    @org.aspectj.lang.annotation.Around("anySet()")
+    public Object around(final org.aspectj.lang.ProceedingJoinPoint pjp) throws Throwable {
+        log.log(System.Logger.Level.DEBUG, "  -> {0}", pjp.getSignature());
+        final var result = pjp.proceed();
+        log.log(System.Logger.Level.DEBUG, "  <- {0} = {1}", pjp.getSignature(), result);
+        return result;
+    }
+}
+----
+
+이 경우 `@HelloWorld_Logging` 어노테이션 *부착이 필요 없다*.
+포인트컷이 타입 계층 전체(`HelloWorld+`)의 `set(..)` 호출을 직접 짚기 때문이다.
+"어노테이션 기반 결합" 대 "포인트컷 기반 결합" 의 차이를 같은 시나리오로 보여줄 수 있다는 점이 이 케이스의 교육적 가치이다.
+
+자리는 두 가지 후보가 있다.
+
+* 새로운 모듈 `04-verbose-hello-world-aspectj` 를 `02-verbose-hello-world-lib` 와 평행하게 추가
+* api 모듈에 `with-aspects` 프로파일을 두고 컴파일 타임 위빙을 토글
+
+== 권장 진행 순서
+
+CASE 1 (CDI 인터셉터) 부터 시작한다.
+새 의존성이 없고, 이미 있는 CDI 챕터 안에 그대로 포함된다.
+*AOP 라이브러리 없이도 AOP 라는 개념을 제대로 보여줄 수 있는* 가장 짧은 거리이며, 한 챕터 한 예제로 끝난다.
+
+그다음 CASE 2 (DI 프로파일별 병렬 시연) 를 후속으로 붙인다.
+"같은 횡단 관심사를 여섯 개의 언어로 표현하는" 이야기가 기존 DI 행렬과 자연스럽게 짝을 이룬다.
+
+CASE 3 (순수 AspectJ) 는 보류하길 권한다.
+AspectJ 는 가르칠 부담이 무겁다 (로드 타임 위빙 대 컴파일 타임 위빙의 구분, AspectJ 전용 문법, `iajc` 컴파일러 등).
+정작 독자가 가져가야 할 "AOP 라는 개념" 자체는 AspectJ 없이도 충분히 전달된다.
+다루고 싶다면 마지막에 두자.
+독자가 AOP 개념을 이해한 뒤에야 AspectJ 를 "DI 프레임워크의 편의 아래에 깔린 원시 메커니즘" 으로 받아들일 수 있다.
