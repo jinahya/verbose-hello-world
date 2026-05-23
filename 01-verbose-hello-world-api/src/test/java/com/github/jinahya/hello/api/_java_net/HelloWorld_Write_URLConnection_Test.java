@@ -20,26 +20,18 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.net.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#write(URLConnection) write(connection)} method.
@@ -50,8 +42,7 @@ import java.nio.charset.StandardCharsets;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_URLConnection_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_URLConnection_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#write(URLConnection) write(connection)} method throws a
@@ -67,10 +58,7 @@ class HelloWorld_Write_URLConnection_Test
         final var service = service();
         final URLConnection connection = null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(connection)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(connection));
     }
 
     /**
@@ -86,58 +74,14 @@ class HelloWorld_Write_URLConnection_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .write(ArgumentMatchers.any(OutputStream.class));
-        final var connection = Mockito.mock(URLConnection.class);
-        final var stream = Mockito.mock(OutputStream.class);
-        Mockito.when(connection.getOutputStream()).thenReturn(stream);
+        doAnswer(returnsFirstArg()).when(service).write(any(OutputStream.class));
+        final var connection = mock(URLConnection.class);
+        final var stream = mock(OutputStream.class);
+        when(connection.getOutputStream()).thenReturn(stream);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(connection);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).write(stream);
-        Assertions.assertSame(connection, result);
-    }
-
-    @畵蛇添足
-    @Test
-    void _添足_畵蛇() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var connection = i.getArgument(0, URLConnection.class);
-            connection.getOutputStream().write("hello, world".getBytes(StandardCharsets.US_ASCII));
-            return connection;
-        }).when(service).write(ArgumentMatchers.<URLConnection>notNull());
-        HelloWorldTestUtils.executeWithHttpServerStarted(p -> () -> {
-            final var uri = URI.create("http://localhost:" + p);
-            final var connection = (HttpURLConnection) uri.toURL().openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "text/plain");
-            try {
-                connection.connect();
-                // ---------------------------------------------------------------------------- when
-                service.write(connection);
-                connection.getOutputStream().flush();
-                connection.getOutputStream().close();
-                // ---------------------------------------------------------------------------- then
-                final var status = connection.getResponseCode();
-                Assertions.assertEquals(200, status);
-                System.out.printf("%s%n", connection.getHeaderField(0));
-                connection.getHeaderFields().entrySet().stream().skip(1L).forEach(
-                        e -> e.getValue().forEach(
-                                v -> System.out.printf("%s: %s%n", e.getKey(), v)
-                        )
-                );
-                try (final var is = connection.getInputStream()) {
-                    final var bytes = is.readAllBytes();
-                    System.out.printf("%n%s%n", new String(bytes, StandardCharsets.US_ASCII));
-                }
-            } finally {
-                connection.disconnect();
-            }
-        });
+        verify(service, times(1)).write(stream);
+        assertSame(connection, result);
     }
 }

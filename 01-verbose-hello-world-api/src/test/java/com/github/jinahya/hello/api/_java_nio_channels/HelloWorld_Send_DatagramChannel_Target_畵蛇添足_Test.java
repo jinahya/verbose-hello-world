@@ -20,28 +20,17 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
+import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.util.concurrent.*;
 
 @畵蛇添足
 @Slf4j

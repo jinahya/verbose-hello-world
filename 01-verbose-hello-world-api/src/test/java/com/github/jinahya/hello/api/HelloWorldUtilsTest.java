@@ -1,14 +1,10 @@
 package com.github.jinahya.hello.api;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
 
 /*-
  * #%L

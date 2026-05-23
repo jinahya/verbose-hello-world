@@ -20,13 +20,11 @@ package com.github.jinahya.hello.api._java_net_http;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.net.http.WebSocket;
+import java.net.http.*;
 
 /**
  * A class for testing

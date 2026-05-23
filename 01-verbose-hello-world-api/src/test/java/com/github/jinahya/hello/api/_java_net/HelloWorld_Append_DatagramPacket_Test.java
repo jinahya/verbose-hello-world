@@ -20,26 +20,18 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.net.DatagramPacket;
-import java.util.concurrent.ThreadLocalRandom;
+import java.net.*;
+import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#append(DatagramPacket) append(packet)} method.

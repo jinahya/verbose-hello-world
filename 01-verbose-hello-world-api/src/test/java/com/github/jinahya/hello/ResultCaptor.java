@@ -20,10 +20,9 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import lombok.*;
+import org.mockito.invocation.*;
+import org.mockito.stubbing.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class ResultCaptor<T>

@@ -20,62 +20,22 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.StandardSocketOptions;
-import java.net.URLConnection;
-import java.net.http.HttpRequest;
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.BreakIterator;
-import java.util.BitSet;
-import java.util.Objects;
-import java.util.SequencedCollection;
-import java.util.SequencedMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
-import java.util.zip.Checksum;
-import java.util.zip.Deflater;
+import javax.crypto.*;
+import java.io.*;
+import java.lang.foreign.*;
+import java.net.*;
+import java.net.http.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.security.*;
+import java.sql.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.zip.*;
 
 /**
  * An interface for writing <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -188,39 +148,6 @@ public interface HelloWorld {
 //        set(array, 0);
 //        return array;
         return null;
-    }
-
-    /**
-     * Returns an array of {@value #BYTES} bytes on which the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> are set.
-     * <p>
-     * The result array, on successful return, will be set as follows.
-     * <pre>
-     *  0                       12
-     *  ↓                       ↓
-     * |h|e|l|l|o|,| |w|o|r|l|d|
-     * </pre>
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * final var array = new byte[BYTES];
-     * set(array);
-     * return array;
-     *}
-     *
-     * @return an array of {@value #BYTES} bytes containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and returns the result.
-     */
-    @Deprecated(forRemoval = true)
-    default byte[] byteArray() {
-        return set(new byte[BYTES]);
-    }
-
-    @Deprecated(forRemoval = true)
-    default String string() {
-        return new String(byteArray(), StandardCharsets.US_ASCII);
     }
 
     /**
@@ -360,10 +287,6 @@ public interface HelloWorld {
         set(new byte[BYTES]);
 //        stream.write(array);
         return stream;
-    }
-
-    default InputStream inputStream() {
-        return new ByteArrayInputStream(byteArray());
     }
 
     /**
@@ -516,10 +439,6 @@ public interface HelloWorld {
         return file;
     }
 
-    default InputStream asInputStream() throws IOException {
-        return new ByteArrayInputStream(byteArray());
-    }
-
     // ------------------------------------------------------------------------------------ java.net
 
     /**
@@ -634,7 +553,6 @@ public interface HelloWorld {
             throw new IllegalArgumentException("not connected; " + socket);
         }
         final var target = socket.getRemoteSocketAddress();
-        assert target != null;
 //        send(socket, target);
         return socket;
     }
@@ -702,7 +620,8 @@ public interface HelloWorld {
         if (connection == null) {
             throw new NullPointerException("connection is null");
         }
-        write(connection.getOutputStream());
+        final var stream = connection.getOutputStream();
+        write(stream);
         return connection;
     }
 
@@ -737,12 +656,6 @@ public interface HelloWorld {
     }
 
     // -------------------------------------------------------------------------------- java.net.ssl
-//    @Deprecated(forRemoval = true)
-//    @屋上架屋("SSLSocket extends Socket")
-//    @SuppressWarnings({"unchecked"})
-//    default <T extends SSLSocket> T send(final T socket) throws IOException {
-//        return (T) send((Socket) socket);
-//    }
 
     // ------------------------------------------------------------------------------------ java.nio
 
@@ -822,62 +735,16 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-//            final var array = buffer.array();
-//            final var index = buffer.arrayOffset() + buffer.position();
+            final var array = buffer.array();
+            final var index = buffer.arrayOffset() + buffer.position();
 //            set(array, index);
 //            buffer.position(buffer.position() + BYTES);
         } else {
-//            final var array = new byte[BYTES];
-//            set(array);
+            final var array = new byte[BYTES];
+            set(array);
 //            buffer.put(array);
         }
         return buffer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings({"unchecked"})
-    default <T extends ByteBuffer> T byteBuffer(final Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return (T) put(Objects.requireNonNull(supplier.get(), "supplier.get() is null")).flip();
-    }
-
-    @Deprecated(forRemoval = true)
-    default ByteBuffer byteBuffer() {
-        return byteBuffer(() -> ByteBuffer.allocate(BYTES));
-    }
-
-    /**
-     * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>, whose {@code position}, {@code limit} is
-     * equal to the {@code capacity}.
-     * <p>
-     * The result buffer's state, on successful return, is as follows.
-     * <pre>
-     *  0                       12
-     *                          position = limit = capacity
-     *  ↓                       ↓
-     * |h|e|l|l|o|,| |w|o|r|l|d|
-     *                         |
-     *                         remaining(0)
-     * </pre>
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * var buffer = ByteBuffer.allocate(BYTES);
-     * put(buffer);
-     * return buffer;
-     *}
-     *
-     * @return a byte buffer ready to be drained.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} with a byte buffer of
-     * {@value #BYTES}, and returns the byte buffer.
-     * @apiNote The returned buffer has no remaining. Callers should {@link ByteBuffer#flip() flip}
-     * the buffer before reading from it.
-     * @see #put(ByteBuffer)
-     * @see ByteBuffer#flip()
-     */
-    default ByteBuffer put() {
-        return ByteBuffer.wrap(byteArray());
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
@@ -913,8 +780,8 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-//        final var buffer = ByteBuffer.allocate(BYTES);
-//        put(buffer);
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
 //        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            channel.write(buffer);

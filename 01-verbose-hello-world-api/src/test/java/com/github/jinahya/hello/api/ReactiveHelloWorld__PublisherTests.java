@@ -20,8 +20,8 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Subscriber;
+import lombok.extern.slf4j.*;
+import org.reactivestreams.*;
 
 @Slf4j
 final class ReactiveHelloWorld__PublisherTests {

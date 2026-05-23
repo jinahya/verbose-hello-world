@@ -20,20 +20,19 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
-import org.reactivestreams.Publisher;
+import lombok.*;
+import lombok.experimental.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.reactivestreams.*;
 
-import java.util.function.Function;
+import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingPublisher;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
-import static java.util.Objects.requireNonNull;
-import static org.mockito.Mockito.mock;
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static java.util.Objects.*;
+import static org.mockito.Mockito.*;
 
 /**
  * An abstract base for tests that verify subscription-level behaviour of the three concrete

@@ -20,22 +20,15 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.*;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.WebSocket;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
-import java.nio.file.Path;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
-import java.util.function.Function;
+import java.net.http.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * An interface for writing the

@@ -20,21 +20,13 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * A class for testing {@link HelloWorld#write(BufferedWriter) write(writer)} method.

@@ -20,14 +20,10 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import org.junit.jupiter.api.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class AsynchronousHelloWorld_ApplyAsync_Mapper__Test

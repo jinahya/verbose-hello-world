@@ -20,12 +20,12 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.params.provider.Arguments;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.nio.ByteOrder;
-import java.util.stream.Stream;
+import java.nio.*;
+import java.util.stream.*;
 
 @Slf4j
 @SuppressWarnings({"java:S101"})

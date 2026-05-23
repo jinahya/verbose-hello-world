@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

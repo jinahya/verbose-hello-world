@@ -20,25 +20,18 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import akka.actor.ActorSystem;
-import akka.stream.javadsl.Sink;
-import akka.stream.javadsl.Source;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import akka.actor.*;
+import akka.stream.javadsl.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static com.github.jinahya.hello.api.HelloWorldUtils.array;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorldUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A pedagogical tour of <a href="https://doc.akka.io/docs/akka/current/stream/">Akka Streams</a>'s

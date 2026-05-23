@@ -20,15 +20,12 @@ package com.github.jinahya.hello.api._java_util;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
+import java.util.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

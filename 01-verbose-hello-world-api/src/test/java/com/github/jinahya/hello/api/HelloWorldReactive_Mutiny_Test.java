@@ -20,18 +20,13 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import io.smallrye.mutiny.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.time.Duration;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 /**
  * A pedagogical tour of <a href="https://smallrye.io/smallrye-mutiny/">SmallRye Mutiny</a>'s own

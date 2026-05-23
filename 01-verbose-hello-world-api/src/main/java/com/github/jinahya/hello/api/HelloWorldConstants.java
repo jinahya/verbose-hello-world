@@ -20,14 +20,14 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
 
 /**
  * (Internal) Constants for the {@link HelloWorld}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Deprecated(forRemoval = true)
 final class HelloWorldConstants {
 
     static final String HELLO_WORLD_STRING = "hello, world";

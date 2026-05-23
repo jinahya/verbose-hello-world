@@ -20,11 +20,10 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mockito;
+import lombok.*;
+import lombok.experimental.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
 /**
  * An abstract class for testing {@link AsynchronousHelloWorld} interface.

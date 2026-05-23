@@ -20,10 +20,10 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.IOException;
-import java.net.SocketOption;
-import java.nio.channels.NetworkChannel;
-import java.util.Objects;
+import java.io.*;
+import java.net.*;
+import java.nio.channels.*;
+import java.util.*;
 
 /**
  * Utilities for {@link NetworkChannel} interface.

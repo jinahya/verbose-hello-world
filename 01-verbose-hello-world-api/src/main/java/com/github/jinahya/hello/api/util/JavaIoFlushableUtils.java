@@ -20,8 +20,8 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.Flushable;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
 
 /**
  * Utilities for {@link java.io.Flushable} interface.

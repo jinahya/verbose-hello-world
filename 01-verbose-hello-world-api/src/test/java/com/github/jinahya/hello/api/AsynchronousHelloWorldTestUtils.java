@@ -20,13 +20,11 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
+import org.mockito.*;
+import org.mockito.stubbing.*;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * Utilities for testing {@link AsynchronousHelloWorld}.

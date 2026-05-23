@@ -20,24 +20,15 @@ package com.github.jinahya.hello.api._java_nio_file;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
+import java.io.*;
+import java.nio.channels.*;
+import java.nio.file.*;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.

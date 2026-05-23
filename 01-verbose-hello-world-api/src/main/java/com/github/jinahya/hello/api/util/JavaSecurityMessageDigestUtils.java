@@ -20,10 +20,10 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

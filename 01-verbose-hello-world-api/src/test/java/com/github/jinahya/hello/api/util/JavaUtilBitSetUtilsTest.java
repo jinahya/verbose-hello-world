@@ -20,11 +20,11 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.BitSet;
+import java.nio.charset.*;
+import java.util.*;
 
 @Slf4j
 class JavaUtilBitSetUtilsTest {

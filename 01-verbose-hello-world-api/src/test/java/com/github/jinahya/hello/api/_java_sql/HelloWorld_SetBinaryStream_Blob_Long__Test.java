@@ -20,24 +20,14 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.sql.Blob;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.io.*;
+import java.sql.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

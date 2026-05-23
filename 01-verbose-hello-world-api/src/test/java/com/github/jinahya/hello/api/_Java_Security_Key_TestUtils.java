@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.*;
 
 @Slf4j
 @SuppressWarnings({"java:S101"})

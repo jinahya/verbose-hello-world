@@ -20,10 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.*;
 
 /**
  * A roof underneath a roof.

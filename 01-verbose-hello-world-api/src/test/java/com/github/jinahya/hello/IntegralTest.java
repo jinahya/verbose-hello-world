@@ -20,10 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import org.junit.jupiter.api.*;
 
 class IntegralTest {
 

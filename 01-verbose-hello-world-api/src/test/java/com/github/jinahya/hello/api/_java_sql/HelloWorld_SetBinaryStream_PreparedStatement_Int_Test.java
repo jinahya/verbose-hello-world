@@ -20,21 +20,14 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.sql.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing

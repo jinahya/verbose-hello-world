@@ -20,10 +20,10 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.*;
 
-import java.security.Key;
-import java.util.Base64;
+import java.security.*;
+import java.util.*;
 
 @Slf4j
 class _Java_Security_Key_Test {

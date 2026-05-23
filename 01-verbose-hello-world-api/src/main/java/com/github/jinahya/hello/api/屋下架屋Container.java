@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.lang.annotation.Documented;
+import java.lang.annotation.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

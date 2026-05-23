@@ -20,24 +20,19 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.reactivestreams.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
+import java.time.*;
+import java.util.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.awaitility.Awaitility.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link ReactiveHelloWorldStringProcessor} with multiple downstream

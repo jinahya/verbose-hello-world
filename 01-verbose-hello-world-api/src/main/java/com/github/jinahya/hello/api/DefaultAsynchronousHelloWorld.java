@@ -20,11 +20,9 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
-import java.util.function.Function;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * A default implementation of {@link AsynchronousHelloWorld} interface.

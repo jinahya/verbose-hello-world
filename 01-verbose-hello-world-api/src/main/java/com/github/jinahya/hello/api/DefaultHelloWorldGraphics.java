@@ -21,9 +21,8 @@ package com.github.jinahya.hello.api;
  */
 
 import java.awt.*;
-import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
-import java.util.Objects;
+import java.lang.invoke.*;
+import java.util.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

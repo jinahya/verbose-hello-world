@@ -20,9 +20,8 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.PrintStream;
-import java.util.BitSet;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
 
 /**
  * Utilities for the {@link java.util.BitSet BitSet}.

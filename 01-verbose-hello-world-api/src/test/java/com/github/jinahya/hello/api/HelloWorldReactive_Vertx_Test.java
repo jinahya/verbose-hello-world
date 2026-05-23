@@ -20,17 +20,13 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import io.vertx.core.*;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * A pedagogical tour of <a href="https://vertx.io/docs/">Vert.x</a>'s own publisher-creation idioms

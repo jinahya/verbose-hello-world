@@ -20,16 +20,13 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import lombok.*;
+import lombok.experimental.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.extension.*;
+import org.mockito.*;
+import org.mockito.junit.jupiter.*;
+import org.mockito.quality.*;
 
 /**
  * An abstract class for testing methods defined in {@link HelloWorld} interface.

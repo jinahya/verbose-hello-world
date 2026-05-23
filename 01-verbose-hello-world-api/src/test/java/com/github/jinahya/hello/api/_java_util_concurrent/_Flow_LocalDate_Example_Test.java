@@ -20,25 +20,18 @@ package com.github.jinahya.hello.api._java_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AwaitilityTestUtils;
-import com.github.jinahya.hello.api.util.JavaLangObjectUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.util.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.concurrent.locks.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

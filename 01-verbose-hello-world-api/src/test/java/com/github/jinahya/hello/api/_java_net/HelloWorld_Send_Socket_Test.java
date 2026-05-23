@@ -20,21 +20,23 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * A class for testing {@link HelloWorld#send(Socket) send(socket)} method.
@@ -45,8 +47,7 @@ import java.net.Socket;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_Socket_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_Socket_Test extends HelloWorldTest {
 
     /**
      * Verifies that the {@link HelloWorld#send(Socket) send(socket)} method throws a
@@ -62,10 +63,7 @@ class HelloWorld_Send_Socket_Test
         final var service = service();
         final var socket = (Socket) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(socket)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(socket));
     }
 
     /**
@@ -80,16 +78,14 @@ class HelloWorld_Send_Socket_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .write(ArgumentMatchers.any(OutputStream.class));
-        final var socket = Mockito.mock(Socket.class);                 // <1>
-        final var stream = Mockito.mock(OutputStream.class);           // <2>
-        Mockito.when(socket.getOutputStream()).thenReturn(stream);     // <3>
+        doAnswer(returnsFirstArg()).when(service).write(any(OutputStream.class));
+        final var socket = mock(Socket.class);
+        final var stream = mock(OutputStream.class);
+        when(socket.getOutputStream()).thenReturn(stream);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1)).write(stream);
-        Assertions.assertSame(socket, result);
+//        verify(service, times(1)).write(stream);
+        assertSame(socket, result);
     }
 }

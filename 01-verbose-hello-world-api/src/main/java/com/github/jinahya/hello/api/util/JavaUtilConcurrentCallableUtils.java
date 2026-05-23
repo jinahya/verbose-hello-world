@@ -20,11 +20,10 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

@@ -20,11 +20,10 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.io.*;
+import java.lang.invoke.*;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Utilities for {@link java.io.Closeable} interface.

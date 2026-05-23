@@ -20,15 +20,13 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.ECGenParameterSpec;
+import java.security.*;
+import java.security.spec.*;
 
 @Slf4j
 class _Java_Security_KeyPairGenerator_Test {

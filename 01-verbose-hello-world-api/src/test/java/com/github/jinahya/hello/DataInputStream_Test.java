@@ -20,17 +20,15 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
+import org.mockito.junit.jupiter.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.lang.classfile.ClassFile;
-import java.nio.file.Files;
-import java.util.spi.ToolProvider;
+import java.io.*;
+import java.lang.classfile.*;
+import java.nio.file.*;
+import java.util.spi.*;
 
 @ExtendWith({MockitoExtension.class})
 @Slf4j

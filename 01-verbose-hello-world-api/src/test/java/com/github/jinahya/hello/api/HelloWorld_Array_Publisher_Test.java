@@ -20,30 +20,21 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.awaitility.Awaitility.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentCaptor.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Subscription-level tests for {@link HelloWorldArrayPublisher} against the

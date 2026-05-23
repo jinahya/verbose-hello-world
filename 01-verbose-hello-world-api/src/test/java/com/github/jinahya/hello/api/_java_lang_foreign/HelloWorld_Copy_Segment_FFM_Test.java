@@ -20,27 +20,14 @@ package com.github.jinahya.hello.api._java_lang_foreign;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
+import org.mockito.*;
 
-import java.lang.foreign.Arena;
-import java.lang.foreign.FunctionDescriptor;
-import java.lang.foreign.Linker;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.SymbolLookup;
-import java.lang.foreign.ValueLayout;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
+import java.lang.foreign.*;
+import java.nio.charset.*;
+import java.util.*;
 
 /**
  * Tests {@link HelloWorld#copy(MemorySegment)} with various native libraries via FFM API. Tests are

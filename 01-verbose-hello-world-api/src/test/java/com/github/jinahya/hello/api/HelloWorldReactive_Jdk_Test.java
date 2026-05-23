@@ -20,22 +20,14 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.ReactiveStreamTests.LoggingSubmissionPublisher;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.github.jinahya.hello.api.ReactiveStreamTests.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * A pedagogical tour of the JDK's built-in {@link SubmissionPublisher SubmissionPublisher&lt;T&gt;}

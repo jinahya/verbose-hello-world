@@ -20,32 +20,20 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
 
-@畵蛇添足
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_Socket_畵蛇添足_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_Socket__Test extends HelloWorldTest {
 
     @TempDir
     private static File tempDir;
@@ -61,24 +49,23 @@ class HelloWorld_Send_Socket_畵蛇添足_Test
     class SocketTest {
 
         @Test
-        void ___() throws IOException, InterruptedException {
-            final var service = service();
+        void ___() throws IOException {
             try (var server = new ServerSocket()) {
                 server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                final var thread = Thread.ofPlatform().daemon().start(() -> {
+                Thread.ofPlatform().daemon().start(() -> {
                     try (var client = server.accept()) {
                         final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
-                        log.debug("received: {}", new String(bytes, StandardCharsets.US_ASCII));
+                        final var string = new String(bytes, StandardCharsets.US_ASCII);
+                        log.debug("'{}' received from {}", string, client.getRemoteSocketAddress());
                     } catch (final IOException ioe) {
-                        throw new RuntimeException("failed to accept/read", ioe);
+                        throw new UncheckedIOException(ioe);
                     }
                 });
                 try (var client = new Socket()) {
                     client.connect(server.getLocalSocketAddress());
-                    service.send(client);
+                    service().send(client);
                     client.getOutputStream().flush();
                 }
-                thread.join();
             }
         }
     }

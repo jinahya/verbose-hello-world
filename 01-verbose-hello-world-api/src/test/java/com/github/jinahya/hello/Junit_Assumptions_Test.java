@@ -20,14 +20,12 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
-import org.opentest4j.TestAbortedException;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.opentest4j.*;
 
-import java.time.LocalTime;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.*;
+import java.util.concurrent.*;
 
 @Slf4j
 class Junit_Assumptions_Test {

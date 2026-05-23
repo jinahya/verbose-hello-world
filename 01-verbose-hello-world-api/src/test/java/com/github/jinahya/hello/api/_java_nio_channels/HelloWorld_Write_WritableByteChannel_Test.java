@@ -20,30 +20,21 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#write(WritableByteChannel) write(channel)} method.
@@ -54,8 +45,7 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_WritableByteChannel_Test
-        extends HelloWorldTest {
+class HelloWorld_Write_WritableByteChannel_Test extends HelloWorldTest {
 
     /**
      * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
@@ -71,11 +61,7 @@ class HelloWorld_Write_WritableByteChannel_Test
         final var service = service();
         final var channel = (WritableByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        // assert: <service.write(channel)> throws a <NullPointerException>
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(channel)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(channel));
     }
 
     /**
@@ -155,74 +141,29 @@ class HelloWorld_Write_WritableByteChannel_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-//        final var srcRef = new AtomicReference<byte[]>();
-        Mockito.doAnswer(i -> {
-            final var src = new byte[HelloWorld.BYTES];
-            ThreadLocalRandom.current().nextBytes(src);
-//            srcRef.set(src);
-            return i.getArgument(0, ByteBuffer.class).put(src);
-        }).when(service).put(ArgumentMatchers.argThat(v -> {
-            return v != null
-                   && v.capacity() == HelloWorld.BYTES
-                   && v.remaining() == HelloWorld.BYTES;
-        }));
-        final var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-        final var channel = Mockito.spy(Channels.newChannel(baos));
-        Mockito.doAnswer(i -> {
+        final var service = put_buffer_will_put_12_random_bytes(service());
+        final var channel = mock(WritableByteChannel.class);
+        final var positions = new ArrayList<Integer>();
+        doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var bytes = new byte[ThreadLocalRandom.current().nextInt(1, src.remaining() + 1)];
-            src.get(bytes);
-            baos.write(bytes);
-            return bytes.length;
-        }).when(channel).write(ArgumentMatchers.argThat(v -> {
-            return v != null && v.remaining() > 0;
-        }));
+            assert src.hasRemaining();
+            assert src.limit() == HelloWorld.BYTES;
+            final var pos = src.position();
+            positions.add(pos);
+            final var ext = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+            src.position(pos + ext);
+            return ext;
+        }).when(channel).write(notNull());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-//        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-//        Assertions.assertArrayEquals(buffer.array(), baos.toByteArray());
-        Assertions.assertSame(channel, result);
-    }
-
-    @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    @畵蛇添足
-    @Test
-    void _添足_畵蛇() throws IOException, InterruptedException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var channel = i.getArgument(0, WritableByteChannel.class);
-            for (var b = ByteBuffer.wrap("hello, world".getBytes(StandardCharsets.US_ASCII));
-                 b.hasRemaining(); ) {
-                channel.write(b);
-            }
-            return channel;
-        }).when(service).write(ArgumentMatchers.<WritableByteChannel>notNull());
-        final var pipe = Pipe.open();
-        try (var sink = pipe.sink(); var source = pipe.source()) {
-//            if (ThreadLocalRandom.current().nextBoolean()) {
-//                sink.configureBlocking(false);
-//            }
-//            if (ThreadLocalRandom.current().nextBoolean()) {
-//                source.configureBlocking(false);
-//            }
-            // -------------------------------------------------------------------------------- when
-            final var thread = Thread.ofPlatform().start(() -> {
-                try {
-                    service.write(sink);
-                } catch (final IOException ioe) {
-                    throw new RuntimeException(ioe);
-                }
-            });
-            // -------------------------------------------------------------------------------- then
-            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-            while (buffer.hasRemaining()) {
-                source.read(buffer);
-            }
-            log.debug("read: {}", StandardCharsets.US_ASCII.decode(buffer.flip()));
-            thread.join();
-        }
+        final var buffer = put_buffer12_invoked_once(service);
+//        verify(channel, atLeast(1)).write(buffer);
+//        assertEquals(0, positions.getFirst());
+//        for (var i = 1; i < positions.size(); i++) {
+//            assertTrue(positions.get(i) > positions.get(i - 1));
+//        }
+//        assertFalse(buffer.hasRemaining());
+        assertSame(channel, result);
     }
 }

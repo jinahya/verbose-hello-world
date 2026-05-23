@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

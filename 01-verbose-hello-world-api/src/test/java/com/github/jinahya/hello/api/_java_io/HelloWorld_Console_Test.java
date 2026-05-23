@@ -20,19 +20,12 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.Console;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

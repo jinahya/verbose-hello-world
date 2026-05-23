@@ -20,30 +20,19 @@ package com.github.jinahya.hello.api._java_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AwaitilityTestUtils;
-import com.github.jinahya.hello.api.util.JavaLangObjectUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.util.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.awaitility.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.IntStream;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.stream.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

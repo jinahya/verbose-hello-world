@@ -20,10 +20,7 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

@@ -20,17 +20,12 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.LocalDate;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.*;
+import java.util.concurrent.*;
 
 @Slf4j
 class BDDMockito_Test {

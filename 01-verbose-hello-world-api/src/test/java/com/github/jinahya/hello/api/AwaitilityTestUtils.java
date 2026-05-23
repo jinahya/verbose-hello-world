@@ -20,14 +20,13 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
-import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Assertions;
+import com.github.jinahya.hello.api.util.*;
+import lombok.extern.slf4j.*;
+import org.awaitility.*;
+import org.junit.jupiter.api.*;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
+import java.time.*;
+import java.time.temporal.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

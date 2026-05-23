@@ -20,15 +20,13 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
+import com.github.jinahya.hello.api.util.*;
 
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.function.Supplier;
+import java.net.*;
+import java.nio.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Convenience methods that produce the

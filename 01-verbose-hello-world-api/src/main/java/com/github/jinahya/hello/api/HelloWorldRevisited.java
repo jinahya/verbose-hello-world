@@ -20,42 +20,20 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.Writer;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.http.HttpRequest;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.util.BitSet;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
-import java.util.zip.Checksum;
-import java.util.zip.Deflater;
+import javax.crypto.*;
+import java.io.*;
+import java.lang.foreign.*;
+import java.net.*;
+import java.net.http.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.zip.*;
 
 /**
  * Just a revisited implementation.
@@ -85,8 +63,7 @@ interface HelloWorldRevisited
         return set(array, 0);
     }
 
-    @Override
-    default byte[] byteArray() {
+    private byte[] byteArray() {
         return set(new byte[BYTES]);
     }
 
@@ -216,9 +193,8 @@ interface HelloWorldRevisited
         return buffer;
     }
 
-    @Override
-    default ByteBuffer byteBuffer() {
-        return put(ByteBuffer.allocate(BYTES));
+    private ByteBuffer byteBuffer() {
+        return ByteBuffer.wrap(byteArray());
     }
 
     // --------------------------------------------------------------------------- java.nio.channels

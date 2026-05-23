@@ -20,10 +20,8 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import org.junit.jupiter.api.*;
 
 // Raw Bit Field	Official IEEE 754 Name	Common "Math" Name
 // Sign	Sign	Sign
