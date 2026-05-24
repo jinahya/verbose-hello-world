@@ -45,11 +45,9 @@ import java.util.stream.*;
 
 import static java.util.Objects.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A collection of test-side helpers shared across the {@link HelloWorld} service test classes.
@@ -238,7 +236,7 @@ public final class HelloWorldTestUtils {
      */
     public static <T extends HelloWorld> T set_array_returns_the_array(final T service) {
         requireMock(service);
-        doAnswer(AdditionalAnswers.returnsFirstArg())
+        doAnswer(returnsFirstArg())
                 .when(service)
                 .set(ArgumentMatchers.<byte[]>argThat(
                         v -> v != null && v.length >= HelloWorld.BYTES
@@ -264,7 +262,7 @@ public final class HelloWorldTestUtils {
             final var array = i.getArgument(0, byte[].class);
             ThreadLocalRandom.current().nextBytes(array);
             return array;
-        }).when(service).set(ArgumentMatchers.any(byte[].class));
+        }).when(service).set(any(byte[].class));
         return service;
     }
 
@@ -285,7 +283,7 @@ public final class HelloWorldTestUtils {
             final var array = i.getArgument(0, byte[].class);
             System.arraycopy(hello_world_byte_array(), 0, array, 0, HelloWorld.BYTES);
             return array;
-        }).when(service).set(ArgumentMatchers.any(byte[].class));
+        }).when(service).set(any(byte[].class));
         return service;
     }
 
@@ -674,6 +672,12 @@ public final class HelloWorldTestUtils {
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
+    public static <T extends HelloWorld>
+    T write_writablebytechannel_returns_channel(final T service) throws IOException {
+        requireMock(service);
+        doAnswer(returnsFirstArg()).when(service).<WritableByteChannel>write(any());
+        return service;
+    }
 
     /**
      * Stubs the specified {@link HelloWorld#write(WritableByteChannel)} method to write actual
@@ -690,14 +694,11 @@ public final class HelloWorldTestUtils {
         requireMock(service);
         doAnswer(i -> {
             final var channel = i.getArgument(0, WritableByteChannel.class);
-            final var src = hello_world_byte_buffer();
-            while (src.hasRemaining()) {
+            for (final var src = hello_world_byte_buffer(); src.hasRemaining(); ) {
                 channel.write(src);
             }
             return channel;
-        }).when(service).write(
-                ArgumentMatchers.<WritableByteChannel>notNull()
-        );
+        }).when(service).write(ArgumentMatchers.<WritableByteChannel>notNull());
         return service;
     }
 
@@ -721,20 +722,16 @@ public final class HelloWorldTestUtils {
             final var channel = i.getArgument(0, DatagramChannel.class);
             final var target = i.getArgument(1, SocketAddress.class);
             final var src = hello_world_byte_buffer();
-            int written;
-            do {
-                written = channel.send(src, target);
-            } while (written == 0);
+            while (src.remaining() == HelloWorld.BYTES) {
+                channel.send(src, target);
+            }
             return channel;
-        }).when(service).send(
-                ArgumentMatchers.<DatagramChannel>notNull(),
-                ArgumentMatchers.<SocketAddress>notNull()
-        );
+        }).when(service).<DatagramChannel>send(notNull(), notNull());
         return service;
     }
 
     /**
-     * Stubs the specified mock service's {@link HelloWorld#write(DatagramChannel) write(channel)}
+     * Stubs the specified mock service's {@link HelloWorld#send(DatagramChannel) send(channel)}
      * method, when the channel is non-{@code null} and
      * {@linkplain DatagramChannel#isConnected() connected}, to write the actual
      * {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes in a write-until-drained loop, and
@@ -746,7 +743,7 @@ public final class HelloWorldTestUtils {
      * @throws IOException declared for stubbing convenience.
      */
     public static <T extends HelloWorld>
-    T write_datagramchannel_writes_hello_world_buffer(final T service) throws IOException {
+    T send_datagramchannel_writes_hello_world_buffer(final T service) throws IOException {
         requireMock(service);
         doAnswer(i -> {
             final var channel = i.getArgument(0, WritableByteChannel.class);
@@ -755,7 +752,7 @@ public final class HelloWorldTestUtils {
                 channel.write(src);
             }
             return channel;
-        }).when(service).write(
+        }).when(service).send(
                 ArgumentMatchers.<DatagramChannel>argThat(v -> v != null && v.isConnected())
         );
         return service;
@@ -784,7 +781,7 @@ public final class HelloWorldTestUtils {
                 channel.write(b).get();
             }
             return channel;
-        }).when(service).write(ArgumentMatchers.<AsynchronousByteChannel>notNull());
+        }).when(service).<AsynchronousByteChannel>write(notNull());
         return service;
     }
 
@@ -813,10 +810,7 @@ public final class HelloWorldTestUtils {
                 position += channel.write(b, position).get();
             }
             return channel;
-        }).when(service).write(
-                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
-                ArgumentMatchers.longThat(v -> v >= 0L)
-        );
+        }).when(service).write(notNull(), longThat(v -> v >= 0L));
         return service;
     }
 

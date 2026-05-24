@@ -112,7 +112,7 @@ interface HelloWorldRevisited
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
-    default <T extends PrintStream> T write(final T stream) throws IOException {
+    default <T extends PrintStream> T send(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -227,7 +227,7 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends DatagramChannel> T write(final T channel) throws IOException {
+    default <T extends DatagramChannel> T send(final T channel) throws IOException {
         if (channel.write(byteBuffer().flip()) != BYTES) {
             throw new IOException("packet dropped; OS's send buffer is full");
         }

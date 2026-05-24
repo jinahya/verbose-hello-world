@@ -834,33 +834,31 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see DatagramChannel#send(ByteBuffer, SocketAddress)
      */
-    @SuppressWarnings({"unchecked"})
     default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(target, "target is null");
         if (channel.isBlocking()) {
-            return (T) send(channel.socket(), target).getChannel();
+            final var socket = channel.socket();
+            send(socket, target);
+            return channel;
         }
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-//        while (channel.send(buffer, target) == 0) {
-//            {
-//                final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
-//                if (sndbuf == null || sndbuf < BYTES) {
-//                    throw new IOException("channel.SNDBUF is not enough: " + sndbuf);
-//                }
-//            }
-//            Thread.onSpinWait();
-//        }
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            assert buffer.remaining() == BYTES;
+            channel.send(buffer, target);
+        }
         return channel;
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified connected
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified connected
      * datagram channel.
      *
      * @param <T>     channel type parameter
-     * @param channel the connected datagram channel to which bytes are written.
+     * @param channel the connected datagram channel to which bytes are sent.
      * @return the given {@code channel}.
      * @throws NullPointerException     if {@code channel} is {@code null}.
      * @throws IllegalArgumentException if the {@code channel} is not
@@ -888,15 +886,17 @@ public interface HelloWorld {
      * @see #send(DatagramSocket)
      * @see #write(WritableByteChannel)
      */
-    @SuppressWarnings({"unchecked"})
-    default <T extends DatagramChannel> T write(final T channel) throws IOException {
+    default <T extends DatagramChannel> T send(final T channel) throws IOException {
         if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
         if (channel.isBlocking()) {
-            return (T) send(channel.socket()).getChannel();
+            final var socket = channel.socket();
+            send(socket);
+            return channel;
         }
-        return (T) write((WritableByteChannel) channel);
+        write((WritableByteChannel) channel);
+        return channel;
     }
 
     /**
@@ -919,11 +919,12 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            final var future = channel.write(buffer);
-//            final var written = future.get();
-//            assert written > 0;
+//            future.get();
 //        }
         return channel;
     }
@@ -981,11 +982,12 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            final var future = channel.write(buffer, position);
 //            final var written = future.get();
-//            assert written > 0; // why?
 //            position += written;
 //        }
         return channel;
@@ -1005,7 +1007,6 @@ public interface HelloWorld {
      *                                     StandardOpenOption.CREATE,
      *                                     StandardOpenOption.APPEND)) {
      *     write(channel);
-     *     channel.force(true);
      * } // @end
      * return path;
      *}
@@ -1018,13 +1019,11 @@ public interface HelloWorld {
      * @implSpec Default implementation opens a {@link FileChannel} from {@code path} with
      * {@link StandardOpenOption#CREATE CREATE} and {@link StandardOpenOption#APPEND APPEND},
      * invokes {@link #write(WritableByteChannel) write(channel)} method with it,
-     * {@link FileChannel#force(boolean) forces channel including metadata},
      * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see StandardOpenOption#CREATE
      * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
-     * @see FileChannel#force(boolean)
      * @see <a
      * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
      * try-with-resources</a> (The Java® Language Specification)
@@ -1035,10 +1034,9 @@ public interface HelloWorld {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND
         };
-        try (var channel = FileChannel.open(path, options)) {
-            write((WritableByteChannel) channel);
-            channel.force(true);
-        }
+//        try (var channel = FileChannel.open(path, options)) {
+//            write((WritableByteChannel) channel);
+//        }
         return path;
     }
 

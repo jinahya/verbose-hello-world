@@ -23,7 +23,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.net.*;
@@ -32,20 +31,16 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
-/**
- * A class for testing {@link HelloWorld#write(DatagramChannel)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.mockito.Mockito.*;
+
 @Slf4j
-class HelloWorld_Write_DatagramChannel_畵蛇添足_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() throws IOException {
-        HelloWorldTestUtils.write_datagramchannel_writes_hello_world_buffer(service());
+        send_datagramchannel_socketaddress_sends_hello_world_buffer(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -53,40 +48,36 @@ class HelloWorld_Write_DatagramChannel_畵蛇添足_Test
     class DatagramSocket_Server_Test {
 
         private CompletableFuture<SocketAddress> startServer() {
-            final var address = new CompletableFuture<SocketAddress>();
+            final var future = new CompletableFuture<SocketAddress>();
             Thread.ofVirtual().start(() -> {
                 try (var server = new DatagramSocket(
-                        new InetSocketAddress(InetAddress.getLocalHost(), 0))) {
-                    assert server.isBound();
-                    address.complete(server.getLocalSocketAddress());
+                        new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {
+                    future.complete(server.getLocalSocketAddress());
                     final var packet = new DatagramPacket(new byte[HelloWorld.BYTES],
                                                           HelloWorld.BYTES);
                     server.receive(packet);
-                    log.debug("received: {}",
-                              new String(packet.getData(), StandardCharsets.US_ASCII));
+                    final var decoded = new String(packet.getData(), StandardCharsets.US_ASCII);
+                    log.debug("'{}' received from {}", decoded, packet.getSocketAddress());
                 } catch (final IOException ioe) {
-                    log.error("failed to start/receive server");
-                    address.completeExceptionally(ioe);
+                    future.completeExceptionally(ioe);
                 }
             });
-            return address;
+            return future;
         }
 
         @Test
         void __blocking() throws IOException {
-            try (var client = Mockito.spy(DatagramChannel.open())) {
+            try (var client = spy(DatagramChannel.open())) {
                 assert client.isBlocking();
-                client.connect(startServer().join());
-                service().write(client);
+                service().send(client, startServer().join());
             }
         }
 
         @Test
         void __nonblocking() throws IOException {
-            try (var client = Mockito.spy(DatagramChannel.open())) {
+            try (var client = spy(DatagramChannel.open())) {
                 client.configureBlocking(false);
-                client.connect(startServer().join());
-                service().write(client);
+                service().send(client, startServer().join());
             }
         }
     }
@@ -95,36 +86,34 @@ class HelloWorld_Write_DatagramChannel_畵蛇添足_Test
     class DatagramChannel_Server_Blocking_Test {
 
         private CompletableFuture<SocketAddress> startServer() {
-            final var address = new CompletableFuture<SocketAddress>();
+            final var future = new CompletableFuture<SocketAddress>();
             Thread.ofVirtual().start(() -> {
                 try (var server = DatagramChannel.open()) {
-                    server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-                    address.complete(server.getLocalAddress());
+                    server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                    future.complete(server.getLocalAddress());
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    server.receive(buffer);
-                    log.debug("received: {}", StandardCharsets.US_ASCII.decode(buffer.flip()));
+                    final var address = server.receive(buffer);
+                    final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip());
+                    log.debug("'{}' received from {}", decoded, address);
                 } catch (final IOException ioe) {
-                    log.error("failed to start/receive server");
-                    address.completeExceptionally(ioe);
+                    future.completeExceptionally(ioe);
                 }
             });
-            return address;
+            return future;
         }
 
         @Test
         void __blocking() throws IOException {
-            try (var client = Mockito.spy(DatagramChannel.open())) {
-                client.connect(startServer().join());
-                service().write(client);
+            try (var client = spy(DatagramChannel.open())) {
+                service().send(client, startServer().join());
             }
         }
 
         @Test
         void __nonblocking() throws IOException {
-            try (var client = Mockito.spy(DatagramChannel.open())) {
+            try (var client = spy(DatagramChannel.open())) {
                 client.configureBlocking(false);
-                client.connect(startServer().join());
-                service().write(client);
+                service().send(client, startServer().join());
             }
         }
     }
@@ -133,41 +122,38 @@ class HelloWorld_Write_DatagramChannel_畵蛇添足_Test
     class DatagramChannel_Server_Nonblocking_Test {
 
         private CompletableFuture<SocketAddress> startServer() {
-            final var address = new CompletableFuture<SocketAddress>();
+            final var future = new CompletableFuture<SocketAddress>();
             Thread.ofVirtual().start(() -> {
                 try (var selector = Selector.open();
                      var server = DatagramChannel.open()) {
-                    server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-                    address.complete(server.getLocalAddress());
+                    server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                    future.complete(server.getLocalAddress());
                     server.configureBlocking(false);
                     final var key = server.register(selector, SelectionKey.OP_READ);
-                    selector.select();
+                    while (selector.select() == 0) ;
                     assert selector.selectedKeys().iterator().next() == key;
                     final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    server.receive(buffer);
-                    log.debug("received: {}", StandardCharsets.US_ASCII.decode(buffer.flip()));
+                    final var address = server.receive(buffer);
+                    final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip());
+                    log.debug("'{}' received from {}", decoded, address);
                 } catch (final IOException ioe) {
-                    log.error("failed to start/receive server");
-                    address.completeExceptionally(ioe);
+                    future.completeExceptionally(ioe);
                 }
             });
-            return address;
+            return future;
         }
 
         @Test
         void __blocking() throws IOException {
-            try (var client = Mockito.spy(DatagramChannel.open())) {
-                client.connect(startServer().join());
-                service().write(client);
+            try (var client = spy(DatagramChannel.open())) {
+                service().send(client, startServer().join());
             }
         }
 
         @Test
         void __nonblocking() throws IOException {
-            try (var client = Mockito.spy(DatagramChannel.open())) {
-                client.configureBlocking(false);
-                client.connect(startServer().join());
-                service().write(client);
+            try (var client = spy(DatagramChannel.open())) {
+                service().send(client, startServer().join());
             }
         }
     }

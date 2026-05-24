@@ -25,42 +25,45 @@ import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
-import org.mockito.*;
 
+import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
+import java.nio.charset.*;
 import java.nio.file.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_Path__Test extends HelloWorldTest {
 
+    @TempDir
+    private static Path tempDir;
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeEach
+    void beforeEach() throws IOException {
+        append_path_appends_hello_world(service());
+    }
+
     @Test
-    void __(final @TempDir Path tempDir) throws Exception {
-        // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.append_path_appends_hello_world(service());
-        Mockito.doAnswer(i -> {
-            final var path = i.getArgument(0, Path.class);
-            try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
-                for (final var b = ByteBuffer.allocate(HelloWorld.BYTES);
-                     b.hasRemaining(); ) {
-                    final var written = channel.write(b);
-                    assert written >= 0;
-                }
-                channel.force(true);
-            }
-            return path;
-        }).when(service).append(ArgumentMatchers.notNull(Path.class));
+    void __() throws Exception {
         final var path = Files.createTempFile(tempDir, null, null);
-        HelloWorldTestUtils.writeSome(path);
+        writeSome(path);
         final var size = Files.size(path);
-        // ------------------------------------------------------------------------------------ when
-        service.append(path);
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(
-                size + HelloWorld.BYTES,
-                Files.size(path)
-        );
+        service().append(path);
+        try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
+            channel.position(size);
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            for (int r; buffer.hasRemaining(); ) {
+                r = channel.read(buffer);
+                assert r != -1;
+            }
+            final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip()).toString();
+            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, decoded);
+        }
     }
 }

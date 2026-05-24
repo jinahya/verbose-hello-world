@@ -143,25 +143,26 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorldTest {
         // ----------------------------------------------------------------------------------- given
         final var service = put_buffer_will_put_12_random_bytes(service());
         final var channel = mock(WritableByteChannel.class);
-        final var positions = new ArrayList<Integer>();
+        final var bufferPositions = new ArrayList<Integer>();
         doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
+            assert src != null;
             assert src.hasRemaining();
             assert src.limit() == HelloWorld.BYTES;
             final var pos = src.position();
-            positions.add(pos);
-            final var ext = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-            src.position(pos + ext);
-            return ext;
-        }).when(channel).write(notNull());
+            bufferPositions.add(pos);
+            final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
+            src.position(pos + n);
+            return n;
+        }).when(channel).write(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         final var buffer = put_buffer12_invoked_once(service);
-//        verify(channel, atLeast(1)).write(buffer);
-//        assertEquals(0, positions.getFirst());
-//        for (var i = 1; i < positions.size(); i++) {
-//            assertTrue(positions.get(i) > positions.get(i - 1));
+//        assertFalse(bufferPositions.isEmpty());
+//        assertEquals(0, bufferPositions.getFirst());
+//        for (var i = 1; i < bufferPositions.size(); i++) {
+//            assertTrue(bufferPositions.get(i) > bufferPositions.get(i - 1));
 //        }
 //        assertFalse(buffer.hasRemaining());
         assertSame(channel, result);

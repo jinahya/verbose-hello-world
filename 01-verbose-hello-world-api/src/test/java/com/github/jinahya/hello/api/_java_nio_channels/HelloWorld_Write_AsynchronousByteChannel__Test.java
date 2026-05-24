@@ -31,20 +31,47 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorldTest {
 
     @BeforeEach
     void __() throws ExecutionException, InterruptedException {
-        HelloWorldTestUtils.write_asynchornousbytechannel_writes_hello_world(service());
+        write_asynchornousbytechannel_writes_hello_world(service());
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Nested
-    class AsynchronousServerSocketChannelTest {
+    class AsynchronousServerSocketChannel_Test {
 
         @Test
-        void __() throws Exception { // @formatter:off
+        void __() throws Exception {
+            try (var server = AsynchronousServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                Thread.ofPlatform().start(() -> {
+                    try (var client = server.accept().get()) {
+                        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                        for (int r; buffer.hasRemaining(); ) {
+                            r = client.read(buffer).get();
+                            assert r != -1;
+                        }
+                        final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip());
+                        log.debug("'{}' received from {}", decoded, client.getRemoteAddress());
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                try (var client = AsynchronousSocketChannel.open()) {
+                    client.connect(server.getLocalAddress()).get();
+                    service().write(client);
+                }
+            }
+        }
+
+        @Test
+        void __multiple() throws Exception { // @formatter:off
             var group = AsynchronousChannelGroup.withThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory())
             );
@@ -55,7 +82,7 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorldTest {
                         try {
                             var c = server.accept().get();
                             Thread.ofPlatform().start(() -> {
-                                try (c) { service().write(c); } catch (Exception _) { }
+                                try (c) { service().write(c); } catch (final Exception _) { }
                             });
                         } catch (Exception _) {
                             return;
@@ -92,7 +119,7 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorldTest {
     }
 
     @Nested
-    class AsynchronousSocketChannelTest {
+    class AsynchronousSocketChannel_Test {
 
         @Test
         void __() throws Exception { // @formatter:off

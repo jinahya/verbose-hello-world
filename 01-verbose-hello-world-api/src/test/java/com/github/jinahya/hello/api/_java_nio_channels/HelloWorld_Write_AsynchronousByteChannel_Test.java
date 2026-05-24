@@ -24,13 +24,18 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method.
@@ -59,10 +64,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
         var service = service();
         var channel = (AsynchronousByteChannel) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(channel)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(channel));
     }
 
     /**
@@ -77,35 +79,41 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
             and return the <channel>"""
     )
     @Test
-    void __succeeds() throws InterruptedException, ExecutionException {
+    void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
-                service());
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
-        final var written = new LongAdder();
-        Mockito.doAnswer(w -> {
+        final var service = put_buffer_will_increase_buffer_position_by_12(service());
+        final var channel = mock(AsynchronousByteChannel.class);
+        final var bufferPositions = new ArrayList<Integer>();
+        final var futureReference = new AtomicReference<Future<Integer>>();
+        doAnswer(w -> {
+            assert futureReference.get() == null;
             final var src = w.getArgument(0, ByteBuffer.class);
+            assert src != null;
+            assert src.limit() == HelloWorld.BYTES;
+            bufferPositions.add(src.position());
+            assert src.hasRemaining();
             @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) Mockito.mock(Future.class);
-            Mockito.doAnswer(g -> {
+            final var future = (Future<Integer>) mock(Future.class);
+            futureReference.set(future);
+            doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
-                written.add(n);
+                futureReference.set(null);
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+        }).when(channel).write(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(buffer);
-//        Assertions.assertEquals(HelloWorld.BYTES, written.intValue());
-//        final var srcCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
-//        Mockito.verify(channel, Mockito.atLeastOnce()).write(srcCaptor.capture());
-//        final var srcs = srcCaptor.getAllValues();
-//        srcs.forEach(s -> Assertions.assertSame(srcs.getFirst(), s));
-        Assertions.assertSame(channel, result);
+        final var buffer = put_buffer12_invoked_once(service);
+//        assertFalse(bufferPositions.isEmpty());
+//        assertEquals(0, bufferPositions.getFirst());
+//        for (var i = 1; i < bufferPositions.size(); i++) {
+//            assertTrue(bufferPositions.get(i) > bufferPositions.get(i - 1));
+//        }
+//        assertFalse(buffer.hasRemaining());
+        assertSame(channel, result);
     }
 
     /**
@@ -120,29 +128,34 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorldTest {
     @Test
     void __fails() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
-                service());
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var service = put_buffer_will_increase_buffer_position_by_12(service());
+        final var channel = mock(AsynchronousByteChannel.class);
+        final var reference = new AtomicReference<Future<Integer>>();
         final var cause = new IOException("simulated write failure");
-        Mockito.doAnswer(w -> {
+        final var errored = new AtomicBoolean();
+        doAnswer(w -> {
+            assert !errored.get();
             final var src = w.getArgument(0, ByteBuffer.class);
             @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) Mockito.mock(Future.class);
-            Mockito.doAnswer(g -> {
+            final var future = (Future<Integer>) mock(Future.class);
+            reference.set(future);
+            doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
+                reference.set(null);
                 if (!src.hasRemaining() || ThreadLocalRandom.current().nextBoolean()) {
+                    errored.set(true);
                     throw new ExecutionException(cause);
                 }
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()));
+        }).when(channel).write(argThat(b -> b != null && b.hasRemaining()));
         // ------------------------------------------------------------------------------- when/then
-//        final var thrown = Assertions.assertThrows(
+//        final var thrown = assertThrows(
 //                ExecutionException.class,
 //                () -> service.write(channel)
 //        );
-//        Assertions.assertSame(cause, thrown.getCause());
+//        assertSame(cause, thrown.getCause());
     }
 }

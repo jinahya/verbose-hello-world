@@ -27,14 +27,19 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
 
 import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
 import java.nio.file.*;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_WritableByteChannel__Test
-        extends HelloWorldTest {
+class HelloWorld_Write_WritableByteChannel__Test extends HelloWorldTest {
 
     @TempDir
     private static Path tempDir;
@@ -42,12 +47,60 @@ class HelloWorld_Write_WritableByteChannel__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() throws IOException {
-        HelloWorldTestUtils.write_writablebytechannel_writes_hello_world_buffer(service());
+        write_writablebytechannel_writes_hello_world_buffer(service());
     }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
     class Pipe_Test {
 
+        @Test
+        void __() throws IOException {
+            final var pipe = Pipe.open();
+            Thread.ofPlatform().start(() -> {
+                try (var sink = pipe.sink()) {
+                    service().write(sink);
+                } catch (final IOException ioe) {
+                    log.error("failed to write", ioe);
+                }
+            });
+            try (var source = pipe.source()) {
+                final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                for (int r; dst.hasRemaining(); ) {
+                    r = source.read(dst);
+                    assert r != -1;
+                }
+                final var string = StandardCharsets.US_ASCII.decode(dst.flip()).toString();
+                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+            }
+        }
+    }
+
+    @Nested
+    class SocketChannel_Test {
+
+        @Test
+        void __() throws IOException {
+            try (var server = ServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                Thread.ofPlatform().start(() -> {
+                    try (var accepted = server.accept()) {
+                        final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                        for (int r; dst.hasRemaining(); ) {
+                            r = accepted.read(dst);
+                            assert r != -1;
+                        }
+                        final var string = StandardCharsets.US_ASCII.decode(dst.flip()).toString();
+                        assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    } catch (final IOException ioe) {
+                        log.error("failed to read", ioe);
+                    }
+                });
+                try (var client = SocketChannel.open()) {
+                    client.connect(server.getLocalAddress());
+                    service().write(client);
+                }
+            }
+        }
     }
 }

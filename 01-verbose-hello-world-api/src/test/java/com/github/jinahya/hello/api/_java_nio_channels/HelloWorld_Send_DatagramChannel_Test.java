@@ -23,20 +23,24 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.channels.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 /**
- * A class for testing {@link HelloWorld#write(DatagramChannel)} method.
+ * A class for testing {@link HelloWorld#send(DatagramChannel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Write_DatagramChannel_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_DatagramChannel_Test extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @DisplayName("(null)NullPointerException")
@@ -46,10 +50,7 @@ class HelloWorld_Write_DatagramChannel_Test
         final var service = service();
         final var channel = (DatagramChannel) null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(channel)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(channel));
     }
 
     @DisplayName("(!connected)IllegalArgumentException")
@@ -57,53 +58,41 @@ class HelloWorld_Write_DatagramChannel_Test
     void _ThrowIllegalArgumentException_ChannelIsNotConnected() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = Mockito.mock(DatagramChannel.class);
+        final var channel = mock(DatagramChannel.class);
         assert !channel.isConnected();
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> service.write(channel)
-        );
+        assertThrows(IllegalArgumentException.class, () -> service.send(channel));
     }
 
     @Test
     void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = Mockito.mock(DatagramChannel.class);
-        Mockito.when(channel.isConnected()).thenReturn(true);
-        Mockito.when(channel.isBlocking()).thenReturn(true);
-        final var socket = Mockito.mock(DatagramSocket.class);
-        Mockito.when(channel.socket()).thenReturn(socket);
-        Mockito.when(socket.getChannel()).thenReturn(channel);
-        Mockito.doReturn(socket).when(service).send(
-                ArgumentMatchers.<DatagramSocket>same(socket)
-        );
+        doAnswer(returnsFirstArg()).when(service).<DatagramSocket>send(any());
+        final var channel = mock(DatagramChannel.class);
+        when(channel.isConnected()).thenReturn(true);
+        when(channel.isBlocking()).thenReturn(true);
+        final var socket = mock(DatagramSocket.class);
+        when(channel.socket()).thenReturn(socket);
+        when(socket.getChannel()).thenReturn(channel);
         // ------------------------------------------------------------------------------------ when
-        final var result = service.write(channel);
+        final var result = service.send(channel);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).send(
-                ArgumentMatchers.<DatagramSocket>same(socket)
-        );
-        Assertions.assertSame(channel, result);
+        verify(service, times(1)).send(socket);
+        assertSame(channel, result);
     }
 
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var channel = Mockito.mock(DatagramChannel.class);
-        Mockito.when(channel.isConnected()).thenReturn(true);
-        Mockito.when(channel.isBlocking()).thenReturn(false);
-        Mockito.doReturn(channel).when(service).write(
-                ArgumentMatchers.<WritableByteChannel>same(channel)
-        );
+        final var service = write_writablebytechannel_returns_channel(service());
+        final var channel = mock(DatagramChannel.class);
+        when(channel.isConnected()).thenReturn(true);
+        when(channel.isBlocking()).thenReturn(false);
         // ------------------------------------------------------------------------------------ when
-        final var result = service.write(channel);
+        final var result = service.send(channel);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).write(
-                ArgumentMatchers.<WritableByteChannel>same(channel)
-        );
-        Assertions.assertSame(channel, result);
+        verify(service, times(1)).write(channel);
+        assertSame(channel, result);
     }
 }

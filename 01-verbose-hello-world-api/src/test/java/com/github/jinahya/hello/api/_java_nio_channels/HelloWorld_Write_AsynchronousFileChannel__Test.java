@@ -31,7 +31,8 @@ import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+
 @Slf4j
 class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorldTest {
 
@@ -40,13 +41,13 @@ class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() throws ExecutionException, InterruptedException {
-        HelloWorldTestUtils.write_asynchornousfilechannel_position_writes_hello_world(service());
+    void __stubService() throws ExecutionException, InterruptedException {
+        write_asynchornousfilechannel_position_writes_hello_world(service());
     }
 
     // ---------------------------------------------------------------------------------------------
     @Test
-    void _添足_畵蛇() throws Exception {
+    void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var path = Files.createTempFile(tempDir, null, null);
         var position = ThreadLocalRandom.current().nextLong(0L, 128L);
