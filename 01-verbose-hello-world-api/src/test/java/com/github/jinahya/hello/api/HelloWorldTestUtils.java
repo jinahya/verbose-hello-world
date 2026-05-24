@@ -44,8 +44,12 @@ import java.util.function.*;
 import java.util.stream.*;
 
 import static java.util.Objects.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * A collection of test-side helpers shared across the {@link HelloWorld} service test classes.
@@ -295,10 +299,10 @@ public final class HelloWorldTestUtils {
     public static byte[] set_array12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(service, Mockito.times(1)).set(captor.capture());
+        verify(service, times(1)).set(captor.capture());
         final var array = captor.getValue();
-        Assertions.assertNotNull(array);
-        Assertions.assertEquals(HelloWorld.BYTES, array.length);
+        assertNotNull(array);
+        assertEquals(HelloWorld.BYTES, array.length);
         return array;
     }
 
@@ -430,9 +434,9 @@ public final class HelloWorldTestUtils {
             throws IOException {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(OutputStream.class);
-        Mockito.verify(service, Mockito.times(1)).write(captor.capture());
+        verify(service, times(1)).write(captor.capture());
         final var value = captor.getValue();
-        Assertions.assertNotNull(value);
+        assertNotNull(value);
         return value;
     }
 
@@ -632,10 +636,10 @@ public final class HelloWorldTestUtils {
     public static ByteBuffer put_buffer12_invoked_once(final HelloWorld service) {
         requireMock(service);
         final var captor = ArgumentCaptor.forClass(ByteBuffer.class);
-        Mockito.verify(service, Mockito.times(1)).put(captor.capture());
+        verify(service, times(1)).put(captor.capture());
         final var buffer = captor.getValue();
-        Assertions.assertNotNull(buffer);
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.capacity());
+        assertNotNull(buffer);
+        assertEquals(HelloWorld.BYTES, buffer.capacity());
         return buffer;
     }
 
