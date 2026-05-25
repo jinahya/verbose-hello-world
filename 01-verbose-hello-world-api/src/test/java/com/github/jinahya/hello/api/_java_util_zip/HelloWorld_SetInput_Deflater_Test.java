@@ -24,9 +24,12 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.util.zip.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#setInput(Deflater) setInput(deflater)} method.
@@ -36,8 +39,7 @@ import java.util.zip.*;
 @DisplayName("setInput(Deflater)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetInput_Deflater_Test
-        extends HelloWorldTest {
+class HelloWorld_SetInput_Deflater_Test extends HelloWorldTest {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -48,24 +50,21 @@ class HelloWorld_SetInput_Deflater_Test
         final var service = service();
         final Deflater deflator = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setInput(deflator)
-        );
+        assertThrows(NullPointerException.class, () -> service.setInput(deflator));
     }
 
     @DisplayName("deflater.setInput(set(byte[12]))")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
-        final var deflater = Mockito.mock(Deflater.class);
+        final var service = set_array_sets_random_bytes(service());
+        final var deflater = mock(Deflater.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setInput(deflater);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        Mockito.verify(deflater, Mockito.times(1)).setInput(array);
-        Mockito.verifyNoMoreInteractions(deflater);
-        Assertions.assertSame(deflater, result);
+        final var array = set_array12_invoked_once(service);
+        verify(deflater, times(1)).setInput(array);
+        verifyNoMoreInteractions(deflater);
+        assertSame(deflater, result);
     }
 }

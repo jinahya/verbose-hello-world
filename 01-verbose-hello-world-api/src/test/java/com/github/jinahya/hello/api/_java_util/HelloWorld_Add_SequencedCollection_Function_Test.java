@@ -24,10 +24,15 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.util.*;
 import java.util.function.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_random_bytes;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)}
@@ -38,8 +43,7 @@ import java.util.function.*;
 @DisplayName("add(SequencedCollection, Function)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Add_Collection_Function_Test
-        extends HelloWorldTest {
+class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorldTest {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -51,10 +55,7 @@ class HelloWorld_Add_Collection_Function_Test
         final var collection = (SequencedCollection<Byte>) null;
         final Function<? super Byte, ? extends Byte> mapper = b -> b;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.add(collection, mapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
 
     @DisplayName("""
@@ -67,32 +68,29 @@ class HelloWorld_Add_Collection_Function_Test
         final var collection = new ArrayList<Byte>();
         final Function<? super Byte, ? extends Byte> mapper = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.add(collection, mapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
 
     @DisplayName("should invoke <set(byte[])>, and <collection.add(mapper.apply(b))> for each byte")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes(service());
         @SuppressWarnings("unchecked")
-        final var collection = (SequencedCollection<Byte>) Mockito.mock(SequencedCollection.class);
+        final var collection = (SequencedCollection<Byte>) mock(SequencedCollection.class);
         @SuppressWarnings("unchecked")
-        final Function<Byte, Byte> mapper = Mockito.mock(Function.class);
-        Mockito.when(mapper.apply(Mockito.any())).thenAnswer(i -> i.getArgument(0));
+        final Function<Byte, Byte> mapper = mock(Function.class);
+        when(mapper.apply(any())).thenAnswer(i -> i.getArgument(0));
         // ------------------------------------------------------------------------------------ when
         final var result = service.add(collection, mapper);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        final var inOrder = Mockito.inOrder(mapper, collection);
+        final var array = set_array12_invoked_once(service);
+        final var inOrder = inOrder(mapper, collection);
         for (final var b : array) {
-            inOrder.verify(mapper, Mockito.calls(1)).apply(b);
-            inOrder.verify(collection, Mockito.calls(1)).add(b);
+            inOrder.verify(mapper, calls(1)).apply(b);
+            inOrder.verify(collection, calls(1)).addLast(b);
         }
         inOrder.verifyNoMoreInteractions();
-        Assertions.assertSame(collection, result);
+        assertSame(collection, result);
     }
 }

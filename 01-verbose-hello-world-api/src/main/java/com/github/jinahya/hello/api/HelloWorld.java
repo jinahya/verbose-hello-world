@@ -1060,7 +1060,7 @@ public interface HelloWorld {
         Objects.requireNonNull(digest, "digest is null");
         final var array = new byte[BYTES];
         set(array);
-//        digest.update(array);
+        digest.update(array);
         return digest;
     }
 
@@ -1412,7 +1412,7 @@ public interface HelloWorld {
         final var array = new byte[BYTES];
         set(array);
         final var string = new String(array, StandardCharsets.UTF_8);
-//        iterator.setText(string);
+        iterator.setText(string);
         return iterator;
     }
 
@@ -1459,30 +1459,6 @@ public interface HelloWorld {
         return bitset;
     }
 
-//    /**
-//     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
-//     * {@link Byte}, into the specified collection.
-//     *
-//     * @param <T>        collection type parameter
-//     * @param collection the collection into which each byte is collected.
-//     * @return the given {@code collection}.
-//     * @throws NullPointerException if {@code collection} is {@code null}.
-//     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-//     * of {@value #BYTES} bytes, and {@link Collection#add(Object) adds} each byte in the array,
-//     * boxed as {@link Byte}, to the {@code collection}.
-//     * @see #set(byte[])
-//     * @see Collection#add(Object)
-//     */
-//    default <T extends Collection<? super Byte>> T collect(final T collection) {
-//        Objects.requireNonNull(collection, "collection is null");
-//        final var array = new byte[BYTES];
-//        set(array);
-//        for (final var b : array) {
-//            collection.add(b);
-//        }
-//        return collection;
-//    }
-
     /**
      * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
      * specified mapper, into the specified collection.
@@ -1496,11 +1472,11 @@ public interface HelloWorld {
      * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, boxed as
-     * {@link Byte}, and {@link SequencedCollection#add(Object) adds} the result to the
-     * {@code collection}.
+     * {@link Byte}, and {@link SequencedCollection#addLast(Object) appends} the result to the end
+     * of the {@code collection}.
      * @see #set(byte[])
      * @see Function#apply(Object)
-     * @see SequencedCollection#add(Object)
+     * @see SequencedCollection#addLast(Object)
      */
     default <T extends SequencedCollection<? super U>, U>
     T add(final T collection, final Function<? super Byte, ? extends U> mapper) {
@@ -1509,44 +1485,7 @@ public interface HelloWorld {
         final var array = new byte[BYTES];
         set(array);
         for (final var b : array) {
-            collection.add(mapper.apply(b));
-        }
-        return collection;
-    }
-
-    /**
-     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
-     * specified mapper, into the specified collection.
-     * <p>
-     * Each byte is applied to the {@code mapper} as an {@code int}. Because every
-     * <a href="#hello-world-bytes">hello-world-byte</a> is non-negative (within
-     * {@code [0x20..0x77]}), the widening conversion preserves the byte's numeric value with no
-     * masking required.
-     *
-     * @param <T>        collection type parameter
-     * @param <R>        element type parameter
-     * @param collection the collection into which each mapped value is collected.
-     * @param mapper     the function applied to each byte, widened to an {@code int}, to produce
-     *                   the value to be collected.
-     * @return the given {@code collection}.
-     * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, widened to an
-     * {@code int}, and {@link SequencedCollection#add(Object) adds} the result to the
-     * {@code collection}.
-     * @see #set(byte[])
-     * @see IntFunction#apply(int)
-     * @see SequencedCollection#add(Object)
-     */
-    default <T extends SequencedCollection<? super R>, R>
-    T add(final T collection, final IntFunction<? extends R> mapper) {
-        Objects.requireNonNull(collection, "collection is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-//            collection.add(mapper.apply(b & 0xFF));
-            collection.add(mapper.apply(b));
+            collection.addLast(mapper.apply(b));
         }
         return collection;
     }
@@ -1563,75 +1502,37 @@ public interface HelloWorld {
      * @param <K>         key type parameter
      * @param <V>         value type parameter
      * @param map         the sequenced map into which each entry is put.
-     * @param keyMapper   the function applied to each byte index, in
-     *                    {@code [0, }{@value #BYTES}{@code )}, to produce the key.
+     * @param keyMapper   the function applied to each byte, boxed as {@link Byte}, to produce the
+     *                    key.
      * @param valueMapper the function applied to each byte, boxed as {@link Byte}, to produce the
      *                    value.
      * @return the given {@code map}.
      * @throws NullPointerException if any of {@code map}, {@code keyMapper}, or {@code valueMapper}
      *                              is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and, for each byte index {@code i} in
-     * {@code [0, }{@value #BYTES}{@code )}, {@link SequencedMap#put(Object, Object) puts}
-     * {@code (keyMapper.apply(i), valueMapper.apply(array[i]))} into the {@code map}.
+     * of {@value #BYTES} bytes, and, for each byte {@code b} in the array, appends
+     * {@code (keyMapper.apply(b), valueMapper.apply(b))} to the end of the {@code map} via
+     * {@link SequencedMap#putLast(Object, Object)}.
      * @see #set(byte[])
-     * @see IntFunction#apply(int)
      * @see Function#apply(Object)
-     * @see SequencedMap#put(Object, Object)
+     * @see SequencedMap#putLast(Object, Object)
      */
     default <T extends SequencedMap<? super K, ? super V>, K, V> T put(
             final T map,
-            final IntFunction<? extends K> keyMapper,
+            final Function<? super Byte, ? extends K> keyMapper,
             final Function<? super Byte, ? extends V> valueMapper) {
         Objects.requireNonNull(map, "map is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final var array = new byte[BYTES];
         set(array);
-        for (var i = 0; i < array.length; i++) {
-            map.put(keyMapper.apply(i), valueMapper.apply(array[i]));
+        for (final var b : array) {
+            map.putLast(keyMapper.apply(b), valueMapper.apply(b));
         }
         return map;
     }
 
     // -------------------------------------------------------------------------- java.util.function
-
-    /**
-     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
-     * {@link Byte}, to the specified consumer.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(consumer, "consumer is null");
-     * final var array = new byte[BYTES];
-     * set(array);
-     * for (final var b : array) { // @highlight region
-     *     consumer.accept(b);
-     * } // @end
-     * return consumer;
-     *}
-     *
-     * @param <T>      consumer type parameter
-     * @param consumer the consumer to which each byte is accepted.
-     * @return the given {@code consumer}.
-     * @throws NullPointerException if {@code consumer} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link Consumer#accept(Object) accepts} each byte in the array,
-     * boxed as {@link Byte}, to the {@code consumer}.
-     * @see #set(byte[])
-     * @see Consumer#accept(Object)
-     * @deprecated Use {@link #acceptEach(Consumer, Function)}
-     */
-    @Deprecated
-    default <T extends Consumer<? super Byte>> T accept(final T consumer) {
-        Objects.requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-            consumer.accept(b);
-        }
-        return consumer;
-    }
 
     /**
      * Accepts a value, mapped from each of the <a href="#hello-world-bytes">hello-world-bytes</a>
@@ -1665,7 +1566,7 @@ public interface HelloWorld {
      * @see Consumer#accept(Object)
      */
     default <T extends Consumer<? super U>, U>
-    T acceptEach(final T consumer, final Function<? super Byte, ? extends U> mapper) {
+    T accept(final T consumer, final Function<? super Byte, ? extends U> mapper) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(mapper, "mapper is null");
         final var array = new byte[BYTES];
@@ -1676,87 +1577,7 @@ public interface HelloWorld {
         return consumer;
     }
 
-    /**
-     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, widened to
-     * {@code int}, to the specified consumer.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(consumer, "consumer is null");
-     * final var array = new byte[BYTES];
-     * set(array);
-     * for (final var b : array) { // @highlight region
-     *     consumer.accept(b);
-     * } // @end
-     * return consumer;
-     *}
-     *
-     * @param <T>      consumer type parameter
-     * @param consumer the consumer to which each byte, widened to {@code int}, is accepted.
-     * @return the given {@code consumer}.
-     * @throws NullPointerException if {@code consumer} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link IntConsumer#accept(int) accepts} each byte in the array,
-     * widened to {@code int}, to the {@code consumer}.
-     * @see #set(byte[])
-     * @see IntConsumer#accept(int)
-     */
-    default <T extends IntConsumer> T acceptEach(final T consumer) {
-        Objects.requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-            consumer.accept(b);
-        }
-        return consumer;
-    }
-
     // ------------------------------------------------------------------------------- java.util.jar
-
-    // ------------------------------------------------------------------------------- java.util.zip
-
-    /**
-     * Updates the specified checksum with the <a href="#hello-world-bytes">hello-world-bytes</a>.
-     *
-     * @param <T>      checksum type parameter
-     * @param checksum the checksum to be updated.
-     * @return the given {@code checksum}.
-     * @throws NullPointerException if {@code checksum} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, {@link Checksum#update(byte[]) updates} the {@code checksum} with
-     * the array, and returns the {@code checksum}.
-     * @see #set(byte[])
-     * @see Checksum#update(byte[])
-     */
-    default <T extends Checksum> T update(final T checksum) {
-        Objects.requireNonNull(checksum, "checksum is null");
-        final var array = new byte[BYTES];
-        set(array);
-        checksum.update(array);
-        return checksum;
-    }
-
-    /**
-     * Sets, as an input data for compression, the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the specified deflater.
-     *
-     * @param <T>      deflater type parameter
-     * @param deflater the deflater to which the input data is set.
-     * @return the given {@code deflater}.
-     * @throws NullPointerException if {@code deflater} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, {@link Deflater#setInput(byte[]) sets} the array as the input data
-     * of the {@code deflater}, and returns the {@code deflater}.
-     * @see #set(byte[])
-     * @see Deflater#setInput(byte[])
-     */
-    default <T extends Deflater> T setInput(final T deflater) {
-        Objects.requireNonNull(deflater, "deflater is null");
-        final var array = new byte[BYTES];
-        set(array);
-        deflater.setInput(array);
-        return deflater;
-    }
 
     // ---------------------------------------------------------------------------- java.util.stream
 
@@ -1803,6 +1624,51 @@ public interface HelloWorld {
 //        Objects.requireNonNull(builder, "builder is null");
 //        return (T) acceptEach((IntConsumer) builder);
 //    }
+
+    // ------------------------------------------------------------------------------- java.util.zip
+
+    /**
+     * Updates the specified checksum with the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param <T>      checksum type parameter
+     * @param checksum the checksum to be updated.
+     * @return the given {@code checksum}.
+     * @throws NullPointerException if {@code checksum} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Checksum#update(byte[]) updates} the {@code checksum} with
+     * the array, and returns the {@code checksum}.
+     * @see #set(byte[])
+     * @see Checksum#update(byte[])
+     */
+    default <T extends Checksum> T update(final T checksum) {
+        Objects.requireNonNull(checksum, "checksum is null");
+        final var array = new byte[BYTES];
+        set(array);
+        checksum.update(array);
+        return checksum;
+    }
+
+    /**
+     * Sets, as an input data for compression, the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> to the specified deflater.
+     *
+     * @param <T>      deflater type parameter
+     * @param deflater the deflater to which the input data is set.
+     * @return the given {@code deflater}.
+     * @throws NullPointerException if {@code deflater} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Deflater#setInput(byte[]) sets} the array as the input data
+     * of the {@code deflater}, and returns the {@code deflater}.
+     * @see #set(byte[])
+     * @see Deflater#setInput(byte[])
+     */
+    default <T extends Deflater> T setInput(final T deflater) {
+        Objects.requireNonNull(deflater, "deflater is null");
+        final var array = new byte[BYTES];
+        set(array);
+        deflater.setInput(array);
+        return deflater;
+    }
 
     // -------------------------------------------------------------------------------- javax.crypto
 

@@ -26,24 +26,27 @@ import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
-import org.mockito.*;
 
 import java.nio.charset.*;
 import java.text.*;
 import java.util.*;
 import java.util.stream.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
 
     @BeforeEach
-    void __() {
-        Mockito.doAnswer(i -> {
+    void __stubService() {
+        doAnswer(i -> {
             final var iterator = i.getArgument(0, BreakIterator.class);
             iterator.setText(HelloWorldTestConstants.HELLO_WORLD_STRING);
             return iterator;
-        }).when(service()).setText(ArgumentMatchers.notNull());
+        }).when(service()).setText(notNull());
     }
 
     @Test
@@ -177,7 +180,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         final var truncatedBytes = truncated.getBytes(StandardCharsets.UTF_8).length;
         System.out.printf(" original: (%2d) ⁨%s⁩%n", originalBytes, string);
         System.out.printf("truncated: (%2d) ⁨%s⁩%n", truncatedBytes, truncated);
-        Assertions.assertTrue(truncatedBytes <= 20);
-        Assertions.assertTrue(string.startsWith(truncated));
+        assertTrue(truncatedBytes <= 20);
+        assertTrue(string.startsWith(truncated));
     }
 }

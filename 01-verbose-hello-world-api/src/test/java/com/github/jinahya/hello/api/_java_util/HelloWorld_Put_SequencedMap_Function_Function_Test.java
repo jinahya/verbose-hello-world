@@ -24,23 +24,26 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.util.*;
 import java.util.function.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for testing
- * {@link HelloWorld#put(SequencedMap, IntFunction, Function) put(map, keyMapper, valueMapper)}
+ * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)}
  * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("put(SequencedMap, IntFunction, Function)")
+@DisplayName("put(SequencedMap, Function, Function)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Put_SequencedMap_IntFunction_Function_Test
-        extends HelloWorldTest {
+class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorldTest {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -50,13 +53,10 @@ class HelloWorld_Put_SequencedMap_IntFunction_Function_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var map = (SequencedMap<Integer, Byte>) null;
-        final IntFunction<Integer> keyMapper = i -> i;
+        final Function<Byte, Integer> keyMapper = Byte::intValue;
         final Function<Byte, Byte> valueMapper = b -> b;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.put(map, keyMapper, valueMapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
     @DisplayName("""
@@ -67,13 +67,10 @@ class HelloWorld_Put_SequencedMap_IntFunction_Function_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var map = new LinkedHashMap<Integer, Byte>();
-        final IntFunction<Integer> keyMapper = null;
+        final Function<Byte, Integer> keyMapper = null;
         final Function<Byte, Byte> valueMapper = b -> b;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.put(map, keyMapper, valueMapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
     @DisplayName("""
@@ -84,42 +81,33 @@ class HelloWorld_Put_SequencedMap_IntFunction_Function_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var map = new LinkedHashMap<Integer, Byte>();
-        final IntFunction<Integer> keyMapper = i -> i;
+        final Function<Byte, Integer> keyMapper = Byte::intValue;
         final Function<Byte, Byte> valueMapper = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.put(map, keyMapper, valueMapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
     @DisplayName("""
             should invoke <set(byte[])>, and \
-            <map.put(keyMapper.apply(i), valueMapper.apply(array[i]))> for each i""")
+            <map.putLast(keyMapper.apply(b), valueMapper.apply(b))> for each byte b""")
     @Test
+    @SuppressWarnings({"unchecked"})
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
-        @SuppressWarnings("unchecked")
-        final var map = (SequencedMap<Integer, Byte>) Mockito.mock(SequencedMap.class);
-        @SuppressWarnings("unchecked")
-        final IntFunction<Integer> keyMapper = Mockito.mock(IntFunction.class);
-        Mockito.when(keyMapper.apply(Mockito.anyInt())).thenAnswer(i -> (int) i.getArgument(0));
-        @SuppressWarnings("unchecked")
-        final Function<Byte, Byte> valueMapper = Mockito.mock(Function.class);
-        Mockito.when(valueMapper.apply(Mockito.any())).thenAnswer(i -> i.getArgument(0));
+        final var service = set_array_sets_actual_hello_world_bytes(service());
+        final var map = mock(SequencedMap.class);
+        final var keyMapper = mock(Function.class);
+        when(keyMapper.apply(any())).thenAnswer(i -> (byte) ((Byte) i.getArgument(0) + 1));
+        final var valueMapper = mock(Function.class);
+        when(valueMapper.apply(any())).thenAnswer(i -> (byte) ((Byte) i.getArgument(0) + 2));
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(map, keyMapper, valueMapper);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        final var inOrder = Mockito.inOrder(keyMapper, valueMapper, map);
-        for (var i = 0; i < array.length; i++) {
-            final var b = array[i];
-            inOrder.verify(keyMapper, Mockito.calls(1)).apply(i);
-            inOrder.verify(valueMapper, Mockito.calls(1)).apply(b);
-            inOrder.verify(map, Mockito.calls(1)).put(i, b);
+        final var array = set_array12_invoked_once(service);
+        final var inOrder = inOrder(map);
+        for (final var b : array) {
+            inOrder.verify(map, calls(1)).putLast((byte) (b + 1), (byte) (b + 2));
         }
-        inOrder.verifyNoMoreInteractions();
-        Assertions.assertSame(map, result);
+        assertSame(map, result);
     }
 }

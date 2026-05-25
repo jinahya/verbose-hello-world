@@ -26,7 +26,6 @@ import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
-import org.mockito.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -37,10 +36,14 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Cipher__Test
-        extends HelloWorldTest {
+class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorldTest {
 
     // JDK 25
     //AES/CBC/NoPadding (128)
@@ -97,16 +100,14 @@ class HelloWorld_Update_Cipher__Test
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
+    @SuppressWarnings({"unchecked"})
     void __() {
-        Mockito.doAnswer(i -> {
+        doAnswer(i -> {
             final var cipher = i.getArgument(0, Cipher.class);
-            @SuppressWarnings({"unchecked"})
-            final var consumer = (Consumer<byte[]>) i.getArgument(1, Consumer.class);
-            consumer.accept(cipher.update(HelloWorldTestUtils.hello_world_byte_array()));
+            final var consumer = i.getArgument(1, Consumer.class);
+            consumer.accept(cipher.update(hello_world_byte_array()));
             return cipher;
-        }).when(service()).update(
-                ArgumentMatchers.notNull(), ArgumentMatchers.notNull()
-        );
+        }).when(service()).update(any(), any());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -161,11 +162,8 @@ class HelloWorld_Update_Cipher__Test
             // -------------------------------------------------------------------------------- then
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
-            Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
-            Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.hello_world_byte_array(),
-                    Arrays.copyOf(decrypted, HelloWorld.BYTES)
-            );
+            assertEquals(AES_BLOCK_SIZE, decrypted.length);
+            assertArrayEquals(hello_world_byte_array(), Arrays.copyOf(decrypted, HelloWorld.BYTES));
         }
     }
 
@@ -210,7 +208,7 @@ class HelloWorld_Update_Cipher__Test
             cipher.init(Cipher.DECRYPT_MODE, key, params);
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -259,9 +257,9 @@ class HelloWorld_Update_Cipher__Test
             // -------------------------------------------------------------------------------- then
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
             // NoPadding doesn't strip padding on decryption, so we compare only the first 12 bytes.
-            Assertions.assertEquals(AES_BLOCK_SIZE, decrypted.length);
-            Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+            assertEquals(AES_BLOCK_SIZE, decrypted.length);
+            assertArrayEquals(
+                    hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -304,7 +302,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -368,7 +366,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
             // GCM is a stream cipher mode - no padding needed, decrypted equals original plaintext
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -412,7 +410,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             // -------------------------------------------------------------------------------- then
             // ChaCha20-Poly1305 is a stream cipher (AEAD) - no padding, decrypted equals original
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -469,9 +467,9 @@ class HelloWorld_Update_Cipher__Test
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
-            Assertions.assertEquals(16, decrypted.length);
-            Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+            assertEquals(16, decrypted.length);
+            assertArrayEquals(
+                    hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -520,7 +518,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -570,9 +568,9 @@ class HelloWorld_Update_Cipher__Test
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
             // decrypted is 16 bytes: 12 bytes of "hello, world" + 4 bytes of zero padding.
-            Assertions.assertEquals(16, decrypted.length);
-            Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+            assertEquals(16, decrypted.length);
+            assertArrayEquals(
+                    hello_world_byte_array(),
                     Arrays.copyOf(decrypted, HelloWorld.BYTES)
             );
         }
@@ -615,7 +613,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -661,7 +659,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -703,7 +701,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -750,7 +748,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -792,7 +790,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 
@@ -834,7 +832,7 @@ class HelloWorld_Update_Cipher__Test
             final var decrypted = cipher.doFinal(encrypted);
             log.debug("decrypted: {}", HexFormat.of().formatHex(decrypted));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), decrypted);
+            assertArrayEquals(hello_world_byte_array(), decrypted);
         }
     }
 }

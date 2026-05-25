@@ -29,10 +29,12 @@ import org.junit.jupiter.api.io.*;
 import java.io.*;
 import java.util.jar.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Java_Util_Jar__Test
-        extends HelloWorldTest {
+class HelloWorld_Java_Util_Jar__Test extends HelloWorldTest {
 
     @TempDir
     private static File tempDir;
@@ -40,37 +42,33 @@ class HelloWorld_Java_Util_Jar__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.write_stream_will_write_actual_hello_world_bytes(service());
+        write_stream_will_write_actual_hello_world_bytes(service());
     }
 
     @Nested
     class JarOutputStream_Test {
 
         @Test
-        void __JarInputStream() throws IOException {
-            // ------------------------------------------------------------------------------- given
-            // -------------------------------------------------------------------------------- when
+        void __() throws IOException {
+            final var name = "hello-world.txt";
             try (var baos = new ByteArrayOutputStream();
                  var jos = new JarOutputStream(baos)) {
-                jos.putNextEntry(new JarEntry("hello-world.txt"));
+                jos.putNextEntry(new JarEntry(name));
                 service().write(jos);
                 jos.closeEntry();
                 jos.flush();
-                // ---------------------------------------------------------------------------- then
                 try (var bais = new ByteArrayInputStream(baos.toByteArray());
                      var jis = new JarInputStream(bais)) {
                     final var entry = jis.getNextJarEntry();
                     assert entry != null;
-                    Assertions.assertArrayEquals(
-                            HelloWorldTestUtils.hello_world_byte_array(),
-                            jis.readAllBytes()
-                    );
+                    assert entry.getName().equals(name);
+                    assertArrayEquals(hello_world_byte_array(), jis.readAllBytes());
                 }
             }
         }
 
         @Test
-        void __JarFile() throws IOException {
+        void __File() throws IOException {
             // ------------------------------------------------------------------------------- given
             final var tempFile = File.createTempFile("tmp", null, tempDir);
             final var entryName = "hello-world.bin";
@@ -87,10 +85,35 @@ class HelloWorld_Java_Util_Jar__Test
                 final var entry = jarFile.getJarEntry(entryName);
                 assert entry != null;
                 try (var in = jarFile.getInputStream(entry)) {
-                    Assertions.assertArrayEquals(
-                            HelloWorldTestUtils.hello_world_byte_array(),
-                            in.readAllBytes()
-                    );
+                    assertArrayEquals(hello_world_byte_array(), in.readAllBytes());
+                }
+            }
+        }
+    }
+
+    @Nested
+    class JarFile_Test {
+
+        @Test
+        void __() throws IOException {
+            // ------------------------------------------------------------------------------- given
+            final var file = File.createTempFile("tmp", null, tempDir);
+            final var name = "hello-world.bin";
+            // -------------------------------------------------------------------------------- when
+            try (var fos = new FileOutputStream(file);
+                 var jos = new JarOutputStream(fos)) {
+                jos.putNextEntry(new JarEntry(name));
+                service().write(jos);
+                jos.closeEntry();
+                jos.flush();
+            }
+            // -------------------------------------------------------------------------------- then
+            try (var jf = new JarFile(file)) {
+                final var entry = jf.getJarEntry(name);
+                assert entry != null;
+                assert entry.getName().equals(name);
+                try (var in = jf.getInputStream(entry)) {
+                    assertArrayEquals(hello_world_byte_array(), in.readAllBytes());
                 }
             }
         }

@@ -24,20 +24,23 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.util.function.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 /**
- * A class for testing {@link HelloWorld#acceptEach(Consumer, Function)} method.
+ * A class for testing {@link HelloWorld#accept(Consumer, Function)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("acceptEach(Consumer, Function)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_AcceptEach_Consumer_Mapper_Test
-        extends HelloWorldTest {
+class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorldTest {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -49,51 +52,43 @@ class HelloWorld_AcceptEach_Consumer_Mapper_Test
         final var consumer = (Consumer<Byte>) null;
         final Function<Byte, Byte> mapper = b -> b;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.acceptEach(consumer, mapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.accept(consumer, mapper));
     }
 
     @DisplayName("""
             should throw a <NullPointerException>
             when the <mapper> argument is <null>""")
     @Test
+    @SuppressWarnings("unchecked")
     void _ThrowNullPointerException_MapperIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        @SuppressWarnings("unchecked")
-        final var consumer = (Consumer<Byte>) Mockito.mock(Consumer.class);
+        final var consumer = mock(Consumer.class);
         final var mapper = (Function<Byte, Byte>) null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.acceptEach(consumer, mapper)
-        );
+        assertThrows(NullPointerException.class, () -> service.accept(consumer, mapper));
     }
 
     @DisplayName(
             "should invoke <set(byte[])>, and <consumer.accept(mapper.apply(b))> for each byte")
     @Test
+    @SuppressWarnings("unchecked")
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
-        @SuppressWarnings("unchecked")
-        final var consumer = (Consumer<String>) Mockito.mock(Consumer.class);
-        @SuppressWarnings("unchecked")
-        final var mapper = (Function<Byte, String>) Mockito.mock(Function.class);
-        Mockito.when(mapper.apply(Mockito.anyByte()))
-                .thenAnswer(i -> "m:" + i.<Byte>getArgument(0));
+        final var service = set_array_sets_random_bytes(service());
+        final var consumer = mock(Consumer.class);
+        final var mapper = mock(Function.class);
+        when(mapper.apply(any())).thenAnswer(i -> "m:" + i.getArgument(0));
         // ------------------------------------------------------------------------------------ when
-        final var result = service.acceptEach(consumer, mapper);
+        final var result = service.accept(consumer, mapper);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        final var inOrder = Mockito.inOrder(mapper, consumer);
+        final var array = set_array12_invoked_once(service);
+        final var inOrder = inOrder(mapper, consumer);
         for (final var b : array) {
-            inOrder.verify(mapper, Mockito.calls(1)).apply(b);
-            inOrder.verify(consumer, Mockito.calls(1)).accept("m:" + b);
+            inOrder.verify(mapper, calls(1)).apply(b);
+            inOrder.verify(consumer, calls(1)).accept("m:" + b);
         }
         inOrder.verifyNoMoreInteractions();
-        Assertions.assertSame(consumer, result);
+        assertSame(consumer, result);
     }
 }

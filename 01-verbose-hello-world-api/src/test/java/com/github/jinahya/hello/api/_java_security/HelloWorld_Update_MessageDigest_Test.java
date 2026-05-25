@@ -23,13 +23,16 @@ package com.github.jinahya.hello.api._java_security;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.security.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
- * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest)}
- * method.
+ * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드를
+ * 테스트하는 클래스.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
@@ -40,26 +43,38 @@ class HelloWorld_Update_MessageDigest_Test
         extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * {@code digest} 인수가 {@code null} 일 때
+     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드가
+     * {@link NullPointerException} 을 던지는지 검증한다.
+     */
     @Test
     void _ThrowNullPointerException_DigestIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final MessageDigest digest = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(NullPointerException.class, () -> service.update(digest));
+        assertThrows(NullPointerException.class, () -> service.update(digest));
     }
 
+    /**
+     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드가
+     * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)} 가 채워 준 배열로
+     * {@link MessageDigest#update(byte[]) digest.update(array)} 를 호출하고, 전달된 digest 를 그대로
+     * 반환하는지 검증한다.
+     */
     @DisplayName("digest.update(set(byte[12]))")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-        final var digest = Mockito.mock(MessageDigest.class);
+        final var service = set_array_returns_the_array(service());
+        final var digest = mock(MessageDigest.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(digest);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-//        Mockito.verify(digest, Mockito.times(1)).update(array);
-        Assertions.assertEquals(digest, result);
+        final var array = set_array12_invoked_once(service);
+        verify(digest, times(1)).update(array);
+        assertSame(digest, result);
     }
 }

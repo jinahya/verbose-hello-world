@@ -24,9 +24,12 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.util.zip.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#update(Checksum) update(checksum)} method.
@@ -36,8 +39,7 @@ import java.util.zip.*;
 @DisplayName("update(Checksum)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Checksum_Test
-        extends HelloWorldTest {
+class HelloWorld_Update_Checksum_Test extends HelloWorldTest {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -48,24 +50,21 @@ class HelloWorld_Update_Checksum_Test
         final var service = service();
         final Checksum checksum = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.update(checksum)
-        );
+        assertThrows(NullPointerException.class, () -> service.update(checksum));
     }
 
     @DisplayName("checksum.update(set(byte[12]))")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
-        final var checksum = Mockito.mock(Checksum.class);
+        final var service = set_array_sets_random_bytes(service());
+        final var checksum = mock(Checksum.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(checksum);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        Mockito.verify(checksum, Mockito.times(1)).update(array);
-        Mockito.verifyNoMoreInteractions(checksum);
-        Assertions.assertSame(checksum, result);
+        final var array = set_array12_invoked_once(service);
+        verify(checksum, times(1)).update(array);
+        verifyNoMoreInteractions(checksum);
+        assertSame(checksum, result);
     }
 }

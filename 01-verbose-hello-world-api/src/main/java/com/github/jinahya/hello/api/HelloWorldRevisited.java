@@ -277,13 +277,6 @@ interface HelloWorldRevisited
     }
 
     // -------------------------------------------------------------------------- java.util.function
-    @Override
-    default <T extends Consumer<? super Byte>> T accept(final T consumer) {
-        for (final var b : byteArray()) {
-            consumer.accept(b);
-        }
-        return consumer;
-    }
 
     // ------------------------------------------------------------------------------- java.util.jar
 

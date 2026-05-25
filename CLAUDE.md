@@ -100,6 +100,14 @@ The `generate-executables` profile (active by default) produces multiple artifac
 - `HelloWorld_Write_DatagramChannel_Test` tests `write(DatagramChannel)`
 - `HelloWorld_Send_DatagramChannel_Target_Test` tests `send(DatagramChannel, SocketAddress)`
 
+**`_Test` vs `__Test` — trailing-underscore count distinguishes two *kinds* of test class**:
+
+- `*_Test` (single trailing underscore) — **contract tests**. These specify what the method-under-test must do: null-arg validation, return value, interactions with collaborators (typically via `mock(...)` + `verify(...)`). They are the executable specification. The implementation is driven by them, and a failure here means the impl is wrong. Example: `HelloWorld_Update_MessageDigest_Test`, `HelloWorld_Add_SequencedCollection_Function_Test`.
+
+- `*__Test` (double trailing underscore — 畵蛇添足, "adding feet") — **extras / explorations**. These **stub the method-under-test itself** (typically `doAnswer(...).when(service()).<method>(...)`) so they can run independently of whether the real implementation exists or is correct. Their purpose is to catalogue how real collaborators (concrete collection types, real JCA providers, real files, real network I/O, etc.) behave when called by the stub's loop. Example: `HelloWorld_Update_MessageDigest__Test` exercises real `MessageDigest.getInstance(...)` providers; `HelloWorld_Add_SequencedCollection_Function__Test` exercises real `SequencedCollection` subtypes.
+  - The stub inside `__Test` is the *test's own* iteration logic, **not a copy of the real impl** and **not required to be equivalent to it**. Don't critique a `__Test` stub for diverging from the real method (null-check messages, `set(byte[])` skipped, primitive `byte` vs boxed `Byte`, etc.) — divergence is expected. The contract tests live in `_Test`.
+  - A `__Test` should keep running even if the real method body is wiped to `throw new AssertionError("TODO")`. That property is the whole point.
+
 **Test method**: `(method)_{then}_{given}` — all three parts may be omitted
 - `_ThrowNullPointerException_SocketIsNull` — throws NPE when socket is null
 - `_ThrowIllegalArgumentException_SocketIsNotConnected` — throws IAE when not connected
@@ -113,6 +121,13 @@ The `generate-executables` profile (active by default) produces multiple artifac
 
 - **Test class javadoc**: Every concrete test class must specify which class and method it tests, using `{@link}` references. Example: `"A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method."`
 - **Test method javadoc**: Every test method must be documented starting with "Asserts" or "Verifies". Example: `"Verifies that the method throws a {@link NullPointerException} when the {@code channel} argument is {@code null}."`
+- **Test-module language**: Javadoc on **non-public** elements in any test module — package-private / protected / private classes (including `@Nested` inner classes), methods, helper utilities — is written in **Korean (한국어)**. This covers nearly every test class and test method, since test types are almost always package-private. Public test utilities (e.g., shared helpers exported from `*TestUtils`) keep the same English Javadoc style as main-module code.
+  - `{@link}` / `{@code}` references, annotation names, type names, ASCII diagrams, and `@see` URLs are language-agnostic — only the prose changes.
+  - Korean equivalents of the templates above:
+    - Test class: `"{@link HelloWorld#write(OutputStream) write(stream)} 메서드를 테스트하는 클래스."`
+    - Test method (verifies): `"{@link HelloWorld#write(OutputStream) write(stream)} 메서드가 ... 검증한다."`
+    - Test method (asserts NPE on null arg): `"{@code stream} 인수가 {@code null} 일 때 {@link NullPointerException} 이 발생함을 검증한다."`
+  - Follow the same plain-Korean discipline used in the book's asciidoc: pick the everyday word, avoid literary / book-author voice, no em-dash glue between clauses.
 
 ## Key Conventions
 

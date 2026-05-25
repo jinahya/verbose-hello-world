@@ -28,6 +28,11 @@ import org.mockito.*;
 
 import java.text.*;
 
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for testing
  * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)} method.
@@ -48,24 +53,20 @@ class HelloWorld_SetText_BreakIterator_Test extends HelloWorldTest {
         final var service = service();
         final BreakIterator iterator = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setText(iterator)
-        );
+        assertThrows(NullPointerException.class, () -> service.setText(iterator));
     }
 
     @DisplayName("iterator.setText(<string from set(byte[12])>)")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        final var iterator = Mockito.mock(BreakIterator.class);
+        final var service = set_array_sets_actual_hello_world_bytes(service());
+        final var iterator = mock(BreakIterator.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setText(iterator);
         // ------------------------------------------------------------------------------------ then
         HelloWorldTestUtils.set_array12_invoked_once(service);
-//        Mockito.verify(iterator, Mockito.times(1))
-//                .setText(HelloWorldTestUtils.hello_world_string());
-        Assertions.assertSame(iterator, result);
+        verify(iterator, times(1)).setText(hello_world_string());
+        assertSame(iterator, result);
     }
 }

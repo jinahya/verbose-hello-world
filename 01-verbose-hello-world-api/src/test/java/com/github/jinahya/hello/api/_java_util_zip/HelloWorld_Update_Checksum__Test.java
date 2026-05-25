@@ -27,10 +27,13 @@ import org.apache.commons.codec.digest.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
-import org.mockito.*;
 
 import java.util.stream.*;
 import java.util.zip.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -39,9 +42,9 @@ class HelloWorld_Update_Checksum__Test
 
     private static Stream<Checksum> getChecksumStream() {
         return Stream.of(
-                Mockito.spy(new CRC32()),
-                Mockito.spy(new CRC32C()),
-                Mockito.spy(new Adler32())
+                spy(new CRC32()),
+                spy(new CRC32C()),
+                spy(new Adler32())
         );
     }
 
@@ -52,23 +55,20 @@ class HelloWorld_Update_Checksum__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        Mockito.doAnswer(i -> {
+        doAnswer(i -> {
             final var checksum = i.getArgument(0, Checksum.class);
-            checksum.update(HelloWorldTestUtils.hello_world_byte_array());
+            checksum.update(hello_world_byte_array());
             return checksum;
-        }).when(service()).update(ArgumentMatchers.<Checksum>notNull());
+        }).when(service()).<Checksum>update(any());
     }
 
     // ---------------------------------------------------------------------------------------------
     @MethodSource("getChecksumStream")
     @ParameterizedTest
     void __(final Checksum checksum) {
-        // ----------------------------------------------------------------------------------- given
         final var service = service();
-        // ------------------------------------------------------------------------------------ when
         final var result = service.update(checksum);
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(checksum, result);
+        assertSame(checksum, result);
         printf(checksum.getClass().getSimpleName(), checksum.getValue());
     }
 
@@ -80,20 +80,8 @@ class HelloWorld_Update_Checksum__Test
         void __() {
             final var checksum = new XXHash32();
             final var result = service().update(checksum);
-            Assertions.assertSame(checksum, result);
+            assertSame(checksum, result);
             printf("XXHash32", checksum.getValue());
-        }
-    }
-
-    @Nested
-    class Crc16_Test {
-
-        @Test
-        void __() {
-            final var checksum = Crc16.arc();
-            final var result = service().update(checksum);
-            Assertions.assertSame(checksum, result);
-            printf("Crc16.arc", checksum.getValue());
         }
     }
 }

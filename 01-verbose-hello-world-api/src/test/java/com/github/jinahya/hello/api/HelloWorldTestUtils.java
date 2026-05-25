@@ -147,6 +147,30 @@ public final class HelloWorldTestUtils {
     }
 
     /**
+     * Returns an int array containing the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}
+     * bytes, each widened to an {@code int} as an unsigned 8-bit value.
+     *
+     * @return an int array containing the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}
+     * bytes.
+     */
+    public static int[] hello_world_int_array() {
+        final var bytes = hello_world_byte_array();
+        final var ints = new int[bytes.length];
+        for (var i = 0; i < bytes.length; i++) {
+            ints[i] = bytes[i] & 0xFF;
+        }
+        return ints;
+    }
+
+    public static IntStream hello_world_int_stream() {
+        return IntStream.of(hello_world_int_array());
+    }
+
+    public static Stream<Byte> hello_world_byte_stream() {
+        return hello_world_int_stream().mapToObj(v -> (byte) v);
+    }
+
+    /**
      * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a
      * {@link String}, US-ASCII decoded from {@link #hello_world_byte_array()}.
      *
