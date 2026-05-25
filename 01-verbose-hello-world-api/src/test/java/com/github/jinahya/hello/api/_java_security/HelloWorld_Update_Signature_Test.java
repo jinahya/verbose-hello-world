@@ -23,18 +23,16 @@ package com.github.jinahya.hello.api._java_security;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.security.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array12_invoked_once;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} 메서드를
- * 테스트하는 클래스.
+ * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} 메서드를 테스트하는
+ * 클래스.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
@@ -67,8 +65,8 @@ class HelloWorld_Update_Signature_Test
     /**
      * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} 메서드가
      * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)} 가 채워 준 배열로
-     * {@link Signature#update(byte[]) signature.update(array)} 를 호출하고, 전달된 signature 를 그대로
-     * 반환하는지 검증한다.
+     * {@link Signature#update(byte[]) signature.update(array)} 를 호출하고, 전달된 signature 를 그대로 반환하는지
+     * 검증한다.
      */
     @DisplayName("signature.update(set(byte[12]))")
     @Test

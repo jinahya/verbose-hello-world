@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드를
- * 테스트하는 클래스.
+ * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드를 테스트하는
+ * 클래스.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
@@ -61,8 +61,8 @@ class HelloWorld_Update_MessageDigest_Test
     /**
      * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드가
      * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)} 가 채워 준 배열로
-     * {@link MessageDigest#update(byte[]) digest.update(array)} 를 호출하고, 전달된 digest 를 그대로
-     * 반환하는지 검증한다.
+     * {@link MessageDigest#update(byte[]) digest.update(array)} 를 호출하고, 전달된 digest 를 그대로 반환하는지
+     * 검증한다.
      */
     @DisplayName("digest.update(set(byte[12]))")
     @Test

@@ -29,14 +29,11 @@ import org.mockito.*;
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.file.*;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.

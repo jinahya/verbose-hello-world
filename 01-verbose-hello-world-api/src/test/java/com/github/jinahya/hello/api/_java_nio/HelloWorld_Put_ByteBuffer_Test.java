@@ -28,7 +28,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.aggregator.*;
 import org.junit.jupiter.params.provider.*;
-import org.mockito.*;
 
 import java.nio.*;
 import java.security.*;
@@ -38,14 +37,11 @@ import java.util.function.*;
 import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array12_invoked_once;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer) put(buffer)} method.

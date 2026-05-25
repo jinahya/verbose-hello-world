@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_random_bytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
