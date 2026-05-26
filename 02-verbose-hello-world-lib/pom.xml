@@ -76,34 +76,6 @@
 
   <profiles>
     <profile>
-      <id>cdi-se-arc</id>
-      <dependencies>
-        <dependency>
-          <groupId>io.quarkus.arc</groupId>
-          <artifactId>arc</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus.arc</groupId>
-          <artifactId>arc-processor</artifactId>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>cdi-se-arc-junit5</id>
-      <dependencies>
-        <dependency>
-          <groupId>io.quarkus.arc</groupId>
-          <artifactId>arc</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus.arc</groupId>
-          <artifactId>arc-processor</artifactId>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>cdi-se-openwebbeans</id>
       <properties>
         <test>HelloWorldCdiSeOpenWebBeansTest</test>
