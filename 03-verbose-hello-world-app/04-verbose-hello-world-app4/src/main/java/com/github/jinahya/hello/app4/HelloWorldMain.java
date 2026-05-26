@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.app4_;
+package com.github.jinahya.hello.app4;
 
 /*-
  * #%L
@@ -20,18 +20,15 @@ package com.github.jinahya.hello.app4_;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldArrayPublisher;
-import jakarta.enterprise.inject.se.SeContainerInitializer;
-import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
+import com.github.jinahya.hello.api.*;
+import jakarta.enterprise.inject.se.*;
+import jakarta.enterprise.inject.spi.*;
+import jakarta.inject.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Flow;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.logging.*;
 
 /**
  * A program whose {@link #main()} method obtains a {@link HelloWorld} through
@@ -54,8 +51,8 @@ class HelloWorldMain implements Flow.Subscriber<byte[]> {
     /**
      * Bootstraps a CDI SE container via {@link SeContainerInitializer#initialize()}, selects an
      * instance of this class (which is itself the {@link Flow.Subscriber}) from the container,
-     * invokes {@link #print()} on it, and {@linkplain CompletableFuture#join() joins} the
-     * returned future so the JVM does not exit before the publisher has emitted (or terminated).
+     * invokes {@link #print()} on it, and {@linkplain CompletableFuture#join() joins} the returned
+     * future so the JVM does not exit before the publisher has emitted (or terminated).
      */
     static void main() {
         try (var _ = SeContainerInitializer.newInstance().initialize()) {
@@ -82,9 +79,9 @@ class HelloWorldMain implements Flow.Subscriber<byte[]> {
     /**
      * Subscribes {@code this} to a {@link HelloWorldArrayPublisher} backed by the injected
      * {@link HelloWorld} and returns a {@link CompletableFuture} that the subscriber's terminal
-     * callbacks complete: {@link #onNext(byte[])} completes it after the first emitted byte
-     * array has been printed, while {@link #onComplete()} / {@link #onError(Throwable)} complete
-     * it on upstream termination.
+     * callbacks complete: {@link #onNext(byte[])} completes it after the first emitted byte array
+     * has been printed, while {@link #onComplete()} / {@link #onError(Throwable)} complete it on
+     * upstream termination.
      *
      * @return a {@link CompletableFuture} the caller should
      * {@linkplain CompletableFuture#join() join} so the JVM does not exit before the publisher

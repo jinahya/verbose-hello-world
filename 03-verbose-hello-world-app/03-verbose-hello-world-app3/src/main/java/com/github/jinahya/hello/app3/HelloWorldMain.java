@@ -20,17 +20,14 @@ package com.github.jinahya.hello.app3;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.HelloWorld;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.github.jinahya.hello.api.*;
+import org.springframework.context.annotation.*;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
+import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * A program whose {@link #main()} method obtains an {@link AsynchronousHelloWorld} through

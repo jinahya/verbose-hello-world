@@ -15,7 +15,7 @@
   <description>Verbose Hello World App4</description>
 
   <properties>
-    <mainClass>com.github.jinahya.hello.app4_.HelloWorldMain</mainClass>
+    <mainClass>com.github.jinahya.hello.app4.HelloWorldMain</mainClass>
   </properties>
 
   <dependencies>

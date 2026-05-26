@@ -1,13 +1,10 @@
 /**
- * The Verbose Hello World Lib package. Provides a concrete implementation of
- * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld} —
- * {@link com.github.jinahya.hello.lib.HelloWorldImpl HelloWorldImpl} — whose
- * {@link com.github.jinahya.hello.lib.HelloWorldImpl#set(byte[], int) set(array, index)} writes the
- * {@value com.github.jinahya.hello.api.HelloWorld#BYTES} {@code US-ASCII} bytes of
- * {@code "hello, world"} into {@code array} starting at {@code index} via direct byte-by-byte
- * assignment. The class is registered for {@link java.util.ServiceLoader ServiceLoader} discovery,
- * so consumers depending on this module at runtime can resolve it via
- * {@code ServiceLoader.load(HelloWorld.class).iterator().next()}.
+ * The Verbose Hello World App2 package. Hosts
+ * {@link com.github.jinahya.hello.app2.HelloWorldMain HelloWorldMain}, which obtains a
+ * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld} through
+ * {@link java.util.ServiceLoader ServiceLoader} and writes {@code hello, world} to
+ * {@link java.lang.System#out System.out} via a
+ * {@link java.nio.channels.WritableByteChannel WritableByteChannel}.
  * <p>
  * The whole package is {@linkplain org.jspecify.annotations.NullMarked null-marked} — references
  * default to non-null unless explicitly annotated
@@ -16,11 +13,11 @@
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @org.jspecify.annotations.NullMarked
-package com.github.jinahya.hello.lib;
+package com.github.jinahya.hello.app2;
 
 /*-
  * #%L
- * verbose-hello-world-lib
+ * verbose-hello-world-app2
  * %%
  * Copyright (C) 2018 - 2026 Jinahya, Inc.
  * %%

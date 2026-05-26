@@ -660,6 +660,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
+          <!-- https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-site-plugin/versions -->
           <version>4.0.0-M16</version>
         </plugin>
         <plugin>

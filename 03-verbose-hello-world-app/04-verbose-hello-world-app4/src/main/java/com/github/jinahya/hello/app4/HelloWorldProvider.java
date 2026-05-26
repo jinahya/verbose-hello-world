@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.app4_;
+package com.github.jinahya.hello.app4;
 
 /*-
  * #%L
@@ -20,11 +20,10 @@ package com.github.jinahya.hello.app4_;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.enterprise.inject.Disposes;
-import jakarta.enterprise.inject.Produces;
+import com.github.jinahya.hello.api.*;
+import jakarta.enterprise.inject.*;
 
-import java.util.ServiceLoader;
+import java.util.*;
 
 /**
  * A class for producing (and disposing) instances of {@link HelloWorld} interface.

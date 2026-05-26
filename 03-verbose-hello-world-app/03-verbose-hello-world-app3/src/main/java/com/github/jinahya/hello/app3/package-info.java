@@ -1,13 +1,12 @@
 /**
- * The Verbose Hello World Lib package. Provides a concrete implementation of
- * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld} —
- * {@link com.github.jinahya.hello.lib.HelloWorldImpl HelloWorldImpl} — whose
- * {@link com.github.jinahya.hello.lib.HelloWorldImpl#set(byte[], int) set(array, index)} writes the
- * {@value com.github.jinahya.hello.api.HelloWorld#BYTES} {@code US-ASCII} bytes of
- * {@code "hello, world"} into {@code array} starting at {@code index} via direct byte-by-byte
- * assignment. The class is registered for {@link java.util.ServiceLoader ServiceLoader} discovery,
- * so consumers depending on this module at runtime can resolve it via
- * {@code ServiceLoader.load(HelloWorld.class).iterator().next()}.
+ * The Verbose Hello World App3 package. Hosts
+ * {@link com.github.jinahya.hello.app3.HelloWorldMain HelloWorldMain} and
+ * {@link com.github.jinahya.hello.app3.HelloWorldConfiguration HelloWorldConfiguration}, which
+ * together wire an
+ * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld AsynchronousHelloWorld} via
+ * <a href="https://spring.io/projects/spring-framework">Spring</a> dependency injection,
+ * asynchronously append {@code hello, world} to a temporary file, and print it back to
+ * {@link java.lang.System#out System.out}.
  * <p>
  * The whole package is {@linkplain org.jspecify.annotations.NullMarked null-marked} — references
  * default to non-null unless explicitly annotated
@@ -16,11 +15,11 @@
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @org.jspecify.annotations.NullMarked
-package com.github.jinahya.hello.lib;
+package com.github.jinahya.hello.app3;
 
 /*-
  * #%L
- * verbose-hello-world-lib
+ * verbose-hello-world-app3
  * %%
  * Copyright (C) 2018 - 2026 Jinahya, Inc.
  * %%
