@@ -20,10 +20,10 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import lombok.extern.slf4j.Slf4j;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
 
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 /**
  * A class for testing {@link HelloWorldImpl} class.

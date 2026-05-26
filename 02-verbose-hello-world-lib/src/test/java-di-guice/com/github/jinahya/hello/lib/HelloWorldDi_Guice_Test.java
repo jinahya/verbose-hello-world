@@ -37,7 +37,8 @@ class HelloWorldDi_Guice_Test extends HelloWorldDi__Test {
 
     @BeforeEach
     void _beforeEach() {
-        final var injector = com.google.inject.Guice.createInjector(new HelloWorldDi_Guice_Module());
+        final var injector = com.google.inject.Guice.createInjector(
+                new HelloWorldDi_Guice_Module());
         injector.injectMembers(this);
     }
 }

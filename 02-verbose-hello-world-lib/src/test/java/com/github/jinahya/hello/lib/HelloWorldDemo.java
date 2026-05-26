@@ -20,9 +20,9 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.*;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
 
 /**
  * A class, for demonstration purposes only, implements the {@link HelloWorld} interface.

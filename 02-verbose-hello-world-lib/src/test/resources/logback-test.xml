@@ -20,7 +20,7 @@
 <configuration>
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-<!--      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+      <!--      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level - %msg%n</pattern>
       <!--      <pattern>%msg%n</pattern>-->
     </encoder>
@@ -29,8 +29,8 @@
     <appender-ref ref="CONSOLE"/>
   </root>
   <logger name="com.github.jinahya.hello" level="debug"/>
-<!--  <logger name="org.apache.webbeans" level="WARN"/>-->
-<!--  <logger name="org.jboss.logging" level="WARN"/>-->
-<!--  <logger name="org.jboss.weld" level="WARN"/>-->
-<!--  <logger name="org.springframework" level="WARN"/>-->
+  <!--  <logger name="org.apache.webbeans" level="WARN"/>-->
+  <!--  <logger name="org.jboss.logging" level="WARN"/>-->
+  <!--  <logger name="org.jboss.weld" level="WARN"/>-->
+  <!--  <logger name="org.springframework" level="WARN"/>-->
 </configuration>

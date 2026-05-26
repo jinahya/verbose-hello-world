@@ -20,11 +20,11 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.*;
 
 /**
- * A {@link HelloWorldServiceProvider} that supplies {@link HelloWorldImpl} instances. The
- * supplied service is classified as <em>qualified</em> ({@link #isServiceQualified()} returns
+ * A {@link HelloWorldServiceProvider} that supplies {@link HelloWorldImpl} instances. The supplied
+ * service is classified as <em>qualified</em> ({@link #isServiceQualified()} returns
  * {@code true}).
  *
  * <p>{@code public} so {@link java.util.ServiceLoader ServiceLoader}'s classpath-mode

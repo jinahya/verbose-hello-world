@@ -20,18 +20,14 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.github.jinahya.hello.api.*;
+import jakarta.inject.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
 
-import java.util.stream.Stream;
+import java.util.stream.*;
 
-import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
-import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
+import static com.github.jinahya.hello.lib.HelloWorldDi_Constants.*;
 
 /**
  * An abstract class for testing {@link HelloWorld} implementations using Dependency Injection.

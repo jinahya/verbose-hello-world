@@ -20,12 +20,11 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
 
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 /**
  * Runs the {@link HelloWorld#set(byte[], int) set(array, index)} contract inherited from

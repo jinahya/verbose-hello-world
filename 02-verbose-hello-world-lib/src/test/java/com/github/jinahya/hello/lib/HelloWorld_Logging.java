@@ -20,11 +20,7 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * An interceptor binding marking a method (or a type) whose invocations should be intercepted by

@@ -20,14 +20,14 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.*;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
- * A {@link HelloWorld} whose {@link #set(byte[], int) set(array, index)} writes the {@value
- * HelloWorld#BYTES} {@code US-ASCII} bytes of {@code "hello, world"} into {@code array} starting at
- * {@code index}, byte-by-byte via direct array assignments.
+ * A {@link HelloWorld} whose {@link #set(byte[], int) set(array, index)} writes the
+ * {@value HelloWorld#BYTES} {@code US-ASCII} bytes of {@code "hello, world"} into {@code array}
+ * starting at {@code index}, byte-by-byte via direct array assignments.
  *
  * <p>Validates its arguments before writing: throws {@link NullPointerException} when
  * {@code array} is {@code null}, and {@link IndexOutOfBoundsException} when {@code index} is
