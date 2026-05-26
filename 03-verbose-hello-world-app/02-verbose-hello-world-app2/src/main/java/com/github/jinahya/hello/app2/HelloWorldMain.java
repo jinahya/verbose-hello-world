@@ -54,7 +54,7 @@ class HelloWorldMain {
      * @see ServiceLoader#load(Class)
      * @see HelloWorld#write(WritableByteChannel)
      */
-    public static void main() throws IOException {
+    static void main() throws IOException {
         ServiceLoader.load(HelloWorld.class)
                 .iterator()
                 .next()

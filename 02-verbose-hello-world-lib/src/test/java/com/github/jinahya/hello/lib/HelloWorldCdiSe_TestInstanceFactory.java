@@ -51,6 +51,11 @@ class HelloWorldCdiSe_TestInstanceFactory
             Collections.synchronizedMap(new IdentityHashMap<>());
 
     // ---------------------------------------------------------------------------------------------
+    private HelloWorldCdiSe_TestInstanceFactory() {
+        super();
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @Override
     public void beforeAll(final ExtensionContext context) {
         final var testClass = context.getRequiredTestClass();

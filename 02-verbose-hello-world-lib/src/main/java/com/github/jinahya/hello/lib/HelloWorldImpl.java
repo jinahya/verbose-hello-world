@@ -37,13 +37,6 @@ import java.util.*;
  */
 public class HelloWorldImpl implements HelloWorld {
 
-    /**
-     * Creates a new instance.
-     */
-    public HelloWorldImpl() {
-        super();
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + '@' + String.format("%08x", hashCode());

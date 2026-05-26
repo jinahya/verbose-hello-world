@@ -33,10 +33,6 @@ class HelloWorldDemo implements HelloWorld {
 
     private static final String STRING = "hello, world";
 
-    HelloWorldDemo() {
-        super();
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + '@' + String.format("%08x", hashCode());

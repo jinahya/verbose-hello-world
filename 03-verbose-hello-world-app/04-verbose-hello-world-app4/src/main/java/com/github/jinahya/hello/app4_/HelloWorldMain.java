@@ -95,7 +95,7 @@ class HelloWorldMain implements Flow.Subscriber<byte[]> {
         return future;
     }
 
-    // ----------------------------------------------------------------------------- Flow.Subscriber
+    // ----------------------------------------------------------------------- Flow.Subscriber<byte>
 
     @Override
     public void onSubscribe(final Flow.Subscription subscription) {
