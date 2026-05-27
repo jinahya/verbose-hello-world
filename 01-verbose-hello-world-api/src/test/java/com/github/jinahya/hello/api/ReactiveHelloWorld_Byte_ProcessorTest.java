@@ -30,7 +30,6 @@ import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static org.awaitility.Awaitility.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -97,16 +96,14 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
                 processor.subscribe(subscriber);
             }
             // -------------------------------------------------------------------------------- then
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < ds.length; i++) {
-                    final var sub = subscribers.get(i);
-                    if (ds[i] >= HelloWorld.BYTES) {
-                        verify(sub, times(1)).onComplete();
-                    } else {
-                        verify(sub, times(ds[i])).onNext(any());
-                    }
+            for (int i = 0; i < ds.length; i++) {
+                final var sub = subscribers.get(i);
+                if (ds[i] >= HelloWorld.BYTES) {
+                    verify(sub, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
+                } else {
+                    verify(sub, timeout(TIMEOUT.toMillis()).times(ds[i])).onNext(any());
                 }
-            });
+            }
             for (int i = 0; i < ds.length; i++) {
                 final var subscriber = subscribers.get(i);
                 verify(subscriber, times(1)).onSubscribe(notNull());

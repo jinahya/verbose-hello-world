@@ -335,6 +335,13 @@ public final class HelloWorldTestUtils {
     }
 
     // ------------------------------------------------------------------------------------- java.io
+    public static void closeSilently(final Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (final IOException ioe) {
+            log.error("failed to close {}", closeable, ioe);
+        }
+    }
 
     /**
      * Stubs the specified mock service's {@link HelloWorld#append(File) append(file)} method to

@@ -24,7 +24,6 @@ import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.util.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
-import org.awaitility.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 
@@ -232,10 +231,8 @@ class _Flow_DayOfWeek_Example_Test {
         final var n = ThreadLocalRandom.current().nextInt(5, 14);
         subscription.request(n);
         // await, <subscriber.onNext(item)> invoked, at most <n> times
-        Awaitility.await().untilAsserted(() -> {
-            Mockito.verify(subscriber, Mockito.times(Math.min(n, 7)))
-                    .onNext(ArgumentMatchers.notNull());
-        });
+        Mockito.verify(subscriber, Mockito.timeout(10_000L).times(Math.min(n, 7)))
+                .onNext(ArgumentMatchers.notNull());
         if (n >= DayOfWeek.values().length) {
             Mockito.verify(subscriber, Mockito.times(1)).onComplete();
         }

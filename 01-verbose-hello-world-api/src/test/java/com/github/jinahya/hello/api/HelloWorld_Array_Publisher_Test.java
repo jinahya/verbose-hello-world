@@ -30,7 +30,6 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -75,7 +74,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             p.subscribe(subscriber);
-            await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(n)).onNext(any()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -121,11 +120,10 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
             for (final var subscriber : subscribers) {
                 p.subscribe(subscriber);
             }
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < count; i++) {
-                    verify(subscribers.get(i), times(demands[i])).onNext(any());
-                }
-            });
+            for (int i = 0; i < count; i++) {
+                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(demands[i]))
+                        .onNext(any());
+            }
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -161,8 +159,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            await().atMost(TIMEOUT)
-                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then

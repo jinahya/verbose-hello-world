@@ -30,7 +30,6 @@ import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static org.awaitility.Awaitility.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -99,11 +98,9 @@ class ReactiveHelloWorld_String_ProcessorTest {
                 processor.subscribe(subscriber);
             }
             // -------------------------------------------------------------------------------- then
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < ds.length; i++) {
-                    verify(subscribers.get(i), times(ds[i])).onNext(any());
-                }
-            });
+            for (int i = 0; i < ds.length; i++) {
+                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(ds[i])).onNext(any());
+            }
             for (int i = 0; i < ds.length; i++) {
                 final var subscriber = subscribers.get(i);
                 verify(subscriber, times(1)).onSubscribe(notNull());

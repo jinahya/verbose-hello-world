@@ -21,19 +21,18 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
-import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.nio.charset.*;
 import java.util.concurrent.*;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.mockito.Mockito.*;
+
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
         extends AsynchronousHelloWorld__Test<HelloWorld> {
@@ -42,169 +41,140 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
         super(HelloWorld.class);
     }
 
+    // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() { // @formatter:off
-        Mockito.doAnswer(i -> {
-            var channel = i.getArgument(0, AsynchronousByteChannel.class);
-            var attachment = i.getArgument(1);
-            var future = new CompletableFuture<>();
-            var src = HelloWorldTestUtils.hello_world_byte_buffer();
+    void __stubService() { // @formatter:off
+        doAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousByteChannel.class);
+            final var attachment = i.getArgument(1);
+            final var src = hello_world_byte_buffer();
+            final var future = new CompletableFuture<>();
             channel.write(src, attachment, new CompletionHandler<>() {
                 @Override
-                public void completed(Integer r, Object a) {
+                public void completed(final Integer result, final Object attachment) {
                     if (src.hasRemaining()) {
-                        channel.write(src, a, this);
+                        channel.write(src, attachment, this);
                         return;
                     }
-                    future.complete(a);
+                    future.complete(attachment);
                 }
                 @Override
-                public void failed(Throwable t, Object a) {
-                    future.completeExceptionally(t);
+                public void failed(final Throwable exc, final Object attachment) {
+                    future.completeExceptionally(exc);
                 }
             });
             return future;
-        }).when(asynchronousService()).write(
-                ArgumentMatchers.<AsynchronousByteChannel>notNull(),
-                ArgumentMatchers.any()
-        ); // @formatter:on
+        }).when(asynchronousService()).write(any(), any()); // @formatter:on
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Nested
-    class AsynchronousServerSocketChannelTest {
+    class EchoServer_Test {
 
         @Test
         void __() throws Exception { // @formatter:off
-            var group = AsynchronousChannelGroup.withCachedThreadPool(
+            final var group = AsynchronousChannelGroup.withCachedThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
-                    0);
+                    0
+            );
             try (var server = AsynchronousServerSocketChannel.open(group)) {
-                server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
                 server.accept(null, new CompletionHandler<>() {
                     @Override
-                    public void completed(AsynchronousSocketChannel c, Object a) {
-                        server.accept(null, this);
-                        AsynchronousHelloWorld asynchronousService = asynchronousService();
-                        asynchronousService.write(c, c).whenComplete((r, t) -> {
-                            try { c.close(); } catch (IOException _) { }
-                        });
-                    }
-                    @Override
-                    public void failed(Throwable exc, Object a) {
-                        // ignored — server close races with pending accept
-                    }
-                });
-                var clients = 4;
-                var readFutures = new CompletableFuture<?>[clients];
-                for (var i = 0; i < clients; i++) {
-                    var future = new CompletableFuture<Void>();
-                    readFutures[i] = future;
-                    var client = AsynchronousSocketChannel.open(group);
-                    client.connect(server.getLocalAddress(), null, new CompletionHandler<>() {
-                        @Override
-                        public void completed(Void r, Object a) {
-                            var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-                            client.read(dst, null, new CompletionHandler<>() {
+                    public void completed(final AsynchronousSocketChannel r1, final Object a1) {
+                        log.info("[server] accepted");
+                        try (r1) {
+                            final var future = new CompletableFuture<Void>();
+                            final var buf = ByteBuffer.allocate(HelloWorld.BYTES);
+                            r1.read(buf, null, new CompletionHandler<>() {
                                 @Override
-                                public void completed(Integer n, Object a2) {
-                                    if (dst.hasRemaining()) {
-                                        client.read(dst, null, this);
+                                public void completed(final Integer r2, final Object a2) {
+                                    if (r2 == -1) {
+                                        future.completeExceptionally(new EOFException());
                                         return;
                                     }
-                                    IO.println("[" + Thread.currentThread().getName() + "] "
-                                            + StandardCharsets.US_ASCII.decode(dst.flip()));
-                                    try { client.close(); } catch (IOException _) { }
-                                    future.complete(null);
+                                    if (buf.hasRemaining()) {
+                                        r1.read(buf, null, this);
+                                        return;
+                                    }
+                                    log.debug("[server] completed; read[12]");
+                                    buf.flip();
+                                    r1.write(buf, null, new CompletionHandler<>() {
+                                        @Override
+                                        public void completed(final Integer r3, final Object a3) {
+                                            if (buf.hasRemaining()) {
+                                                r1.write(buf, null, this);
+                                                return;
+                                            }
+                                            log.debug("[server] completed; write[12]");
+                                            future.complete(null);
+                                        }
+                                        @Override
+                                        public void failed(final Throwable t3, final Object a3) {
+                                            future.completeExceptionally(t3);
+                                        }
+                                    });
                                 }
                                 @Override
-                                public void failed(Throwable t, Object a2) {
-                                    try { client.close(); } catch (IOException _) { }
-                                    future.completeExceptionally(t);
+                                public void failed(final Throwable t2, final Object a2) {
+                                    future.completeExceptionally(t2);
                                 }
+                            });
+                            future.get(8L, TimeUnit.SECONDS);
+                        } catch (final Exception _) {
+                        }
+                    }
+                    @Override
+                    public void failed(final Throwable t1, final Object a1) {
+                    }
+                });
+                // ---------------------------------------------------------------------------------
+                try (var client = AsynchronousSocketChannel.open(group)) {
+                    final var future = new CompletableFuture<Void>();
+                    client.connect(server.getLocalAddress(), null, new CompletionHandler<>() {
+                        @Override
+                        public void completed(final Void r1, final Object a1) {
+                            log.info("[client] connected");
+                            asynchronousService().write(client, null).whenComplete((r2, t2) -> {
+                                if (t2 != null) {
+                                    future.completeExceptionally(t2);
+                                    return;
+                                }
+                                log.debug("[client] completed; write[12]");
+                                final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                                client.read(dst, null, new CompletionHandler<>() {
+                                    @Override
+                                    public void completed(Integer n, Object a3) {
+                                        if (n == -1) {
+                                            future.completeExceptionally(new EOFException());
+                                            return;
+                                        }
+                                        if (dst.hasRemaining()) {
+                                            client.read(dst, null, this);
+                                            return;
+                                        }
+                                        log.debug("[client] completed; read[12]");
+                                        future.complete(null);
+                                    }
+                                    @Override
+                                    public void failed(final Throwable t3, final Object a3) {
+                                        future.completeExceptionally(t3);
+                                    }
+                                });
                             });
                         }
                         @Override
-                        public void failed(Throwable exc, Object a) {
-                            try { client.close(); } catch (IOException _) { }
-                            future.completeExceptionally(exc);
+                        public void failed(final Throwable t1, final Object a1) {
+                            future.completeExceptionally(t1);
                         }
                     });
+                    future.get(8L, TimeUnit.SECONDS);
                 }
-                CompletableFuture.allOf(readFutures).get(8L, TimeUnit.SECONDS);
             } finally {
                 group.shutdown();
-                group.awaitTermination(8L, TimeUnit.SECONDS);
-            } // @formatter:on
-        }
-    }
-
-    @Nested
-    class AsynchronousSocketChannelTest {
-
-        @Test
-        void __() throws Exception { // @formatter:off
-            var group = AsynchronousChannelGroup.withCachedThreadPool(
-                    Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
-                    0);
-            try (var server = AsynchronousServerSocketChannel.open(group)) {
-                server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-                server.accept(null, new CompletionHandler<>() {
-                    @Override
-                    public void completed(AsynchronousSocketChannel c, Object a) {
-                        server.accept(null, this);
-                        var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-                        c.read(dst, null, new CompletionHandler<>() {
-                            @Override
-                            public void completed(Integer n, Object a2) {
-                                if (dst.hasRemaining()) {
-                                    c.read(dst, null, this);
-                                    return;
-                                }
-                                IO.println("[" + Thread.currentThread().getName() + "] "
-                                        + StandardCharsets.US_ASCII.decode(dst.flip()));
-                                try { c.close(); } catch (IOException _) { }
-                            }
-                            @Override
-                            public void failed(Throwable t, Object a2) {
-                                try { c.close(); } catch (IOException _) { }
-                            }
-                        });
-                    }
-                    @Override
-                    public void failed(Throwable t, Object a) {
-                        // ignored — server close races with pending accept
-                    }
-                });
-                var clients = 4;
-                var writeFutures = new CompletableFuture<?>[clients];
-                for (var i = 0; i < clients; i++) {
-                    var future = new CompletableFuture<Void>();
-                    writeFutures[i] = future;
-                    var client = AsynchronousSocketChannel.open(group);
-                    client.connect(server.getLocalAddress(), null, new CompletionHandler<>() {
-                        @Override
-                        public void completed(Void v, Object a) {
-                            asynchronousService().write(client, client)
-                                    .whenComplete((r, t) -> {
-                                        try { client.close(); } catch (IOException _) { }
-                                        if (t != null) {
-                                            future.completeExceptionally(t);
-                                        } else {
-                                            future.complete(null);
-                                        }
-                                    });
-                        }
-                        @Override
-                        public void failed(Throwable t, Object a) {
-                            try { client.close(); } catch (IOException _) { }
-                            future.completeExceptionally(t);
-                        }
-                    });
+                if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
+                    log.warn("channel group did not terminate within 8s");
                 }
-                CompletableFuture.allOf(writeFutures).get(8L, TimeUnit.SECONDS);
-            } finally {
-                group.shutdown();
-                group.awaitTermination(8L, TimeUnit.SECONDS);
             } // @formatter:on
         }
     }

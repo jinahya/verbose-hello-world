@@ -23,14 +23,12 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
-import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -76,65 +74,18 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
         final var channel = mock(AsynchronousByteChannel.class);
-        Mockito.doAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(1);
-            final var h = i.getArgument(2, CompletionHandler.class);
-            Thread.ofPlatform().start(() -> {
-                final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                src.position(src.position() + n);
-                h.completed(n, a);
-            });
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        doAnswer(i -> {
+            final var handler = i.getArgument(2, CompletionHandler.class);
+            handler.completed(channel, attachment);
             return null;
-        }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.any(),                                       // <attachment>
-                ArgumentMatchers.notNull()                                    // <handler>
-        );
-        final var attachment = new Object();
+        }).when(asynchronousService).write(same(channel), same(attachment), notNull());
         // ------------------------------------------------------------------------------------ when
-        final var stage = asynchronousService.write(channel, attachment);
+        final var result = asynchronousService.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
-        assertSame(attachment, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
-    }
-
-    /**
-     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
-     * {@code null} when {@code null} is passed as the attachment.
-     */
-    @DisplayName("""
-            should complete the returned stage with <null>
-            when the <attachment> is <null>"""
-    )
-    @Test
-    @SuppressWarnings({"unchecked"})
-    void __completedNullAttachment() throws Exception {
-        // ----------------------------------------------------------------------------------- given
-        put_buffer_will_increase_buffer_position_by_12(synchronousService());
-        final var asynchronousService = asynchronousService();
-        final var channel = mock(AsynchronousByteChannel.class);
-        Mockito.doAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(1);
-            final var h = i.getArgument(2, CompletionHandler.class);
-            Thread.ofPlatform().start(() -> {
-                final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                src.position(src.position() + n);
-                h.completed(n, a);
-            });
-            return null;
-        }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.notNull()
-        );
-        // ------------------------------------------------------------------------------------ when
-        final var stage = asynchronousService.write(channel, null);
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertNull(stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        assertSame(attachment, result.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
@@ -150,73 +101,22 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __failed() {
         // ----------------------------------------------------------------------------------- given
-        put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
         final var channel = mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
-        Mockito.doAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(1);
-            final var h = i.getArgument(2, CompletionHandler.class);
-            Thread.ofPlatform().start(() -> {
-                final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                src.position(src.position() + n);
-                if (!src.hasRemaining() || ThreadLocalRandom.current().nextBoolean()) {
-                    h.failed(exc, a);
-                    return;
-                }
-                h.completed(n, a);
-            });
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        doAnswer(i -> {
+            final var handler = i.getArgument(2, CompletionHandler.class);
+            handler.failed(exc, attachment);
             return null;
-        }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.notNull()
-        );
-        final var attachment = new Object();
+        }).when(asynchronousService).write(same(channel), same(attachment), notNull());
         // ------------------------------------------------------------------------------------ when
-        final var stage = asynchronousService.write(channel, attachment);
+        final var result = asynchronousService.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
-        final var cause = assertThrows(
+        final var thrown = assertThrows(
                 ExecutionException.class,
-                () -> stage.toCompletableFuture().get(8L, TimeUnit.SECONDS)
-        ).getCause();
-        assertSame(exc, cause);
-    }
-
-    /**
-     * Verifies that passing the {@code channel} itself as the {@code attachment} yields a stage
-     * that completes with the same channel — the idiom that takes the place of the (removed)
-     * stage-of-channel overload.
-     */
-    @DisplayName("""
-            stage completes with the <channel> when the <channel> is passed as the <attachment>"""
-    )
-    @Test
-    @SuppressWarnings({"unchecked"})
-    void __completedChannelAsAttachment() throws Exception {
-        // ----------------------------------------------------------------------------------- given
-        put_buffer_will_increase_buffer_position_by_12(synchronousService());
-        final var asynchronousService = asynchronousService();
-        final var channel = mock(AsynchronousByteChannel.class);
-        Mockito.doAnswer(i -> {
-            final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(1);
-            final var h = i.getArgument(2, CompletionHandler.class);
-            Thread.ofPlatform().start(() -> {
-                final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-                src.position(src.position() + n);
-                h.completed(n, a);
-            });
-            return null;
-        }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.notNull()
+                () -> result.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         );
-        // ------------------------------------------------------------------------------------ when
-        final var stage = asynchronousService.write(channel, channel);
-        // ------------------------------------------------------------------------------------ then
-        assertSame(channel, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        assertSame(exc, thrown.getCause());
     }
 }

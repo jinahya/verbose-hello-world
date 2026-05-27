@@ -30,7 +30,6 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -68,7 +67,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onComplete());
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -113,14 +112,16 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             for (final var subscriber : subscribers) {
                 p.subscribe(subscriber);
             }
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < count; i++) {
-                    final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
-                    final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
-                    verify(subscribers.get(i), times(expectedNext)).onNext(any());
-                    verify(subscribers.get(i), times(expectedComplete)).onComplete();
+            for (int i = 0; i < count; i++) {
+                final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
+                final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
+                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(expectedNext))
+                        .onNext(any());
+                if (expectedComplete > 0) {
+                    verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(expectedComplete))
+                            .onComplete();
                 }
-            });
+            }
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -159,8 +160,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            await().atMost(TIMEOUT)
-                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -189,8 +189,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);                  // returns normally
-            await().atMost(TIMEOUT)
-                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then

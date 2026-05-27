@@ -30,7 +30,6 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -77,7 +76,7 @@ class ReactiveHelloWorld_Array_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onNext(any()));
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onNext(any());
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
@@ -100,7 +99,7 @@ class ReactiveHelloWorld_Array_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(n)).onNext(any()));
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());

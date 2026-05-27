@@ -23,6 +23,7 @@ package com.github.jinahya.hello.api;
 import javax.crypto.*;
 import java.io.*;
 import java.lang.foreign.*;
+import java.lang.invoke.*;
 import java.net.*;
 import java.net.http.*;
 import java.nio.*;
@@ -62,6 +63,10 @@ import java.util.zip.*;
         "UnicodeInCode" // https://errorprone.info/bugpattern/UnicodeInCode
 })
 public interface HelloWorld {
+
+    private static System.Logger log() {
+        return System.getLogger(MethodHandles.lookup().lookupClass().getName());
+    }
 
     // ----------------------------------------------------------------------------------- constants
 

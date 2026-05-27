@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api;
 
 import org.jspecify.annotations.*;
 
+import java.lang.invoke.*;
 import java.net.http.*;
 import java.nio.*;
 import java.nio.channels.*;
@@ -65,6 +66,10 @@ import java.util.function.*;
  * @see HelloWorld
  */
 public interface AsynchronousHelloWorld<T extends HelloWorld> {
+
+    private static System.Logger log() {
+        return System.getLogger(MethodHandles.lookup().lookupClass().getName());
+    }
 
     // ---------------------------------------------------------------------- STATIC_FACTORY_METHODS
 
@@ -279,7 +284,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default <C extends AsynchronousByteChannel, A>
     void write(final C channel, @Nullable final A attachment,
-               final CompletionHandler<? super C, ? super A> handler) { // @formatter:on
+               final CompletionHandler<? super C, ? super A> handler) { // @formatter:off
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
@@ -296,7 +301,6 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                     }
                     handler.completed(channel, attachment);
                 }
-
                 @Override
                 public void failed(final Throwable exc, final A attachment) {
                     handler.failed(exc, attachment);
@@ -324,10 +328,10 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default <A>
     CompletionStage<A> write(final AsynchronousByteChannel channel,
-                             final @Nullable A attachment) { // @formatter:off
+                             final @Nullable A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         final var future = new CompletableFuture<A>();
-        write(channel, attachment, new CompletionHandler<>() {
+        write(channel, attachment, new CompletionHandler<>() { // @formatter:off
             @Override
             public void completed(final AsynchronousByteChannel result, final A attachment) {
                 future.complete(attachment);
@@ -335,9 +339,9 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             @Override
             public void failed(final Throwable exc, final A attachment) {
                 future.completeExceptionally(exc);
-            }
+            } // @formatter:on
         });
-        return future; // @formatter:on
+        return future;
     }
 
     // ---------------------------------------------------------------------------------------------

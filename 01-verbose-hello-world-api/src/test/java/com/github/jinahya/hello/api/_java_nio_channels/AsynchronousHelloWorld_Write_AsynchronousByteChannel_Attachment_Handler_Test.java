@@ -31,7 +31,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
-import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -57,14 +56,13 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
      */
     @DisplayName("should throw NullPointerException when channel is null")
     @Test
-    @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var s = asynchronousService();
-        final var c = (AsynchronousByteChannel) null;
-        final var h = mock(CompletionHandler.class);
+        final var service = asynchronousService();
+        final var channel = (AsynchronousByteChannel) null;
+        final var handler = mock(CompletionHandler.class);
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(NullPointerException.class, () -> s.write(c, null, h));
+        assertThrows(NullPointerException.class, () -> service.write(channel, null, handler));
     }
 
     /**
@@ -76,11 +74,11 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var s = asynchronousService();
-        final var c = mock(AsynchronousByteChannel.class);
+        final var service = asynchronousService();
+        final var channel = mock(AsynchronousByteChannel.class);
         final CompletionHandler h = null;
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(NullPointerException.class, () -> s.write(c, null, h));
+        assertThrows(NullPointerException.class, () -> service.write(channel, null, h));
     }
 
     /**
@@ -125,8 +123,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         // ------------------------------------------------------------------------------------ when
         asynchronousService.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        await().atMost(Duration.ofSeconds(8L))
-                .untilAsserted(() -> verify(handler).completed(channel, attachment));
+        verify(handler, timeout(Duration.ofSeconds(8L).toMillis())).completed(channel, attachment);
         verify(handler, never()).failed(any(), any());
         final var buffer = put_buffer12_invoked_once(synchronousService());
         verify(channel, atLeastOnce()).write(same(buffer), same(attachment), notNull());
@@ -182,8 +179,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         // ------------------------------------------------------------------------------------ when
         asynchronousService.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        await().atMost(Duration.ofSeconds(8L))
-                .untilAsserted(() -> verify(handler).failed(exc, attachment));
+        verify(handler, timeout(Duration.ofSeconds(8L).toMillis())).failed(exc, attachment);
         verify(handler, never()).completed(any(), any());
     }
 }
