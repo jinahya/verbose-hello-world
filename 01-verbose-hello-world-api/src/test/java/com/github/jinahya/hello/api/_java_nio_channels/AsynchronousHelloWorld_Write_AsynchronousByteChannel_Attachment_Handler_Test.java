@@ -23,14 +23,15 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.nio.*;
 import java.nio.channels.*;
+import java.time.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -59,13 +60,11 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var asynchronousService = asynchronousService();
-        final var channel = (AsynchronousByteChannel) null;
-        final CompletionHandler handler = mock(CompletionHandler.class);
+        final var s = asynchronousService();
+        final var c = (AsynchronousByteChannel) null;
+        final var h = mock(CompletionHandler.class);
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.write(channel, null, handler));
+        assertThrows(NullPointerException.class, () -> s.write(c, null, h));
     }
 
     /**
@@ -77,14 +76,11 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var asynchronousService = asynchronousService();
-        final var channel = mock(AsynchronousByteChannel.class);
-        final CompletionHandler handler = null;
+        final var s = asynchronousService();
+        final var c = mock(AsynchronousByteChannel.class);
+        final CompletionHandler h = null;
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.write(channel, null, handler)
-        );
+        assertThrows(NullPointerException.class, () -> s.write(c, null, h));
     }
 
     /**
@@ -129,8 +125,8 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         // ------------------------------------------------------------------------------------ when
         asynchronousService.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
-                .completed(channel, attachment);
+        await().atMost(Duration.ofSeconds(8L))
+                .untilAsserted(() -> verify(handler).completed(channel, attachment));
         verify(handler, never()).failed(any(), any());
         final var buffer = put_buffer12_invoked_once(synchronousService());
         verify(channel, atLeastOnce()).write(same(buffer), same(attachment), notNull());
@@ -160,34 +156,34 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         final var asynchronousService = asynchronousService();
         final var channel = mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
+        final var threadReference = new AtomicReference<Thread>();
         doAnswer(i -> {
+            assert threadReference.get() == null;
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var a = i.getArgument(1);
-            final var h = i.getArgument(2, CompletionHandler.class);
+            assert src != null;
+            assert src.capacity() == HelloWorld.BYTES;
+            assert src.limit() == HelloWorld.BYTES;
+            assert src.remaining() > 0;
+            final var attachment = i.getArgument(1);
+            final var handler = i.getArgument(2, CompletionHandler.class);
             Thread.ofPlatform().start(() -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
                 if (!src.hasRemaining() || ThreadLocalRandom.current().nextBoolean()) {
-                    h.failed(exc, a);
+                    handler.failed(exc, attachment);
                     return;
                 }
-                h.completed(n, a);
+                handler.completed(n, attachment);
             });
             return null;
-        }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                any(),                                       // <attachment>
-                notNull()                                    // <handler>
-        );
+        }).when(channel).write(any(), any(), any());
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
-        final var handler = (CompletionHandler<AsynchronousByteChannel, Object>)
-                mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         asynchronousService.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
-                .failed(exc, attachment);
-        verify(handler, never())
-                .completed(any(), any());
+        await().atMost(Duration.ofSeconds(8L))
+                .untilAsserted(() -> verify(handler).failed(exc, attachment));
+        verify(handler, never()).completed(any(), any());
     }
 }

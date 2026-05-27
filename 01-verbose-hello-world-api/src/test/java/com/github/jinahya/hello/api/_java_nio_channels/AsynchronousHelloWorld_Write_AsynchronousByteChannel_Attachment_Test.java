@@ -21,7 +21,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
-import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
@@ -29,6 +28,10 @@ import org.mockito.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -54,13 +57,10 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var asynchronousService = asynchronousService();
-        final var channel = (AsynchronousByteChannel) null;
+        final var s = asynchronousService();
+        final var c = (AsynchronousByteChannel) null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.write(channel, null)
-        );
+        assertThrows(NullPointerException.class, () -> s.write(c, null));
     }
 
     /**
@@ -76,9 +76,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var channel = mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var a = i.getArgument(1);
@@ -98,7 +98,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         // ------------------------------------------------------------------------------------ when
         final var stage = asynchronousService.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(attachment, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        assertSame(attachment, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
@@ -113,9 +113,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __completedNullAttachment() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var channel = mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var a = i.getArgument(1);
@@ -150,9 +150,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __failed() {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var channel = mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
@@ -177,11 +177,11 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         // ------------------------------------------------------------------------------------ when
         final var stage = asynchronousService.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
-        final var cause = Assertions.assertThrows(
+        final var cause = assertThrows(
                 ExecutionException.class,
                 () -> stage.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
-        Assertions.assertSame(exc, cause);
+        assertSame(exc, cause);
     }
 
     /**
@@ -196,9 +196,9 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __completedChannelAsAttachment() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(synchronousService());
+        put_buffer_will_increase_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
-        final var channel = Mockito.mock(AsynchronousByteChannel.class);
+        final var channel = mock(AsynchronousByteChannel.class);
         Mockito.doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             final var a = i.getArgument(1);
@@ -217,6 +217,6 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         // ------------------------------------------------------------------------------------ when
         final var stage = asynchronousService.write(channel, channel);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(channel, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        assertSame(channel, stage.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 }
