@@ -34,10 +34,13 @@ import java.nio.charset.*;
 import java.util.concurrent.*;
 
 @畵蛇添足
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test() {
+        super(HelloWorld.class);
+    }
 
     @BeforeEach
     void __() { // @formatter:off

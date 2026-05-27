@@ -46,7 +46,7 @@ abstract class HelloWorldReactive__Test {
         super();
         this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
         this.asynchronousService = Mockito.spy(
-                new DefaultAsynchronousHelloWorld(synchronousService, Runnable::run)
+                new AsynchronousHelloWorldImpl<>(synchronousService, Runnable::run)
         );
     }
 
@@ -67,5 +67,5 @@ abstract class HelloWorldReactive__Test {
 
     @Accessors(fluent = true)
     @Getter(AccessLevel.PACKAGE)
-    private final AsynchronousHelloWorld asynchronousService;
+    private final AsynchronousHelloWorld<HelloWorld> asynchronousService;
 }

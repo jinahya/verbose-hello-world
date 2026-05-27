@@ -31,11 +31,14 @@ import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test() {
+        super(HelloWorld.class);
+    }
 
     @Test
     @SuppressWarnings({"unchecked"})

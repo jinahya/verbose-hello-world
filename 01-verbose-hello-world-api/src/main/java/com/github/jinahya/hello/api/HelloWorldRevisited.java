@@ -53,7 +53,7 @@ interface HelloWorldRevisited
         assert array != null;
         assert index >= 0;
         assert index + BYTES <= array.length;
-        final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        final var src = HelloWorldConstants.HELL_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(src, 0, array, index, src.length);
         return array;
     }

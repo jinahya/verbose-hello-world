@@ -3,8 +3,16 @@ package com.github.jinahya.hello.api;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
+import java.nio.*;
 import java.nio.charset.*;
+import java.util.function.*;
+import java.util.stream.*;
+
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /*-
  * #%L
@@ -33,49 +41,73 @@ import java.nio.charset.*;
 @Slf4j
 class HelloWorldUtilsTest extends HelloWorldTest {
 
+    private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
+        return Stream.of(
+                () -> ByteBuffer.allocate(HelloWorld.BYTES),
+                () -> ByteBuffer.allocateDirect(HelloWorld.BYTES)
+        );
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        HelloWorldTestUtils.put_buffer_will_put_actual_hello_world_bytes(service());
+        set_array_sets_actual_hello_world_bytes(service());
+        put_buffer_will_put_actual_hello_world_bytes(service());
+        append_packet_appends_hello_world_bytes(service());
     }
 
-    // --------------------------------------------------------------------------------------- array
-    @Test
-    @DisplayName("array(service) → byte[12] of \"hello, world\"")
-    void array__() {
-        // ----------------------------------------------------------------------------------- given
-        // ------------------------------------------------------------------------------------ when
-        final var result = HelloWorldUtils.array(service());
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(HelloWorld.BYTES, result.length);
-        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), result);
+    // ---------------------------------------------------------------------------------------------
+    @DisplayName("array(service)")
+    @Nested
+    class Array_Test {
+
+        @Test
+        void __() {
+            final var result = HelloWorldUtils.array(service());
+            assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), result);
+        }
     }
 
-    // -------------------------------------------------------------------------------------- buffer
-    @Test
-    @DisplayName("buffer(service) → ByteBuffer of \"hello, world\", ready for reading")
-    void buffer__() {
-        // ----------------------------------------------------------------------------------- given
-        // ------------------------------------------------------------------------------------ when
-        final var buffer = HelloWorldUtils.buffer(service());
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(0, buffer.position());
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.limit());
-        Assertions.assertEquals(HelloWorld.BYTES, buffer.remaining());
-        final var bytes = new byte[buffer.remaining()];
-        buffer.get(bytes);
-        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), bytes);
+    @DisplayName("buffer(service, supplier)")
+    @Nested
+    class Buffer_Supplier_Test {
+
+        private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
+            return HelloWorldUtilsTest.byteBufferSupplierStream();
+        }
+
+        @MethodSource({"byteBufferSupplierStream"})
+        @ParameterizedTest
+        void __(final Supplier<ByteBuffer> supplier) {
+            final var result = HelloWorldUtils.buffer(service(), supplier);
+            assertEquals(hello_world_byte_buffer(), result);
+        }
     }
 
-    // ----------------------------------------------------------------------------- stringFromArray
-    @Test
-    void stringFromArray__() {
-        final var string = new String(HelloWorldUtils.array(service()), StandardCharsets.US_ASCII);
+    @DisplayName("string(service)")
+    @Nested
+    class String_Test {
+
+        @Test
+        void __() {
+            final var result = HelloWorldUtils.string(service());
+            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, result);
+        }
     }
 
-    // ---------------------------------------------------------------------------- stringFromBuffer
-    @Test
-    void stringFromBuffer__() {
-        final var string = StandardCharsets.US_ASCII.decode(HelloWorldUtils.buffer(service()));
+    @DisplayName("decode(service, supplier)")
+    @Nested
+    class Decode_Supplier_Test {
+
+        private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
+            return HelloWorldUtilsTest.byteBufferSupplierStream();
+        }
+
+        @MethodSource({"byteBufferSupplierStream"})
+        @ParameterizedTest
+        void __(final Supplier<ByteBuffer> supplier) throws CharacterCodingException {
+            final var result = HelloWorldUtils.decode(service(), supplier);
+            assertEquals(hello_world_char_buffer(), result);
+        }
     }
 }

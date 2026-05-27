@@ -37,7 +37,11 @@ import java.nio.channels.*;
 @DisplayName("write(channel, attachment, handler)")
 @Slf4j
 class AsynchronousHelloWorld_Send_Channel_Attachment_Handler_Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Send_Channel_Attachment_Handler_Test() {
+        super(HelloWorld.class);
+    }
 
 //    /**
 //     * Verifies that the

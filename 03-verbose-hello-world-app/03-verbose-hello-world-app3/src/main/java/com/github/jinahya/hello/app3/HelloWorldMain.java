@@ -23,18 +23,15 @@ package com.github.jinahya.hello.app3;
 import com.github.jinahya.hello.api.*;
 import org.springframework.context.annotation.*;
 
-import java.io.*;
-import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 /**
  * A program whose {@link #main()} method obtains an {@link AsynchronousHelloWorld} through
  * <a href="https://spring.io/projects/spring-framework">Spring</a> dependency injection,
- * asynchronously appends {@code hello, world} to a temp file on {@link ForkJoinPool#commonPool()},
- * reads the file back, and prints it to {@link System#out}. The returned future is joined so the
- * program does not exit before the chain completes.
+ * asynchronously produces the {@code hello, world} string on {@link ForkJoinPool#commonPool()}, and
+ * prints it to {@link System#out}. The returned future is joined so the program does not exit
+ * before the chain completes.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see AnnotationConfigApplicationContext
@@ -48,12 +45,14 @@ class HelloWorldMain {
      * Bootstraps a Spring {@link AnnotationConfigApplicationContext} from
      * {@link HelloWorldConfiguration}, looks up the container-managed {@link HelloWorldMain} bean,
      * invokes {@link #print()} on it, and {@linkplain CompletableFuture#join() joins} the returned
-     * future so the asynchronous append + read + print chain completes before this method returns.
+     * stage (converted via {@link CompletionStage#toCompletableFuture()}) so the asynchronous print
+     * chain completes before this method returns.
      */
     static void main() {
         try (var context = new AnnotationConfigApplicationContext(HelloWorldConfiguration.class)) {
             context.getBean(HelloWorldMain.class)
                     .print()
+                    .toCompletableFuture()
                     .join();
         }
     }
@@ -67,56 +66,30 @@ class HelloWorldMain {
      * @param service the {@link AsynchronousHelloWorld} service to print with; must not be
      *                {@code null}.
      */
-    HelloWorldMain(final AsynchronousHelloWorld service) {
+    HelloWorldMain(final AsynchronousHelloWorld<HelloWorld> service) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
     }
 
     /**
-     * Creates a temp file,
-     * {@linkplain AsynchronousHelloWorld#append(java.nio.file.Path, Object) asynchronously appends}
-     * the {@value HelloWorld#BYTES} bytes of {@code hello, world} to it via the injected
-     * {@link AsynchronousHelloWorld}, then reads the file via
-     * {@link Files#readString(java.nio.file.Path, java.nio.charset.Charset)} and prints it to
+     * Asynchronously produces the {@code hello, world} {@link String} via the injected
+     * {@link AsynchronousHelloWorld} — by
+     * {@linkplain AsynchronousHelloWorld#applyAsync(java.util.function.Function) dispatching}
+     * {@link HelloWorldUtils#string(HelloWorld)} on the service's executor — and prints it to
      * {@link System#out}.
      *
-     * @return a {@link CompletableFuture} that completes after the append finishes and the line has
-     * been printed; the caller must {@linkplain CompletableFuture#join() join} (or otherwise wait
-     * on) it if the JVM might exit before {@link ForkJoinPool#commonPool()} runs the scheduled
-     * task.
+     * @return a {@link CompletionStage} that completes after the line has been printed; the caller
+     * must wait on it (typically via
+     * {@linkplain CompletionStage#toCompletableFuture() toCompletableFuture()} {@code .join()}) if
+     * the JVM might exit before {@link ForkJoinPool#commonPool()} runs the scheduled task.
      */
-    CompletableFuture<Void> print() {
-        return CompletableFuture
-                .supplyAsync(() -> {
-                    try {
-                        final var path = Files.createTempFile(null, null);
-                        path.toFile().deleteOnExit();
-                        return path;
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException(ioe);
-                    }
-                })
-                .thenCompose(p -> service.append(p, p))
-                .thenApply(p -> {
-                    try {
-                        IO.println(Files.readString(p, StandardCharsets.US_ASCII));
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException(ioe);
-                    }
-                    return p;
-                })
-                .thenAccept(p -> {
-                    try {
-                        Files.deleteIfExists(p);
-                    } catch (final IOException ioe) {
-                        throw new UncheckedIOException(ioe);
-                    }
-                });
+    CompletionStage<Void> print() {
+        return service.applyAsync(HelloWorldUtils::string).thenAccept(IO::println);
     }
 
     /**
      * The {@link AsynchronousHelloWorld} service to print with; injected by Spring through the
      * constructor.
      */
-    private final AsynchronousHelloWorld service;
+    private final AsynchronousHelloWorld<HelloWorld> service;
 }

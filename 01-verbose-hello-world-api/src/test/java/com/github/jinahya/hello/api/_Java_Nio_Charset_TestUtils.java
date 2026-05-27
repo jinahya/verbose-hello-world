@@ -52,6 +52,17 @@ public final class _Java_Nio_Charset_TestUtils {
         );
     }
 
+    public static Stream<CharsetEncoder> charsetEncoderStream() {
+        return charsetStream()
+                .filter(Charset::canEncode)
+                .map(Charset::newEncoder);
+    }
+
+    public static Stream<CharsetDecoder> charsetDecoderStream() {
+        return charsetStream()
+                .map(Charset::newDecoder);
+    }
+
     private _Java_Nio_Charset_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

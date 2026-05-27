@@ -55,8 +55,10 @@ import static org.mockito.Mockito.*;
  * The class groups three kinds of utilities:
  * <ul>
  *   <li><strong>Reference payload constructors</strong> — {@link #hello_world_byte_array()},
- *       {@link #hello_world_string()}, {@link #hello_world_byte_buffer()}, and
- *       {@link #hello_world_char_array()} return fresh copies of the canonical
+ *       {@link #hello_world_int_array()}, {@link #hello_world_int_stream()},
+ *       {@link #hello_world_byte_stream()}, {@link #hello_world_string()},
+ *       {@link #hello_world_char_array()}, {@link #hello_world_byte_buffer()}, and
+ *       {@link #hello_world_char_buffer()} return fresh copies of the canonical
  *       {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload in different shapes for
  *       assertion comparisons.</li>
  *   <li><strong>Mock stubbing helpers</strong> — the {@code <verb>_<argType>_<does>(service)}
@@ -162,10 +164,25 @@ public final class HelloWorldTestUtils {
         return ints;
     }
 
+    /**
+     * Returns an {@link IntStream} of the {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes
+     * widened to unsigned 8-bit {@code int}s, sourced from {@link #hello_world_int_array()}.
+     *
+     * @return an {@link IntStream} of the {@value HelloWorldTestConstants#HELLO_WORLD_STRING}
+     * bytes.
+     */
     public static IntStream hello_world_int_stream() {
         return IntStream.of(hello_world_int_array());
     }
 
+    /**
+     * Returns a {@link Stream} of boxed {@link Byte}s for each
+     * {@value HelloWorldTestConstants#HELLO_WORLD_STRING} byte, sourced from
+     * {@link #hello_world_int_stream()}.
+     *
+     * @return a {@link Stream} of the {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes as
+     * boxed {@link Byte}s.
+     */
     public static Stream<Byte> hello_world_byte_stream() {
         return hello_world_int_stream().mapToObj(v -> (byte) v);
     }
@@ -178,17 +195,6 @@ public final class HelloWorldTestUtils {
      */
     public static String hello_world_string() {
         return new String(hello_world_byte_array(), StandardCharsets.US_ASCII);
-    }
-
-    /**
-     * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a fresh,
-     * read-write {@link ByteBuffer} backed by a new {@code byte[]} — position {@code 0}, limit and
-     * capacity {@value HelloWorld#BYTES}.
-     *
-     * @return the canonical payload as a {@link ByteBuffer}.
-     */
-    public static ByteBuffer hello_world_byte_buffer() {
-        return ByteBuffer.wrap(hello_world_byte_array());
     }
 
     /**
@@ -508,6 +514,51 @@ public final class HelloWorldTestUtils {
     // ------------------------------------------------------------------------------------ java.net
 
     /**
+     * Stubs the specified mock service's {@link HelloWorld#append(DatagramPacket) append(packet)}
+     * method to increase the packet's {@linkplain DatagramPacket#getLength() length} by
+     * {@value HelloWorld#BYTES} and return the packet. Useful when an assertion only cares that 12
+     * bytes were appended, not what they are.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     */
+    public static <T extends HelloWorld> T append_packet_increases_packet_length_by_12(
+            final T service) {
+        requireMock(service);
+        doAnswer(i -> {
+            final var packet = i.getArgument(0, DatagramPacket.class);
+            packet.setLength(packet.getLength() + HelloWorld.BYTES);
+            return packet;
+        }).when(service).<DatagramPacket>append(any());
+        return service;
+    }
+
+    /**
+     * Stubs the specified mock service's {@link HelloWorld#append(DatagramPacket) append(packet)}
+     * method to copy the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes into the
+     * packet's data buffer (starting at {@linkplain DatagramPacket#getOffset() offset}), increase
+     * the packet's {@linkplain DatagramPacket#getLength() length} by {@value HelloWorld#BYTES}, and
+     * return the packet.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     */
+    public static <T extends HelloWorld> T append_packet_appends_hello_world_bytes(
+            final T service) {
+        requireMock(service);
+        doAnswer(i -> {
+            final var packet = i.getArgument(0, DatagramPacket.class);
+            System.arraycopy(hello_world_byte_array(), 0, packet.getData(), packet.getOffset(),
+                             HelloWorld.BYTES);
+            packet.setLength(packet.getLength() + HelloWorld.BYTES);
+            return packet;
+        }).when(service).<DatagramPacket>append(any());
+        return service;
+    }
+
+    /**
      * Stubs the specified mock service's {@link HelloWorld#send(Socket) send(socket)} method to
      * write the actual {@value HelloWorldTestConstants#HELLO_WORLD_STRING} bytes to the socket's
      * {@link Socket#getOutputStream() output stream} and return the socket.
@@ -531,9 +582,31 @@ public final class HelloWorldTestUtils {
     // ------------------------------------------------------------------------------------ java.nio
 
     /**
+     * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a fresh,
+     * read-write {@link ByteBuffer} backed by a new {@code byte[]} — position {@code 0}, limit and
+     * capacity {@value HelloWorld#BYTES}.
+     *
+     * @return the canonical payload as a {@link ByteBuffer}.
+     */
+    public static ByteBuffer hello_world_byte_buffer() {
+        return ByteBuffer.wrap(hello_world_byte_array());
+    }
+
+    /**
+     * Returns the canonical {@value HelloWorldTestConstants#HELLO_WORLD_STRING} payload as a fresh
+     * {@link CharBuffer} wrapping the {@value HelloWorld#BYTES}-character string — position
+     * {@code 0}, limit and capacity {@value HelloWorld#BYTES}.
+     *
+     * @return the canonical payload as a {@link CharBuffer}.
+     */
+    public static CharBuffer hello_world_char_buffer() {
+        return StandardCharsets.US_ASCII.decode(hello_world_byte_buffer());
+    }
+
+    /**
      * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
      * {@code buffer} is not {@code null} and has remaining greater than or equal to
-     * {@value HelloWorld#BYTES}, to just return the {@code bufefer} whose
+     * {@value HelloWorld#BYTES}, to just return the {@code buffer} whose
      * {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
      *
      * @param service the mock service.
@@ -559,7 +632,7 @@ public final class HelloWorldTestUtils {
     /**
      * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
      * {@code buffer} is not {@code null} and its capacity and remaining are equal to
-     * {@value HelloWorld#BYTES}, to just return the {@code bufefer} whose
+     * {@value HelloWorld#BYTES}, to just return the {@code buffer} whose
      * {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
      *
      * @param service the mock service.
@@ -613,6 +686,16 @@ public final class HelloWorldTestUtils {
         return service;
     }
 
+    /**
+     * Convenience overload of
+     * {@link #put_buffer_will_put_12_random_bytes(HelloWorld, Consumer)
+     * put_buffer_will_put_12_random_bytes(service, consumer)} with a no-op consumer — use when the
+     * random bytes themselves are not needed for later assertion.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     */
     public static <T extends HelloWorld>
     T put_buffer_will_put_12_random_bytes(final T service) {
         return put_buffer_will_put_12_random_bytes(
@@ -696,6 +779,18 @@ public final class HelloWorldTestUtils {
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
+
+    /**
+     * Stubs the specified mock service's
+     * {@link HelloWorld#write(WritableByteChannel) write(channel)} method to just return the
+     * channel (no bytes written). Useful when an assertion only cares that the method was invoked,
+     * not what (if anything) it wrote.
+     *
+     * @param service the mock service.
+     * @param <T>     the {@link HelloWorld} subtype.
+     * @return the given {@code service}.
+     * @throws IOException declared for stubbing convenience.
+     */
     public static <T extends HelloWorld>
     T write_writablebytechannel_returns_channel(final T service) throws IOException {
         requireMock(service);

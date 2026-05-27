@@ -37,10 +37,13 @@ import java.util.concurrent.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("append(path, attachment)")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class AsynchronousHelloWorld_Append_Path_Attachment_Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Append_Path_Attachment_Test() {
+        super(HelloWorld.class);
+    }
 
     @DisplayName("should throw NullPointerException when path is null")
     @Test

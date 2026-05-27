@@ -29,11 +29,14 @@ import org.junit.jupiter.api.io.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class AsynchronousHelloWorld_Append_Path_Attachment__Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Append_Path_Attachment__Test() {
+        super(HelloWorld.class);
+    }
 
     @Test
     void __(final @TempDir Path tempDir) throws Exception {

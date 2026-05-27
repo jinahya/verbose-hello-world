@@ -39,10 +39,13 @@ import java.util.concurrent.atomic.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(channel, position, attachment, handler)")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handler_Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handler_Test() {
+        super(HelloWorld.class);
+    }
 
     @DisplayName("should throw NullPointerException when channel is null")
     @Test

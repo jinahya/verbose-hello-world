@@ -22,22 +22,22 @@ package com.github.jinahya.hello.api;
 
 import lombok.*;
 import lombok.experimental.*;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
+
+import static org.mockito.Mockito.*;
 
 /**
  * An abstract class for testing {@link AsynchronousHelloWorld} interface.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public abstract class AsynchronousHelloWorldTest {
+//@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+public abstract class AsynchronousHelloWorld__Test<T extends HelloWorld> {
 
-    protected AsynchronousHelloWorldTest() {
+    protected AsynchronousHelloWorld__Test(final Class<T> synchronousServiceClass) {
         super();
-        this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        this.asynchronousService = Mockito.spy(
-                new DefaultAsynchronousHelloWorld(synchronousService, Runnable::run)
+        this.synchronousService = mock(synchronousServiceClass);
+        this.asynchronousService = spy(
+                new AsynchronousHelloWorldImpl<>(synchronousService, Runnable::run)
         );
     }
 
@@ -48,9 +48,9 @@ public abstract class AsynchronousHelloWorldTest {
     // ---------------------------------------------------------------------------------------------
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
-    private final HelloWorld synchronousService;
+    private final T synchronousService;
 
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
-    private final AsynchronousHelloWorld asynchronousService;
+    private final AsynchronousHelloWorld<T> asynchronousService;
 }

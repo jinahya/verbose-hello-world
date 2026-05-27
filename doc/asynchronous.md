@@ -8,7 +8,7 @@ The `AsynchronousHelloWorld` interface provides **asynchronous** I/O methods usi
 
 **Interface:** `com.github.jinahya.hello.api.AsynchronousHelloWorld`
 
-**Implementation:** `com.github.jinahya.hello.api.DefaultAsynchronousHelloWorld`
+**Implementation:** `com.github.jinahya.hello.api.AsynchronousHelloWorldImpl`
 
 **Executor Strategy:** Uses virtual threads by default (`Executors.newVirtualThreadPerTaskExecutor()`)
 

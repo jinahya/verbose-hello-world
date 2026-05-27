@@ -64,7 +64,7 @@ import java.util.function.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld
  */
-public interface AsynchronousHelloWorld {
+public interface AsynchronousHelloWorld<T extends HelloWorld> {
 
     // ---------------------------------------------------------------------- STATIC_FACTORY_METHODS
 
@@ -78,8 +78,11 @@ public interface AsynchronousHelloWorld {
      * @return a new instance wrapping the {@code service} on the {@code executor}.
      * @throws NullPointerException if either {@code service} or {@code executor} is {@code null}.
      */
-    static AsynchronousHelloWorld from(final HelloWorld service, final Executor executor) {
-        return new DefaultAsynchronousHelloWorld(service, executor);
+    static <T extends HelloWorld> AsynchronousHelloWorld<T> from(final T service,
+                                                                 final Executor executor) {
+        Objects.requireNonNull(service, "service is null");
+        Objects.requireNonNull(executor, "executor is null");
+        return new AsynchronousHelloWorldImpl<>(service, executor);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -99,7 +102,7 @@ public interface AsynchronousHelloWorld {
      * {@code write}, {@code append}, {@code sendXxx}, and {@code sendAsync} all delegate here for
      * dispatch onto the instance's executor.
      */
-    <R> CompletionStage<R> applyAsync(Function<? super HelloWorld, ? extends R> mapper);
+    <R> CompletionStage<R> applyAsync(Function<? super T, ? extends R> mapper);
 
     // ------------------------------------------------------------------------------- java.net.http
 
@@ -276,25 +279,26 @@ public interface AsynchronousHelloWorld {
      */
     default <C extends AsynchronousByteChannel, A>
     void write(final C channel, @Nullable final A attachment,
-               final CompletionHandler<? super C, ? super A> handler) { // @formatter:off
+               final CompletionHandler<? super C, ? super A> handler) { // @formatter:on
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).whenComplete((b, t) -> {
+        applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
             }
             channel.write(b, attachment, new CompletionHandler<>() {
-                @Override public void completed(final Integer result, final A attachment) {
+                @Override
+                public void completed(final Integer result, final A attachment) {
                     if (b.hasRemaining()) {
                         channel.write(b, attachment, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
-                @Override public void failed(final Throwable exc, final A attachment) {
+
+                @Override
+                public void failed(final Throwable exc, final A attachment) {
                     handler.failed(exc, attachment);
                 }
             });

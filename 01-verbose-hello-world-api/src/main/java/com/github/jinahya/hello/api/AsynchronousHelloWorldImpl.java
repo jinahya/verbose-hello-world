@@ -29,7 +29,7 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-final class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
+final class AsynchronousHelloWorldImpl<T extends HelloWorld> implements AsynchronousHelloWorld<T> {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 
@@ -43,7 +43,7 @@ final class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
      *                 dispatched.
      * @throws NullPointerException if either {@code service} or {@code executor} is {@code null}.
      */
-    DefaultAsynchronousHelloWorld(final HelloWorld service, final Executor executor) {
+    AsynchronousHelloWorldImpl(final T service, final Executor executor) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
         this.executor = Objects.requireNonNull(executor, "executor is null");
@@ -51,8 +51,7 @@ final class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
 
     // ---------------------------------------------------------------------------------------------
     @Override
-    public <R> CompletionStage<R> applyAsync(
-            final Function<? super HelloWorld, ? extends R> mapper) {
+    public <R> CompletionStage<R> applyAsync(final Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return CompletableFuture.supplyAsync(
                 () -> mapper.apply(service),
@@ -61,7 +60,7 @@ final class DefaultAsynchronousHelloWorld implements AsynchronousHelloWorld {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private final HelloWorld service;
+    private final T service;
 
     private final Executor executor;
 }

@@ -38,10 +38,13 @@ import java.util.concurrent.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(channel, attachment)")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
+
+    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test() {
+        super(HelloWorld.class);
+    }
 
     /**
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}

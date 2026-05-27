@@ -20,15 +20,19 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.*;
 import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 class AsynchronousHelloWorld_ApplyAsync_Mapper__Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld> {
 
+    // ---------------------------------------------------------------------------------------------
+    AsynchronousHelloWorld_ApplyAsync_Mapper__Test() {
+        super(HelloWorld.class);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
         AsynchronousHelloWorldTestUtils.applyAsync_mapper_applies_(
