@@ -23,7 +23,6 @@ package com.github.jinahya.hello.api;
 import lombok.*;
 import lombok.experimental.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**

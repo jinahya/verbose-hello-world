@@ -164,7 +164,6 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
                                 }
                                 @Override
                                 public void failed(final Throwable t2, final Object a2) {
-                                    closeSilently(client);
                                     future.completeExceptionally(t2);
                                 }
                             });
