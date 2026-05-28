@@ -32,7 +32,8 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-final class AsynchronousHelloWorldImpl<T extends HelloWorld> implements AsynchronousHelloWorld<T> {
+public final class ExecutorAsynchronousHelloWorld<T extends HelloWorld>
+        implements AsynchronousHelloWorld<T> {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 
@@ -46,7 +47,7 @@ final class AsynchronousHelloWorldImpl<T extends HelloWorld> implements Asynchro
      *                 dispatched.
      * @throws NullPointerException if either {@code service} or {@code executor} is {@code null}.
      */
-    AsynchronousHelloWorldImpl(final T service, final Executor executor) {
+    public ExecutorAsynchronousHelloWorld(final T service, final Executor executor) {
         super();
         this.service = Objects.requireNonNull(service, "service is null");
         this.executor = Objects.requireNonNull(executor, "executor is null");

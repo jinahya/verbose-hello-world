@@ -23,6 +23,7 @@ package com.github.jinahya.hello.api;
 import lombok.*;
 import lombok.experimental.*;
 
+import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,9 +36,9 @@ public abstract class AsynchronousHelloWorld__Test<T extends HelloWorld> {
 
     protected AsynchronousHelloWorld__Test(final Class<T> synchronousServiceClass) {
         super();
-        this.synchronousService = mock(synchronousServiceClass);
-        this.asynchronousService = spy(
-                new AsynchronousHelloWorldImpl<>(synchronousService, Runnable::run)
+        this.synchronousService = loggingSpy(mock(synchronousServiceClass));
+        this.asynchronousService = loggingSpiedInstance(
+                new ExecutorAsynchronousHelloWorld<>(synchronousService, Runnable::run)
         );
     }
 

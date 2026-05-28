@@ -83,12 +83,14 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      *                 dispatched.
      * @return a new instance wrapping the {@code service} on the {@code executor}.
      * @throws NullPointerException if either {@code service} or {@code executor} is {@code null}.
+     * @deprecated
      */
+    @Deprecated(forRemoval = true)
     static <T extends HelloWorld> AsynchronousHelloWorld<T> from(final T service,
                                                                  final Executor executor) {
         Objects.requireNonNull(service, "service is null");
         Objects.requireNonNull(executor, "executor is null");
-        return new AsynchronousHelloWorldImpl<>(service, executor);
+        return new ExecutorAsynchronousHelloWorld<>(service, executor);
     }
 
     // ---------------------------------------------------------------------------------------------

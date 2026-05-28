@@ -238,7 +238,7 @@ and `IllegalArgumentException`.
 
 ==== `from(HelloWorld)` (static factory)
 
-* No issues. Null check, wraps in `AsynchronousHelloWorldImpl`.
+* No issues. Null check, wraps in `ExecutorAsynchronousHelloWorld`.
 
 === General async
 

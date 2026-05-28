@@ -46,7 +46,7 @@ abstract class HelloWorldReactive__Test {
         super();
         this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
         this.asynchronousService = Mockito.spy(
-                new AsynchronousHelloWorldImpl<>(synchronousService, Runnable::run)
+                new ExecutorAsynchronousHelloWorld<>(synchronousService, Runnable::run)
         );
     }
 

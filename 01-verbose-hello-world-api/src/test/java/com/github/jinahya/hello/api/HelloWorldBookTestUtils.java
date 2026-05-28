@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.mockito.*;
+import org.mockito.invocation.*;
 import org.reactivestreams.*;
 
 import java.util.*;
@@ -109,6 +110,41 @@ final class HelloWorldBookTestUtils {
      */
     static <T> Flow.Subscriber<T> loggingSpy(final Flow.Subscriber<T> delegate) {
         return loggingSpy(Flow.Subscriber.class, delegate);
+    }
+
+    static <T extends HelloWorld> T loggingSpy(final T delegate) {
+        return loggingSpy(HelloWorld.class, delegate);
+    }
+
+    /**
+     * Returns a Mockito spy of the given real instance whose every invocation is logged at
+     * {@code DEBUG} via an {@link org.mockito.listeners.InvocationListener InvocationListener} and
+     * — unlike {@link #loggingSpy(Class, Object) loggingSpy(...)} — preserves true spy semantics:
+     * internal {@code this.foo(...)} calls from interface default methods still go through the
+     * mock proxy, so {@link Mockito#verify(Object) verify} sees them.
+     *
+     * @param realInstance the real instance to spy on; must not be {@code null}.
+     * @param <T>          the runtime type of {@code realInstance}.
+     * @return a Mockito spy of {@code realInstance} that logs every non-{@link Object} method
+     * invocation; never {@code null}.
+     * @throws NullPointerException if {@code realInstance} is {@code null}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> T loggingSpiedInstance(final T realInstance) {
+        Objects.requireNonNull(realInstance, "realInstance is null");
+        final Class<T> clazz = (Class<T>) realInstance.getClass();
+        return mock(clazz, withSettings()
+                .spiedInstance(realInstance)
+                .defaultAnswer(CALLS_REAL_METHODS)
+                .invocationListeners(report -> {
+                    final var inv = (Invocation) report.getInvocation();
+                    if (inv.getMethod().getDeclaringClass() != Object.class) {
+                        log.debug("{}.{}({})",
+                                  toHascodeString(inv.getMock()),
+                                  inv.getMethod().getName(),
+                                  argsString(inv.getArguments()));
+                    }
+                }));
     }
 
     private HelloWorldBookTestUtils() {
