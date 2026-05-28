@@ -131,7 +131,8 @@ final class HelloWorldBookTestUtils {
      */
     @SuppressWarnings("unchecked")
     static <T> T loggingSpiedInstance(final T realInstance) {
-        Objects.requireNonNull(realInstance, "realInstance is null");
+//        Objects.requireNonNull(realInstance, "realInstance is null");
+        MockitoTestUtils.requireNotMock(realInstance);
         final Class<T> clazz = (Class<T>) realInstance.getClass();
         return mock(clazz, withSettings()
                 .spiedInstance(realInstance)
