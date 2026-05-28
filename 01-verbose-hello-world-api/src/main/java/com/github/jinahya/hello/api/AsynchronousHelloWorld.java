@@ -38,9 +38,10 @@ import java.util.function.*;
  * <p>
  * Each instance wraps a service of type {@code T} (a {@link HelloWorld} subtype) that supplies the
  * bytes, and an {@link Executor} on which the synchronous {@link HelloWorld} calls are dispatched.
- * Every method on this interface uses that stored executor — directly via
- * {@link #applyAsync(Function)} (the primitive every default method is built on) or indirectly via
- * the default methods themselves.
+ * Every method on this interface uses that stored executor — directly via the two shape-paired
+ * primitives {@link #applyAsync(Function)} ({@link CompletionStage}-based) and
+ * {@link #applyAsync(Function, Object, CompletionHandler)} ({@link CompletionHandler}-based), or
+ * indirectly via the default methods built on them.
  * <p>
  * Channel and path operations come as a matched pair:
  * <ul>
@@ -94,6 +95,28 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
 
     /**
      * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
+     * instance's executor, and notifies the specified handler with the result and the specified
+     * attachment.
+     *
+     * @param <R>        result type parameter.
+     * @param <A>        attachment type parameter.
+     * @param mapper     the mapper to apply; receives the wrapped {@link HelloWorld} service and
+     *                   returns a result.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with the result (or a failure) and
+     *                   the {@code attachment}.
+     * @throws NullPointerException if either {@code mapper} or {@code handler} is {@code null}.
+     * @apiNote This method is the {@link CompletionHandler}-based primitive on which every
+     * handler-based default method in this interface — {@code write(..., handler)},
+     * {@code append(..., handler)}, and any future {@code CompletionHandler}-based variant — is
+     * built. Its {@link CompletionStage}-based counterpart is {@link #applyAsync(Function)}.
+     */
+    <R, A> void applyAsync(Function<? super T, ? extends R> mapper,
+                           @Nullable A attachment,
+                           CompletionHandler<? super R, ? super A> handler);
+
+    /**
+     * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
      * instance's executor, and returns the result as a {@link CompletionStage}.
      *
      * @param <R>    result type parameter.
@@ -102,10 +125,13 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @return a {@link CompletionStage} that completes with the value produced by the
      * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
      * @throws NullPointerException if {@code mapper} is {@code null}.
-     * @apiNote This method is the primitive that every default method in this interface is built
-     * on. The {@link CompletionHandler}-based and {@link CompletionStage}-based variants of
-     * {@code write}, {@code append}, {@code sendXxx}, and {@code sendAsync} all delegate here for
-     * dispatch onto the instance's executor.
+     * @apiNote This method is the {@link CompletionStage}-based primitive on which every
+     * stage-based default method in this interface — {@code write(...)} (no-handler overload),
+     * {@code append(...)} (no-handler overload), {@code sendBinary}, {@code sendPing},
+     * {@code sendPong}, and {@code sendAsync} — is built. Its {@link CompletionHandler}-based
+     * counterpart is
+     * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
+     * handler)}.
      */
     <R> CompletionStage<R> applyAsync(Function<? super T, ? extends R> mapper);
 
@@ -465,7 +491,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default <P extends Path, A>
     void append(final P path, final @Nullable A attachment,
-                final CompletionHandler<? super P, ? super A> handler) { // @formatter:off
+                final CompletionHandler<? super P, ? super A> handler) {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
         applyAsync(
@@ -479,7 +505,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                     handler.completed(path, attachment);
                     return null;
                 }
-        ); // @formatter:on
+        );
     }
 
     /**

@@ -137,7 +137,7 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
         service.write(channel, position, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         verify(handler, timeout(TIMEOUT).times(1)).completed(channel, attachment);
-        verify(handler, never()).failed(any(), any());
+        verifyNoMoreInteractions(handler);
         final var buffer = put_buffer12_invoked_once(synchronousService());
         verify(channel, atLeastOnce()).write(same(buffer), anyLong(), any(), notNull());
         assertEquals(0, bufferPositions.getFirst());

@@ -23,20 +23,25 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api._Java_Util_Concurrent_ExecutorService_TestUtils.*;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test
         extends AsynchronousHelloWorld__Test<HelloWorld> {
 
+    // ---------------------------------------------------------------------------------------------
     AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test() {
         super(HelloWorld.class);
     }
@@ -44,13 +49,13 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     @SuppressWarnings({"unchecked"})
-    void __stubService() { // @formatter:off
+    void __stubService() {
         doAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousByteChannel.class);
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
             final var src = hello_world_byte_buffer();
-            channel.write(src, attachment, new CompletionHandler<>() {
+            channel.write(src, attachment, new CompletionHandler<>() { // @formatter:off
                 @Override
                 public void completed(final Integer result, final Object attachment) {
                     if (src.hasRemaining()) {
@@ -62,22 +67,24 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__T
                 @Override
                 public void failed(final Throwable exc, final Object attachment) {
                     handler.failed(exc, attachment);
-                }
+                } // @formatter:on
             });
             return null;
-        }).when(asynchronousService()).write(any(), any(), any()); // @formatter:on
+        }).when(asynchronousService()).write(any(), any(), any());
     }
 
     // ---------------------------------------------------------------------------------------------
     @Nested
     class EchoServer_Test {
 
-        @Test
-        void __() throws Exception { // @formatter:off
-            final var group = AsynchronousChannelGroup.withCachedThreadPool(
-                    Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
-                    0
-            );
+        private static Stream<Named<ExecutorService>> executorStream() {
+            return executorStreamAsynchronousChannelGroup();
+        }
+
+        @MethodSource({"executorStream"})
+        @ParameterizedTest
+        void __(final ExecutorService executor) throws Exception { // @formatter:off
+            final var group = AsynchronousChannelGroup.withThreadPool(executor);
             try (var server = AsynchronousServerSocketChannel.open(group)) {
                 server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
                 server.accept(null, new CompletionHandler<>() {

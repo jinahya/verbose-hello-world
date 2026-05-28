@@ -90,6 +90,7 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test
         final var result = service.write(channel, position, attachment);
         // ------------------------------------------------------------------------------------ then
         assertSame(attachment, result.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        verify(service, times(1)).write(same(channel), eq(position), same(attachment), notNull());
     }
 
     @DisplayName("""
@@ -119,5 +120,6 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test
                 () -> result.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         );
         assertSame(exc, thrown.getCause());
+        verify(service, times(1)).write(same(channel), eq(position), same(attachment), notNull());
     }
 }

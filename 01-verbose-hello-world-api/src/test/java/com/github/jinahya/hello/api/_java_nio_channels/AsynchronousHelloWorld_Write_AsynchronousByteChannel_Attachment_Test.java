@@ -86,6 +86,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         final var result = service.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
         assertSame(attachment, result.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        verify(service, times(1)).write(same(channel), same(attachment), notNull());
     }
 
     /**
@@ -113,11 +114,11 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
-//        assertSame(attachment, result.toCompletableFuture().get(8L, TimeUnit.SECONDS)); // should be remained as commented-out
         final var thrown = assertThrows(
                 ExecutionException.class,
                 () -> result.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         );
         assertSame(exc, thrown.getCause());
+        verify(service, times(1)).write(same(channel), same(attachment), notNull());
     }
 }

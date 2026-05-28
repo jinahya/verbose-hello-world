@@ -128,7 +128,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         service.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         verify(handler, timeout(TIMEOUT).times(1)).completed(channel, attachment);
-        verify(handler, never()).failed(any(), any());
+        verifyNoMoreInteractions(handler);
         final var buffer = put_buffer12_invoked_once(synchronousService());
         verify(channel, atLeastOnce()).write(same(buffer), same(attachment), notNull());
         assertEquals(0, bufferPositions.getFirst());
@@ -187,7 +187,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Te
         service.write(channel, attachment, handler);
         // ------------------------------------------------------------------------------------ then
         verify(handler, timeout(TIMEOUT).times(1)).failed(exc, attachment);
-        verify(handler, never()).completed(any(), any());
+        verifyNoMoreInteractions(handler);
         final var buffer = put_buffer12_invoked_once(synchronousService());
         verify(channel, atLeastOnce()).write(same(buffer), same(attachment), notNull());
         assertEquals(0, bufferPositions.getFirst());

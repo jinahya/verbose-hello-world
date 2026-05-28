@@ -20,6 +20,9 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import org.jspecify.annotations.*;
+
+import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
@@ -50,6 +53,24 @@ final class AsynchronousHelloWorldImpl<T extends HelloWorld> implements Asynchro
     }
 
     // ---------------------------------------------------------------------------------------------
+    @Override
+    public <R, A> void applyAsync(final Function<? super T, ? extends R> mapper,
+                                  final @Nullable A attachment,
+                                  final CompletionHandler<? super R, ? super A> handler) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        Objects.requireNonNull(handler, "handler is null");
+        executor.execute(() -> {
+            final R result;
+            try {
+                result = mapper.apply(service);
+            } catch (final Throwable t) {
+                handler.failed(t, attachment);
+                return;
+            }
+            handler.completed(result, attachment);
+        });
+    }
+
     @Override
     public <R> CompletionStage<R> applyAsync(final Function<? super T, ? extends R> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

@@ -45,14 +45,14 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
 
     @BeforeEach
     @SuppressWarnings({"unchecked"})
-    void __() { // @formatter:off
+    void __() {
         doAnswer(i -> {
             final var channel = i.getArgument(0, AsynchronousFileChannel.class);
             final var position = i.getArgument(1, Long.class);
             final var attachment = i.getArgument(2);
             final var handler = i.getArgument(3, CompletionHandler.class);
             final var src = hello_world_byte_buffer();
-            channel.write(src, position, position, new CompletionHandler<Integer, Long>() {
+            channel.write(src, position, position, new CompletionHandler<>() { // @formatter:off
                 @Override
                 public void completed(final Integer result, Long attachment_) {
                     if (src.hasRemaining()) {
@@ -65,10 +65,10 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
                 @Override
                 public void failed(final Throwable exc, final Long attachment_) {
                     handler.failed(exc, attachment);
-                }
+                } // @formatter:on
             });
             return null;
-        }).when(asynchronousService()).write(any(), anyLong(), any(), any()); // @formatter:on
+        }).when(asynchronousService()).write(any(), anyLong(), any(), any());
     }
 
     @Test

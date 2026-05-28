@@ -50,8 +50,7 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test
             final var future = new CompletableFuture<>();
             final var src = hello_world_byte_buffer();
             channel.write(src, position, position, new CompletionHandler<>() { // @formatter:off
-                @Override
-                public void completed(final Integer result, Long attachment_) {
+                @Override public void completed(final Integer result, Long attachment_) {
                     if (src.hasRemaining()) {
                         attachment_ += result;
                         channel.write(src, attachment_, attachment_, this);
@@ -59,8 +58,7 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test
                     }
                     future.complete(attachment);
                 }
-                @Override
-                public void failed(final Throwable exc, final Long attachment_) {
+                @Override public void failed(final Throwable exc, final Long attachment_) {
                     future.completeExceptionally(exc);
                 }  // @formatter:on
             });
