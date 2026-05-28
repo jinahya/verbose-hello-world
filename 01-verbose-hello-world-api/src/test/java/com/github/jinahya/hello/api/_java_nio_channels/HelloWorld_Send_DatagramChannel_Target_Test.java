@@ -89,7 +89,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorldTest {
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer_will_increase_buffer_position_by_12(service());
+        final var service = put_buffer12_increases_buffer_position_by_12(service());
         final var channel = mock(DatagramChannel.class);
         when(channel.isBlocking()).thenReturn(false);
         doAnswer(i -> {

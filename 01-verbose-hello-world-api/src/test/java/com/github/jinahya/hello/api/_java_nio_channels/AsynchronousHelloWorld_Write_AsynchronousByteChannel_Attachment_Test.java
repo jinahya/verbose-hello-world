@@ -55,10 +55,10 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var s = asynchronousService();
-        final var c = (AsynchronousByteChannel) null;
+        final var service = asynchronousService();
+        final var channel = (AsynchronousByteChannel) null;
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(NullPointerException.class, () -> s.write(c, null));
+        assertThrows(NullPointerException.class, () -> service.write(channel, null));
     }
 
     /**
@@ -74,16 +74,16 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var asynchronousService = asynchronousService();
+        final var service = asynchronousService();
         final var channel = mock(AsynchronousByteChannel.class);
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
         doAnswer(i -> {
             final var handler = i.getArgument(2, CompletionHandler.class);
             handler.completed(channel, attachment);
             return null;
-        }).when(asynchronousService).write(same(channel), same(attachment), notNull());
+        }).when(service).write(same(channel), same(attachment), notNull());
         // ------------------------------------------------------------------------------------ when
-        final var result = asynchronousService.write(channel, attachment);
+        final var result = service.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
         assertSame(attachment, result.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
@@ -101,7 +101,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
     @SuppressWarnings({"unchecked"})
     void __failed() {
         // ----------------------------------------------------------------------------------- given
-        final var asynchronousService = asynchronousService();
+        final var service = asynchronousService();
         final var channel = mock(AsynchronousByteChannel.class);
         final var exc = new RuntimeException("simulated write failure");
         final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
@@ -109,10 +109,11 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
             final var handler = i.getArgument(2, CompletionHandler.class);
             handler.failed(exc, attachment);
             return null;
-        }).when(asynchronousService).write(same(channel), same(attachment), notNull());
+        }).when(service).write(same(channel), same(attachment), notNull());
         // ------------------------------------------------------------------------------------ when
-        final var result = asynchronousService.write(channel, attachment);
+        final var result = service.write(channel, attachment);
         // ------------------------------------------------------------------------------------ then
+//        assertSame(attachment, result.toCompletableFuture().get(8L, TimeUnit.SECONDS)); // should be remained as commented-out
         final var thrown = assertThrows(
                 ExecutionException.class,
                 () -> result.toCompletableFuture().get(8L, TimeUnit.SECONDS)

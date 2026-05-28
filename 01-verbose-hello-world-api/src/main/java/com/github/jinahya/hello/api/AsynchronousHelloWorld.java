@@ -282,9 +282,9 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * @see #applyAsync(Function)
      */
-    default <C extends AsynchronousByteChannel, A>
-    void write(final C channel, @Nullable final A attachment,
-               final CompletionHandler<? super C, ? super A> handler) { // @formatter:off
+    default <C extends AsynchronousByteChannel, A> void write(
+            final C channel, @Nullable final A attachment,
+            final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
         applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
@@ -292,7 +292,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                 handler.failed(t, attachment);
                 return;
             }
-            channel.write(b, attachment, new CompletionHandler<>() {
+            channel.write(b, attachment, new CompletionHandler<>() { // @formatter:off
                 @Override
                 public void completed(final Integer result, final A attachment) {
                     if (b.hasRemaining()) {
@@ -304,9 +304,9 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                 @Override
                 public void failed(final Throwable exc, final A attachment) {
                     handler.failed(exc, attachment);
-                }
+                } // @formatter:on
             });
-        }); // @formatter:on
+        });
     }
 
     /**
@@ -326,9 +326,8 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * success, or completes it exceptionally on failure.
      * @see #write(AsynchronousByteChannel, Object, CompletionHandler)
      */
-    default <A>
-    CompletionStage<A> write(final AsynchronousByteChannel channel,
-                             final @Nullable A attachment) {
+    default <A> CompletionStage<A> write(final AsynchronousByteChannel channel,
+                                         final @Nullable A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         final var future = new CompletableFuture<A>();
         write(channel, attachment, new CompletionHandler<>() { // @formatter:off
@@ -373,38 +372,36 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      * @see #applyAsync(Function)
      */
-    default <C extends AsynchronousFileChannel, A>
-    void write(final C channel, final long position,
-               final @Nullable A attachment,
-               final CompletionHandler<? super C, ? super A> handler) { // @formatter:off
+    default <C extends AsynchronousFileChannel, A> void write(
+            final C channel, final long position, final @Nullable A attachment,
+            final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).whenComplete((buffer, t) -> {
+        applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
             }
-            channel.write(buffer, position, position, new CompletionHandler<>() {
+            channel.write(b, position, position, new CompletionHandler<>() { // @formater:off
                 @Override
-                public void completed(final Integer result, Long position_) {
-                    if (buffer.hasRemaining()) {
-                        position_ += result;
-                        channel.write(buffer, position_, position_, this);
+                public void completed(final Integer result, Long attachment_) {
+                    if (b.hasRemaining()) {
+                        attachment_ += result;
+                        channel.write(b, attachment_, attachment_, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
+
                 @Override
-                public void failed(final Throwable exc, final Long position_) {
+                public void failed(final Throwable exc, final Long attachment_) {
                     handler.failed(exc, attachment);
-                }
+                } // @formater:off
             });
-        }); // @formatter:on
+        });
     }
 
     /**
@@ -426,25 +423,24 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * success, or completes it exceptionally on failure.
      * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
      */
-    default <A>
-    CompletionStage<A> write(final AsynchronousFileChannel channel,
-                             final long position, final @Nullable A attachment) { // @formatter:off
+    default <A> CompletionStage<A> write(final AsynchronousFileChannel channel,
+                                         final long position, final @Nullable A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         final var future = new CompletableFuture<A>();
-        write(channel, position, attachment,
-              new CompletionHandler<>() {
-                  @Override
-                  public void completed(final AsynchronousFileChannel result, final A attachment) {
-                      future.complete(attachment);
-                  }
-                  @Override public void failed(final Throwable exc, final A attachment) {
-                      future.completeExceptionally(exc);
-                  }
-              });
-        return future; // @formatter:on
+        write(channel, position, attachment, new CompletionHandler<>() { // @formatter:off
+            @Override
+            public void completed(final AsynchronousFileChannel result, final A attachment) {
+                future.complete(attachment);
+            }
+            @Override
+            public void failed(final Throwable exc, final A attachment) {
+                future.completeExceptionally(exc);
+            } // @formatter:on
+        });
+        return future;
     }
 
     // ------------------------------------------------------------------------------- java.nio.file

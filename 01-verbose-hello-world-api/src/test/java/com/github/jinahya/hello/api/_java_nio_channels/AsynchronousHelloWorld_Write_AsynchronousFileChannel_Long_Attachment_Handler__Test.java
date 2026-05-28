@@ -21,17 +21,18 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
-import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
-import org.mockito.*;
 
 import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 @Slf4j
 class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handler__Test
         extends AsynchronousHelloWorld__Test<HelloWorld> {
@@ -40,56 +41,55 @@ class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handl
         super(HelloWorld.class);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     @BeforeEach
     @SuppressWarnings({"unchecked"})
     void __() { // @formatter:off
-        Mockito.doAnswer(i -> {
-            var channel = i.getArgument(0, AsynchronousFileChannel.class);
-            var position = i.getArgument(1, Long.class);
-            var attachment = i.getArgument(2);
-            var handler = i.getArgument(3, CompletionHandler.class);
-            var src = HelloWorldTestUtils.hello_world_byte_buffer();
+        doAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
+            final var src = hello_world_byte_buffer();
             channel.write(src, position, position, new CompletionHandler<Integer, Long>() {
                 @Override
-                public void completed(Integer n, Long p) {
+                public void completed(final Integer result, Long attachment_) {
                     if (src.hasRemaining()) {
-                        long next = p + n;
-                        channel.write(src, next, next, this);
+                        attachment_ += result;
+                        channel.write(src, attachment_, attachment_, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
                 @Override
-                public void failed(Throwable t, Long p) {
-                    handler.failed(t, attachment);
+                public void failed(final Throwable exc, final Long attachment_) {
+                    handler.failed(exc, attachment);
                 }
             });
             return null;
-        }).when(asynchronousService()).write(
-                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<CompletionHandler<AsynchronousFileChannel, Object>>notNull()
-        ); // @formatter:on
+        }).when(asynchronousService()).write(any(), anyLong(), any(), any()); // @formatter:on
     }
 
     @Test
-    void __(@TempDir final Path dir) throws Exception { // @formatter:off
-        var file = Files.createTempFile(dir, null, null);
-        var done = new CompletableFuture<AsynchronousFileChannel>();
-        try (var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
-            asynchronousService().write(channel, 0L, null, new CompletionHandler<>() {
+    void __(@TempDir final Path tempDir) throws Exception {
+        final var tempFile = Files.createTempFile(tempDir, null, null);
+        final var done = new CompletableFuture<AsynchronousFileChannel>();
+        try (var channel = AsynchronousFileChannel.open(tempFile, StandardOpenOption.WRITE)) {
+            final var position = ThreadLocalRandom.current().nextLong(1024L);
+            asynchronousService().write(channel, position, null, new CompletionHandler<>() { // @formatter:off
                 @Override
-                public void completed(AsynchronousFileChannel c, Object a) {
-                    done.complete(c);
+                public void completed(final AsynchronousFileChannel result,
+                                      final Object attachment) {
+                    done.complete(result);
                 }
                 @Override
-                public void failed(Throwable t, Object a) {
-                    done.completeExceptionally(t);
-                }
+                public void failed(final Throwable exc, final Object attachment) {
+                    done.completeExceptionally(exc);
+                } // @formatter:on
             });
-            Assertions.assertSame(channel, done.get(8L, TimeUnit.SECONDS));
+            assertSame(channel, done.get());
+            assertEquals(position + HelloWorld.BYTES, Files.size(tempFile));
         }
-        Assertions.assertEquals(HelloWorld.BYTES, Files.size(file)); // @formatter:on
     }
 }

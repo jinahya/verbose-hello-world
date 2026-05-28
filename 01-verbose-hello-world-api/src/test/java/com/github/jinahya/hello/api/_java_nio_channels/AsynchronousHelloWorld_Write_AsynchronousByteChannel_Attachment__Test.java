@@ -72,7 +72,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
     class EchoServer_Test {
 
         @Test
-        void __() throws Exception { // @formatter:off
+        void __() throws Exception { // @formatter:on
             final var group = AsynchronousChannelGroup.withCachedThreadPool(
                     Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory()),
                     0
@@ -109,12 +109,14 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
                                             log.debug("[server] completed; write[12]");
                                             future.complete(null);
                                         }
+
                                         @Override
                                         public void failed(final Throwable t3, final Object a3) {
                                             future.completeExceptionally(t3);
                                         }
                                     });
                                 }
+
                                 @Override
                                 public void failed(final Throwable t2, final Object a2) {
                                     future.completeExceptionally(t2);
@@ -124,6 +126,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
                         } catch (final Exception _) {
                         }
                     }
+
                     @Override
                     public void failed(final Throwable t1, final Object a1) {
                     }
@@ -135,11 +138,7 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
                         @Override
                         public void completed(final Void r1, final Object a1) {
                             log.info("[client] connected");
-                            asynchronousService().write(client, null).whenComplete((r2, t2) -> {
-                                if (t2 != null) {
-                                    future.completeExceptionally(t2);
-                                    return;
-                                }
+                            asynchronousService().write(client, null).thenAccept(r2 -> {
                                 log.debug("[client] completed; write[12]");
                                 final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
                                 client.read(dst, null, new CompletionHandler<>() {
@@ -156,13 +155,18 @@ class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
                                         log.debug("[client] completed; read[12]");
                                         future.complete(null);
                                     }
+
                                     @Override
                                     public void failed(final Throwable t3, final Object a3) {
                                         future.completeExceptionally(t3);
                                     }
                                 });
+                            }).exceptionally(t2 -> {
+                                future.completeExceptionally(t2);
+                                return null;
                             });
                         }
+
                         @Override
                         public void failed(final Throwable t1, final Object a1) {
                             future.completeExceptionally(t1);

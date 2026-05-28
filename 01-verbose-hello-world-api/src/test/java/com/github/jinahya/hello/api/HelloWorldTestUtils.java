@@ -63,7 +63,7 @@ import static org.mockito.Mockito.*;
  *       assertion comparisons.</li>
  *   <li><strong>Mock stubbing helpers</strong> — the {@code <verb>_<argType>_<does>(service)}
  *       methods (e.g., {@link #set_array_returns_the_array(HelloWorld)},
- *       {@link #put_buffer_will_increase_buffer_position_by_12(HelloWorld)},
+ *       {@link #put_buffer12_increases_buffer_position_by_12(HelloWorld)},
  *       {@link #write_outputstream_writes_hello_world_bytes(HelloWorld)}) stub a single
  *       {@link HelloWorld} method on a {@linkplain Mockito#mock(Class) mock} service to perform
  *       the most common "actual hello-world bytes" behaviour, then return the same service for
@@ -622,17 +622,16 @@ public final class HelloWorldTestUtils {
      * @see #put_buffer12_invoked_once(HelloWorld)
      */
     public static <T extends HelloWorld>
-    T put_buffer_will_increase_buffer_position_by_12(final T service) {
+    T put_buffer12_increases_buffer_position_by_12(final T service) {
         requireMock(service);
         doAnswer(i -> {
             final var buffer = i.getArgument(0, ByteBuffer.class);
+            assert buffer != null;
+            assert buffer.capacity() == HelloWorld.BYTES;
+            assert buffer.remaining() == HelloWorld.BYTES;
             buffer.position(buffer.position() + HelloWorld.BYTES);
             return buffer;
-        })
-                .when(service)
-                .<ByteBuffer>put(argThat(
-                        b -> b != null && b.remaining() >= HelloWorld.BYTES
-                ));
+        }).when(service).put(any());
         return service;
     }
 
@@ -678,24 +677,26 @@ public final class HelloWorldTestUtils {
      * @throws NullPointerException if the {@code consumer} is {@code null}.
      */
     public static <T extends HelloWorld>
-    T put_buffer_will_put_12_random_bytes(final T service,
-                                          final Consumer<? super byte[]> consumer) {
+    T put_buffer12_put_random_bytes(final T service, final Consumer<? super byte[]> consumer) {
         requireMock(service);
         requireNonNull(consumer, "consumer is null");
         doAnswer(i -> {
             final var buffer = i.getArgument(0, ByteBuffer.class);
+            assert buffer != null;
+            assert buffer.capacity() == HelloWorld.BYTES;
+            assert buffer.remaining() == HelloWorld.BYTES;
             final var src = new byte[HelloWorld.BYTES];
             ThreadLocalRandom.current().nextBytes(src);
             buffer.put(src);
             consumer.accept(src);
             return buffer;
-        }).when(service).put(argThat(b -> b != null && b.remaining() >= HelloWorld.BYTES));
+        }).when(service).put(any());
         return service;
     }
 
     /**
      * Convenience overload of
-     * {@link #put_buffer_will_put_12_random_bytes(HelloWorld, Consumer)
+     * {@link #put_buffer12_put_random_bytes(HelloWorld, Consumer)
      * put_buffer_will_put_12_random_bytes(service, consumer)} with a no-op consumer — use when the
      * random bytes themselves are not needed for later assertion.
      *
@@ -704,8 +705,8 @@ public final class HelloWorldTestUtils {
      * @return the given {@code service}.
      */
     public static <T extends HelloWorld>
-    T put_buffer_will_put_12_random_bytes(final T service) {
-        return put_buffer_will_put_12_random_bytes(
+    T put_buffer12_put_random_bytes(final T service) {
+        return put_buffer12_put_random_bytes(
                 service,
                 b -> {
                 }

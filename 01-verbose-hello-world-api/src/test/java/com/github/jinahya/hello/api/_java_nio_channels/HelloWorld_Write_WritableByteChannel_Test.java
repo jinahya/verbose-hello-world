@@ -141,7 +141,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorldTest {
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer_will_put_12_random_bytes(service());
+        final var service = HelloWorldTestUtils.put_buffer12_put_random_bytes(service());
         final var channel = mock(WritableByteChannel.class);
         final var bufferPositions = new ArrayList<Integer>();
         doAnswer(i -> {
