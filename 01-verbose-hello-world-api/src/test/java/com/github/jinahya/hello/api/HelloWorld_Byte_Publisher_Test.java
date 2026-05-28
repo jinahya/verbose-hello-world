@@ -28,7 +28,6 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
@@ -56,7 +55,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     @DisplayName("request(12) → exactly 12 elements + onComplete")
     void __singleExactly12() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -96,7 +95,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES << 1); // [1, 24)
             demands[i] = n;
-            subscribers.add(loggingSpy(new Flow.Subscriber<>() {
+            subscribers.add(MockitoTestUtils.loggingSpy(new Flow.Subscriber<>() {
                 @Override public void onSubscribe(final Flow.Subscription subscription) {
                     subscription.request(n);
                 }
@@ -149,7 +148,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
-        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -178,7 +177,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated onSubscribe failure");
-        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 throw error;
             }

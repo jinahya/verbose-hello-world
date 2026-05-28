@@ -30,7 +30,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
 import static com.github.jinahya.hello.api.ReactiveHelloWorld__PublisherTestUtils.*;
 import static java.util.Arrays.*;
@@ -72,7 +71,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     @DisplayName("request(12) → 12 elements, onComplete")
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 s.request(HelloWorld.BYTES);
             }
@@ -103,7 +102,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -131,7 +130,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __requestMoreThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextLong(HelloWorld.BYTES + 1L, 1024L);
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -163,7 +162,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         final var terminated = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 requester.set(Thread.ofVirtual().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {

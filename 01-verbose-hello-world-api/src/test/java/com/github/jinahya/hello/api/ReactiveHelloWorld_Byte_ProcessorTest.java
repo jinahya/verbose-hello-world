@@ -28,7 +28,6 @@ import org.reactivestreams.*;
 import java.time.*;
 import java.util.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -73,7 +72,7 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
         try (final var processor = new ReactiveHelloWorldByteProcessor(service)) {
             final var subscribers = new ArrayList<Subscriber<Byte>>();
             for (final int d : ds) {
-                final var subscriber = loggingSpy(new Subscriber<Byte>() {
+                final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<Byte>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
                         Thread.ofVirtual().start(() -> {
