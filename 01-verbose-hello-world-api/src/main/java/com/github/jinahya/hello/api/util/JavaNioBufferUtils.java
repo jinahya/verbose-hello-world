@@ -25,19 +25,24 @@ import java.nio.*;
 import java.util.*;
 
 /**
- * Utilities for {@link Buffer}.
+ * Helpers for {@link Buffer java.nio.Buffer} — currently a textual visualizer that prints a
+ * buffer's {@code position} / {@code limit} / {@code capacity} state as a labeled ASCII strip.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaNioBufferUtils {
 
     /**
-     * Prints out the specified buffer's current status.
+     * Prints a multi-line, human-readable snapshot of {@code buffer}'s current state to
+     * {@code printer}: identity hash, {@code remaining}, {@code direct}, {@code hasArray},
+     * {@code arrayOffset} (when present), and an ASCII strip marking {@code position},
+     * {@code limit}, and {@code capacity}.
      *
-     * @param buffer  the buffer.
-     * @param printer the print stream to which {@code buffer}'s status is printed.
-     * @param <T>     buffer type parameter
-     * @return given {@code buffer}.
+     * @param buffer  the buffer to render; must not be {@code null}.
+     * @param printer the destination of the rendering; must not be {@code null}.
+     * @param <T>     the concrete {@link Buffer} subtype of {@code buffer}.
+     * @return the given {@code buffer}, unchanged; never {@code null}.
+     * @throws NullPointerException if either argument is {@code null}.
      */
     @SuppressWarnings({
             "java:S1192"
@@ -83,11 +88,13 @@ public final class JavaNioBufferUtils {
     }
 
     /**
-     * Prints out the specified buffer's status.
+     * The single-argument convenience of
+     * {@link #print(Buffer, PrintStream) print(buffer, System.out)}.
      *
-     * @param buffer the buffer.
-     * @param <T>    buffer type parameter
-     * @return given {@code buffer}.
+     * @param buffer the buffer to render; must not be {@code null}.
+     * @param <T>    the concrete {@link Buffer} subtype of {@code buffer}.
+     * @return the given {@code buffer}, unchanged; never {@code null}.
+     * @throws NullPointerException if {@code buffer} is {@code null}.
      */
     @SuppressWarnings({
             "java:S106"

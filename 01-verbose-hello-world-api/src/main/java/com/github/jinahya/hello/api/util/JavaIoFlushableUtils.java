@@ -30,6 +30,20 @@ import java.util.*;
  */
 public final class JavaIoFlushableUtils {
 
+    /**
+     * Invokes {@link Flushable#flush() flushable.flush()} and returns the {@code flushable},
+     * wrapping any thrown {@link IOException} in a {@link RuntimeException} so callers can use
+     * this in lambda contexts that disallow checked exceptions.
+     *
+     * @param flushable the {@link Flushable} to flush; must not be {@code null}.
+     * @param <T>       the concrete {@link Flushable} subtype.
+     * @return the given {@code flushable}, after flushing; never {@code null}.
+     * @throws NullPointerException if {@code flushable} is {@code null}.
+     * @throws RuntimeException     if {@link Flushable#flush() flush()} throws an
+     *                              {@link IOException}; the cause is the original
+     *                              {@link IOException}.
+     * @see JavaUtilConcurrentCallableUtils#callUnchecked(java.util.concurrent.Callable)
+     */
     public static <T extends Flushable> T flushUnchecked(final T flushable) {
         Objects.requireNonNull(flushable, "flushable is null");
         return JavaUtilConcurrentCallableUtils.callUnchecked(() -> {

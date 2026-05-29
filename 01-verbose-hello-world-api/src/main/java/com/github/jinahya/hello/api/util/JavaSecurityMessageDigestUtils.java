@@ -26,6 +26,11 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
+ * Helpers for {@link MessageDigest java.security.MessageDigest} — currently a single
+ * {@link ByteBuffer}-aware {@code update} that feeds the digest with a trailing slice of the
+ * buffer in whichever shape ({@code array}-backed, {@code slice()}-view, or rewound view) is
+ * available without copying.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @SuppressWarnings({
@@ -36,14 +41,22 @@ public final class JavaSecurityMessageDigestUtils {
     // ------------------------------------------------------------------------------- MessageDigest
 
     /**
-     * Updates specified message digest with the specified number of bytes preceding specified byte
-     * buffer's current position.
+     * Feeds the trailing {@code bytes}-length window — i.e. the {@code bytes} bytes immediately
+     * preceding {@code buffer}'s current {@link ByteBuffer#position() position} — into
+     * {@code digest}. Uses the buffer's backing array when available, otherwise a
+     * {@link ByteBuffer#slice(int, int) slice()}-view or a rewound view (chosen randomly to
+     * exercise both paths under tests). The buffer's position and limit are restored before
+     * return.
      *
-     * @param digest the message digest to be updated.
-     * @param buffer the byte buffer whose bytes are updated to the {@code digest}.
-     * @param bytes  the number of bytes preceding the {@code buffer}'s current {@code position} to
-     *               be updated to the {@code digest}; must be not negative nor greater than
-     *               {@code buffer}'s current position.
+     * @param digest the {@link MessageDigest} to update; must not be {@code null}.
+     * @param buffer the byte buffer whose recent bytes are fed to the {@code digest}; must not be
+     *               {@code null}.
+     * @param bytes  the number of bytes preceding {@code buffer.position()} to feed; must satisfy
+     *               {@code 0 <= bytes <= buffer.position()}.
+     * @throws NullPointerException     if either {@code digest} or {@code buffer} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if {@code bytes} is negative or greater than
+     *                                  {@code buffer.position()}.
      */
     public static void updateDigest(final MessageDigest digest, final ByteBuffer buffer,
                                     final int bytes) {

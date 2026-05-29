@@ -72,27 +72,6 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
         return System.getLogger(MethodHandles.lookup().lookupClass().getName());
     }
 
-    // ---------------------------------------------------------------------- STATIC_FACTORY_METHODS
-
-    /**
-     * Creates a new instance wrapping the specified service and dispatching on the specified
-     * executor.
-     *
-     * @param service  the service to wrap.
-     * @param executor the executor on which the synchronous {@link HelloWorld} calls are
-     *                 dispatched.
-     * @return a new instance wrapping the {@code service} on the {@code executor}.
-     * @throws NullPointerException if either {@code service} or {@code executor} is {@code null}.
-     * @deprecated
-     */
-    @Deprecated(forRemoval = true)
-    static <T extends HelloWorld> AsynchronousHelloWorld<T> from(final T service,
-                                                                 final Executor executor) {
-        Objects.requireNonNull(service, "service is null");
-        Objects.requireNonNull(executor, "executor is null");
-        return new ExecutorAsynchronousHelloWorld<>(service, executor);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     /**

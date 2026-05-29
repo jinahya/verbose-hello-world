@@ -23,7 +23,15 @@ package com.github.jinahya.hello.api.util;
 import java.lang.annotation.*;
 
 /**
+ * A documentation-only marker for a <em>test</em> method whose entire body asserts a
+ * deliberately-failing case (e.g. an exception is expected) and therefore should not be counted
+ * by coverage tooling as exercising real production logic. Retained at
+ * {@link RetentionPolicy#RUNTIME} so the marker is visible to Javadoc and to reflective tooling
+ * that inventories test scenarios.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see _ExcludeFromCoverage
+ * @see _ExcludeFromCoverage_PrivateConstructor_Obviously
  */
 //@Retention(RetentionPolicy.CLASS)
 @Retention(RetentionPolicy.RUNTIME) // javadoc

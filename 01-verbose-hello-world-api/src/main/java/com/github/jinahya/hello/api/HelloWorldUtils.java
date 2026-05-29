@@ -83,6 +83,18 @@ public final class HelloWorldUtils {
         return service.put(supplier.get()).flip();
     }
 
+    /**
+     * The single-argument convenience of
+     * {@link #buffer(HelloWorld, Supplier) buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES))}
+     * — supplies a freshly heap-allocated {@value HelloWorld#BYTES}-byte buffer to the service.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes; must not be
+     *                {@code null}.
+     * @return the {@link ByteBuffer} returned by the service, after
+     * {@linkplain ByteBuffer#flip() flipping}; never {@code null}.
+     * @throws NullPointerException if {@code service} is {@code null}.
+     * @see #buffer(HelloWorld, Supplier)
+     */
     public static ByteBuffer buffer(final HelloWorld service) {
         return buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES));
     }

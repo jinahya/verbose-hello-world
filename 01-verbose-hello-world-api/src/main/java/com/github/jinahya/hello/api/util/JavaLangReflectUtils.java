@@ -25,12 +25,30 @@ import java.util.*;
 import java.util.stream.*;
 
 /**
+ * Helpers for {@link java.lang.reflect java.lang.reflect} — currently a single multi-interface
+ * {@link Proxy}-based wrapper that logs each interface-declared call before delegating.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaLangReflectUtils {
 
     private static final System.Logger log = System.getLogger(JavaLangReflectUtils.class.getName());
 
+    /**
+     * Wraps {@code obj} in a JDK {@link Proxy} implementing every interface in
+     * {@code interfaceClasses}; on each interface-declared method invocation logs the call at
+     * {@code DEBUG} ({@code <obj>.<method>(<args>)}) and then reflectively forwards to
+     * {@code obj}. Methods inherited from {@link Object} pass through without a log line.
+     *
+     * @param interfaceClasses the interfaces the returned proxy must implement; must not be
+     *                         {@code null}.
+     * @param obj              the underlying instance every call is forwarded to; must not be
+     *                         {@code null} and must implement every class in
+     *                         {@code interfaceClasses}.
+     * @return a proxy object implementing every interface in {@code interfaceClasses}; never
+     * {@code null}.
+     * @throws NullPointerException if either argument is {@code null}.
+     */
     public static Object loggingProxy(final Set<Class<?>> interfaceClasses, final Object obj) {
         return Proxy.newProxyInstance(
                 obj.getClass().getClassLoader(),
