@@ -58,10 +58,7 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
         final var service = service();
         final var stream = (OutputStream) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(stream)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(stream));
     }
 
     /**

@@ -36,8 +36,7 @@ import org.junit.jupiter.api.*;
 @SuppressWarnings({
         "java:S2187" // empty
 })
-class HelloWorld_Set_Array_Index_Test
-        extends HelloWorld__Test {
+class HelloWorld_Set_Array_Index_Test extends HelloWorld__Test {
 
     // empty; we're not going to implement the method in this module.
 }
