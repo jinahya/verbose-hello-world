@@ -36,7 +36,7 @@ import javax.crypto.*;
  */
 @Slf4j
 class HelloWorld_Update_Mac_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @Test
@@ -52,12 +52,12 @@ class HelloWorld_Update_Mac_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
+        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
         final var mac = Mockito.mock(Mac.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(mac);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(mac, Mockito.times(1)).update(array);
         Assertions.assertSame(mac, result);
     }

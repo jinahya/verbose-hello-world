@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_OutputStream_Test extends HelloWorldTest {
+class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method throws a

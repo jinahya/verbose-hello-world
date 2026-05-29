@@ -31,7 +31,7 @@ import java.net.http.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("method(HttpRequest.Builder, String)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorldTest {
+class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @DisplayName("""
@@ -113,7 +113,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorldTest {
             );
             return builder;
         }).when(service).method(Mockito.<HttpRequest.Builder>any(), Mockito.anyString());
-        HelloWorldTestUtils.executeWithHttpEchoStarted(p -> () -> {
+        HelloWorld__TestUtils.executeWithHttpEchoStarted(p -> () -> {
             final HttpClient.Version version;
             {
                 final var versions = HttpClient.Version.values();

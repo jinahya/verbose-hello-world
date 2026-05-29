@@ -35,14 +35,14 @@ import java.util.concurrent.*;
 import java.util.stream.*;
 import java.util.zip.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetInput_Deflater__Test extends HelloWorldTest {
+class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -137,7 +137,7 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() throws IOException {
+    void __stubService() throws IOException {
         doAnswer(i -> {
             final var deflator = i.getArgument(0, Deflater.class);
             deflator.setInput(hello_world_byte_array());

@@ -32,14 +32,14 @@ import java.sql.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
         Mockito.doAnswer(invocation -> {
             final var ps = invocation.getArgument(0, PreparedStatement.class);
             final var pi = invocation.getArgument(1, Integer.class);
-            ps.setCharacterStream(pi, new StringReader(HelloWorldTestConstants.HELLO_WORLD_STRING));
+            ps.setCharacterStream(pi, new StringReader(HelloWorld__TestConstants.HELLO_WORLD_STRING));
             return ps;
         }).when(service()).setCharacterStream(
                 ArgumentMatchers.<PreparedStatement>notNull(),
@@ -91,7 +91,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         Assertions.assertTrue(resultSet.next());
                         final var string = resultSet.getString(COLUMN);
-                        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), string);
+                        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), string);
                     }
                 }
             }
@@ -141,7 +141,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         Assertions.assertTrue(resultSet.next());
                         final var string = resultSet.getString(COLUMN);
-                        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), string);
+                        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), string);
                     }
                 }
             }
@@ -190,7 +190,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         Assertions.assertTrue(resultSet.next());
                         final var string = resultSet.getString(COLUMN);
-                        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), string);
+                        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), string);
                     }
                 }
             }

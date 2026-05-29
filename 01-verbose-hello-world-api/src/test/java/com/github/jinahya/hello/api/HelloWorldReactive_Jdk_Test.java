@@ -55,7 +55,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
     // ---------------------------------------------------------------------------------------------
 
     private static void assertPayload(final byte[] array) {
-        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+        Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
     }
 
     /**

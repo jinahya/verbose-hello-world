@@ -20,34 +20,23 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.*;
-import lombok.experimental.*;
+import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
-import org.junit.jupiter.api.extension.*;
-import org.mockito.*;
-import org.mockito.junit.jupiter.*;
-import org.mockito.quality.*;
 
 /**
- * An abstract class for testing methods defined in {@link HelloWorld} interface.
- *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://github.com/jinahya/verbose-hello-world/issues/4">[#4] Implement HelloWorld
- * interface</a> (GitHub)
  */
-@MockitoSettings(strictness = Strictness.LENIENT)
-@ExtendWith({MockitoExtension.class})
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public abstract class HelloWorldTest {
+@SuppressWarnings({
+        "java:S101"
+})
+public final class HelloWorld__TestConstants {
 
-    // -------------------------------------------------------------------------------- CONSTRUCTORS
-
-    // ------------------------------------------------------------------------------------- service
+    public static final String HELLO_WORLD_STRING = "hello, world";
 
     // ---------------------------------------------------------------------------------------------
-    @Spy
-    @Accessors(fluent = true)
-    @Getter(AccessLevel.PROTECTED)
-    private HelloWorld service;
+    @_ExcludeFromCoverage_PrivateConstructor_Obviously
+    private HelloWorld__TestConstants() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 }

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.zip.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("update(Checksum)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Checksum_Test extends HelloWorldTest {
+class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
 
     @DisplayName("""
             should throw a <NullPointerException>

@@ -26,7 +26,7 @@ import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
 /**
  * An abstract base for tests that demonstrate a reactive library's <em>own</em> publisher-creation

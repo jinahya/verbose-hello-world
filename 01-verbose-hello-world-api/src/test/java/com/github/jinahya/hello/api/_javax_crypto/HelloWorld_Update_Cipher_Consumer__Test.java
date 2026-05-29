@@ -36,14 +36,14 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorldTest {
+class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
     // JDK 25
     //AES/CBC/NoPadding (128)

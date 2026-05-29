@@ -39,7 +39,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 class HelloWorld_SetString_Clob_Long_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @DisplayName("(null, pos)NullPointerException")
     @Test
@@ -73,15 +73,15 @@ class HelloWorld_SetString_Clob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
         final var clob = Mockito.mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setString(clob, pos);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.set_array12_invoked_once(service);
+        HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(clob, Mockito.times(1))
-                .setString(pos, HelloWorldTestUtils.hello_world_string());
+                .setString(pos, HelloWorld__TestUtils.hello_world_string());
         Assertions.assertSame(clob, result);
     }
 }

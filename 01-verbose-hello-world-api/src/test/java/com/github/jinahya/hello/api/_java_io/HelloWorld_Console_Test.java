@@ -31,7 +31,7 @@ import java.util.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorld_Console_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     private interface PrivateHelloWorld
             extends HelloWorld {

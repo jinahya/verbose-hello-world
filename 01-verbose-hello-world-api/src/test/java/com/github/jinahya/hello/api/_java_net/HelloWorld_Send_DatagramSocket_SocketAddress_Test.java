@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test {
 
     static {
         final var pin = new Runnable[] {

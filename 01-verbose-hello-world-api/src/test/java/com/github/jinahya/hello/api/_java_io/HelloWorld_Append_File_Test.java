@@ -44,7 +44,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Append_File_Test extends HelloWorldTest {
+class HelloWorld_Append_File_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a

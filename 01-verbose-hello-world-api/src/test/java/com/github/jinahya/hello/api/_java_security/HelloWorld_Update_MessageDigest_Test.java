@@ -26,7 +26,7 @@ import org.junit.jupiter.api.*;
 
 import java.security.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  */
 @Slf4j
 class HelloWorld_Update_MessageDigest_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
 

@@ -48,9 +48,9 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
     void __(final @TempDir Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        HelloWorldTestUtils.append_path_appends_hello_world(synchronousService());
+        HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());
         final var path = Files.createTempFile(tempDir, null, null);
-        HelloWorldTestUtils.writeSome(path);
+        HelloWorld__TestUtils.writeSome(path);
         final var size = Files.size(path);
         final var attachment = new Object();
         final var handler = (CompletionHandler<Path, Object>) Mockito.mock(CompletionHandler.class);

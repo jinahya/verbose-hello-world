@@ -56,7 +56,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             final var array = Single.just(HelloWorldUtils.array(synchronousService()))
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -67,7 +67,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -101,7 +101,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -118,7 +118,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -135,7 +135,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -148,7 +148,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
         }
     }
 }

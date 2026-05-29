@@ -39,7 +39,7 @@ import java.security.spec.*;
 import java.util.*;
 import java.util.stream.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
@@ -60,7 +60,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Signature__Test extends HelloWorldTest {
+class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;

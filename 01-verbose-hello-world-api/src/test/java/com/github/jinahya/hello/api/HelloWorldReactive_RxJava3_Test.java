@@ -54,7 +54,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             final var array = Single.just(HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -65,7 +65,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             () -> HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -76,7 +76,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -104,7 +104,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             final var array = Maybe.just(HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -115,7 +115,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             () -> HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -126,7 +126,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
     }
 
@@ -144,7 +144,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
         }
 
         @Test
@@ -161,7 +161,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -178,7 +178,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -196,7 +196,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -212,7 +212,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
     }

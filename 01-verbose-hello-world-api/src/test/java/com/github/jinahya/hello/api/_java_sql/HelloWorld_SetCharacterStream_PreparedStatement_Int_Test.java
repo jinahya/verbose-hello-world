@@ -39,7 +39,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @DisplayName("(null, parameterIndex)NullPointerException")
     @Test
@@ -73,7 +73,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
         final var sink = new StringWriter();
         final var statement = Mockito.mock(PreparedStatement.class);
         Mockito.doAnswer(i -> {
@@ -87,10 +87,10 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.setCharacterStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.set_array12_invoked_once(service);
+        HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(statement, Mockito.times(1))
                 .setCharacterStream(Mockito.eq(index), Mockito.<Reader>notNull());
-        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), sink.toString());
+        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), sink.toString());
         Assertions.assertSame(statement, result);
     }
 }

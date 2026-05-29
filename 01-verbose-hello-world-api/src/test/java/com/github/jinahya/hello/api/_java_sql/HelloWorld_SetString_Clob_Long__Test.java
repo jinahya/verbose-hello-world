@@ -31,14 +31,14 @@ import java.sql.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetString_Clob_Long__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws SQLException {
         Mockito.doAnswer(invocation -> {
             final var c = invocation.getArgument(0, Clob.class);
             final var p = invocation.getArgument(1, Long.class);
-            c.setString(p, HelloWorldTestConstants.HELLO_WORLD_STRING);
+            c.setString(p, HelloWorld__TestConstants.HELLO_WORLD_STRING);
             return c;
         }).when(service()).setString(
                 ArgumentMatchers.<Clob>notNull(),
@@ -66,7 +66,7 @@ class HelloWorld_SetString_Clob_Long__Test
                 final var result = service().setString(clob, pos);
                 Assertions.assertSame(clob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING,
+                Assertions.assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING,
                                         clob.getSubString(1L, HelloWorld.BYTES));
             }
         }

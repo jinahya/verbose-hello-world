@@ -38,7 +38,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 class HelloWorld_SetCharacterStream_Clob_Long_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @DisplayName("(null, pos)NullPointerException")
     @Test
@@ -72,7 +72,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_writes_hello_world_string(service());
+        final var service = HelloWorld__TestUtils.write_writer_writes_hello_world_string(service());
         final var sink = new StringWriter();
         final var clob = Mockito.mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
@@ -82,7 +82,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(clob, Mockito.times(1)).setCharacterStream(pos);
         Mockito.verify(service, Mockito.times(1)).write((Writer) sink);
-        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), sink.toString());
+        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), sink.toString());
         Assertions.assertSame(clob, result);
     }
 }

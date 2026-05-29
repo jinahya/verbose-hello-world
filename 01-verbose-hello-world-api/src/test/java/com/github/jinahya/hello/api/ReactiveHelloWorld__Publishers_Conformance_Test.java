@@ -75,7 +75,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     // ---------------------------------------------------------------------------------------------
     private static void assertBytes(final List<Byte> bytes) {
         Assertions.assertEquals(HelloWorld.BYTES, bytes.size());
-        final var expected = HelloWorldTestUtils.hello_world_byte_array();
+        final var expected = HelloWorld__TestUtils.hello_world_byte_array();
         for (var i = 0; i < expected.length; i++) {
             Assertions.assertEquals(expected[i], bytes.get(i));
         }
@@ -83,7 +83,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
     private static void assertArrays(final List<byte[]> arrays) {
         Assertions.assertEquals(N, arrays.size());
-        final var expected = HelloWorldTestUtils.hello_world_byte_array();
+        final var expected = HelloWorld__TestUtils.hello_world_byte_array();
         for (final var array : arrays) {
             Assertions.assertArrayEquals(expected, array);
         }
@@ -91,7 +91,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
     private static void assertStrings(final List<String> strings) {
         Assertions.assertEquals(N, strings.size());
-        final var expected = HelloWorldTestUtils.hello_world_string();
+        final var expected = HelloWorld__TestUtils.hello_world_string();
         for (final var string : strings) {
             Assertions.assertEquals(expected, string);
         }
@@ -101,7 +101,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     ReactiveHelloWorldPublishers_Conformance_Test() {
         super();
         service = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        HelloWorldTestUtils.set_array_sets_hello_world_bytes(service);
+        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service);
     }
 
     private final HelloWorld service;

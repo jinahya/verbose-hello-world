@@ -40,7 +40,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @DisplayName("(null, parameterIndex)NullPointerException")
     @Test
@@ -74,7 +74,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_random_bytes(service());
         final var sink = new ByteArrayOutputStream();
         final var statement = Mockito.mock(PreparedStatement.class);
         Mockito.doAnswer(i -> {
@@ -88,7 +88,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBinaryStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(statement, Mockito.times(1))
                 .setBinaryStream(Mockito.eq(index), Mockito.<InputStream>notNull());
         Assertions.assertArrayEquals(array, sink.toByteArray());

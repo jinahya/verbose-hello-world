@@ -52,7 +52,7 @@ import java.util.concurrent.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Mac__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Prints a one-line summary of a MAC tag or derived hash &mdash; algorithm, optional parameter,
@@ -74,7 +74,7 @@ class HelloWorld_Update_Mac__Test
     /**
      * Stubs {@link com.github.jinahya.hello.api.HelloWorld#update(Mac) service().update(mac)} so
      * that, when invoked with any non-{@code null} {@link Mac}, it forwards the
-     * {@link HelloWorldTestUtils#hello_world_byte_array() hello-world bytes} to the mac's
+     * {@link HelloWorld__TestUtils#hello_world_byte_array() hello-world bytes} to the mac's
      * {@link Mac#update(byte[])} method and returns the mac.
      */
     // ---------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ class HelloWorld_Update_Mac__Test
     void __() {
         Mockito.doAnswer(i -> {
             final var mac = i.getArgument(0, Mac.class);
-            mac.update(HelloWorldTestUtils.hello_world_byte_array());
+            mac.update(HelloWorld__TestUtils.hello_world_byte_array());
             return mac;
         }).when(service()).update(ArgumentMatchers.<Mac>notNull());
     }

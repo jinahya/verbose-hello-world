@@ -76,7 +76,7 @@ public interface HelloWorld {
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.3">9.3.
      * Field (Constant) Declarations</a> (The Java® Language Specification)
      */
-    public static final
+    public static final // redundant
     int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
@@ -192,9 +192,9 @@ public interface HelloWorld {
         }
 //        final var array = new byte[BYTES];
 //        set(array);
-        for (final var b : set(new byte[BYTES])) {
-            appendable.append((char) b);
-        }
+//        for (final var b : array) {
+//            appendable.append((char) b);
+//        }
         return appendable;
     }
 

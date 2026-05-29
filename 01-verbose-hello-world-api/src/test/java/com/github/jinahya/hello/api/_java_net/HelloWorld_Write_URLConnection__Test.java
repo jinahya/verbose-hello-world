@@ -30,14 +30,14 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_URLConnection__Test extends HelloWorldTest {
+class HelloWorld_Write_URLConnection__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() throws IOException {

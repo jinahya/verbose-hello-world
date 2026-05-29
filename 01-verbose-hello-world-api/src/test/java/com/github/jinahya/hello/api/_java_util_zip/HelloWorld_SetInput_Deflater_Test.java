@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.zip.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("setInput(Deflater)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetInput_Deflater_Test extends HelloWorldTest {
+class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
 
     @DisplayName("""
             should throw a <NullPointerException>

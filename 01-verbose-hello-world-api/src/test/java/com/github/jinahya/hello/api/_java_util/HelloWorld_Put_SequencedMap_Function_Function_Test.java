@@ -28,7 +28,7 @@ import org.junit.jupiter.api.*;
 import java.util.*;
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("put(SequencedMap, Function, Function)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorldTest {
+class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Test {
 
     @DisplayName("""
             should throw a <NullPointerException>

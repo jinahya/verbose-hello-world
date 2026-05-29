@@ -29,12 +29,12 @@ import org.junit.jupiter.api.io.*;
 import java.io.*;
 import java.util.jar.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Java_Util_Jar__Test extends HelloWorldTest {
+class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;

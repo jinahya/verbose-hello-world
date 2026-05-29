@@ -51,7 +51,7 @@ import java.util.*;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_MessageDigest__Test extends HelloWorldTest {
+class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -73,7 +73,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorldTest {
      */
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
+        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

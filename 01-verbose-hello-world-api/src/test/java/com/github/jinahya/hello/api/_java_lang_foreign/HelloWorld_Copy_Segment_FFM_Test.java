@@ -107,7 +107,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @Nested
     class Libc_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using C {@code puts()}.
@@ -127,7 +127,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 // ----------------------------------------------------------------------------when
                 service.copy(segment);
                 // ---------------------------------------------------------------------------- then
-                final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+                final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
                 final var content = readSegmentAsString(segment);
                 Assertions.assertEquals("hello, world", content);
                 final var linker = Linker.nativeLinker();
@@ -225,7 +225,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @Nested
     class Python_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         private static final List<String> PYTHON_LIBS_MACOS = List.of(
                 // Homebrew Cellar paths (versioned)
@@ -333,7 +333,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
     @Nested
     @EnabledOnOs(OS.MAC)
     class MacOS_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
@@ -381,7 +381,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
     @Nested
     @EnabledOnOs(OS.LINUX)
     class Linux_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
@@ -439,7 +439,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
     @Nested
     @EnabledOnOs(OS.WINDOWS)
     class Windows_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using Windows {@code WriteConsoleA()}.

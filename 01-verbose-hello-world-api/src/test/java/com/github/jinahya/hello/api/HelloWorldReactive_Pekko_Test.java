@@ -77,7 +77,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -91,7 +91,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -106,7 +106,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
     }
 
@@ -131,7 +131,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -149,7 +149,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -167,7 +167,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
     }

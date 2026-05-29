@@ -31,11 +31,11 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws ExecutionException, InterruptedException {

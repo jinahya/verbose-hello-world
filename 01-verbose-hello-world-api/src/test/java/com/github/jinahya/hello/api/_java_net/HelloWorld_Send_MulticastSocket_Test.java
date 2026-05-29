@@ -35,7 +35,7 @@ import java.util.stream.*;
 @Disabled
 @Slf4j
 class HelloWorld_Send_MulticastSocket_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     // "232.1.1.1"   source-specific multicast, SSM (RFC 4607)
     // "224.1.1.1"   transient, global scope (not well-known)
@@ -63,7 +63,7 @@ class HelloWorld_Send_MulticastSocket_Test
         Mockito.doAnswer(i -> {
             final var socket = i.getArgument(0, DatagramSocket.class);
             socket.send(new DatagramPacket(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+                    HelloWorld__TestUtils.hello_world_byte_array(),
                     HelloWorld.BYTES
             ));
             return socket;
@@ -144,7 +144,7 @@ class HelloWorld_Send_MulticastSocket_Test
         Mockito.doAnswer(i -> {
             final var socket = i.getArgument(0, DatagramSocket.class);
             socket.send(new DatagramPacket(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+                    HelloWorld__TestUtils.hello_world_byte_array(),
                     HelloWorld.BYTES
             ));
             return socket;

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_Writer_Test extends HelloWorldTest {
+class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method throws a

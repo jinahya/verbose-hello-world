@@ -32,14 +32,14 @@ import java.sql.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_Clob_Long__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
         Mockito.doAnswer(invocation -> {
             final var clob = invocation.getArgument(0, Clob.class);
             final var pos = invocation.getArgument(1, Long.class);
-            clob.setString(pos, HelloWorldTestConstants.HELLO_WORLD_STRING);
+            clob.setString(pos, HelloWorld__TestConstants.HELLO_WORLD_STRING);
             return clob;
         }).when(service()).setAsciiStream(
                 ArgumentMatchers.<Clob>notNull(),
@@ -66,7 +66,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
                 Assertions.assertSame(clob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, clob.length());
                 Assertions.assertEquals(
-                        HelloWorldTestConstants.HELLO_WORLD_STRING,
+                        HelloWorld__TestConstants.HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
             }
@@ -90,7 +90,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
                 Assertions.assertSame(clob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, clob.length());
                 Assertions.assertEquals(
-                        HelloWorldTestConstants.HELLO_WORLD_STRING,
+                        HelloWorld__TestConstants.HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
             }

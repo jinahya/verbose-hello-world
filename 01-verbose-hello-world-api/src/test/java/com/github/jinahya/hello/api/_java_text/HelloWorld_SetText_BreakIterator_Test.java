@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.text.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetText_BreakIterator_Test extends HelloWorldTest {
+class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
 
     @DisplayName("(null)NullPointerException")
     @Test
@@ -63,7 +63,7 @@ class HelloWorld_SetText_BreakIterator_Test extends HelloWorldTest {
         // ------------------------------------------------------------------------------------ when
         final var result = service.setText(iterator);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.set_array12_invoked_once(service);
+        HelloWorld__TestUtils.set_array12_invoked_once(service);
         verify(iterator, times(1)).setText(hello_world_string());
         assertSame(iterator, result);
     }

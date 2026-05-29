@@ -31,14 +31,14 @@ import org.junit.jupiter.params.provider.*;
 import java.util.stream.*;
 import java.util.zip.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Checksum__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     private static Stream<Checksum> getChecksumStream() {
         return Stream.of(

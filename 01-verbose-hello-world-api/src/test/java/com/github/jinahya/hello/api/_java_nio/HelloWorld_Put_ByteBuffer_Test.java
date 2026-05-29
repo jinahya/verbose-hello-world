@@ -36,7 +36,7 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
 import static org.mockito.AdditionalAnswers.*;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Put_ByteBuffer_Test extends HelloWorldTest {
+class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
 
     private static final Random RANDOM;
 

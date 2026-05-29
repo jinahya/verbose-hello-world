@@ -53,7 +53,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
-            HelloWorldTestUtils.set_array_sets_hello_world_bytes(synchronousService());
+            HelloWorld__TestUtils.set_array_sets_hello_world_bytes(synchronousService());
             // -------------------------------------------------------------------------------- when
             final var stage = asynchronousService().applyAsync(
                     ss -> ss.set(new byte[HelloWorld.BYTES])
@@ -61,7 +61,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
             final var array = stage.toCompletableFuture().get(5L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
             Assertions.assertArrayEquals(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+                    HelloWorld__TestUtils.hello_world_byte_array(),
                     array
             );
         }

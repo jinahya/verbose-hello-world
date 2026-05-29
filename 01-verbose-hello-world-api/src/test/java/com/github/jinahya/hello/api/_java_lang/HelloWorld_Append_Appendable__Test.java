@@ -27,12 +27,12 @@ import org.junit.jupiter.api.*;
 
 import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Append_Appendable__Test extends HelloWorldTest {
+class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
 
     @Nested
     class StringBuilder_Test {
@@ -45,7 +45,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorldTest {
             // -------------------------------------------------------------------------------- when
             service.append(appendable);
             // -------------------------------------------------------------------------------- then
-            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, appendable.toString());
+            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, appendable.toString());
         }
     }
 }

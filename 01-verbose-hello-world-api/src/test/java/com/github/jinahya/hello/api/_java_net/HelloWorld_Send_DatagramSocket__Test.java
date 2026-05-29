@@ -29,14 +29,14 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket__Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() throws IOException {

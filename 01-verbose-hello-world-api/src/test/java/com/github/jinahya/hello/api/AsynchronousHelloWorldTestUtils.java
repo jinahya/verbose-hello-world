@@ -29,7 +29,7 @@ import java.util.function.*;
 /**
  * Utilities for testing {@link AsynchronousHelloWorld}.
  *
- * @see HelloWorldTestUtils
+ * @see HelloWorld__TestUtils
  */
 public final class AsynchronousHelloWorldTestUtils {
 
@@ -61,8 +61,8 @@ public final class AsynchronousHelloWorldTestUtils {
     public static void applyAsync_mapper_applies_(
             final HelloWorld service,
             final AsynchronousHelloWorld asynchronousService) {
-        MockitoTestUtils.requireMock(service);
-        MockitoTestUtils.requireMock(asynchronousService);
+        Mockito__TestUtils.requireMock(service);
+        Mockito__TestUtils.requireMock(asynchronousService);
         Mockito.doAnswer(applies_(service))
                 .when(asynchronousService)
                 .applyAsync(ArgumentMatchers.notNull());

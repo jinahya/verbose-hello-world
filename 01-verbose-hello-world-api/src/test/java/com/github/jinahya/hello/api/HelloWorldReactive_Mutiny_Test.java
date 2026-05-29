@@ -63,7 +63,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .item(HelloWorldUtils.array(synchronousService()))
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -74,7 +74,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .item(() -> HelloWorldUtils.array(synchronousService()))
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -87,7 +87,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     ))
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -118,7 +118,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
         }
 
         @Test
@@ -136,7 +136,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -154,7 +154,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -172,7 +172,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -189,7 +189,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -204,7 +204,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
         }
     }
 }

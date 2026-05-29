@@ -29,13 +29,13 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorldTest {
+class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() {
@@ -52,7 +52,7 @@ class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorldTest {
         try (var baos = new ByteArrayOutputStream()) {
             service().accept((Consumer<Integer>) baos::write, Integer::valueOf);
             baos.flush();
-            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING,
+            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING,
                          new String(baos.toByteArray(), StandardCharsets.US_ASCII));
         }
     }

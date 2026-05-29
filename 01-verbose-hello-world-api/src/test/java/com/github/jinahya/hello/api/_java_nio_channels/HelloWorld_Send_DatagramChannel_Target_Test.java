@@ -30,7 +30,7 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @DisplayName("(null, ?)NullPointerException")

@@ -31,14 +31,14 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Set_BitSet_Index__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __a() {
         Mockito.doAnswer(i -> {
             final var bitset = i.getArgument(0, BitSet.class);
             var index = i.getArgument(1, Integer.class);
-            for (int b : HelloWorldTestUtils.hello_world_byte_array()) {
+            for (int b : HelloWorld__TestUtils.hello_world_byte_array()) {
                 for (var j = 0; j < Byte.SIZE; j++) {
                     bitset.set(index++, (b & 1) == 1);
                     b >>>= 1;

@@ -28,12 +28,12 @@ import org.junit.jupiter.api.io.*;
 
 import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Append_File__Test extends HelloWorldTest {
+class HelloWorld_Append_File__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -67,7 +67,7 @@ class HelloWorld_Append_File__Test extends HelloWorldTest {
         assert file.exists();
         assert file.isFile();
         assert !file.isDirectory();
-        HelloWorldTestUtils.writeSome(file);
+        HelloWorld__TestUtils.writeSome(file);
         final var length = file.length();
         // ------------------------------------------------------------------------------------ when
         service.append(file);

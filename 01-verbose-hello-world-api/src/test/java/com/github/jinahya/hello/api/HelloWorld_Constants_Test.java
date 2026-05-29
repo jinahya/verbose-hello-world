@@ -20,23 +20,28 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
+import lombok.*;
 import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-/**
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static java.nio.charset.StandardCharsets.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("HelloWorld's Constants")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
-public final class HelloWorldTestConstants {
+class HelloWorld_Constants_Test {
 
-    public static final String HELLO_WORLD_STRING = "hello, world";
+    @DisplayName("BYTE")
+    @Nested
+    class BYTES_Test {
 
-    // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private HelloWorldTestConstants() {
-        throw new AssertionError("instantiation is not allowed");
+        @Test
+        void _12_BYTES() {
+            final var expected = HELLO_WORLD_STRING.getBytes(US_ASCII).length;
+            final var actual = HelloWorld.BYTES;
+            assertEquals(expected, actual);
+        }
     }
 }

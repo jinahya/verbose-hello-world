@@ -31,7 +31,7 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-class HelloWorld_Send_DatagramChannel__Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach

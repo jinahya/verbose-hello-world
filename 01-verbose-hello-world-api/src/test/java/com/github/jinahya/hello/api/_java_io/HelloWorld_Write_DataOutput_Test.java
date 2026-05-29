@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_DataOutput_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(output)} method throws a

@@ -32,7 +32,7 @@ import java.sql.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBytes_PreparedStatement_Int__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws SQLException {
@@ -45,7 +45,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
                 ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
-        HelloWorldTestUtils.set_array_returns_the_array(service());
+        HelloWorld__TestUtils.set_array_returns_the_array(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------

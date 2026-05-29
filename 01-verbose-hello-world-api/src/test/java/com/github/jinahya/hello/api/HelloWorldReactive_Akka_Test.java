@@ -29,7 +29,7 @@ import org.junit.jupiter.api.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.api.HelloWorldUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -38,7 +38,7 @@ import java.io.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_PipedOutputStream_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Asserts {@link HelloWorld#write(PipedOutputStream) write(stream)} method invokes
@@ -52,12 +52,12 @@ class HelloWorld_Write_PipedOutputStream_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_stream_writes_12_bytes(service());
+        final var service = HelloWorld__TestUtils.write_stream_writes_12_bytes(service());
         final var stream = Mockito.mock(PipedOutputStream.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.write_stream_invoked_once(service);
+        HelloWorld__TestUtils.write_stream_invoked_once(service);
         Assertions.assertSame(stream, result);
     }
 
@@ -66,7 +66,7 @@ class HelloWorld_Write_PipedOutputStream_Test
     @Test
     void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_stream_writes_12_bytes(service());
+        final var service = HelloWorld__TestUtils.write_stream_writes_12_bytes(service());
         // -------------------------------------------------------------------------------- buffered
         try (var snk = new PipedInputStream(HelloWorld.BYTES);
              var stream = new PipedOutputStream(snk)) {

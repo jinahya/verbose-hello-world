@@ -30,13 +30,13 @@ import java.net.http.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorldTest {
+class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() {

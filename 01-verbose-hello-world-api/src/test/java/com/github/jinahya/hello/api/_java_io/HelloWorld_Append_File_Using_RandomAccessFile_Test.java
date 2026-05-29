@@ -39,7 +39,7 @@ import java.util.concurrent.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_File_Using_RandomAccessFile_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @Test
     void __(@TempDir final File dir)
@@ -49,7 +49,7 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
         // stub: <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         Mockito.doAnswer(i -> {
             final var file = i.getArgument(0, RandomAccessFile.class);
-            file.write(HelloWorldTestUtils.hello_world_byte_array());
+            file.write(HelloWorld__TestUtils.hello_world_byte_array());
             return file;
         }).when(service).write(ArgumentMatchers.<RandomAccessFile>notNull());
         // prepare: create a temp file

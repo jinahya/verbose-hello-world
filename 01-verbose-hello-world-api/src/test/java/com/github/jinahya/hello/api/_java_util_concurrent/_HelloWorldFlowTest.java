@@ -37,7 +37,7 @@ import java.nio.charset.*;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class _HelloWorldFlowTest
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 

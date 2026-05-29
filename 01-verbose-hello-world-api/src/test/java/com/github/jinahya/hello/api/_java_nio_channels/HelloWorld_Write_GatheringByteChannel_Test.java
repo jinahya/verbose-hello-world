@@ -39,7 +39,7 @@ import java.util.concurrent.*;
 @DisplayName("write(GatheringByteChannel)")
 @Slf4j
 class HelloWorld_Write_GatheringByteChannel_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(GatheringByteChannel) write(channel)} method throws
@@ -93,7 +93,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given
-        final var bytes = HelloWorldTestUtils.hello_world_byte_array();
+        final var bytes = HelloWorld__TestUtils.hello_world_byte_array();
         final var pipe = Pipe.open();
         // ----------------------------------------------------------------------------------- write
         final var writer = Thread.ofVirtual().start(() -> {

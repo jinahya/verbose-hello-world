@@ -28,6 +28,10 @@ import org.mockito.verification.*;
 
 import java.util.concurrent.*;
 
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for testing {@link HelloWorld#set(byte[])} method.
  *
@@ -40,7 +44,7 @@ import java.util.concurrent.*;
         "java:S1854", // useless (yet) assignments
         "java:S2699"  // no assertions (yet)
 })
-class HelloWorld_Set_Array_Testa extends HelloWorldTest {
+class HelloWorld_Set_Array_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
@@ -56,7 +60,7 @@ class HelloWorld_Set_Array_Testa extends HelloWorldTest {
         final var service = service();
         final var array = (byte[]) null;
         // ------------------------------------------------------------------------------- when/then
-//        Assertions.assertThrows(
+//        assertThrows(
 //                NullPointerException.class,
 //                () -> service.set(array)
 //        );
@@ -78,7 +82,7 @@ class HelloWorld_Set_Array_Testa extends HelloWorldTest {
         final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)];
         assert array.length < HelloWorld.BYTES; // always 'true', I know
         // ------------------------------------------------------------------------------- when/then
-//        Assertions.assertThrows(
+//        assertThrows(
 //                IndexOutOfBoundsException.class, // <expectedType>
 //                () -> service.set(array)         // <executable>
 //        );
@@ -100,21 +104,16 @@ class HelloWorld_Set_Array_Testa extends HelloWorldTest {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .set(ArgumentMatchers.any(byte[].class),   // <array>
-                     ArgumentMatchers.anyInt()             // <index>
-                );
+        doAnswer(returnsFirstArg()).when(service).set(any(byte[].class), anyInt());
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);
         // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1))
-//                .set(ArgumentMatchers.same(array), ArgumentMatchers.intThat(v -> v == 0));
 //        final var arrayCaptor = ArgumentCaptor.forClass(byte[].class);
 //        final var indexCaptor = ArgumentCaptor.forClass(int.class);
-//        Mockito.verify(service, Mockito.times(1))
-//                .set(arrayCaptor.capture(), indexCaptor.capture());
-//        Assertions.assertSame(array, result);
+//        verify(service, times(1)).set(arrayCaptor.capture(), indexCaptor.capture());
+//        assertSame(array, arrayCaptor.getValue());
+//        assertEquals(0, indexCaptor.getValue());
+//        assertSame(array, result);
     }
 }

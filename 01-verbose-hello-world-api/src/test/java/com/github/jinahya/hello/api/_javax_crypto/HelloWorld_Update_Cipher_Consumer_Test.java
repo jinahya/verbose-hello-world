@@ -29,14 +29,14 @@ import javax.crypto.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Cipher_Consumer_Test extends HelloWorldTest {
+class HelloWorld_Update_Cipher_Consumer_Test extends HelloWorld__Test {
 
     @DisplayName("""
             should throw a <NullPointerException>

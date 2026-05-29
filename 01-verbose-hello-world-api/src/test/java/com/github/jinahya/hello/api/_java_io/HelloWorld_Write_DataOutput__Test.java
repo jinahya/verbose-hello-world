@@ -29,8 +29,8 @@ import org.junit.jupiter.api.io.*;
 import java.io.*;
 
 import static com.github.jinahya.hello.api.HelloWorld.*;
-import static com.github.jinahya.hello.api.HelloWorldTestConstants.*;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.io.File.*;
 import static java.nio.charset.StandardCharsets.*;
 import static java.util.concurrent.ThreadLocalRandom.*;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Write_DataOutput__Test extends HelloWorldTest {
+class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;

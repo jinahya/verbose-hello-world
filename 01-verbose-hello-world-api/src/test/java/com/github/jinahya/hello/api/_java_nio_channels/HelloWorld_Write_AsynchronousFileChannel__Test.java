@@ -31,10 +31,10 @@ import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
 @Slf4j
-class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
 
     @TempDir
     private static Path tempDir;

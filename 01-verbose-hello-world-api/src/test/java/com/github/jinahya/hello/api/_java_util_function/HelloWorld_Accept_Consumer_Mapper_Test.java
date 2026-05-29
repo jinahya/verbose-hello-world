@@ -27,7 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 @DisplayName("acceptEach(Consumer, Function)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorldTest {
+class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
 
     @DisplayName("""
             should throw a <NullPointerException>

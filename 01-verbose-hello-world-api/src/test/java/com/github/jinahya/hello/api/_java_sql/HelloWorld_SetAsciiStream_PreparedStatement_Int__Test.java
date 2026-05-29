@@ -32,7 +32,7 @@ import java.sql.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
@@ -41,14 +41,14 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
             final var pi = invocation.getArgument(1, Integer.class);
             ps.setAsciiStream(
                     pi,
-                    new ByteArrayInputStream(HelloWorldTestUtils.hello_world_byte_array())
+                    new ByteArrayInputStream(HelloWorld__TestUtils.hello_world_byte_array())
             );
             return ps;
         }).when(service()).setAsciiStream(
                 ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
-        HelloWorldTestUtils.set_array_returns_the_array(service());
+        HelloWorld__TestUtils.set_array_returns_the_array(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
                             final var bytes = stream.readAllBytes();
                             Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
                             Assertions.assertArrayEquals(
-                                    HelloWorldTestUtils.hello_world_byte_array(),
+                                    HelloWorld__TestUtils.hello_world_byte_array(),
                                     bytes
                             );
                         }
@@ -156,7 +156,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
                             final var bytes = stream.readAllBytes();
                             Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
                             Assertions.assertArrayEquals(
-                                    HelloWorldTestUtils.hello_world_byte_array(),
+                                    HelloWorld__TestUtils.hello_world_byte_array(),
                                     bytes
                             );
                         }
@@ -212,7 +212,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
                             final var bytes = stream.readAllBytes();
                             Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
                             Assertions.assertArrayEquals(
-                                    HelloWorldTestUtils.hello_world_byte_array(),
+                                    HelloWorld__TestUtils.hello_world_byte_array(),
                                     bytes
                             );
                         }

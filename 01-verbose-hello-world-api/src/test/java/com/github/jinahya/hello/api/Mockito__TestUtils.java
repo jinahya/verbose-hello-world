@@ -74,7 +74,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({
         "java:S101"
 })
-public final class MockitoTestUtils {
+public final class Mockito__TestUtils {
 
     // -------------------------------------------------------------------------- PREDICATES / ASSERTIONS
 
@@ -210,7 +210,7 @@ public final class MockitoTestUtils {
     /**
      * Returns a Mockito-verifiable {@link Subscriber} that, on every received signal, logs the call
      * and forwards it to {@code delegate}. Equivalent to
-     * {@link MockitoTestUtils#loggingSpy(Class, Object) loggingSpy(Subscriber.class, delegate)}.
+     * {@link Mockito__TestUtils#loggingSpy(Class, Object) loggingSpy(Subscriber.class, delegate)}.
      *
      * @param delegate the real {@link Subscriber} to which calls are ultimately delivered; must not
      *                 be {@code null}.
@@ -223,7 +223,7 @@ public final class MockitoTestUtils {
     }
 
     /**
-     * The {@link Flow.Subscriber} counterpart of {@link MockitoTestUtils#loggingSpy(Subscriber)}.
+     * The {@link Flow.Subscriber} counterpart of {@link Mockito__TestUtils#loggingSpy(Subscriber)}.
      *
      * @param delegate the real {@link Flow.Subscriber} to which calls are ultimately delivered;
      *                 must not be {@code null}.
@@ -299,7 +299,7 @@ public final class MockitoTestUtils {
 
     // ---------------------------------------------------------------------------------------------
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private MockitoTestUtils() {
+    private Mockito__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the

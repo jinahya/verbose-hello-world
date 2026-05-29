@@ -39,7 +39,7 @@ import java.util.concurrent.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_File_Using_DataOutput_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @Test
     void __(@TempDir final File dir)
@@ -49,7 +49,7 @@ class HelloWorld_Append_File_Using_DataOutput_Test
         // stub: <service.write(DataOutput)> will write <hello, world> bytes.
         Mockito.doAnswer(i -> {
             final var output = i.getArgument(0, DataOutput.class);
-            output.write(HelloWorldTestUtils.hello_world_byte_array());
+            output.write(HelloWorld__TestUtils.hello_world_byte_array());
             return output;
         }).when(service).write(ArgumentMatchers.<DataOutput>notNull());
         // prepare: create a temp file, and write some dummy bytes

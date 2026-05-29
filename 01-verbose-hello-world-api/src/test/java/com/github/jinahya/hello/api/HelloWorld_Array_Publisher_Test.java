@@ -28,7 +28,7 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -57,7 +57,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 10);
         log.debug("n: {}", n);
-        final var subscriber = MockitoTestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
             private Flow.Subscription subscription;
             private int received;
             @Override public void onSubscribe(final Flow.Subscription s) {
@@ -99,7 +99,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, 10);
             demands[i] = n;
-            subscribers.add(MockitoTestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
+            subscribers.add(Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
                 private Flow.Subscription subscription;
                 private int received;
                 @Override public void onSubscribe(final Flow.Subscription s) {
@@ -147,7 +147,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
-        final var subscriber = MockitoTestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }

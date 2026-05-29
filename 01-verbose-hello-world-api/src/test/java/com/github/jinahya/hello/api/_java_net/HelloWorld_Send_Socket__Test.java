@@ -33,7 +33,7 @@ import java.nio.charset.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_Socket__Test extends HelloWorldTest {
+class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -41,7 +41,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorldTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.send_socket_sends_hello_world_bytes(service());
+        HelloWorld__TestUtils.send_socket_sends_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

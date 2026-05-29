@@ -25,7 +25,7 @@ import lombok.experimental.*;
 
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.MockitoTestUtils.*;
+import static com.github.jinahya.hello.api.Mockito__TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**

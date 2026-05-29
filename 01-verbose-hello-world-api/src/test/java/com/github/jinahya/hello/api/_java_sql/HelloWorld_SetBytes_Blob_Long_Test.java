@@ -36,7 +36,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 class HelloWorld_SetBytes_Blob_Long_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @DisplayName("(null, pos)NullPointerException")
     @Test
@@ -70,13 +70,13 @@ class HelloWorld_SetBytes_Blob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
+        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
         final var blob = Mockito.mock(Blob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBytes(blob, pos);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(blob, Mockito.times(1)).setBytes(pos, array);
         Assertions.assertSame(blob, result);
     }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._java_lang;
+package com.github.jinahya.hello.api;
 
 /*-
  * #%L
@@ -20,24 +20,9 @@ package com.github.jinahya.hello.api._java_lang;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
-import lombok.*;
-import lombok.extern.slf4j.*;
-import org.junit.jupiter.api.*;
+import java.nio.charset.*;
 
-/**
- * A class for testing {@link HelloWorld#set(byte[], int) set(array, index)} method.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-@DisplayName("set(array, index)")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Slf4j
-@SuppressWarnings({
-        "java:S2187" // empty
-})
-class HelloWorld_Set_Array_Index_Test
-        extends HelloWorld__Test {
+interface HelloWorld2 {
 
-    // empty; we're not going to implement the method in this module.
+    int BYTES = "hello, world".getBytes(StandardCharsets.US_ASCII).length;
 }

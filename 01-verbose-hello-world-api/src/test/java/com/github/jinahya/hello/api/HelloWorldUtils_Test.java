@@ -11,7 +11,7 @@ import java.nio.charset.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /*-
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorldUtilsTest extends HelloWorldTest {
+class HelloWorldUtils_Test extends HelloWorld__Test {
 
     private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
         return Stream.of(
@@ -64,7 +64,7 @@ class HelloWorldUtilsTest extends HelloWorldTest {
         @Test
         void __() {
             final var result = HelloWorldUtils.array(service());
-            assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), result);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), result);
         }
     }
 
@@ -73,7 +73,7 @@ class HelloWorldUtilsTest extends HelloWorldTest {
     class Buffer_Supplier_Test {
 
         private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
-            return HelloWorldUtilsTest.byteBufferSupplierStream();
+            return HelloWorldUtils_Test.byteBufferSupplierStream();
         }
 
         @MethodSource({"byteBufferSupplierStream"})
@@ -91,7 +91,7 @@ class HelloWorldUtilsTest extends HelloWorldTest {
         @Test
         void __() {
             final var result = HelloWorldUtils.string(service());
-            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, result);
+            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, result);
         }
     }
 
@@ -100,7 +100,7 @@ class HelloWorldUtilsTest extends HelloWorldTest {
     class Decode_Supplier_Test {
 
         private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
-            return HelloWorldUtilsTest.byteBufferSupplierStream();
+            return HelloWorldUtils_Test.byteBufferSupplierStream();
         }
 
         @MethodSource({"byteBufferSupplierStream"})

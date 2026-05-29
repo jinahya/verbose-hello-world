@@ -40,7 +40,7 @@ import java.io.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_StringWriter_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(BufferedWriter) write(writer)} method throws a
@@ -72,7 +72,7 @@ class HelloWorld_Write_StringWriter_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_writes_12_chars(service());
+        final var service = HelloWorld__TestUtils.write_writer_writes_12_chars(service());
         final var writer = Mockito.mock(StringWriter.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
@@ -84,7 +84,7 @@ class HelloWorld_Write_StringWriter_Test
     @Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_writes_12_chars(service());
+        final var service = HelloWorld__TestUtils.write_writer_writes_12_chars(service());
         final var writer = Mockito.spy(new StringWriter());
         // ------------------------------------------------------------------------------------ when
         service.write(writer).flush();

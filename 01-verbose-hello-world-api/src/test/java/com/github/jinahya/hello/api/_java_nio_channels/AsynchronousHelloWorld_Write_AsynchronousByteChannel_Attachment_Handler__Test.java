@@ -34,7 +34,7 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.api._Java_Util_Concurrent_ExecutorService_TestUtils.*;
 import static org.mockito.Mockito.*;
 

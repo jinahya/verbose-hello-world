@@ -65,7 +65,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -79,7 +79,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test
@@ -93,7 +93,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @Test

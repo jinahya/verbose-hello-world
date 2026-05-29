@@ -31,7 +31,7 @@ import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_WritableByteChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
 
     /**
      * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
@@ -111,7 +111,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorldTest {
      * {@link Buffer} method achieves the state reset.
      * <p>
      * <b>Why no {@code Mockito.verify(channel, atLeastOnce()).write(buffer)}.</b> The captor in
-     * {@link HelloWorldTestUtils#put_buffer12_invoked_once(HelloWorld) put_buffer12_invoked_once}
+     * {@link HelloWorld__TestUtils#put_buffer12_invoked_once(HelloWorld) put_buffer12_invoked_once}
      * returns the {@code buffer} argument that was passed into {@code service.put(buffer)}. The
      * default implementation of {@link HelloWorld#write(WritableByteChannel)} happens to use the
      * same reference for {@code channel.write(buffer)} — but only because the helper's
@@ -141,7 +141,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorldTest {
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.put_buffer12_put_random_bytes(service());
+        final var service = HelloWorld__TestUtils.put_buffer12_put_random_bytes(service());
         final var channel = mock(WritableByteChannel.class);
         final var bufferPositions = new ArrayList<Integer>();
         doAnswer(i -> {

@@ -38,13 +38,13 @@ import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
+class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() {
         doAnswer(i -> {
             final var iterator = i.getArgument(0, BreakIterator.class);
-            iterator.setText(HelloWorldTestConstants.HELLO_WORLD_STRING);
+            iterator.setText(HelloWorld__TestConstants.HELLO_WORLD_STRING);
             return iterator;
         }).when(service()).setText(notNull());
     }
@@ -55,7 +55,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
@@ -65,7 +65,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
@@ -75,7 +75,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
@@ -85,7 +85,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 

@@ -36,7 +36,7 @@ import java.util.concurrent.*;
 @DisplayName("set(BitSet, int)")
 @Slf4j
 class HelloWorld_Set_BitSet_Index_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @DisplayName("""
             should throw a <NullPointerException>
@@ -74,13 +74,13 @@ class HelloWorld_Set_BitSet_Index_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_random_bytes(service());
         final var bitset = Mockito.spy(new BitSet(HelloWorld.BYTES << 3));
         final var index = 0;
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
         Assertions.assertArrayEquals(array, bitset.toByteArray());
         Assertions.assertSame(bitset, result);
     }

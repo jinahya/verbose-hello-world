@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method throws a

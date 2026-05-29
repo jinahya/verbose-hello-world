@@ -39,7 +39,7 @@ import java.nio.charset.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_FilterOutputStream_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(FilterOutputStream)} method throws a
@@ -92,7 +92,7 @@ class HelloWorld_Write_FilterOutputStream_Test
         final var service = service();
         Mockito.doAnswer(i -> {
                     final var stream = i.getArgument(0, OutputStream.class);
-                    stream.write(HelloWorldTestUtils.hello_world_byte_array());
+                    stream.write(HelloWorld__TestUtils.hello_world_byte_array());
                     return stream;
                 })
                 .when(service)
@@ -108,6 +108,6 @@ class HelloWorld_Write_FilterOutputStream_Test
         service.write(stream);
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(stream, Mockito.times(1))
-                .write(ArgumentMatchers.eq(HelloWorldTestUtils.hello_world_byte_array()));
+                .write(ArgumentMatchers.eq(HelloWorld__TestUtils.hello_world_byte_array()));
     }
 }

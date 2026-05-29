@@ -28,7 +28,7 @@ import org.reactivestreams.*;
 import java.time.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -67,7 +67,7 @@ class ReactiveHelloWorld_Array_PublisherTest
     @DisplayName("request(1) → 1 element, no onComplete")
     void __exactly1() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
             @Override public void onSubscribe(final Subscription s) { s.request(1L); }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable t) { }
@@ -90,7 +90,7 @@ class ReactiveHelloWorld_Array_PublisherTest
     void __random() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 8);
-        final var subscriber = MockitoTestUtils.loggingSpy(new Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable t) { }

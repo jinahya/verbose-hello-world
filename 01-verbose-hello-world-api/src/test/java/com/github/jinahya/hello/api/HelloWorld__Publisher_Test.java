@@ -29,7 +29,7 @@ import org.mockito.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**

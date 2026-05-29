@@ -30,14 +30,14 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorldTest {
+class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Test {
 
     private static void print(final boolean unsupported,
                               final SequencedMap<String, String> map) {

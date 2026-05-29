@@ -40,7 +40,7 @@ import java.io.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_PrintWriter_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(BufferedWriter) write(writer)} method throws a

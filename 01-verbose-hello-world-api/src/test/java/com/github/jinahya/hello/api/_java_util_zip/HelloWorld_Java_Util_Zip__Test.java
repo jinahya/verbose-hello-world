@@ -35,7 +35,7 @@ import java.util.zip.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Java_Util_Zip__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -43,8 +43,8 @@ class HelloWorld_Java_Util_Zip__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
-        HelloWorldTestUtils.write_stream_writes_hello_world_bytes(service());
+        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
+        HelloWorld__TestUtils.write_stream_writes_hello_world_bytes(service());
     }
 
     @Nested
@@ -66,7 +66,7 @@ class HelloWorld_Java_Util_Zip__Test
                     final var entry = zis.getNextEntry();
                     assert entry != null;
                     Assertions.assertArrayEquals(
-                            HelloWorldTestUtils.hello_world_byte_array(),
+                            HelloWorld__TestUtils.hello_world_byte_array(),
                             zis.readAllBytes()
                     );
                 }
@@ -92,7 +92,7 @@ class HelloWorld_Java_Util_Zip__Test
                 assert entry != null;
                 try (var in = zipFile.getInputStream(entry)) {
                     Assertions.assertArrayEquals(
-                            HelloWorldTestUtils.hello_world_byte_array(),
+                            HelloWorld__TestUtils.hello_world_byte_array(),
                             in.readAllBytes()
                     );
                 }
@@ -124,7 +124,7 @@ class HelloWorld_Java_Util_Zip__Test
             try (var inflater = new InflaterInputStream(
                     new ByteArrayInputStream(baos.toByteArray()))) {
                 Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
+                        HelloWorld__TestUtils.hello_world_byte_array(),
                         inflater.readAllBytes()
                 );
             }
@@ -177,7 +177,7 @@ class HelloWorld_Java_Util_Zip__Test
             try (var gzipis = new GZIPInputStream(
                     new ByteArrayInputStream(baos.toByteArray()))) {
                 Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
+                        HelloWorld__TestUtils.hello_world_byte_array(),
                         gzipis.readAllBytes()
                 );
             }

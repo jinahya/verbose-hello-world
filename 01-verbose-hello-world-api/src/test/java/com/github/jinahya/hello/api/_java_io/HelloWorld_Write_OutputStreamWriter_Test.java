@@ -44,7 +44,7 @@ import java.util.stream.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_OutputStreamWriter_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     private static Stream<Charset> standardCharsetStream() {
         return _Java_Nio_Charset_TestUtils.charsetStream();

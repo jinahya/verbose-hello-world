@@ -32,13 +32,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.zip.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
+class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -61,7 +61,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
                     final var bytes = bais.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -129,7 +129,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                      var dis = new DataInputStream(bais)) {
                     final var bytes = dis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -148,7 +148,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
             try (var stream = new FileInputStream(file)) {
                 final var bytes = stream.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
     }
@@ -167,7 +167,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
 
@@ -189,7 +189,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
     }
@@ -208,7 +208,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                      var iis = new InflaterInputStream(bais)) {
                     final var bytes = iis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -231,7 +231,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 final var decompressed = gzipis.readAllBytes();
                 log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
                           decompressed.length);
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
                                              decompressed);
             }
         }

@@ -33,13 +33,13 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_WritableByteChannel__Test extends HelloWorldTest {
+class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
 
     @TempDir
     private static Path tempDir;
@@ -71,7 +71,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorldTest {
                     assert r != -1;
                 }
                 final var string = StandardCharsets.US_ASCII.decode(dst.flip()).toString();
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
     }
@@ -91,7 +91,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorldTest {
                             assert r != -1;
                         }
                         final var string = StandardCharsets.US_ASCII.decode(dst.flip()).toString();
-                        assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                        assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                     } catch (final IOException ioe) {
                         log.error("failed to read", ioe);
                     }
