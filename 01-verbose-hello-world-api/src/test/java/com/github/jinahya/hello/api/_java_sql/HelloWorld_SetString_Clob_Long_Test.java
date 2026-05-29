@@ -73,7 +73,7 @@ class HelloWorld_SetString_Clob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        final var service = HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
         final var clob = Mockito.mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when

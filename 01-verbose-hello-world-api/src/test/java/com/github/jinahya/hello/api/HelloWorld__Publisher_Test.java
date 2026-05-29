@@ -60,7 +60,7 @@ abstract class HelloWorld__Publisher_Test<U> {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void stubService() {
-        set_array_sets_actual_hello_world_bytes(service());
+        set_array_sets_hello_world_bytes(service());
     }
 
     // ------------------------------------------------------------------------------------- service

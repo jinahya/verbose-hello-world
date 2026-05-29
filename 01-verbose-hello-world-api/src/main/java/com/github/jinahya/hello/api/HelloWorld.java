@@ -76,7 +76,7 @@ public interface HelloWorld {
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.3">9.3.
      * Field (Constant) Declarations</a> (The Java® Language Specification)
      */
-    /* public static final */
+    public static final
     int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang

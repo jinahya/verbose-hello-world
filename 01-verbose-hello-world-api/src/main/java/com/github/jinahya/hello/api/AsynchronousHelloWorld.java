@@ -37,9 +37,13 @@ import java.util.function.*;
  * Java I/O APIs.
  * <p>
  * Each instance wraps a service of type {@code T} (a {@link HelloWorld} subtype) that supplies the
- * bytes, and an {@link Executor} on which the synchronous {@link HelloWorld} calls are dispatched.
- * Every method on this interface uses that stored executor — directly via the two shape-paired
- * primitives {@link #applyAsync(Function)} ({@link CompletionStage}-based) and
+ * bytes, and a dispatch strategy of the implementation's choosing on which the synchronous
+ * {@link HelloWorld} calls are run — an {@link Executor} for
+ * {@link ExecutorHelloWorld}, a per-call {@link java.util.concurrent.StructuredTaskScope
+ * StructuredTaskScope} on a virtual thread for
+ * {@link StructuredConcurrencyAsynchronousHelloWorld}. Every method on this interface uses that
+ * strategy — directly via the two shape-paired primitives {@link #applyAsync(Function)}
+ * ({@link CompletionStage}-based) and
  * {@link #applyAsync(Function, Object, CompletionHandler)} ({@link CompletionHandler}-based), or
  * indirectly via the default methods built on them.
  * <p>
@@ -54,8 +58,8 @@ import java.util.function.*;
  * The {@link java.net.http.WebSocket} convenience methods —
  * {@link #sendBinary(WebSocket, boolean) sendBinary}, {@link #sendPing(WebSocket) sendPing}, and
  * {@link #sendPong(WebSocket) sendPong} — return a {@link CompletionStage} of the same socket.
- * The synchronous buffer preparation runs on the stored executor; the actual send is dispatched
- * and completed by the underlying {@link WebSocket}'s {@link HttpClient} infrastructure.
+ * The synchronous buffer preparation runs on the instance's dispatch strategy; the actual send is
+ * dispatched and completed by the underlying {@link WebSocket}'s {@link HttpClient} infrastructure.
  * <p>
  * For HTTP/2, {@link #sendAsync(Function, HttpClient, HttpResponse.BodyHandler) sendAsync}
  * prepares an {@link HttpRequest.BodyPublisher} of the
@@ -76,8 +80,8 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
 
     /**
      * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
-     * instance's executor, and notifies the specified handler with the result and the specified
-     * attachment.
+     * instance's dispatch strategy, and notifies the specified handler with the result and the
+     * specified attachment.
      *
      * @param <R>        result type parameter.
      * @param <A>        attachment type parameter.
@@ -98,7 +102,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
 
     /**
      * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
-     * instance's executor, and returns the result as a {@link CompletionStage}.
+     * instance's dispatch strategy, and returns the result as a {@link CompletionStage}.
      *
      * @param <R>    result type parameter.
      * @param mapper the mapper to apply; receives the wrapped {@link HelloWorld} service and

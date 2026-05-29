@@ -28,6 +28,7 @@ import org.mockito.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * A class for testing {@link AsynchronousHelloWorld#append(Path, Object) append(path, attachment)}
@@ -37,11 +38,14 @@ import java.util.concurrent.*;
  */
 @DisplayName("append(path, attachment)")
 @Slf4j
-class AsynchronousHelloWorld_Append_Path_Attachment_Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
-    AsynchronousHelloWorld_Append_Path_Attachment_Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Append_Path_Attachment_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     @DisplayName("should throw NullPointerException when path is null")

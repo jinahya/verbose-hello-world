@@ -143,7 +143,7 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorldTest {
             deflator.setInput(hello_world_byte_array());
             return deflator;
         }).when(service()).setInput(any());
-        write_stream_will_write_actual_hello_world_bytes(service());
+        write_stream_writes_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

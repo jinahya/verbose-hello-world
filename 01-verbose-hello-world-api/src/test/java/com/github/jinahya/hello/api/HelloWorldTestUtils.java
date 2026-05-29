@@ -261,7 +261,7 @@ public final class HelloWorldTestUtils {
      * @param service the mock object whose {@link HelloWorld#set(byte[]) set(array)} method needs
      *                to be stubbed.
      * @return the given {@code service}.
-     * @see #set_array_sets_actual_hello_world_bytes(HelloWorld)
+     * @see #set_array_sets_hello_world_bytes(HelloWorld)
      * @see #set_array12_invoked_once(HelloWorld)
      */
     public static <T extends HelloWorld> T set_array_returns_the_array(final T service) {
@@ -284,7 +284,7 @@ public final class HelloWorldTestUtils {
      * @param <T>     the {@link HelloWorld} subtype.
      * @return the given {@code service}.
      * @see #set_array_returns_the_array(HelloWorld)
-     * @see #set_array_sets_actual_hello_world_bytes(HelloWorld)
+     * @see #set_array_sets_hello_world_bytes(HelloWorld)
      */
     public static <T extends HelloWorld> T set_array_sets_random_bytes(final T service) {
         requireMock(service);
@@ -307,7 +307,7 @@ public final class HelloWorldTestUtils {
      * @see #set_array12_invoked_once(HelloWorld)
      */
     public static <T extends HelloWorld>
-    T set_array_sets_actual_hello_world_bytes(final T service) {
+    T set_array_sets_hello_world_bytes(final T service) {
         requireMock(service);
         doAnswer(i -> {
             final var array = i.getArgument(0, byte[].class);
@@ -402,7 +402,7 @@ public final class HelloWorldTestUtils {
      * @see #write_outputstream_writes_hello_world_bytes(HelloWorld)
      */
     public static <T extends HelloWorld>
-    T write_stream_will_write_12_bytes(final T service) throws IOException {
+    T write_stream_writes_12_bytes(final T service) throws IOException {
         requireMock(service);
         doAnswer(i -> {
             final var stream = i.getArgument(0, OutputStream.class);
@@ -410,7 +410,7 @@ public final class HelloWorldTestUtils {
             return stream;
         })
                 .when(service)
-                .write(ArgumentMatchers.<OutputStream>notNull());
+                .<OutputStream>write(notNull());
         return service;
     }
 
@@ -446,7 +446,7 @@ public final class HelloWorldTestUtils {
      * @throws IOException declared for stubbing convenience.
      */
     public static <T extends HelloWorld>
-    T write_stream_will_write_actual_hello_world_bytes(final T service) throws IOException {
+    T write_stream_writes_hello_world_bytes(final T service) throws IOException {
         requireMock(service);
         doAnswer(i -> {
             final var stream = i.getArgument(0, OutputStream.class);
@@ -485,7 +485,7 @@ public final class HelloWorldTestUtils {
      * @throws IOException if an I/O error occurs.
      */
     public static <T extends HelloWorld>
-    T write_writer_will_write_12_chars(final T service) throws IOException {
+    T write_writer_writes_12_chars(final T service) throws IOException {
         requireMock(service);
         doAnswer(i -> {
             final var writer = i.getArgument(0, Writer.class);
@@ -636,34 +636,6 @@ public final class HelloWorldTestUtils {
     }
 
     /**
-     * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
-     * {@code buffer} is not {@code null} and its capacity and remaining are equal to
-     * {@value HelloWorld#BYTES}, to just return the {@code buffer} whose
-     * {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
-     *
-     * @param service the mock service.
-     * @return given {@code service} whose {@link HelloWorld#put(ByteBuffer)} method stubbed as
-     * above.
-     * @see #put_buffer12_invoked_once(HelloWorld)
-     */
-    public static <T extends HelloWorld>
-    T put_buffer12_will_increase_buffer_position_by_12(final T service) {
-        requireMock(service);
-        doAnswer(i -> {
-            final var buffer = i.getArgument(0, ByteBuffer.class);
-            buffer.position(buffer.position() + HelloWorld.BYTES);
-            return buffer;
-        })
-                .when(service)
-                .<ByteBuffer>put(argThat(
-                        b -> b != null
-                             && b.capacity() == HelloWorld.BYTES
-                             && b.remaining() == HelloWorld.BYTES
-                ));
-        return service;
-    }
-
-    /**
      * Stubs the specified mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
      * when the buffer is non-{@code null} and has at least {@value HelloWorld#BYTES} remaining, to
      * put {@value HelloWorld#BYTES} freshly generated random bytes into the buffer, forward the
@@ -724,7 +696,7 @@ public final class HelloWorldTestUtils {
      * @return the given {@code service}.
      */
     public static <T extends HelloWorld>
-    T put_buffer_will_put_actual_hello_world_bytes(final T service) {
+    T put_buffer_put_actual_hello_world_bytes(final T service) {
         requireMock(service);
         doAnswer(i -> {
             final var buffer = i.getArgument(0, ByteBuffer.class);

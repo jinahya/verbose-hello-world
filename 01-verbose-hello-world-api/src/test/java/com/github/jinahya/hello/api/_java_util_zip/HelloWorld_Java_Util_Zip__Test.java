@@ -43,8 +43,8 @@ class HelloWorld_Java_Util_Zip__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        HelloWorldTestUtils.write_stream_will_write_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
+        HelloWorldTestUtils.write_stream_writes_hello_world_bytes(service());
     }
 
     @Nested

@@ -28,6 +28,8 @@ import org.mockito.*;
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.file.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * A class for testing
@@ -38,11 +40,14 @@ import java.nio.file.*;
  */
 @DisplayName("append(path, attachment, handler)")
 @Slf4j
-class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
-    AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     @DisplayName("""
@@ -98,8 +103,9 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+                .completed(path, attachment);
         Mockito.verify(synchronousService(), Mockito.times(1)).append(path);
-        Mockito.verify(handler, Mockito.times(1)).completed(path, attachment);
         Mockito.verify(handler, Mockito.never())
                 .failed(Mockito.any(), Mockito.any());
     }
@@ -122,7 +128,8 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(handler, Mockito.times(1)).failed(exc, attachment);
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+                .failed(exc, attachment);
         Mockito.verify(handler, Mockito.never())
                 .completed(Mockito.any(), Mockito.any());
     }

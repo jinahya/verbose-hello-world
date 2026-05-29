@@ -31,6 +31,7 @@ import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
@@ -38,12 +39,15 @@ import static com.github.jinahya.hello.api._Java_Util_Concurrent_ExecutorService
 import static org.mockito.Mockito.*;
 
 @Slf4j
-class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
     // ---------------------------------------------------------------------------------------------
-    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     // ---------------------------------------------------------------------------------------------

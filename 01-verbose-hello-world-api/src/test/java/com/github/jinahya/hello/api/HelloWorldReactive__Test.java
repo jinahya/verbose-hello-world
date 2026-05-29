@@ -46,14 +46,14 @@ abstract class HelloWorldReactive__Test {
         super();
         this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
         this.asynchronousService = Mockito.spy(
-                new ExecutorAsynchronousHelloWorld<>(synchronousService, Runnable::run)
+                new ExecutorHelloWorld<>(synchronousService, Runnable::run)
         );
     }
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void stubService() {
-        set_array_sets_actual_hello_world_bytes(synchronousService);
+        set_array_sets_hello_world_bytes(synchronousService);
     }
 
     // -------------------------------------------------------------------------- synchronousService

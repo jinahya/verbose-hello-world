@@ -36,11 +36,11 @@ import java.net.http.*;
 @DisplayName("send(WebSocket, boolean)")
 @Slf4j
 class AsynchornousHelloWorld_SendBinary_WebSocket_Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+        extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
     AsynchornousHelloWorld_SendBinary_WebSocket_Test() {
-        super(HelloWorld.class);
+        super(HelloWorld.class, s -> new ExecutorHelloWorld<>(s, Runnable::run));
     }
 
 //    // ---------------------------------------------------------------------------------------------

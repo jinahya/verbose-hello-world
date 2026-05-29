@@ -26,6 +26,7 @@ import org.junit.jupiter.api.*;
 
 import java.nio.channels.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -40,11 +41,14 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("write(channel, position, attachment)")
 @Slf4j
-class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
-    AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     @DisplayName("should throw NullPointerException when channel is null")

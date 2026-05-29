@@ -123,7 +123,7 @@ class HelloWorld_Copy_Segment_Test
              final var arena = Arena.ofShared()) {
             // ---------------------------------------------------------------- write hello, world\0
             final var segment = channel.map(FileChannel.MapMode.READ_WRITE, 0, 13, arena);
-            HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+            HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
             service().copy(segment);
             segment.set(ValueLayout.JAVA_BYTE, 12, (byte) 0);
             log.debug("bytes written to the file");

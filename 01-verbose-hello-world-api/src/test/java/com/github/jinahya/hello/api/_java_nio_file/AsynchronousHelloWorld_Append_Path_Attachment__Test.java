@@ -27,14 +27,18 @@ import org.junit.jupiter.api.io.*;
 
 import java.nio.file.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class AsynchronousHelloWorld_Append_Path_Attachment__Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
-    AsynchronousHelloWorld_Append_Path_Attachment__Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Append_Path_Attachment__Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     @Test

@@ -51,8 +51,8 @@ class HelloWorldUtilsTest extends HelloWorldTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        set_array_sets_actual_hello_world_bytes(service());
-        put_buffer_will_put_actual_hello_world_bytes(service());
+        set_array_sets_hello_world_bytes(service());
+        put_buffer_put_actual_hello_world_bytes(service());
         append_packet_appends_hello_world_bytes(service());
     }
 

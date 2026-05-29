@@ -29,16 +29,20 @@ import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
-    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     // ---------------------------------------------------------------------------------------------

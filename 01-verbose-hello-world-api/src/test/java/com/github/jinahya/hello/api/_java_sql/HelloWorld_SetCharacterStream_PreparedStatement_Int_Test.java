@@ -73,7 +73,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        final var service = HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
         final var sink = new StringWriter();
         final var statement = Mockito.mock(PreparedStatement.class);
         Mockito.doAnswer(i -> {

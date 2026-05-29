@@ -46,7 +46,7 @@ class HelloWorldConfiguration {
 
     @Bean
     AsynchronousHelloWorld asynchronousHelloWorld(final HelloWorld service) {
-        return new ExecutorAsynchronousHelloWorld(service, ForkJoinPool.commonPool());
+        return new ExecutorHelloWorld(service, ForkJoinPool.commonPool());
     }
 
     @Bean

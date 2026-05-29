@@ -40,7 +40,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorldTest {
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_actual_hello_world_bytes(service());
+            final var service = set_array_sets_hello_world_bytes(service());
             final var appendable = new StringBuilder();
             // -------------------------------------------------------------------------------- when
             service.append(appendable);

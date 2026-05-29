@@ -72,7 +72,7 @@ class HelloWorld_Write_StringWriter_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_will_write_12_chars(service());
+        final var service = HelloWorldTestUtils.write_writer_writes_12_chars(service());
         final var writer = Mockito.mock(StringWriter.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
@@ -84,7 +84,7 @@ class HelloWorld_Write_StringWriter_Test
     @Test
     void _添足_畵蛇() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_will_write_12_chars(service());
+        final var service = HelloWorldTestUtils.write_writer_writes_12_chars(service());
         final var writer = Mockito.spy(new StringWriter());
         // ------------------------------------------------------------------------------------ when
         service.write(writer).flush();

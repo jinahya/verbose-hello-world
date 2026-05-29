@@ -27,12 +27,15 @@ import java.util.function.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class AsynchronousHelloWorld_ApplyAsync_Mapper_Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
     // ---------------------------------------------------------------------------------------------
-    AsynchronousHelloWorld_ApplyAsync_Mapper_Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_ApplyAsync_Mapper_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
 
     @Test

@@ -101,7 +101,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     ReactiveHelloWorldPublishers_Conformance_Test() {
         super();
         service = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service);
+        HelloWorldTestUtils.set_array_sets_hello_world_bytes(service);
     }
 
     private final HelloWorld service;

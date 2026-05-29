@@ -72,7 +72,7 @@ class HelloWorld_Write_PipedWriter_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_will_write_12_chars(service());
+        final var service = HelloWorldTestUtils.write_writer_writes_12_chars(service());
         final var writer = Mockito.mock(PipedWriter.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(writer);
@@ -84,7 +84,7 @@ class HelloWorld_Write_PipedWriter_Test
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_will_write_12_chars(service());
+        final var service = HelloWorldTestUtils.write_writer_writes_12_chars(service());
         {
             try (var reader = Mockito.spy(new PipedReader(HelloWorld.BYTES));
                  var writer = new PipedWriter(reader)) {

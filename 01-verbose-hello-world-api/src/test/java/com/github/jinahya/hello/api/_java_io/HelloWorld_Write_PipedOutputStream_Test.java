@@ -52,7 +52,7 @@ class HelloWorld_Write_PipedOutputStream_Test
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_stream_will_write_12_bytes(service());
+        final var service = HelloWorldTestUtils.write_stream_writes_12_bytes(service());
         final var stream = Mockito.mock(PipedOutputStream.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
@@ -66,7 +66,7 @@ class HelloWorld_Write_PipedOutputStream_Test
     @Test
     void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_stream_will_write_12_bytes(service());
+        final var service = HelloWorldTestUtils.write_stream_writes_12_bytes(service());
         // -------------------------------------------------------------------------------- buffered
         try (var snk = new PipedInputStream(HelloWorld.BYTES);
              var stream = new PipedOutputStream(snk)) {

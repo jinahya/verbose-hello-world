@@ -23,6 +23,9 @@ package com.github.jinahya.hello.api;
 import lombok.*;
 import lombok.experimental.*;
 
+import java.util.function.*;
+
+import static com.github.jinahya.hello.api.MockitoTestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -31,13 +34,16 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 //@TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public abstract class AsynchronousHelloWorld__Test<T extends HelloWorld> {
+public abstract class AsynchronousHelloWorld__Test<T extends HelloWorld,
+        U extends AsynchronousHelloWorld<T>> {
 
-    protected AsynchronousHelloWorld__Test(final Class<T> synchronousServiceClass) {
+    protected AsynchronousHelloWorld__Test(
+            final Class<T> synchronousServiceClass,
+            final Function<? super T, ? extends U> asynchronousServiceInitializer) {
         super();
-        this.synchronousService = MockitoTestUtils.loggingSpy(mock(synchronousServiceClass));
-        this.asynchronousService = MockitoTestUtils.loggingSpiedInstance(
-                new ExecutorAsynchronousHelloWorld<>(synchronousService, Runnable::run)
+        synchronousService = loggingSpy(mock(synchronousServiceClass));
+        asynchronousService = loggingSpiedInstance(
+                asynchronousServiceInitializer.apply(synchronousService)
         );
     }
 
@@ -52,5 +58,5 @@ public abstract class AsynchronousHelloWorld__Test<T extends HelloWorld> {
 
     @Accessors(fluent = true)
     @Getter(AccessLevel.PROTECTED)
-    private final AsynchronousHelloWorld<T> asynchronousService;
+    private final U asynchronousService;
 }

@@ -28,6 +28,7 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorldTestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,17 +43,18 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("write(channel, attachment, handler)")
 @Slf4j
-class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
     private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
     // ---------------------------------------------------------------------------------------------
-    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test() {
-        super(HelloWorld.class);
+    AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
     }
-
-    // ---------------------------------------------------------------------------------------------
 
     /**
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}

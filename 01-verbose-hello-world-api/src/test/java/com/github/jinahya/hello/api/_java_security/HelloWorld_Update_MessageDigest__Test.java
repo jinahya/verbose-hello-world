@@ -73,7 +73,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorldTest {
      */
     @BeforeEach
     void __() {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        HelloWorldTestUtils.set_array_sets_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

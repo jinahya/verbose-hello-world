@@ -24,12 +24,12 @@ import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
 
-class AsynchronousHelloWorld_ApplyAsync_Mapper__Test
-        extends AsynchronousHelloWorld__Test<HelloWorld> {
+class ExecutorHelloWorld_ApplyAsync_Mapper__Test
+        extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
 
     // ---------------------------------------------------------------------------------------------
-    AsynchronousHelloWorld_ApplyAsync_Mapper__Test() {
-        super(HelloWorld.class);
+    ExecutorHelloWorld_ApplyAsync_Mapper__Test() {
+        super(HelloWorld.class, s -> new ExecutorHelloWorld<>(s, Runnable::run));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ class AsynchronousHelloWorld_ApplyAsync_Mapper__Test
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
-            HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(synchronousService());
+            HelloWorldTestUtils.set_array_sets_hello_world_bytes(synchronousService());
             // -------------------------------------------------------------------------------- when
             final var stage = asynchronousService().applyAsync(
                     ss -> ss.set(new byte[HelloWorld.BYTES])
