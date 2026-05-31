@@ -28,7 +28,10 @@ import org.junit.jupiter.api.io.*;
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.*;
+import java.nio.channels.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -41,7 +44,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorld__TestUtils.send_socket_sends_hello_world_bytes(service());
+        send_socket_sends_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -49,14 +52,13 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
     class SocketTest {
 
         @Test
-        void ___() throws IOException {
+        void ___InetSocketAddress() throws IOException {
             try (var server = new ServerSocket()) {
                 server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                Thread.ofPlatform().daemon().start(() -> {
+                Thread.ofPlatform().start(() -> {
                     try (var client = server.accept()) {
                         final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
-                        final var string = new String(bytes, StandardCharsets.US_ASCII);
-                        log.debug("'{}' received from {}", string, client.getRemoteSocketAddress());
+                        assert bytes.length == HelloWorld.BYTES;
                     } catch (final IOException ioe) {
                         throw new UncheckedIOException(ioe);
                     }
@@ -65,6 +67,90 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
                     client.connect(server.getLocalSocketAddress());
                     service().send(client);
                     client.getOutputStream().flush();
+                }
+            }
+        }
+
+        @Disabled("unsupported")
+        @Test
+        void ___UnixDomainSocketAddress() throws IOException {
+            final var tempFile = File.createTempFile("tmp", null, tempDir);
+            final var deleted = tempFile.delete();
+            assert deleted;
+            try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
+                server.bind(UnixDomainSocketAddress.of(tempFile.getPath()));
+                Thread.ofPlatform().start(() -> {
+                    try (var client = server.accept()) {
+                        final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                        assert bytes.length == HelloWorld.BYTES;
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                });
+                try (var client = SocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
+                    client.connect(server.getLocalSocketAddress());
+                    service().send(client);
+                    client.getOutputStream().flush();
+                }
+            }
+        }
+    }
+
+    @Nested
+    class EchoServer_Test {
+
+        @Test
+        void ___InetSocketAddress() throws IOException {
+            try (var server = new ServerSocket()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                log.debug("[server] bound: {}", server.getLocalSocketAddress());
+                Thread.ofPlatform().start(() -> {
+                    try (var accepted = server.accept()) {
+                        final var bytes = accepted.getInputStream().readNBytes(HelloWorld.BYTES);
+                        assert bytes.length == HelloWorld.BYTES;
+                        accepted.getOutputStream().write(bytes);
+                        accepted.getOutputStream().flush();
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                });
+                try (var client = new Socket()) {
+                    client.connect(server.getLocalSocketAddress());
+                    log.debug("[client] connected to : {}", client.getRemoteSocketAddress());
+                    service().send(client);
+                    client.getOutputStream().flush();
+                    final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    assertArrayEquals(hello_world_byte_array(), bytes);
+                }
+            }
+        }
+
+        @Disabled("unsupported")
+        @Test
+        void ___UnixDomainSocketAddress() throws IOException {
+            final var tempFile = File.createTempFile("tmp", null, tempDir);
+            final var deleted = tempFile.delete();
+            assert deleted;
+            try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
+                server.bind(UnixDomainSocketAddress.of(tempFile.getPath()));
+                log.debug("[server] bound: {}", server.getLocalSocketAddress());
+                Thread.ofPlatform().start(() -> {
+                    try (var accepted = server.accept()) {
+                        final var bytes = accepted.getInputStream().readNBytes(HelloWorld.BYTES);
+                        assert bytes.length == HelloWorld.BYTES;
+                        accepted.getOutputStream().write(bytes);
+                        accepted.getOutputStream().flush();
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                });
+                try (var client = SocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
+                    client.connect(server.getLocalSocketAddress());
+                    log.debug("[client] connected to : {}", client.getRemoteSocketAddress());
+                    service().send(client);
+                    client.getOutputStream().flush();
+                    final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    assertArrayEquals(hello_world_byte_array(), bytes);
                 }
             }
         }

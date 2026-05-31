@@ -22,30 +22,21 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 
-import java.io.*;
 import java.util.*;
-
-import static com.github.jinahya.hello.api._Java__TestUtils.*;
 
 @Slf4j
 @SuppressWarnings({"java:S101"})
-public final class _Java_Io_TestUtils {
+public final class _Java__TestUtils {
 
-    public static long copy(final byte[] b, final InputStream in, final OutputStream out)
-            throws IOException {
-        if (Objects.requireNonNull(b, "b is null").length == 0) {
-            throw new IllegalArgumentException("b.length is zero");
+    static <T> void requireNotSame(final T in, final T out) {
+        Objects.requireNonNull(in, "in is null");
+        Objects.requireNonNull(out, "out is null");
+        if (out == in) {
+            throw new IllegalArgumentException("out(" + out + ") is same as in(" + in + ")");
         }
-        requireNotSame(in, out);
-        long count = 0L;
-        for (int r; (r = in.read(b, 0, b.length)) != -1; count += r) {
-            out.write(b, 0, r);
-        }
-        Arrays.fill(b, (byte) 0); // @@?
-        return count;
     }
 
-    private _Java_Io_TestUtils() {
+    private _Java__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

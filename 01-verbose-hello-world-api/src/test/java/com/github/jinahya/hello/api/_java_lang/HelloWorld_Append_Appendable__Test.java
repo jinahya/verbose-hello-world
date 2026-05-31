@@ -27,6 +27,7 @@ import org.junit.jupiter.api.*;
 
 import java.io.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,6 +35,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
 
+    @BeforeEach
+    void __stubService() throws IOException {
+        append_appendable_appends_hello_world_bytes(service());
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @Nested
     class StringBuilder_Test {
 
@@ -45,7 +52,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
             // -------------------------------------------------------------------------------- when
             service.append(appendable);
             // -------------------------------------------------------------------------------- then
-            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, appendable.toString());
+            assertEquals(HELLO_WORLD_STRING, appendable.toString());
         }
     }
 }

@@ -30,10 +30,12 @@ import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.nio.charset.*;
 import java.nio.file.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.api._Java_Nio_Channels_TestUtils.*;
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -70,8 +72,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
                     r = source.read(dst);
                     assert r != -1;
                 }
-                final var string = StandardCharsets.US_ASCII.decode(dst.flip()).toString();
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(hello_world_byte_buffer(), dst.flip());
             }
         }
     }
@@ -90,8 +91,8 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
                             r = accepted.read(dst);
                             assert r != -1;
                         }
-                        final var string = StandardCharsets.US_ASCII.decode(dst.flip()).toString();
-                        assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                        final var string = US_ASCII.decode(dst.flip()).toString();
+                        assertEquals(HELLO_WORLD_STRING, string);
                     } catch (final IOException ioe) {
                         log.error("failed to read", ioe);
                     }
@@ -99,6 +100,77 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
                 try (var client = SocketChannel.open()) {
                     client.connect(server.getLocalAddress());
                     service().write(client);
+                }
+            }
+        }
+    }
+
+    @Nested
+    class EchoServer_Test {
+
+        @Test
+        void __InetSocketAddress() throws IOException {
+            try (var server = ServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                log.debug("[server] bound: {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try (var client = server.accept()) {
+                        final var buf = ByteBuffer.allocate(1);
+                        while (client.read(buf.clear()) != -1) {
+                            for (buf.flip(); buf.hasRemaining(); ) {
+                                client.write(buf);
+                            }
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to read", ioe);
+                    }
+                });
+                try (var client = SocketChannel.open()) {
+                    client.connect(server.getLocalAddress());
+                    log.debug("[client] connected to : {}", client.getRemoteAddress());
+                    service().write(client);
+                    client.shutdownOutput();
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    for (int r; dst.hasRemaining(); ) {
+                        r = client.read(dst);
+                        assert r != -1;
+                    }
+                    assertEquals(hello_world_byte_buffer(), dst.flip());
+                }
+            }
+        }
+
+        @Test
+        void ___UnixDomainSocketAddress() throws IOException {
+            try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX)) {
+                server.bind(null);
+                log.debug("[server] bound: {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try (var client = server.accept()) {
+                        final var buf = ByteBuffer.allocate(1);
+                        buf.clear();
+                        while (client.read(buf) != -1) {
+                            client.write(buf.flip());
+                            buf.compact();
+                        }
+                        for (buf.flip(); buf.hasRemaining(); ) {
+                            client.write(buf);
+                        }
+                    } catch (final IOException ioe) {
+                        log.error("failed to read", ioe);
+                    }
+                });
+                try (var client = SocketChannel.open(StandardProtocolFamily.UNIX)) {
+                    client.connect(server.getLocalAddress());
+                    log.debug("[client] connected to : {}", client.getRemoteAddress());
+                    service().write(client);
+                    client.shutdownOutput();
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    for (int r; dst.hasRemaining(); ) {
+                        r = client.read(dst);
+                        assert r != -1;
+                    }
+                    assertEquals(hello_world_byte_buffer(), dst.flip());
                 }
             }
         }

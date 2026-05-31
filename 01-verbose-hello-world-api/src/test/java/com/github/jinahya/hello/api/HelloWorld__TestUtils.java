@@ -165,8 +165,8 @@ public final class HelloWorld__TestUtils {
     }
 
     /**
-     * Returns an {@link IntStream} of the {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes
-     * widened to unsigned 8-bit {@code int}s, sourced from {@link #hello_world_int_array()}.
+     * Returns an {@link IntStream} of the {@value HelloWorld__TestConstants#HELLO_WORLD_STRING}
+     * bytes widened to unsigned 8-bit {@code int}s, sourced from {@link #hello_world_int_array()}.
      *
      * @return an {@link IntStream} of the {@value HelloWorld__TestConstants#HELLO_WORLD_STRING}
      * bytes.
@@ -180,8 +180,8 @@ public final class HelloWorld__TestUtils {
      * {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} byte, sourced from
      * {@link #hello_world_int_stream()}.
      *
-     * @return a {@link Stream} of the {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes as
-     * boxed {@link Byte}s.
+     * @return a {@link Stream} of the {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes
+     * as boxed {@link Byte}s.
      */
     public static Stream<Byte> hello_world_byte_stream() {
         return hello_world_int_stream().mapToObj(v -> (byte) v);
@@ -198,8 +198,9 @@ public final class HelloWorld__TestUtils {
     }
 
     /**
-     * Returns the canonical {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} payload as a fresh
-     * {@code char[]} of length {@value HelloWorld#BYTES}, with each byte widened to {@code char}.
+     * Returns the canonical {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} payload as a
+     * fresh {@code char[]} of length {@value HelloWorld#BYTES}, with each byte widened to
+     * {@code char}.
      *
      * @return the canonical payload as a {@code char[]}.
      */
@@ -345,8 +346,8 @@ public final class HelloWorld__TestUtils {
 
     /**
      * Stubs the specified mock service's {@link HelloWorld#append(File) append(file)} method to
-     * append the actual {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes to the given file
-     * via a {@link FileOutputStream} (append mode), and return the file.
+     * append the actual {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes to the given
+     * file via a {@link FileOutputStream} (append mode), and return the file.
      *
      * @param service the mock service.
      * @param <T>     the {@link HelloWorld} subtype.
@@ -543,10 +544,10 @@ public final class HelloWorld__TestUtils {
 
     /**
      * Stubs the specified mock service's {@link HelloWorld#append(DatagramPacket) append(packet)}
-     * method to copy the actual {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes into the
-     * packet's data buffer (starting at {@linkplain DatagramPacket#getOffset() offset}), increase
-     * the packet's {@linkplain DatagramPacket#getLength() length} by {@value HelloWorld#BYTES}, and
-     * return the packet.
+     * method to copy the actual {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes into
+     * the packet's data buffer (starting at {@linkplain DatagramPacket#getOffset() offset}),
+     * increase the packet's {@linkplain DatagramPacket#getLength() length} by
+     * {@value HelloWorld#BYTES}, and return the packet.
      *
      * @param service the mock service.
      * @param <T>     the {@link HelloWorld} subtype.
@@ -589,9 +590,9 @@ public final class HelloWorld__TestUtils {
     // ------------------------------------------------------------------------------------ java.nio
 
     /**
-     * Returns the canonical {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} payload as a fresh,
-     * read-write {@link ByteBuffer} backed by a new {@code byte[]} — position {@code 0}, limit and
-     * capacity {@value HelloWorld#BYTES}.
+     * Returns the canonical {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} payload as a
+     * fresh, read-write {@link ByteBuffer} backed by a new {@code byte[]} — position {@code 0},
+     * limit and capacity {@value HelloWorld#BYTES}.
      *
      * @return the canonical payload as a {@link ByteBuffer}.
      */
@@ -600,8 +601,8 @@ public final class HelloWorld__TestUtils {
     }
 
     /**
-     * Returns the canonical {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} payload as a fresh
-     * {@link CharBuffer} wrapping the {@value HelloWorld#BYTES}-character string — position
+     * Returns the canonical {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} payload as a
+     * fresh {@link CharBuffer} wrapping the {@value HelloWorld#BYTES}-character string — position
      * {@code 0}, limit and capacity {@value HelloWorld#BYTES}.
      *
      * @return the canonical payload as a {@link CharBuffer}.
@@ -688,8 +689,8 @@ public final class HelloWorld__TestUtils {
     /**
      * Stubs the specified mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method,
      * when the buffer is non-{@code null} and has at least {@value HelloWorld#BYTES} remaining, to
-     * put the actual {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes into the buffer and
-     * return it.
+     * put the actual {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes into the buffer
+     * and return it.
      *
      * @param service the mock service.
      * @param <T>     the {@link HelloWorld} subtype.
@@ -752,9 +753,20 @@ public final class HelloWorld__TestUtils {
                 }
             });
             return appendable;
-        })
-                .when(service)
-                .append(ArgumentMatchers.<Appendable>notNull());
+        }).when(service).append(ArgumentMatchers.<Appendable>notNull());
+        return service;
+    }
+
+    public static <T extends HelloWorld>
+    T append_appendable_appends_hello_world_bytes(final T service) throws IOException {
+        requireMock(service);
+        doAnswer(i -> {
+            final var appendable = i.getArgument(0, Appendable.class);
+            for (byte b : hello_world_byte_array()) {
+                appendable.append((char) b);
+            }
+            return appendable;
+        }).when(service).append(ArgumentMatchers.<Appendable>notNull());
         return service;
     }
 
@@ -833,8 +845,8 @@ public final class HelloWorld__TestUtils {
      * Stubs the specified mock service's {@link HelloWorld#send(DatagramChannel) send(channel)}
      * method, when the channel is non-{@code null} and
      * {@linkplain DatagramChannel#isConnected() connected}, to write the actual
-     * {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes in a write-until-drained loop, and
-     * return the channel.
+     * {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} bytes in a write-until-drained loop,
+     * and return the channel.
      *
      * @param service the mock service.
      * @param <T>     the {@link HelloWorld} subtype.
