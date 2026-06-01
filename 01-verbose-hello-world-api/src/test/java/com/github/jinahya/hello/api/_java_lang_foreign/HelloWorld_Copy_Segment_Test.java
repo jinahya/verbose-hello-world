@@ -34,10 +34,14 @@ import java.nio.file.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("copy(segment)")
 @Slf4j
 class HelloWorld_Copy_Segment_Test
         extends HelloWorld__Test {
 
+    @DisplayName("""
+            should invoke <set(array[12])>, copy the <array> to the <segment>,
+            and return the <segment>""")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -105,6 +109,7 @@ class HelloWorld_Copy_Segment_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should bridge Java-to-C through a compiled <reader> reading the mapped <segment>")
     @Test
     void testJavaToCBridge(@TempDir final Path tempDir)
             throws Exception {

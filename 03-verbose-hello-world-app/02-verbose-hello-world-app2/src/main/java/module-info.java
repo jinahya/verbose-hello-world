@@ -18,9 +18,10 @@
  * #L%
  */
 /**
- * The Verbose Hello World App2 — obtains a {@link com.github.jinahya.hello.api.HelloWorld
- * HelloWorld} through {@link java.util.ServiceLoader ServiceLoader} and writes
- * {@code hello, world} to {@link java.lang.System#out System.out} via a
+ * The Verbose Hello World App2 — obtains a
+ * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld} through
+ * {@link java.util.ServiceLoader ServiceLoader} and writes {@code hello, world} to
+ * {@link java.lang.System#out System.out} via a
  * {@link java.nio.channels.WritableByteChannel WritableByteChannel}.
  */
 module com.github.jinahya.hello.app2 {

@@ -38,14 +38,12 @@ import java.util.function.*;
  * <p>
  * Each instance wraps a service of type {@code T} (a {@link HelloWorld} subtype) that supplies the
  * bytes, and a dispatch strategy of the implementation's choosing on which the synchronous
- * {@link HelloWorld} calls are run — an {@link Executor} for
- * {@link ExecutorHelloWorld}, a per-call {@link java.util.concurrent.StructuredTaskScope
- * StructuredTaskScope} on a virtual thread for
+ * {@link HelloWorld} calls are run — an {@link Executor} for {@link ExecutorHelloWorld}, a per-call
+ * {@link java.util.concurrent.StructuredTaskScope StructuredTaskScope} on a virtual thread for
  * {@link StructuredConcurrencyAsynchronousHelloWorld}. Every method on this interface uses that
  * strategy — directly via the two shape-paired primitives {@link #applyAsync(Function)}
- * ({@link CompletionStage}-based) and
- * {@link #applyAsync(Function, Object, CompletionHandler)} ({@link CompletionHandler}-based), or
- * indirectly via the default methods built on them.
+ * ({@link CompletionStage}-based) and {@link #applyAsync(Function, Object, CompletionHandler)}
+ * ({@link CompletionHandler}-based), or indirectly via the default methods built on them.
  * <p>
  * Channel and path operations come as a matched pair:
  * <ul>

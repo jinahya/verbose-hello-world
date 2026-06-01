@@ -37,8 +37,8 @@ public final class JavaLangReflectUtils {
     /**
      * Wraps {@code obj} in a JDK {@link Proxy} implementing every interface in
      * {@code interfaceClasses}; on each interface-declared method invocation logs the call at
-     * {@code DEBUG} ({@code <obj>.<method>(<args>)}) and then reflectively forwards to
-     * {@code obj}. Methods inherited from {@link Object} pass through without a log line.
+     * {@code DEBUG} ({@code <obj>.<method>(<args>)}) and then reflectively forwards to {@code obj}.
+     * Methods inherited from {@link Object} pass through without a log line.
      *
      * @param interfaceClasses the interfaces the returned proxy must implement; must not be
      *                         {@code null}.

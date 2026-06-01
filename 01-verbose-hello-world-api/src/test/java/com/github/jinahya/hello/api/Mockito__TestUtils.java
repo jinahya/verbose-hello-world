@@ -80,8 +80,8 @@ public final class Mockito__TestUtils {
 
     /**
      * Asserts that the specified object is a {@linkplain Mockito#mock(Class) Mockito mock} and
-     * returns it; throws {@link IllegalArgumentException} otherwise. Used by helpers that only
-     * make sense against a mock (e.g. stubbing helpers in {@code HelloWorldTestUtils}).
+     * returns it; throws {@link IllegalArgumentException} otherwise. Used by helpers that only make
+     * sense against a mock (e.g. stubbing helpers in {@code HelloWorldTestUtils}).
      *
      * @param object the object to check; must not be {@code null}.
      * @param <T>    the type of {@code object}.
@@ -99,11 +99,12 @@ public final class Mockito__TestUtils {
     }
 
     /**
-     * Asserts that the specified object is <em>not</em> a {@linkplain Mockito#mock(Class) Mockito
-     * mock} and returns it; throws {@link IllegalArgumentException} otherwise. Used by helpers
-     * that exercise a real implementation and would be misled by a mock — for example,
-     * {@link #loggingSpiedInstance(Object) loggingSpiedInstance(...)} expects a vanilla instance
-     * to spy on, not an already-mocked one.
+     * Asserts that the specified object is <em>not</em> a
+     * {@linkplain Mockito#mock(Class) Mockito mock} and returns it; throws
+     * {@link IllegalArgumentException} otherwise. Used by helpers that exercise a real
+     * implementation and would be misled by a mock — for example,
+     * {@link #loggingSpiedInstance(Object) loggingSpiedInstance(...)} expects a vanilla instance to
+     * spy on, not an already-mocked one.
      *
      * @param object the object to check; must not be {@code null}.
      * @param <T>    the type of {@code object}.
@@ -124,8 +125,8 @@ public final class Mockito__TestUtils {
 
     /**
      * The {@link HelloWorld}-bounded counterpart of {@link #requireMock(Object) requireMock(T)};
-     * preserves the {@code <T extends HelloWorld>} bound at the call site for stubbing helpers
-     * that want to keep their {@link HelloWorld} return type.
+     * preserves the {@code <T extends HelloWorld>} bound at the call site for stubbing helpers that
+     * want to keep their {@link HelloWorld} return type.
      *
      * @param object the {@link HelloWorld}-typed object to check; must not be {@code null}.
      * @param <T>    the {@link HelloWorld} subtype of {@code object}.
@@ -167,18 +168,18 @@ public final class Mockito__TestUtils {
 
     /**
      * Returns a {@link Mockito#mock(Class) Mockito mock} of {@code clazz} whose
-     * {@code defaultAnswer} both logs the invocation at {@code DEBUG} and reflectively forwards
-     * it to {@code delegate}. Every call on the returned object is recorded for
+     * {@code defaultAnswer} both logs the invocation at {@code DEBUG} and reflectively forwards it
+     * to {@code delegate}. Every call on the returned object is recorded for
      * {@link Mockito#verify(Object) verify} / {@link Mockito#inOrder(Object...) inOrder} /
-     * {@link ArgumentCaptor ArgumentCaptor}, so the returned object behaves as a
-     * fully-verifiable Mockito mock.
+     * {@link ArgumentCaptor ArgumentCaptor}, so the returned object behaves as a fully-verifiable
+     * Mockito mock.
      * <p>
      * <b>Caveat — internal calls bypass the mock.</b> Forwarding is performed by
      * {@code invocation.getMethod().invoke(delegate, args)}, so recursive {@code this.foo(...)}
      * calls emitted by interface default-method bodies reach {@code delegate} directly and are
      * <em>not</em> recorded on the returned mock. Use
-     * {@link #loggingSpiedInstance(Object) loggingSpiedInstance(...)} instead when a contract
-     * test needs to verify nested-call delegation chains.
+     * {@link #loggingSpiedInstance(Object) loggingSpiedInstance(...)} instead when a contract test
+     * needs to verify nested-call delegation chains.
      *
      * @param clazz    the interface to mock; must not be {@code null} and must be an interface.
      * @param delegate the real instance to which calls are ultimately delivered; must not be
@@ -223,7 +224,8 @@ public final class Mockito__TestUtils {
     }
 
     /**
-     * The {@link Flow.Subscriber} counterpart of {@link Mockito__TestUtils#loggingSpy(Subscriber)}.
+     * The {@link Flow.Subscriber} counterpart of
+     * {@link Mockito__TestUtils#loggingSpy(Subscriber)}.
      *
      * @param delegate the real {@link Flow.Subscriber} to which calls are ultimately delivered;
      *                 must not be {@code null}.
@@ -253,13 +255,13 @@ public final class Mockito__TestUtils {
     // --------------------------------------------------- LOGGING SPIED INSTANCE (real spy + InvocationListener)
 
     /**
-     * Returns a {@linkplain Mockito#spy(Object) Mockito spy} of the given real instance whose
-     * every non-{@link Object} method invocation is logged at {@code DEBUG} via an
+     * Returns a {@linkplain Mockito#spy(Object) Mockito spy} of the given real instance whose every
+     * non-{@link Object} method invocation is logged at {@code DEBUG} via an
      * {@link org.mockito.listeners.InvocationListener InvocationListener}. Unlike
      * {@link #loggingSpy(Class, Object) loggingSpy(...)}, this preserves <em>true</em> spy
-     * semantics — internal {@code this.foo(...)} calls from interface default-method bodies
-     * still route through the spy proxy — so {@link Mockito#verify(Object) verify} sees nested
-     * call chains and a contract test can assert delegation patterns such as
+     * semantics — internal {@code this.foo(...)} calls from interface default-method bodies still
+     * route through the spy proxy — so {@link Mockito#verify(Object) verify} sees nested call
+     * chains and a contract test can assert delegation patterns such as
      * {@code verify(service, times(1)).write(same(channel), same(attachment), notNull())}.
      * <p>
      * The {@link org.mockito.listeners.InvocationListener InvocationListener} fires on every

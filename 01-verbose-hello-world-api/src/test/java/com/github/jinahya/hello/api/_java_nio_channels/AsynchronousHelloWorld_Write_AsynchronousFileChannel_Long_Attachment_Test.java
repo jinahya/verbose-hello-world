@@ -51,7 +51,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         super(HelloWorld.class, initializer);
     }
 
-    @DisplayName("should throw NullPointerException when channel is null")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -62,7 +62,8 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         assertThrows(NullPointerException.class, () -> service.write(channel, position, null));
     }
 
-    @DisplayName("should throw IllegalArgumentException when position is negative")
+    @DisplayName(
+            "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
@@ -75,8 +76,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
 
     @DisplayName("""
             should complete the returned stage with the <attachment>
-            once all <hello-world-bytes> have been written"""
-    )
+            once all <hello-world-bytes> have been written""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
@@ -99,8 +99,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
 
     @DisplayName("""
             should complete the returned stage exceptionally
-            when the <channel> fails on or after partial writes"""
-    )
+            when the <channel> fails on or after partial writes""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

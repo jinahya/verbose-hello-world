@@ -30,6 +30,7 @@ import java.util.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("write(console)")
 class HelloWorld_Console_Test
         extends HelloWorld__Test {
 
@@ -50,7 +51,7 @@ class HelloWorld_Console_Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <console> argument is <null>")
     @Test
     void _ThrowNullPointerException_ConsoleIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -63,7 +64,7 @@ class HelloWorld_Console_Test
         );
     }
 
-    @DisplayName("invoke write(console.writer)")
+    @DisplayName("should invoke <write(console.writer)>, and return the <console>")
     @Test
     void __()
             throws IOException {

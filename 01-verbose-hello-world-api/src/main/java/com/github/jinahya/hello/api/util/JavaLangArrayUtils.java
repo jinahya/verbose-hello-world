@@ -20,6 +20,8 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
+import com.github.jinahya.hello.api.*;
+
 import java.util.*;
 
 /**
@@ -36,8 +38,8 @@ public final class JavaLangArrayUtils {
      *
      * @param array  the array being indexed; must not be {@code null}.
      * @param offset the candidate start offset; must be non-negative.
-     * @param name   the parameter name to use in any thrown
-     *               {@link IllegalArgumentException} message.
+     * @param name   the parameter name to use in any thrown {@link IllegalArgumentException}
+     *               message.
      * @throws NullPointerException     if {@code array} is {@code null}.
      * @throws IllegalArgumentException if {@code offset} is negative.
      */
@@ -58,8 +60,8 @@ public final class JavaLangArrayUtils {
      * @param offset the window's starting offset; must be non-negative.
      * @param length the window's length (negative values are detected via the upper-bound check).
      * @throws NullPointerException     if {@code array} is {@code null}.
-     * @throws IllegalArgumentException if {@code offset} is negative or
-     *                                  {@code offset + length} exceeds {@code array.length}.
+     * @throws IllegalArgumentException if {@code offset} is negative or {@code offset + length}
+     *                                  exceeds {@code array.length}.
      */
     public static void requireValidRange1(final byte[] array, final int offset, final int length) {
         requireValidStart(array, offset, "offset");

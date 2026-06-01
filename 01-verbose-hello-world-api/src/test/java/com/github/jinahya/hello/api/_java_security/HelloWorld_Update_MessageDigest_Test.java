@@ -38,6 +38,7 @@ import static org.mockito.Mockito.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
  */
+@DisplayName("update(digest)")
 @Slf4j
 class HelloWorld_Update_MessageDigest_Test
         extends HelloWorld__Test {
@@ -49,6 +50,7 @@ class HelloWorld_Update_MessageDigest_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드가
      * {@link NullPointerException} 을 던지는지 검증한다.
      */
+    @DisplayName("should throw a <NullPointerException> when the <digest> argument is <null>")
     @Test
     void _ThrowNullPointerException_DigestIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -64,7 +66,7 @@ class HelloWorld_Update_MessageDigest_Test
      * {@link MessageDigest#update(byte[]) digest.update(array)} 를 호출하고, 전달된 digest 를 그대로 반환하는지
      * 검증한다.
      */
-    @DisplayName("digest.update(set(byte[12]))")
+    @DisplayName("should invoke <digest.update(buffer)>, and return the <digest>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

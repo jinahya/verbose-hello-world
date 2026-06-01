@@ -39,6 +39,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("byte processor")
 @Slf4j
 class ReactiveHelloWorld_Byte_ProcessorTest {
 
@@ -57,12 +58,16 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
         try (final var processor = new ReactiveHelloWorldByteProcessor(service)) {
         }
     }
 
+    @DisplayName("""
+            should deliver <min(d, 12)> elements to each subscriber and <onComplete>
+            when <d >= 12>, given two subscribers requesting <BYTES - 1> and <BYTES + 1>""")
     @Test
     void __() { // @formatter:on
         // ----------------------------------------------------------------------------------- given

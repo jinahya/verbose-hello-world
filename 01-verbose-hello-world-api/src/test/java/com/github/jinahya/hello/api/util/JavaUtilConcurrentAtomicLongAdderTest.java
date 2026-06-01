@@ -28,9 +28,11 @@ import java.util.concurrent.atomic.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("LongAdder")
 @Slf4j
 class JavaUtilConcurrentAtomicLongAdderTest {
 
+    @DisplayName("should wrap around to <Long.MIN_VALUE> when the running sum overflows")
     @Test
     void __() {
         final var adder = new LongAdder();

@@ -33,6 +33,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("accept(consumer, mapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorld__Test {
@@ -47,6 +48,8 @@ class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorld__Test {
         }).when(service()).accept(any(), any());
     }
 
+    @DisplayName(
+            "should write <hello, world> bytes through a <ByteArrayOutputStream::write> consumer")
     @Test
     void __() throws IOException {
         try (var baos = new ByteArrayOutputStream()) {

@@ -29,6 +29,7 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+@DisplayName("setAsciiStream(clob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_Clob_Long__Test
@@ -48,6 +49,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -58,6 +60,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real H2 Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -73,6 +76,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -82,6 +86,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real HSQLDB Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -97,6 +102,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Disabled("SQLite JDBC driver does not implement Connection.createClob()")
     @Nested
     class SQLite_Test {
@@ -107,6 +113,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real SQLite Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

@@ -26,8 +26,8 @@ import java.util.*;
 /**
  * A graphics-oriented adapter around a {@link HelloWorld} service that re-interprets the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> as colors and drawing
- * primitives — three or four {@link Color} samples and an {@code AWT}
- * {@link Graphics}-fill convenience.
+ * primitives — three or four {@link Color} samples and an {@code AWT} {@link Graphics}-fill
+ * convenience.
  * <p>
  * Use {@link #newInstance(HelloWorld)} for the default implementation; alternative implementations
  * may be supplied by users who want different byte-to-color groupings.
@@ -87,8 +87,8 @@ public interface HelloWorldGraphics {
     Color[] getFourColors();
 
     /**
-     * Fills the specified {@code (x, y, width, height)} rectangle on the given graphics with
-     * three horizontally-divided bands, each painted with one of the colors returned by
+     * Fills the specified {@code (x, y, width, height)} rectangle on the given graphics with three
+     * horizontally-divided bands, each painted with one of the colors returned by
      * {@link #getThreeColors()}.
      *
      * @param graphics the AWT graphics surface to draw onto; must not be {@code null}.

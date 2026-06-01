@@ -36,6 +36,7 @@ import java.util.concurrent.locks.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("Flow / LocalDate example")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
@@ -209,7 +210,7 @@ class _Flow_LocalDate_Example_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("single subscriber for a publisher")
+    @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
     @Test
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();

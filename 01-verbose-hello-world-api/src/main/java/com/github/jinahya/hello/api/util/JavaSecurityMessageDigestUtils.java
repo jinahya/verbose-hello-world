@@ -27,9 +27,9 @@ import java.util.concurrent.*;
 
 /**
  * Helpers for {@link MessageDigest java.security.MessageDigest} — currently a single
- * {@link ByteBuffer}-aware {@code update} that feeds the digest with a trailing slice of the
- * buffer in whichever shape ({@code array}-backed, {@code slice()}-view, or rewound view) is
- * available without copying.
+ * {@link ByteBuffer}-aware {@code update} that feeds the digest with a trailing slice of the buffer
+ * in whichever shape ({@code array}-backed, {@code slice()}-view, or rewound view) is available
+ * without copying.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -53,8 +53,7 @@ public final class JavaSecurityMessageDigestUtils {
      *               {@code null}.
      * @param bytes  the number of bytes preceding {@code buffer.position()} to feed; must satisfy
      *               {@code 0 <= bytes <= buffer.position()}.
-     * @throws NullPointerException     if either {@code digest} or {@code buffer} is
-     *                                  {@code null}.
+     * @throws NullPointerException     if either {@code digest} or {@code buffer} is {@code null}.
      * @throws IllegalArgumentException if {@code bytes} is negative or greater than
      *                                  {@code buffer.position()}.
      */

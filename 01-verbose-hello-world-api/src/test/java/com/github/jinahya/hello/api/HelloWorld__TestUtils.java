@@ -587,6 +587,40 @@ public final class HelloWorld__TestUtils {
         return service;
     }
 
+    public static <T extends HelloWorld>
+    T send_datagramsocket_sends_hello_world_packet(final T service) throws IOException {
+        requireMock(service);
+        doAnswer(i -> {
+            final var socket = i.getArgument(0, DatagramSocket.class);
+            final var packet = new DatagramPacket(
+                    hello_world_byte_array(), // <buf>
+                    HelloWorld.BYTES,         // <length>
+                    socket.getRemoteSocketAddress()
+            );
+            socket.send(packet);
+            return socket;
+        }).when(service).<DatagramSocket>send(argThat(v -> v != null && v.isConnected()));
+        return service;
+    }
+
+    public static <T extends HelloWorld>
+    T send_datagramsocket_socketaddress_sends_hello_world_packet(final T service)
+            throws IOException {
+        requireMock(service);
+        doAnswer(i -> {
+            final var socket = i.getArgument(0, DatagramSocket.class);
+            final var target = i.getArgument(1, SocketAddress.class);
+            final var packet = new DatagramPacket(
+                    hello_world_byte_array(), // <buf>
+                    HelloWorld.BYTES,         // <length>
+                    target                    // <address>
+            );
+            socket.send(packet);
+            return socket;
+        }).when(service).<DatagramSocket>send(notNull(), notNull());
+        return service;
+    }
+
     // ------------------------------------------------------------------------------------ java.nio
 
     /**
@@ -826,14 +860,12 @@ public final class HelloWorld__TestUtils {
      * @throws IOException declared for stubbing convenience.
      */
     public static <T extends HelloWorld>
-    T send_datagramchannel_socketaddress_sends_hello_world_buffer(final T service)
-            throws IOException {
+    T send_channel_target_sends_hello_world_buffer(final T service) throws IOException {
         requireMock(service);
         doAnswer(i -> {
             final var channel = i.getArgument(0, DatagramChannel.class);
             final var target = i.getArgument(1, SocketAddress.class);
-            final var src = hello_world_byte_buffer();
-            while (src.remaining() == HelloWorld.BYTES) {
+            for (final var src = hello_world_byte_buffer(); src.hasRemaining(); ) {
                 channel.send(src, target);
             }
             return channel;
@@ -911,7 +943,7 @@ public final class HelloWorld__TestUtils {
      * @throws InterruptedException declared for stubbing convenience.
      */
     public static <T extends HelloWorld>
-    T write_asynchornousfilechannel_position_writes_hello_world(final T service)
+    T write_asynchronousfilechannel_long_writes_hello_world(final T service)
             throws ExecutionException, InterruptedException {
         requireMock(service);
         doAnswer(i -> {

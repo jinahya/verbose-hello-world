@@ -52,8 +52,8 @@ public final class JavaNioChannelsNetworkChannelUtils {
     /**
      * Sets {@code option} to {@code value} on {@code channel} — but first checks
      * {@link #isOptionSupported(NetworkChannel, SocketOption)} and throws
-     * {@link UnsupportedOperationException} with a more descriptive message than the JDK's
-     * default if the option isn't supported.
+     * {@link UnsupportedOperationException} with a more descriptive message than the JDK's default
+     * if the option isn't supported.
      *
      * @param channel the network channel to configure; must not be {@code null}.
      * @param option  the socket option to set; must not be {@code null}.
@@ -63,7 +63,8 @@ public final class JavaNioChannelsNetworkChannelUtils {
      * @return the given {@code channel} for chaining; never {@code null}.
      * @throws NullPointerException          if {@code channel} or {@code option} is {@code null}.
      * @throws UnsupportedOperationException if {@code channel} does not support {@code option}.
-     * @throws IOException                   if {@link NetworkChannel#setOption(SocketOption, Object)
+     * @throws IOException                   if
+     *                                       {@link NetworkChannel#setOption(SocketOption, Object)
      *                                       channel.setOption(option, value)} throws.
      */
     @SuppressWarnings({"unchecked"})

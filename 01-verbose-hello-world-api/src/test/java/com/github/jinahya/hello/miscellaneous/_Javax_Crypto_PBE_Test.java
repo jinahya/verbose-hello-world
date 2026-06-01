@@ -51,7 +51,7 @@ import java.util.concurrent.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc9106">RFC 9106 &mdash; Argon2 Memory-Hard
  * Function for Password Hashing and Proof-of-Work Applications</a>
  */
-@DisplayName("Password hashing — PBKDF2 / scrypt / Argon2id (signup/login round-trip)")
+@DisplayName("PBE")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_PBE_Test {
 
@@ -98,7 +98,7 @@ class _Javax_Crypto_PBE_Test {
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018#section-5.2">RFC 8018, &sect;5.2
      * &mdash; PBKDF2</a>
      */
-    @DisplayName("PBKDF2WithHmacSHA256 (salt+hash packed into a fixed-length column)")
+    @DisplayName("PBKDF2WithHmacSHA256")
     @Nested
     class PBKDF2_Test {
 
@@ -124,6 +124,7 @@ class _Javax_Crypto_PBE_Test {
          *
          * @param password the password to register and verify.
          */
+        @DisplayName("should round-trip the <password> column via <PBKDF2WithHmacSHA256>")
         @ValueSource(strings = {
                 "iloveyou",
                 "letmein"
@@ -170,7 +171,7 @@ class _Javax_Crypto_PBE_Test {
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc7914">RFC 7914 &mdash; The scrypt
      * Password-Based Key Derivation Function</a>
      */
-    @DisplayName("SCRYPT (salt+hash packed into a fixed-length column)")
+    @DisplayName("scrypt")
     @Nested
     class Scrypt_Test {
 
@@ -220,6 +221,8 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
+            @DisplayName(
+                    "should round-trip the <password> column via <scrypt> through <Password4j>")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"
@@ -279,6 +282,9 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
+            @DisplayName("""
+                    should round-trip the <password> column
+                    via <SCRYPT> through <BouncyCastle> JCE""")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"
@@ -331,7 +337,7 @@ class _Javax_Crypto_PBE_Test {
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc9106">RFC 9106 &mdash; Argon2
      * Memory-Hard Function for Password Hashing</a>
      */
-    @DisplayName("Argon2id (salt+hash packed into a fixed-length column)")
+    @DisplayName("Argon2id")
     @Nested
     class Argon2id_Test {
 
@@ -381,6 +387,8 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
+            @DisplayName(
+                    "should round-trip the <password> column via <Argon2id> through <Password4j>")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"
@@ -471,6 +479,9 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
+            @DisplayName("""
+                    should round-trip the <password> column
+                    via <Argon2id> through <BouncyCastle> low-level""")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"

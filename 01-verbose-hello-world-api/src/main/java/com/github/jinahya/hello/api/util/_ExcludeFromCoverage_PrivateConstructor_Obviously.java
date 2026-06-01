@@ -23,11 +23,11 @@ package com.github.jinahya.hello.api.util;
 import java.lang.annotation.*;
 
 /**
- * A documentation-only marker for the conventional, never-invoked {@code private} constructor of
- * a utility class — the one whose body is {@code throw new AssertionError("instantiation is not
- * allowed");} — so coverage tooling does not flag the trivially-unreachable line. Retained at
- * {@link RetentionPolicy#RUNTIME} so the marker is visible to Javadoc and to reflective
- * inspection.
+ * A documentation-only marker for the conventional, never-invoked {@code private} constructor of a
+ * utility class — the one whose body is
+ * {@code throw new AssertionError("instantiation is not allowed");} — so coverage tooling does not
+ * flag the trivially-unreachable line. Retained at {@link RetentionPolicy#RUNTIME} so the marker is
+ * visible to Javadoc and to reflective inspection.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see _ExcludeFromCoverage

@@ -40,14 +40,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("put(SequencedMap, Function, Function)")
+@DisplayName("put(map, keyMapper, valueMapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <map> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <map> argument is <null>")
     @Test
     void _ThrowNullPointerException_MapIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -59,9 +57,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
         assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <keyMapper> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <keyMapper> argument is <null>")
     @Test
     void _ThrowNullPointerException_KeyMapperIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -73,9 +69,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
         assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <valueMapper> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <valueMapper> argument is <null>")
     @Test
     void _ThrowNullPointerException_ValueMapperIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -88,8 +82,8 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
     }
 
     @DisplayName("""
-            should invoke <set(byte[])>, and \
-            <map.putLast(keyMapper.apply(b), valueMapper.apply(b))> for each byte b""")
+            should invoke <set(byte[])>,
+            and <map.putLast(keyMapper.apply(b), valueMapper.apply(b))> for each byte b""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __() {

@@ -28,6 +28,7 @@ import org.mockito.*;
 
 import java.sql.*;
 
+@DisplayName("setString(clob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetString_Clob_Long__Test
@@ -47,6 +48,7 @@ class HelloWorld_SetString_Clob_Long__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -57,6 +59,7 @@ class HelloWorld_SetString_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real H2 Clob> through <setString(clob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -72,6 +75,7 @@ class HelloWorld_SetString_Clob_Long__Test
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -81,6 +85,7 @@ class HelloWorld_SetString_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real HSQLDB Clob> through <setString(clob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -94,6 +99,7 @@ class HelloWorld_SetString_Clob_Long__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Disabled("SQLite JDBC driver does not implement Connection.createClob()")
     @Nested
     class SQLite_Test {
@@ -104,6 +110,7 @@ class HelloWorld_SetString_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real SQLite Clob> through <setString(clob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

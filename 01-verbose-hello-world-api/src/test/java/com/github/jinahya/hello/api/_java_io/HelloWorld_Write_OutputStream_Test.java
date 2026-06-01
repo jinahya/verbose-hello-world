@@ -48,10 +48,7 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method throws a
      * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <stream> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <stream> argument is <null>")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -70,9 +67,8 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should invoke <set[array[12])>
-            and writes the <array> to the <stream>"""
-    )
+            should invoke <set(array[12])>, write the <array> to the <stream>,
+            and return the <stream>""")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

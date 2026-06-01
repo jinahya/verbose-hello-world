@@ -34,6 +34,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("write(connection)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,6 +49,7 @@ class HelloWorld_Write_URLConnection__Test extends HelloWorld__Test {
         }).when(service()).write(ArgumentMatchers.<URLConnection>notNull());
     }
 
+    @DisplayName("should send <hello-world-bytes> through a real <HttpURLConnection>")
     @Test
     void __() {
         executeWithHttpEchoStarted(p -> () -> {

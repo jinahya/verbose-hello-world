@@ -31,6 +31,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
@@ -41,9 +42,11 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("string builder")
     @Nested
     class StringBuilder_Test {
 
+        @DisplayName("should append <hello-world-string> to a real <StringBuilder>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given

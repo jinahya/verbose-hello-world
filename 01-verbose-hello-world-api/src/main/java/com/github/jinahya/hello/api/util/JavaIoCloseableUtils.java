@@ -28,8 +28,8 @@ import java.util.function.*;
 /**
  * Helpers for {@link Closeable java.io.Closeable} — three flavors of
  * {@link Closeable#close() close()} that all hide the checked {@link IOException}: route the
- * exception to a caller {@link Consumer}, wrap it as a {@link RuntimeException}, or swallow it
- * with an {@code ERROR}-level log line.
+ * exception to a caller {@link Consumer}, wrap it as a {@link RuntimeException}, or swallow it with
+ * an {@code ERROR}-level log line.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -40,8 +40,8 @@ public final class JavaIoCloseableUtils {
 
     /**
      * Closes {@code closeable} and, on any {@link IOException}, passes it to {@code consumer}
-     * instead of rethrowing. A non-{@link IOException} {@link Exception} (unlikely but possible
-     * if {@code close()} throws an undeclared one) is wrapped in a {@link RuntimeException}.
+     * instead of rethrowing. A non-{@link IOException} {@link Exception} (unlikely but possible if
+     * {@code close()} throws an undeclared one) is wrapped in a {@link RuntimeException}.
      *
      * @param closeable the resource to close; must not be {@code null}.
      * @param consumer  the consumer to receive a thrown {@link IOException}; must not be
@@ -87,9 +87,9 @@ public final class JavaIoCloseableUtils {
     }
 
     /**
-     * Closes {@code closeable}, swallowing any {@link IOException} by logging it at
-     * {@code ERROR} level. Intended for finalizer-style cleanup paths where rethrowing the
-     * failure would mask a more important pending exception.
+     * Closes {@code closeable}, swallowing any {@link IOException} by logging it at {@code ERROR}
+     * level. Intended for finalizer-style cleanup paths where rethrowing the failure would mask a
+     * more important pending exception.
      *
      * @param closeable the resource to close; must not be {@code null}.
      * @throws NullPointerException if {@code closeable} is {@code null}.

@@ -35,6 +35,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("update(checksum)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Checksum__Test
@@ -63,6 +64,7 @@ class HelloWorld_Update_Checksum__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should update <hello, world> through every real <Checksum> subtype")
     @MethodSource("getChecksumStream")
     @ParameterizedTest
     void __(final Checksum checksum) {
@@ -73,9 +75,11 @@ class HelloWorld_Update_Checksum__Test
     }
 
     // ----------------------------------------------------------------------- Apache Commons Codec
+    @DisplayName("XXHash32")
     @Nested
     class XXHash32_Test {
 
+        @DisplayName("should update <hello, world> through <XXHash32>")
         @Test
         void __() {
             final var checksum = new XXHash32();

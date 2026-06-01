@@ -55,7 +55,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_T
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName("should throw NullPointerException when channel is null")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -72,8 +72,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_T
      */
     @DisplayName("""
             should complete the returned stage with the <attachment>
-            once all <hello-world-bytes> have been written"""
-    )
+            once all <hello-world-bytes> have been written""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
@@ -100,8 +99,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_T
      */
     @DisplayName("""
             should complete the returned stage exceptionally
-            when the <channel> fails on or after partial writes"""
-    )
+            when the <channel> fails on or after partial writes""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

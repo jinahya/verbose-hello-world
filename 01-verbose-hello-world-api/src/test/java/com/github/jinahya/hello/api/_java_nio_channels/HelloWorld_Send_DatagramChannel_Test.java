@@ -39,11 +39,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("send(channel)")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -53,7 +54,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.send(channel));
     }
 
-    @DisplayName("(!connected)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <channel> is not <connected>")
     @Test
     void _ThrowIllegalArgumentException_ChannelIsNotConnected() {
         // ----------------------------------------------------------------------------------- given
@@ -64,6 +65,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         assertThrows(IllegalArgumentException.class, () -> service.send(channel));
     }
 
+    @DisplayName("should delegate to <send(socket)> when the <channel> is in <blocking> mode")
     @Test
     void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -82,6 +84,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         assertSame(channel, result);
     }
 
+    @DisplayName("should delegate to <write(channel)> when the <channel> is in <non-blocking> mode")
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given

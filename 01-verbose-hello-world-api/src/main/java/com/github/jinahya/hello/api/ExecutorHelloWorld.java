@@ -41,9 +41,9 @@ import java.util.function.*;
  * The {@link CompletionHandler}-based primitive catches every {@link Throwable} thrown by the
  * mapper — including {@link Error} — and routes it through
  * {@link CompletionHandler#failed(Throwable, Object) handler.failed(...)}, guaranteeing that the
- * handler is always notified exactly once. The {@link CompletionStage}-based primitive delegates
- * to {@link CompletableFuture#supplyAsync(java.util.function.Supplier, Executor)} and so completes
- * its stage exceptionally on any {@link Throwable} from the mapper.
+ * handler is always notified exactly once. The {@link CompletionStage}-based primitive delegates to
+ * {@link CompletableFuture#supplyAsync(java.util.function.Supplier, Executor)} and so completes its
+ * stage exceptionally on any {@link Throwable} from the mapper.
  * <p>
  * Instances are immutable and safe to share across threads; thread-safety of any I/O the wrapped
  * service performs is the wrapped service's responsibility.
@@ -112,8 +112,8 @@ public final class ExecutorHelloWorld<T extends HelloWorld>
      *
      * @implSpec This implementation returns
      * {@link CompletableFuture#supplyAsync(java.util.function.Supplier, Executor)
-     * CompletableFuture.supplyAsync(() -> mapper.apply(service), executor)}: the mapper runs on
-     * the stored executor, and the returned stage completes with its result — or completes
+     * CompletableFuture.supplyAsync(() -> mapper.apply(service), executor)}: the mapper runs on the
+     * stored executor, and the returned stage completes with its result — or completes
      * exceptionally with any {@link Throwable} thrown by the mapper, wrapped in a
      * {@link CompletionException} per the {@link CompletableFuture} contract.
      */

@@ -37,11 +37,12 @@ import java.util.concurrent.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
  */
+@DisplayName("setBytes(statement, index)")
 @Slf4j
 class HelloWorld_SetBytes_PreparedStatement_Int_Test
         extends HelloWorld__Test {
 
-    @DisplayName("(null, parameterIndex)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
     @Test
     void _ThrowNullPointerException_PreparedStatementIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -55,7 +56,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
         );
     }
 
-    @DisplayName("(preparedStatement, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
     @Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -69,7 +70,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
         );
     }
 
-    @DisplayName("preparedStatement.setBytes(parameterIndex, set(byte[12]))")
+    @DisplayName("should invoke <statement.setBytes(index, buffer)>, and return the <statement>")
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given

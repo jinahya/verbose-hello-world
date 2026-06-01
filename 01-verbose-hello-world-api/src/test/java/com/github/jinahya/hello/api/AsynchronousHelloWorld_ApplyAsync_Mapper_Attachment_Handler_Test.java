@@ -29,6 +29,7 @@ import java.util.function.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("applyAsync(mapper, attachment, handler)")
 abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
         >
@@ -40,6 +41,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         super(HelloWorld.class, initializer);
     }
 
+    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
@@ -52,6 +54,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
                      () -> asynchronousService.applyAsync(mapper, null, handler));
     }
 
+    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_HandlerIsNull() {
@@ -64,6 +67,8 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
                      () -> asynchronousService.applyAsync(mapper, null, handler));
     }
 
+    @DisplayName(
+            "should invoke <handler.completed> with the <mapper.apply> result and the <attachment>")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() {
@@ -84,6 +89,9 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         verify(handler, never()).failed(any(), any());
     }
 
+    @DisplayName("""
+            should invoke <handler.failed> with the thrown exception and the <attachment>
+            when <mapper.apply> throws""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

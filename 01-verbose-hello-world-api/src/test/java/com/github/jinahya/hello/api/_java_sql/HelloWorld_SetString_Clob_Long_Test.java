@@ -37,11 +37,12 @@ import java.util.concurrent.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
  */
+@DisplayName("setString(clob, pos)")
 @Slf4j
 class HelloWorld_SetString_Clob_Long_Test
         extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -55,7 +56,7 @@ class HelloWorld_SetString_Clob_Long_Test
         );
     }
 
-    @DisplayName("(clob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -69,7 +70,7 @@ class HelloWorld_SetString_Clob_Long_Test
         );
     }
 
-    @DisplayName("clob.setString(pos, <string from set(byte[12])>)")
+    @DisplayName("should invoke <clob.setString(pos, string)>, and return the <clob>")
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given

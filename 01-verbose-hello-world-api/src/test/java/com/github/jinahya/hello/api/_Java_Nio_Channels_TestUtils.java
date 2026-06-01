@@ -40,7 +40,6 @@ import static com.github.jinahya.hello.api._Java__TestUtils.*;
 @Slf4j
 public final class _Java_Nio_Channels_TestUtils {
 
-
     // ---------------------------------------------------------------------------------------------
     public static long copy1(final ByteBuffer b, final ReadableByteChannel in,
                              final WritableByteChannel out)

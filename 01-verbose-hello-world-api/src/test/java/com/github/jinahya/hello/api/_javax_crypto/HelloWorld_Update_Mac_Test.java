@@ -34,11 +34,13 @@ import javax.crypto.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  */
+@DisplayName("update(mac)")
 @Slf4j
 class HelloWorld_Update_Mac_Test
         extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should throw a <NullPointerException> when the <mac> argument is <null>")
     @Test
     void _ThrowNullPointerException_MacIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -48,7 +50,7 @@ class HelloWorld_Update_Mac_Test
         Assertions.assertThrows(NullPointerException.class, () -> service.update(mac));
     }
 
-    @DisplayName("mac.update(set(byte[12]))")
+    @DisplayName("should invoke <mac.update(buffer)>, and return the <mac>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

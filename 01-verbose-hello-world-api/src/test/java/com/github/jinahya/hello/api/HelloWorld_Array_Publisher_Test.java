@@ -40,6 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("array publisher")
 @Slf4j
 class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]> {
 
@@ -51,8 +52,9 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should emit at least <n> elements when the subscriber calls <request(n)> with <n > 0>")
     @Test
-    @DisplayName("request(n), n > 0 → at least n elements")
     void __singleRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 10);
@@ -89,8 +91,10 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should give each subscriber its own <n> elements
+            when multiple subscribers each call <request(n)>""")
     @Test
-    @DisplayName("multiple subscribers, each request(n) → each gets its own n elements")
     void __multiRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var count = ThreadLocalRandom.current().nextInt(2, 5);
@@ -141,8 +145,8 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         } // @formatter:on
     }
 
+    @DisplayName("should signal <onError> with no further signals when <service.set> throws")
     @Test
-    @DisplayName("service.set throws → subscriber gets onError, no further signals")
     void __serviceThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");

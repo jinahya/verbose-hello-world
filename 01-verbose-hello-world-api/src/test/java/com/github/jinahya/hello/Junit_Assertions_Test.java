@@ -26,17 +26,21 @@ import java.util.function.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("JUnit assertions")
 class Junit_Assertions_Test {
 
+    @DisplayName("assertTrue / assertFalse")
     @Nested
     class AssertTrue_Test {
 
+        @DisplayName("should pass when <assertTrue> is invoked with <true>")
         @Test
         void assertTrue__True() {
             final var condition = true;
             Assertions.assertTrue(condition); // Passes
         }
 
+        @DisplayName("should fail when <assertTrue> is invoked with <false>")
         @Disabled
         @Test
         void assertTrue__False() {
@@ -44,6 +48,7 @@ class Junit_Assertions_Test {
             Assertions.assertTrue(condition); // Fails
         }
 
+        @DisplayName("should fail when <assertFalse> is invoked with <true>")
         @Disabled
         @Test
         void assertFalse__True() {
@@ -51,6 +56,7 @@ class Junit_Assertions_Test {
             Assertions.assertFalse(condition); // Fails
         }
 
+        @DisplayName("should pass when <assertFalse> is invoked with <false>")
         @Test
         void assertFalse__False() {
             final var condition = false;
@@ -58,9 +64,12 @@ class Junit_Assertions_Test {
         }
     }
 
+    @DisplayName("assertNull / assertNotNull")
     @Nested
     class AssertNull_Test {
 
+        @DisplayName(
+                "should pass <assertNull> for <null> and <assertNotNull> for a non-<null> value")
         @Test
         void __() {
             {
@@ -83,9 +92,13 @@ class Junit_Assertions_Test {
         }
     }
 
+    @DisplayName("assertThrows / assertDoesNotThrow")
     @Nested
     class AssertThrows_Test {
 
+        @DisplayName("""
+                should capture a <NumberFormatException>
+                with <assertThrows> and <assertThrowsExactly>""")
         @Test
         void assertThrows__() {
             {
@@ -104,15 +117,18 @@ class Junit_Assertions_Test {
             }
         }
 
+        @DisplayName("should pass when no exception is thrown")
         @Test
         void assertDoesNotThrow__() {
             final IntUnaryOperator fx = a -> a + 1;
         }
     }
 
+    @DisplayName("assertSame / assertNotSame")
     @Nested
     class AssertSame_Test {
 
+        @DisplayName("should treat <null> as the same reference as <null>")
         @Test
         void __Null() {
             assert null == null;
@@ -122,6 +138,7 @@ class Junit_Assertions_Test {
             });
         }
 
+        @DisplayName("should treat the same reference as the same in <assertSame>")
         @Test
         void __Self() {
             final Object self = new Object();
@@ -132,6 +149,7 @@ class Junit_Assertions_Test {
             });
         }
 
+        @DisplayName("should treat aliased references as the same in <assertSame>")
         @Test
         void __Same() {
             final Object expected = new Object();
@@ -140,6 +158,7 @@ class Junit_Assertions_Test {
             Assertions.assertSame(expected, actual);
         }
 
+        @DisplayName("should fail <assertSame> for distinct <Object> references")
         @Test
         void __Other() {
             final Object expected = new Object();
@@ -151,9 +170,11 @@ class Junit_Assertions_Test {
         }
     }
 
+    @DisplayName("assertEquals / assertNotEquals")
     @Nested
     class AssertEquals_Test {
 
+        @DisplayName("should treat <null> as equal to <null> in <assertEquals>")
         @Test
         void __Null() {
             assert java.util.Objects.equals(null, null); // (a == b) || (a != null && a.equals(b))
@@ -164,6 +185,7 @@ class Junit_Assertions_Test {
             });
         }
 
+        @DisplayName("should treat the same reference as equal in <assertEquals>")
         @Test
         void __Self() {
             {
@@ -183,6 +205,7 @@ class Junit_Assertions_Test {
             }
         }
 
+        @DisplayName("should fail <assertEquals> for distinct <Object> instances")
         @Test
         void __Other() {
             final var expected = new Object();
@@ -194,6 +217,7 @@ class Junit_Assertions_Test {
             });
         }
 
+        @DisplayName("should treat interned and <new> <String> literals as equal in <assertEquals>")
         @Test
         void __John() {
             {
@@ -214,6 +238,9 @@ class Junit_Assertions_Test {
             }
         }
 
+        @DisplayName("""
+                should treat equal <int> values as equal in <assertEquals>
+                across the <Integer> cache boundary""")
         @Test
         void __Int() {
             {
@@ -230,6 +257,9 @@ class Junit_Assertions_Test {
             }
         }
 
+        @DisplayName("""
+                should treat equal <Integer> values as equal in <assertEquals>
+                across the <Integer> cache boundary""")
         @Test
         void __Integer() {
             {

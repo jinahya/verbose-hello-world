@@ -29,6 +29,7 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+@DisplayName("setAsciiStream(statement, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
@@ -52,6 +53,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -66,6 +68,9 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real H2 PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -109,6 +114,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -123,6 +129,9 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real HSQLDB PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -166,6 +175,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Nested
     class SQLite_Test {
 
@@ -179,6 +189,9 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real SQLite PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

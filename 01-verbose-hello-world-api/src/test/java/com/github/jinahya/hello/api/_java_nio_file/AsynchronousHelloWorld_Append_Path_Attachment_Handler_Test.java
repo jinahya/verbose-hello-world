@@ -50,10 +50,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         super(HelloWorld.class, initializer);
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <path> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_PathIsNull() {
@@ -69,10 +66,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         );
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <handler> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -87,9 +81,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
     }
 
     @DisplayName("""
-            should invoke <synchronousService.append(path)>
-            and notify <handler.completed(path, attachment)>"""
-    )
+            should invoke <synchronousService.append(path)>,
+            and invoke <handler.completed(path, attachment)>""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws IOException {
@@ -111,9 +104,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
     }
 
     @DisplayName("""
-            should notify <handler.failed(exc, attachment)>
-            when <synchronousService.append(path)> throws"""
-    )
+            should invoke <handler.failed(exc, attachment)>
+            when <synchronousService.append(path)> throws""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() throws IOException {

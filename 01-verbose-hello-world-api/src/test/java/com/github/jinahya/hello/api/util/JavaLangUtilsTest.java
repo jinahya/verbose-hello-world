@@ -31,9 +31,11 @@ import java.util.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("JavaLangUtils")
 @Slf4j
 class JavaLangUtilsTest {
 
+    @DisplayName("isPrimitive(clazz)")
     @Nested
     class IsPrimitiveTest {
 
@@ -41,6 +43,7 @@ class JavaLangUtilsTest {
             return JavaLangUtils.WRAPPER_CLASSES.keySet();
         }
 
+        @DisplayName("should return <true> when the <clazz> is a primitive class")
         @MethodSource({"getPrimitiveClasses"})
         @ParameterizedTest
         void __(final Class<?> clazz) {
@@ -48,6 +51,7 @@ class JavaLangUtilsTest {
         }
     }
 
+    @DisplayName("isWrapper(clazz)")
     @Nested
     class IsWrapperTest {
 
@@ -55,6 +59,7 @@ class JavaLangUtilsTest {
             return JavaLangUtils.PRIMITIVE_CLASSES.keySet();
         }
 
+        @DisplayName("should return <true> when the <clazz> is a wrapper class")
         @MethodSource({"getWrapperClasses"})
         @ParameterizedTest
         void __(final Class<?> clazz) {
@@ -62,7 +67,7 @@ class JavaLangUtilsTest {
         }
     }
 
-    @DisplayName("trim(string, charset, length)")
+    @DisplayName("trimByCodepoints(string, charset, bytes)")
     @Nested
     class TrimByCodepointsTest {
 
@@ -80,6 +85,9 @@ class JavaLangUtilsTest {
                 "汝英語會話係啵？",
                 "어떻게 그의 아버지가 저 남자의 정체를 간파한 것인지 알 수 없어요."
         })
+        @DisplayName("""
+                should trim the <string> within the given byte <length>
+                across multi-byte encodings""")
         @ParameterizedTest
         void __(String string) {
             var charset = StandardCharsets.UTF_8;

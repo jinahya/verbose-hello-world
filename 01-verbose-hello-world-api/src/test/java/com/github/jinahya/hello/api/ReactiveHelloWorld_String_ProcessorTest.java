@@ -39,6 +39,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("string processor")
 @Slf4j
 class ReactiveHelloWorld_String_ProcessorTest {
 
@@ -57,6 +58,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
         final var publisher = ReactiveHelloWorldArrayPublisher.from(service);
@@ -64,6 +66,9 @@ class ReactiveHelloWorld_String_ProcessorTest {
         }
     }
 
+    @DisplayName("""
+            should deliver <d> elements to each subscriber with no <onComplete>,
+            given two subscribers requesting <3> and <5>""")
     @Test
     void __() { // @formatter:off
         // ----------------------------------------------------------------------------------- given

@@ -32,6 +32,7 @@ import java.util.jar.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("java.util.jar")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
@@ -45,9 +46,11 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
         write_stream_writes_hello_world_bytes(service());
     }
 
+    @DisplayName("JarOutputStream")
     @Nested
     class JarOutputStream_Test {
 
+        @DisplayName("should write a <hello, world> entry into an in-memory <JarOutputStream>")
         @Test
         void __() throws IOException {
             final var name = "hello-world.txt";
@@ -67,6 +70,7 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("should write a <hello, world> entry into a file-backed <JarOutputStream>")
         @Test
         void __File() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -91,9 +95,11 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("JarFile")
     @Nested
     class JarFile_Test {
 
+        @DisplayName("should read back a <hello, world> entry through <JarFile>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given

@@ -34,13 +34,14 @@ import java.util.concurrent.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append using RandomAccessFile")
+@DisplayName("append(file) using RandomAccessFile")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_File_Using_RandomAccessFile_Test
         extends HelloWorld__Test {
 
+    @DisplayName("should write <hello-world-bytes> to the <file> through a <RandomAccessFile>")
     @Test
     void __(@TempDir final File dir)
             throws IOException {

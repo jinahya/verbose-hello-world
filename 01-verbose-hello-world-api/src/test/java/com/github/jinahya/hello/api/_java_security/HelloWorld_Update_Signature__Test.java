@@ -58,6 +58,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#signature-algorithms">Signature
  * Algorithms</a>
  */
+@DisplayName("update(signature)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
@@ -139,6 +140,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          * @param mgfSpec MGF1 의 다이제스트 파라미터.
          * @param saltLen 솔트 길이(바이트).
          */
+        @DisplayName(
+                "should sign and verify the hello-world bytes with a <real RSASSA-PSS> signature")
         @ParameterizedTest(name = "{0}-bit RSA with {1}")
         @MethodSource({"pssTestProvider"})
         void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen) throws Exception {
@@ -182,6 +185,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          * 때는 같은 파일을 {@link FileChannel} 로 읽어 {@link Signature#update(ByteBuffer)} 에 흘려 넣어 두 경로 모두
          * 같은 서명을 만들고 검증함을 확인한다.
          */
+        @DisplayName("should sign a <file> with <FileInputStream> and verify it with <FileChannel>")
         @Test
         void __file() throws Exception {
             final var file = writeSome(File.createTempFile("tmp", null, tempDir));
@@ -248,6 +252,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          *
          * @param keysize DSA 키 길이(비트). ({@code 1024 / 2048}.)
          */
+        @DisplayName(
+                "should sign and verify the hello-world bytes with a <real SHA1withDSA> signature")
         @ValueSource(ints = {
                 1024, 2048
         })
@@ -297,6 +303,9 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          *
          * @param keysize DSA 키 길이(비트). ({@code 1024 / 2048}.)
          */
+        @DisplayName("""
+                should sign and verify the hello-world bytes
+                with a <real SHA256withDSA> signature""")
         @ValueSource(ints = {
                 1024, 2048
         })
@@ -347,6 +356,9 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
          * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
          */
+        @DisplayName("""
+                should sign and verify the hello-world bytes
+                with a <real SHA256withECDSA> signature on <secp256r1>""")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -391,6 +403,9 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
          * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
          */
+        @DisplayName("""
+                should sign and verify the hello-world bytes
+                with a <real SHA384withECDSA> signature on <secp384r1>""")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -421,6 +436,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          * {@link FileInputStream} 으로 읽어 {@link Signature#update(byte[], int, int)} 에 흘려 넣어 두 경로 모두
          * 같은 서명을 만들고 검증함을 확인한다.
          */
+        @DisplayName("should sign a <file> with <FileChannel> and verify it with <FileInputStream>")
         @Test
         void __file() throws Exception {
             final var file = writeSome(
@@ -479,6 +495,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          *
          * @param keysize RSA 키 길이(비트). ({@code 1024 / 2048 / 3072 / 4096}.)
          */
+        @DisplayName(
+                "should sign and verify the hello-world bytes with a <real SHA1withRSA> signature")
         @ValueSource(ints = {
                 1024, 2048, 3072, 4096
         })
@@ -529,6 +547,9 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          *
          * @param keysize RSA 키 길이(비트). ({@code 1024 / 2048 / 3072 / 4096}.)
          */
+        @DisplayName("""
+                should sign and verify the hello-world bytes
+                with a <real SHA256withRSA> signature""")
         @ValueSource(ints = {
                 1024, 2048, 3072, 4096
         })
@@ -579,6 +600,9 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
          *
          * @param keysize RSA 키 길이(비트). ({@code 1024 / 2048 / 3072 / 4096}.)
          */
+        @DisplayName("""
+                should sign and verify the hello-world bytes
+                with a <real SHA384withRSA> signature""")
         @ValueSource(ints = {
                 1024, 2048, 3072, 4096
         })

@@ -26,27 +26,32 @@ import org.junit.jupiter.api.*;
 import java.nio.charset.*;
 import java.util.*;
 
+@DisplayName("JavaUtilBitSetUtils")
 @Slf4j
 class JavaUtilBitSetUtilsTest {
 
+    @DisplayName("should print an empty <BitSet> without error")
     @Test
     void print_EmptyBitSet() {
         final var bitset = new BitSet();
         JavaUtilBitSetUtils.print(bitset);
     }
 
+    @DisplayName("should print a single-<long> <BitSet> without error")
     @Test
     void print_SingleLong() {
         final var bitset = BitSet.valueOf(new long[] {0xDEADBEEFL});
         JavaUtilBitSetUtils.print(bitset);
     }
 
+    @DisplayName("should print a multi-<long> <BitSet> without error")
     @Test
     void print_MultipleLongs() {
         final var bitset = BitSet.valueOf(new long[] {0xCAFEBABEL, 0x0123456789ABCDEFL});
         JavaUtilBitSetUtils.print(bitset);
     }
 
+    @DisplayName("should print a <BitSet> built from <hello, world> bytes without error")
     @Test
     void print_HelloWorldBytes() {
         final var bytes = "hello, world".getBytes(StandardCharsets.US_ASCII);

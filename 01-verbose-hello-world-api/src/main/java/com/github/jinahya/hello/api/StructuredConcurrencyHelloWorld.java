@@ -31,11 +31,10 @@ import java.util.function.*;
  * A {@link StructuredTaskScope}-backed implementation of {@link AsynchronousHelloWorld}.
  * <p>
  * Each instance wraps a synchronous {@link HelloWorld} service of type {@code T} supplied at
- * construction time. Unlike {@link ExecutorHelloWorld}, this implementation does not
- * take an {@link Executor}; each {@code applyAsync(...)} call spawns a virtual thread that opens a
+ * construction time. Unlike {@link ExecutorHelloWorld}, this implementation does not take an
+ * {@link Executor}; each {@code applyAsync(...)} call spawns a virtual thread that opens a
  * per-invocation {@link StructuredTaskScope}, forks the mapper as a single subtask, joins the
- * scope, and signals completion through either the supplied
- * {@link CompletionHandler}
+ * scope, and signals completion through either the supplied {@link CompletionHandler}
  * ({@link #applyAsync(Function, Object, CompletionHandler) handler form}) or the returned
  * {@link CompletionStage} ({@link #applyAsync(Function) stage form}).
  * <p>
@@ -58,16 +57,17 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
 
     /**
      * Creates a new instance wrapping the specified service, opening each per-invocation
-     * {@link StructuredTaskScope} with a {@link StructuredTaskScope.Configuration} customized by the
-     * specified configurator.
+     * {@link StructuredTaskScope} with a {@link StructuredTaskScope.Configuration} customized by
+     * the specified configurator.
      *
      * @param service      the {@link HelloWorld} service that supplies the
      *                     <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>; must
      *                     not be {@code null}.
      * @param configurator a function that customizes the {@link StructuredTaskScope.Configuration}
      *                     applied to every per-invocation scope (timeout, {@code ThreadFactory},
-     *                     name, etc.); must not be {@code null}. Use {@link UnaryOperator#identity()
-     *                     UnaryOperator.identity()} for the default configuration.
+     *                     name, etc.); must not be {@code null}. Use
+     *                     {@link UnaryOperator#identity() UnaryOperator.identity()} for the default
+     *                     configuration.
      * @throws NullPointerException if either {@code service} or {@code configurator} is
      *                              {@code null}.
      */
@@ -87,9 +87,9 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
      * @implSpec This implementation spawns a virtual thread that opens a
      * {@link StructuredTaskScope}, forks {@code () -> mapper.apply(service)} as a single subtask,
      * and joins the scope. On {@link StructuredTaskScope.Subtask.State#SUCCESS SUCCESS} it invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)};
-     * on {@link StructuredTaskScope.Subtask.State#FAILED FAILED} or any {@link Throwable} thrown
-     * while opening or joining the scope (including {@link InterruptedException}), it invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)}; on
+     * {@link StructuredTaskScope.Subtask.State#FAILED FAILED} or any {@link Throwable} thrown while
+     * opening or joining the scope (including {@link InterruptedException}), it invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(t, attachment)}. The
      * handler is guaranteed to be notified exactly once.
      */
@@ -124,9 +124,9 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
      * {@link StructuredTaskScope}, forks {@code () -> mapper.apply(service)} as a single subtask,
      * and joins the scope. On {@link StructuredTaskScope.Subtask.State#SUCCESS SUCCESS} it
      * completes the returned stage with the subtask's result; on
-     * {@link StructuredTaskScope.Subtask.State#FAILED FAILED} or any {@link Throwable} thrown
-     * while opening or joining the scope (including {@link InterruptedException}), it completes
-     * the returned stage exceptionally with that cause.
+     * {@link StructuredTaskScope.Subtask.State#FAILED FAILED} or any {@link Throwable} thrown while
+     * opening or joining the scope (including {@link InterruptedException}), it completes the
+     * returned stage exceptionally with that cause.
      */
     @Override
     public <R> CompletionStage<R> applyAsync(final Function<? super T, ? extends R> mapper) {

@@ -35,6 +35,7 @@ import java.util.zip.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(stream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -50,9 +51,11 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("byte array output stream")
     @Nested
     class ByteArrayOutputStream_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <ByteArrayOutputStream>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES)) {
@@ -67,6 +70,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("filter output stream")
     @Nested
     class FilterOutputStream_Test {
 
@@ -117,9 +121,11 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
         }
     } // @formatter:on
 
+    @DisplayName("data output stream")
     @Nested
     class DataOutputStream_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -135,9 +141,11 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("file output stream")
     @Nested
     class FileOutputStreamTest {
 
+        @DisplayName("should write <hello-world-bytes> through a real <FileOutputStream>")
         @Test
         void __() throws IOException {
             final var file = File.createTempFile("tmp", null, tempDir);
@@ -153,9 +161,13 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("pipe")
     @Nested
     class PipeOutputStream_Test {
 
+        @DisplayName("""
+                should write <hello-world-bytes> through a
+                <PipedOutputStream> with sufficient pipe size""")
         @Test
         void __EnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -171,6 +183,9 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("""
+                should write <hello-world-bytes> through a
+                <PipedOutputStream> with insufficient pipe size""")
         @Test
         void __NotEnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -195,9 +210,11 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     }
 
     // ------------------------------------------------------------------------------- java.util.zip
+    @DisplayName("java.util.zip")
     @Nested
     class JavaUtilZipTest {
 
+        @DisplayName("should write <hello-world-bytes> through a <DeflaterOutputStream>")
         @Test
         void __DeflaterOutputStream() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -213,6 +230,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("should write <hello-world-bytes> through a <GZIPOutputStream>")
         @Test
         void __GZIPOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -236,6 +254,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("should write <hello-world-bytes> through a <ZipOutputStream>")
         @Test
         void __ZipOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given

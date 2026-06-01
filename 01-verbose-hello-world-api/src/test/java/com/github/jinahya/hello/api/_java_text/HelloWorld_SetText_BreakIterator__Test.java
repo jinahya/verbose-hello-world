@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("setText(iterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
@@ -49,6 +50,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }).when(service()).setText(notNull());
     }
 
+    @DisplayName("should iterate the hello-world string with a <real character> <BreakIterator>")
     @Test
     void __CharacterInstance() {
         final var iterator = service().setText(BreakIterator.getCharacterInstance(Locale.ROOT));
@@ -59,6 +61,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("should iterate the hello-world string with a <real word> <BreakIterator>")
     @Test
     void __WordInstance() {
         final var iterator = service().setText(BreakIterator.getWordInstance(Locale.ROOT));
@@ -69,6 +72,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("should iterate the hello-world string with a <real line> <BreakIterator>")
     @Test
     void __LineInstance() {
         final var iterator = service().setText(BreakIterator.getLineInstance(Locale.ROOT));
@@ -79,6 +83,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("should iterate the hello-world string with a <real sentence> <BreakIterator>")
     @Test
     void __SentenceInstance() {
         final var iterator = service().setText(BreakIterator.getSentenceInstance(Locale.ROOT));
@@ -100,6 +105,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         );
     }
 
+    @DisplayName("should iterate a <multilingual string> with every kind of <BreakIterator>")
     @MethodSource("strings")
     @ParameterizedTest
     void __Iterators(final String string) {
@@ -172,6 +178,9 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         return string;
     }
 
+    @DisplayName("""
+            should truncate a <multilingual string>
+            to at most <20> UTF-8 bytes via <BreakIterator>""")
     @MethodSource("strings")
     @ParameterizedTest
     void __ChopAtMost20Bytes(final String string) {

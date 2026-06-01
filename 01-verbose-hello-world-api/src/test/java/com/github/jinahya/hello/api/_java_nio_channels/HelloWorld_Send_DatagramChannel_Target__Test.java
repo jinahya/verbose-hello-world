@@ -23,137 +23,143 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.nio.charset.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static org.mockito.Mockito.*;
 
+@DisplayName("send(channel, target)")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void beforeEach() throws IOException {
-        send_datagramchannel_socketaddress_sends_hello_world_buffer(service());
+    void __stubService() throws IOException {
+        send_datagramsocket_socketaddress_sends_hello_world_packet(service());
+        send_channel_target_sends_hello_world_buffer(service());
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    @DisplayName("echo server")
     @Nested
-    class DatagramSocket_Server_Test {
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    class EchoServer_Test {
 
-        private CompletableFuture<SocketAddress> startServer() {
-            final var future = new CompletableFuture<SocketAddress>();
-            Thread.ofVirtual().start(() -> {
-                try (var server = new DatagramSocket(
-                        new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {
-                    future.complete(server.getLocalSocketAddress());
-                    final var packet = new DatagramPacket(new byte[HelloWorld.BYTES],
-                                                          HelloWorld.BYTES);
-                    server.receive(packet);
-                    final var decoded = new String(packet.getData(), StandardCharsets.US_ASCII);
-                    log.debug("'{}' received from {}", decoded, packet.getSocketAddress());
-                } catch (final IOException ioe) {
-                    future.completeExceptionally(ioe);
+        private void doServer(final DatagramChannel server) throws IOException {
+            server.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            while (buffer.hasRemaining()) {
+                final var address = server.receive(buffer);
+                if (address == null) {
+                    continue;
                 }
-            });
-            return future;
-        }
-
-        @Test
-        void __blocking() throws IOException {
-            try (var client = spy(DatagramChannel.open())) {
-                assert client.isBlocking();
-                service().send(client, startServer().join());
-            }
-        }
-
-        @Test
-        void __nonblocking() throws IOException {
-            try (var client = spy(DatagramChannel.open())) {
-                client.configureBlocking(false);
-                service().send(client, startServer().join());
-            }
-        }
-    }
-
-    @Nested
-    class DatagramChannel_Server_Blocking_Test {
-
-        private CompletableFuture<SocketAddress> startServer() {
-            final var future = new CompletableFuture<SocketAddress>();
-            Thread.ofVirtual().start(() -> {
-                try (var server = DatagramChannel.open()) {
-                    server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                    future.complete(server.getLocalAddress());
-                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    final var address = server.receive(buffer);
-                    final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip());
-                    log.debug("'{}' received from {}", decoded, address);
-                } catch (final IOException ioe) {
-                    future.completeExceptionally(ioe);
+                log.debug("[server] received from {}", address);
+                for (buffer.flip(); buffer.hasRemaining(); ) {
+                    server.send(buffer, address);
                 }
-            });
-            return future;
-        }
-
-        @Test
-        void __blocking() throws IOException {
-            try (var client = spy(DatagramChannel.open())) {
-                service().send(client, startServer().join());
+                log.debug("[server] sent to {}", address);
             }
         }
 
-        @Test
-        void __nonblocking() throws IOException {
-            try (var client = spy(DatagramChannel.open())) {
-                client.configureBlocking(false);
-                service().send(client, startServer().join());
-            }
-        }
-    }
-
-    @Nested
-    class DatagramChannel_Server_Nonblocking_Test {
-
-        private CompletableFuture<SocketAddress> startServer() {
-            final var future = new CompletableFuture<SocketAddress>();
-            Thread.ofVirtual().start(() -> {
-                try (var selector = Selector.open();
-                     var server = DatagramChannel.open()) {
-                    server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                    future.complete(server.getLocalAddress());
-                    server.configureBlocking(false);
-                    final var key = server.register(selector, SelectionKey.OP_READ);
-                    while (selector.select() == 0) ;
-                    assert selector.selectedKeys().iterator().next() == key;
-                    final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                    final var address = server.receive(buffer);
-                    final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip());
-                    log.debug("'{}' received from {}", decoded, address);
-                } catch (final IOException ioe) {
-                    future.completeExceptionally(ioe);
+        private void doClient(final DatagramChannel client, final SocketAddress target)
+                throws IOException {
+            client.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+            service().send(client, target);
+            log.debug("[client] sent to {}", target);
+            final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+            while (dst.hasRemaining()) {
+                final var address = client.receive(dst);
+                if (address == null) {
+                    continue;
                 }
-            });
-            return future;
-        }
-
-        @Test
-        void __blocking() throws IOException {
-            try (var client = spy(DatagramChannel.open())) {
-                service().send(client, startServer().join());
+                log.debug("[client] received from {}", address);
             }
         }
 
+        @DisplayName(
+                "should send <hello-world-bytes> to an <echo server> over a <loopback> address")
         @Test
-        void __nonblocking() throws IOException {
-            try (var client = spy(DatagramChannel.open())) {
-                service().send(client, startServer().join());
+        void __() throws IOException {
+            try (final var server = DatagramChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        doServer(server);
+                    } catch (final IOException ioe) {
+                        throw new RuntimeException(ioe);
+                    }
+                });
+                try (final var client = DatagramChannel.open()) {
+                    doClient(client, server.getLocalAddress());
+                }
+            }
+        }
+
+        @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv4> address")
+        @Test
+        void __INET() throws IOException {
+            try (final var server = DatagramChannel.open(StandardProtocolFamily.INET)) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        doServer(server);
+                    } catch (final IOException ioe) {
+                        throw new RuntimeException(ioe);
+                    }
+                });
+                try (final var client = DatagramChannel.open(StandardProtocolFamily.INET)) {
+                    doClient(client, server.getLocalAddress());
+                }
+            }
+        }
+
+        @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv6> address")
+        @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
+                                  disabledReason = "IPv6 disabled by preferIPv4Stack=true")
+        @Test
+        void __INET6() throws IOException {
+            try (final var server = DatagramChannel.open(StandardProtocolFamily.INET6)) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("::1"), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        doServer(server);
+                    } catch (final IOException ioe) {
+                        throw new RuntimeException(ioe);
+                    }
+                });
+                try (final var client = DatagramChannel.open(StandardProtocolFamily.INET6)) {
+                    doClient(client, server.getLocalAddress());
+                }
+            }
+        }
+
+        @DisplayName(
+                "should send <hello-world-bytes> to an <echo server> over a <UNIX domain> address")
+        @Disabled("not supported")
+        @Test
+        void __UNIX() throws IOException {
+            try (final var server = DatagramChannel.open(StandardProtocolFamily.UNIX)) {
+                server.bind(null);
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        doServer(server);
+                    } catch (final IOException ioe) {
+                        throw new RuntimeException(ioe);
+                    }
+                });
+                try (final var client = DatagramChannel.open(StandardProtocolFamily.UNIX)) {
+                    doClient(client, server.getLocalAddress());
+                }
             }
         }
     }

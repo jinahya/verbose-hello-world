@@ -27,9 +27,11 @@ import org.opentest4j.*;
 import java.time.*;
 import java.util.concurrent.*;
 
+@DisplayName("JUnit assumptions")
 @Slf4j
 class Junit_Assumptions_Test {
 
+    @DisplayName("should throw a <TestAbortedException> when <abort> is invoked")
     @Test
     void abort_ThrowsTestAbortedException_() {
         Assertions.assertThrowsExactly(
@@ -38,18 +40,21 @@ class Junit_Assumptions_Test {
         );
     }
 
+    @DisplayName("should abort the test when <abort()> is invoked")
     @Test
     void abort__() {
         Assumptions.abort();
         log.error("you're not supposed to see me!");
     }
 
+    @DisplayName("should abort the test when <abort(message)> is invoked")
     @Test
     void abort__withMessage() {
         Assumptions.abort("aborting...");
         log.error("you're not supposed to see me!");
     }
 
+    @DisplayName("should abort the test when <abort(messageSupplier)> is invoked")
     @Test
     void abort__withMessageSupplier() {
         Assumptions.abort(
@@ -58,6 +63,8 @@ class Junit_Assumptions_Test {
         log.error("you're not supposed to see me!");
     }
 
+    @DisplayName(
+            "should continue past <assumeTrue> and abort on <assumeFalse> when value is <true>")
     @Test
     void assumeTrue__() {
         final var value = true;
@@ -69,6 +76,8 @@ class Junit_Assumptions_Test {
         Assumptions.assumeFalse(value);
     }
 
+    @DisplayName(
+            "should continue past <assumeFalse> and abort on <assumeTrue> when value is <false>")
     @Test
     void assumeFalse__() {
         final var value = false;
@@ -80,6 +89,7 @@ class Junit_Assumptions_Test {
         Assumptions.assumeTrue(value);
     }
 
+    @DisplayName("should continue or abort depending on a random <boolean> passed to <assumeTrue>")
     @Test
     void assumeRandom__() {
         final var value = ThreadLocalRandom.current().nextBoolean();
@@ -87,6 +97,7 @@ class Junit_Assumptions_Test {
         log.debug("the value is true!");
     }
 
+    @DisplayName("should run the block only when <assumingThat> receives <true> as a <boolean>")
     @Test
     void assumeThat__() {
         Assumptions.assumingThat(
@@ -95,6 +106,9 @@ class Junit_Assumptions_Test {
         );
     }
 
+    @DisplayName("""
+            should run the block only
+            when <assumingThat> receives <true> from a <BooleanSupplier>""")
     @Test
     void assumeThat__withBooleanSupplier() {
         Assumptions.assumingThat(

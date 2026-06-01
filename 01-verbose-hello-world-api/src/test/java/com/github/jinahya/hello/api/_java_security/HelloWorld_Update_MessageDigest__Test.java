@@ -49,6 +49,7 @@ import java.util.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest
  * Algorithms</a>
  */
+@DisplayName("update(digest)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
@@ -116,6 +117,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param algorithm {@link #algorithms()} 가 제공하는 알고리즘 이름.
      */
+    @DisplayName("should update a <real digest> through the <SUN> provider")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __SUN(final String algorithm) {
@@ -127,6 +129,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param algorithm {@link #algorithms()} 가 제공하는 알고리즘 이름.
      */
+    @DisplayName("should update a <real digest> through the <BouncyCastle> provider")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __BC(final String algorithm) {
@@ -141,6 +144,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      * {@code "hello, worle"}) 의 해시 차이를 비트 단위로 세서, 전체 256 비트 가운데 약 절반이 뒤집힘을 표준 출력에 찍는다. 입력의 작은 변화가
      * 출력 전체를 골고루 흔드는 좋은 해시의 성질을 확인하기 위한 데모이며, 어서션은 두지 않는다.
      */
+    @DisplayName("should demonstrate the <avalanche effect> of <SHA-256>")
     @Test
     void avalanche_effect__() throws NoSuchAlgorithmException {
         final var a = "hello, world".getBytes(StandardCharsets.US_ASCII);
@@ -163,6 +167,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param password {@link ValueSource} 가 공급하는 약한 비밀번호.
      */
+    @DisplayName("should demonstrate a <rainbow attack> on <SHA-1>")
     @ValueSource(strings = {
             "iloveyou",
             "iloveyou!",

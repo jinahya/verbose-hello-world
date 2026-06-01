@@ -33,6 +33,7 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
+@DisplayName("write(channel, position)")
 @Slf4j
 class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
 
@@ -42,10 +43,12 @@ class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __stubService() throws ExecutionException, InterruptedException {
-        write_asynchornousfilechannel_position_writes_hello_world(service());
+        write_asynchronousfilechannel_long_writes_hello_world(service());
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should write <hello-world-bytes> to a real <AsynchronousFileChannel> at a <position>")
     @Test
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -53,7 +56,7 @@ class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
         var position = ThreadLocalRandom.current().nextLong(0L, 128L);
         // ------------------------------------------------------------------------------------ when
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
-            service().write(channel, position).force(false);
+            service().write(channel, position);
         }
         // ------------------------------------------------------------------------------------ then
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {

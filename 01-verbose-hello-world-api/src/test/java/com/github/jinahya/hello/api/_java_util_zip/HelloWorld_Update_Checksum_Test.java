@@ -36,14 +36,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("update(Checksum)")
+@DisplayName("update(checksum)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <checksum> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <checksum> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChecksumIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -53,7 +51,7 @@ class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.update(checksum));
     }
 
-    @DisplayName("checksum.update(set(byte[12]))")
+    @DisplayName("should invoke <set(byte[12])> and pass the array to <checksum.update>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

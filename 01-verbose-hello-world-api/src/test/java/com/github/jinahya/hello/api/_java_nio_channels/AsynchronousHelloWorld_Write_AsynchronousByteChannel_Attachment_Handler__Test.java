@@ -38,6 +38,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.api._Java_Util_Concurrent_ExecutorService_TestUtils.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("write(channel, attachment, handler)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -78,6 +79,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("echo server")
     @Nested
     class EchoServer_Test {
 
@@ -85,6 +87,9 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
             return executorStreamAsynchronousChannelGroup();
         }
 
+        @DisplayName("""
+                should write <hello-world-bytes> to an <echo server>
+                with a real <AsynchronousChannelGroup>""")
         @MethodSource({"executorStream"})
         @ParameterizedTest
         void __(final ExecutorService executor) throws Exception { // @formatter:off

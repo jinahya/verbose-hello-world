@@ -41,16 +41,13 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("method(HttpRequest.Builder, String)")
+@DisplayName("method(builder, method)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <builder> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <builder> argument is <null>")
     @Test
     void _ThrowNullPointerException_BuilderIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -61,10 +58,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
         assertThrows(NullPointerException.class, () -> service.method(builder, method));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <method> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <method> argument is <null>")
     @Test
     void _ThrowNullPointerException_MethodIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -76,7 +70,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("should invoke builder.method(method, publisher)")
+    @DisplayName("should invoke <builder.method(method, publisher)>, and return the <builder>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -97,6 +91,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
         }
     }
 
+    @DisplayName("should send <hello-world-bytes> through a real <HttpClient> request")
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws Exception {

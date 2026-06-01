@@ -48,7 +48,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         super(HelloWorld.class, initializer);
     }
 
-    @DisplayName("should throw NullPointerException when path is null")
+    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         final var asynchronousService = asynchronousService();
@@ -61,8 +61,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
 
     @DisplayName("""
             should complete the returned stage with the <attachment>
-            once the synchronous append succeeds"""
-    )
+            once the synchronous append succeeds""")
     @Test
     void __completed() throws Exception {
         final var asynchronousService = asynchronousService();
@@ -73,10 +72,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
-    @DisplayName("""
-            should complete the returned stage exceptionally
-            when the synchronous append fails"""
-    )
+    @DisplayName(
+            "should complete the returned stage exceptionally when the synchronous append fails")
     @Test
     void __failed() throws IOException {
         final var asynchronousService = asynchronousService();

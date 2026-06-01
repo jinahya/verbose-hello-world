@@ -34,10 +34,10 @@ import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.api._Java_Nio_Channels_TestUtils.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -53,9 +53,11 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("pipe")
     @Nested
     class Pipe_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a <pipe>")
         @Test
         void __() throws IOException {
             final var pipe = Pipe.open();
@@ -77,9 +79,13 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("socket channel")
     @Nested
     class SocketChannel_Test {
 
+        @DisplayName("""
+                should write <hello-world-bytes> through a <SocketChannel>
+                over a <loopback> address""")
         @Test
         void __() throws IOException {
             try (var server = ServerSocketChannel.open()) {
@@ -105,9 +111,12 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("echo server")
     @Nested
     class EchoServer_Test {
 
+        @DisplayName(
+                "should write <hello-world-bytes> to an <echo server> over an <InetSocketAddress>")
         @Test
         void __InetSocketAddress() throws IOException {
             try (var server = ServerSocketChannel.open()) {
@@ -140,6 +149,9 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("""
+                should write <hello-world-bytes> to an <echo server>
+                over a <UnixDomainSocketAddress>""")
         @Test
         void ___UnixDomainSocketAddress() throws IOException {
             try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX)) {

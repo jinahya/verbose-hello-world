@@ -32,6 +32,7 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 
+@DisplayName("java.util.zip")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Java_Util_Zip__Test
@@ -47,9 +48,13 @@ class HelloWorld_Java_Util_Zip__Test
         HelloWorld__TestUtils.write_stream_writes_hello_world_bytes(service());
     }
 
+    @DisplayName("ZipOutputStream")
     @Nested
     class ZipOutputStream_Test {
 
+        @DisplayName("""
+                should round-trip a <hello, world> entry
+                through <ZipOutputStream> and <ZipInputStream>""")
         @Test
         void __ZipInputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -73,6 +78,8 @@ class HelloWorld_Java_Util_Zip__Test
             }
         }
 
+        @DisplayName(
+                "should round-trip a <hello, world> entry through <ZipOutputStream> and <ZipFile>")
         @Test
         void __ZipFile() throws IOException {
             // ----------------------------------------------------------------------------- given
@@ -101,9 +108,13 @@ class HelloWorld_Java_Util_Zip__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("DeflaterOutputStream")
     @Nested
     class DeflaterOutputStream_Test {
 
+        @DisplayName("""
+                should round-trip <hello, world>
+                through <DeflaterOutputStream> at the given <level>""")
         @MethodSource(
                 "com.github.jinahya.hello.api._java_util_zip.HelloWorld_SetInput_Deflater__Test#levelStream"
         )
@@ -130,6 +141,9 @@ class HelloWorld_Java_Util_Zip__Test
             }
         }
 
+        @DisplayName("""
+                should round-trip the <HelloWorld.class> bytecode
+                through <DeflaterOutputStream> across all levels""")
         @Test
         void __bytecode() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -158,9 +172,12 @@ class HelloWorld_Java_Util_Zip__Test
         }
     }
 
+    @DisplayName("GZIPOutputStream")
     @Nested
     class GZIPOutputStream_Test {
 
+        @DisplayName(
+                "should round-trip <hello, world> through <GZIPOutputStream> and <GZIPInputStream>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given

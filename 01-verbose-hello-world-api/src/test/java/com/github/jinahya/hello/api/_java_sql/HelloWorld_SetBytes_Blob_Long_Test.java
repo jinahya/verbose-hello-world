@@ -34,11 +34,12 @@ import java.util.concurrent.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Blob#setBytes(long, byte[])
  */
+@DisplayName("setBytes(blob, pos)")
 @Slf4j
 class HelloWorld_SetBytes_Blob_Long_Test
         extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <blob> argument is <null>")
     @Test
     void _ThrowNullPointerException_BlobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -52,7 +53,7 @@ class HelloWorld_SetBytes_Blob_Long_Test
         );
     }
 
-    @DisplayName("(blob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -66,7 +67,7 @@ class HelloWorld_SetBytes_Blob_Long_Test
         );
     }
 
-    @DisplayName("blob.setBytes(pos, set(byte[12]))")
+    @DisplayName("should invoke <blob.setBytes(pos, buffer)>, and return the <blob>")
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given

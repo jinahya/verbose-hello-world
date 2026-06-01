@@ -38,17 +38,18 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — RxJava 3")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("exactly-one-value idioms")
     @Nested
-    @DisplayName("Single<byte[]> — exactly-one-value idioms")
     class Single_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Single.just(byte[])>")
         @Test
-        @DisplayName("Single.just(byte[]) → eager single value")
         void __just() {
             // -------------------------------------------------------------------------- given/when
             final var array = Single.just(HelloWorldUtils.array(synchronousService()))
@@ -57,8 +58,8 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Single.fromCallable(Callable)>")
         @Test
-        @DisplayName("Single.fromCallable(Callable) → lazy single value")
         void __fromCallable() {
             // -------------------------------------------------------------------------- given/when
             final var array = Single.fromCallable(
@@ -68,8 +69,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Single.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
         @Test
-        @DisplayName("Single.fromCompletionStage(AsynchronousHelloWorld#applyAsync)")
         void __fromCompletionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Single.fromCompletionStage(
@@ -79,8 +82,8 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("should return <BYTES> via <Single.fromCallable(...).map(byte[]::length)>")
         @Test
-        @DisplayName("Single.fromCallable(...).map(...) → transform")
         void __map() {
             // -------------------------------------------------------------------------- given/when
             final var length = Single.fromCallable(
@@ -93,12 +96,12 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("0-or-1 value idioms")
     @Nested
-    @DisplayName("Maybe<byte[]> — 0-or-1 value idioms")
     class Maybe_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Maybe.just(byte[])>")
         @Test
-        @DisplayName("Maybe.just(byte[]) → eager single value")
         void __just() {
             // -------------------------------------------------------------------------- given/when
             final var array = Maybe.just(HelloWorldUtils.array(synchronousService()))
@@ -107,8 +110,8 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Maybe.fromCallable(Callable)>")
         @Test
-        @DisplayName("Maybe.fromCallable(Callable) → lazy single value")
         void __fromCallable() {
             // -------------------------------------------------------------------------- given/when
             final var array = Maybe.fromCallable(
@@ -118,8 +121,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Maybe.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
         @Test
-        @DisplayName("Maybe.fromCompletionStage(AsynchronousHelloWorld#applyAsync)")
         void __fromCompletionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Maybe.fromCompletionStage(
@@ -131,12 +136,12 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("backpressured stream idioms")
     @Nested
-    @DisplayName("Flowable<byte[]> — backpressured stream idioms")
     class Flowable_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Flowable.just(byte[])>")
         @Test
-        @DisplayName("Flowable.just(byte[]) → one item + onComplete")
         void __just_single() {
             // -------------------------------------------------------------------------- given/when
             final var list = Flowable.just(HelloWorldUtils.array(synchronousService()))
@@ -144,11 +149,12 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                         list.get(0));
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flowable.just(byte[]...)>")
         @Test
-        @DisplayName("Flowable.just(byte[]...) → varargs stream + onComplete")
         void __just_varargs() {
             // -------------------------------------------------------------------------- given/when
             final var list = Flowable.just(
@@ -161,12 +167,13 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flowable.fromIterable(List)>")
         @Test
-        @DisplayName("Flowable.fromIterable(List) → from existing collection")
         void __fromIterable() {
             // -------------------------------------------------------------------------- given/when
             final var list = Flowable.fromIterable(List.of(
@@ -178,12 +185,15 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Flowable.create(emitter, BackpressureStrategy.BUFFER)>""")
         @Test
-        @DisplayName("Flowable.create(emitter, BackpressureStrategy.BUFFER) → manual push emitter")
         void __create() {
             // -------------------------------------------------------------------------- given/when
             final var list = Flowable.<byte[]>create(emitter -> {
@@ -196,12 +206,13 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flowable.range(0, n).map(...)>")
         @Test
-        @DisplayName("Flowable.range(0, n).map(...) → indexed stream")
         void __range_map() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
@@ -212,7 +223,8 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
     }

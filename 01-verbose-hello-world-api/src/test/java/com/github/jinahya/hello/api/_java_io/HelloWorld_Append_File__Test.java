@@ -31,6 +31,7 @@ import java.io.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("append(file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Append_File__Test extends HelloWorld__Test {
@@ -43,7 +44,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         append_file_appends_hello_world(service());
     }
 
-    @DisplayName("(directory)FileNotFoundException")
+    @DisplayName("should throw a <FileNotFoundException> when the <file> is a <directory>")
     @Test
     void __Directory() {
         // ----------------------------------------------------------------------------------- given
@@ -58,7 +59,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         assertThrows(FileNotFoundException.class, () -> service.append(directory));
     }
 
-    @DisplayName("(existing)")
+    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
     @Test
     void __Existing() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -75,7 +76,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         assertEquals(length + HelloWorld.BYTES, file.length());
     }
 
-    @DisplayName("(!existing)")
+    @DisplayName("should create the <file> with <12> bytes when the <file> does not exist")
     @Test
     void __NotExisting() throws IOException {
         // ----------------------------------------------------------------------------------- given

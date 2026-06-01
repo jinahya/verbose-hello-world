@@ -36,7 +36,7 @@ import java.util.concurrent.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(GatheringByteChannel)")
+@DisplayName("write(channel)")
 @Slf4j
 class HelloWorld_Write_GatheringByteChannel_Test
         extends HelloWorld__Test {
@@ -45,9 +45,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * Verifies that the {@link HelloWorld#write(GatheringByteChannel) write(channel)} method throws
      * a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -89,6 +87,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      *
      * @throws IOException if an I/O error occurs.
      */
+    @DisplayName("should write <hello-world-bytes> as <split buffers> through a real <Pipe>")
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
@@ -264,6 +263,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the current thread is interrupted while waiting.
      */
+    @DisplayName("should write a <calculator instruction binary> through a real <Pipe>")
     @畵蛇添足
     @Test
     void __Calc() throws IOException, InterruptedException {

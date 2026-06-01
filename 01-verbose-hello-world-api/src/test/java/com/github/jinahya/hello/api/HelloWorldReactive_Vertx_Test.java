@@ -46,17 +46,18 @@ import java.util.concurrent.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — Vert.x")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single-value idioms")
     @Nested
-    @DisplayName("Future<byte[]> — single-value idioms")
     class Future_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Future.succeededFuture(byte[])>")
         @Test
-        @DisplayName("Future.succeededFuture(byte[]) → eager single value")
         void __succeededFuture() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var array = Future.succeededFuture(
@@ -68,8 +69,9 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName(
+                "should emit <hello-world-bytes> via <Promise.promise()> then <complete(byte[])>")
         @Test
-        @DisplayName("Promise.promise() then complete(byte[]) → manually fulfilled future")
         void __promise() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final Promise<byte[]> promise = Promise.promise();
@@ -82,9 +84,10 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Future.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
         @Test
-        @DisplayName(
-                "Future.fromCompletionStage(AsynchronousHelloWorld#applyAsync) → from CompletionStage")
         void __fromCompletionStage() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var array = Future.fromCompletionStage(
@@ -96,8 +99,8 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("should return <BYTES> via <Future.succeededFuture(...).map(byte[]::length)>")
         @Test
-        @DisplayName("Future.succeededFuture(...).map(...) → transform")
         void __map() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var length = Future.succeededFuture(

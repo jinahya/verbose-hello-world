@@ -37,14 +37,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("acceptEach(Consumer, Function)")
+@DisplayName("accept(consumer, mapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <consumer> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <consumer> argument is <null>")
     @Test
     void _ThrowNullPointerException_ConsumerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -55,9 +53,7 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.accept(consumer, mapper));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <mapper> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     @SuppressWarnings("unchecked")
     void _ThrowNullPointerException_MapperIsNull() {

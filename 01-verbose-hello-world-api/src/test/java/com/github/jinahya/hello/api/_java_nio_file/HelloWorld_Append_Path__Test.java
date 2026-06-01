@@ -29,12 +29,14 @@ import org.junit.jupiter.api.io.*;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.nio.charset.*;
 import java.nio.file.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("append(path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -49,21 +51,20 @@ class HelloWorld_Append_Path__Test extends HelloWorld__Test {
         append_path_appends_hello_world(service());
     }
 
+    @DisplayName("should append <hello-world-bytes> to a real <Path>")
     @Test
     void __() throws Exception {
         final var path = Files.createTempFile(tempDir, null, null);
-        writeSome(path);
-        final var size = Files.size(path);
+        final var size = Files.size(writeSome(path));
         service().append(path);
+        assertEquals(size + HelloWorld.BYTES, Files.size(path));
         try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
             channel.position(size);
             final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-            for (int r; buffer.hasRemaining(); ) {
-                r = channel.read(buffer);
-                assert r != -1;
+            while (buffer.hasRemaining() ) {
+                channel.read(buffer);
             }
-            final var decoded = StandardCharsets.US_ASCII.decode(buffer.flip()).toString();
-            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, decoded);
+            assertEquals(HELLO_WORLD_STRING, US_ASCII.decode(buffer.flip()).toString());
         }
     }
 }

@@ -44,6 +44,7 @@ import static com.github.jinahya.hello.api.HelloWorldUtils.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — Reactor")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
@@ -64,14 +65,16 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
      * synchronous {@link HelloWorld} service or the asynchronous {@link AsynchronousHelloWorld}
      * service.
      */
+    @DisplayName("introduction")
     @Nested
-    @DisplayName("Introduction — sync/async × single/multiple")
     class Introduction_Test {
 
         private static final int N = 3;
 
+        @DisplayName("""
+                should emit a single <hello-world-bytes> from <HelloWorld>
+                through <Mono.fromSupplier>""")
         @Test
-        @DisplayName("HelloWorld → single byte[]")
         void __sync_single() {
             final var array = Mono
                     .fromSupplier(() -> array(synchronousService()))
@@ -79,8 +82,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             assertPayload(array);
         }
 
+        @DisplayName("""
+                should emit <N> copies of <hello-world-bytes> from <HelloWorld>
+                through <Flux.range(0, N).map>""")
         @Test
-        @DisplayName("HelloWorld → N byte[]")
         void __sync_multiple() {
             final var list = Flux.range(0, N)
                     .map(i -> array(synchronousService()))
@@ -90,8 +95,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             list.forEach(HelloWorldReactive_Reactor_Test::assertPayload);
         }
 
+        @DisplayName("""
+                should emit a single <hello-world-bytes> from <AsynchronousHelloWorld>
+                through <Mono.fromCompletionStage>""")
         @Test
-        @DisplayName("AsynchronousHelloWorld → single byte[]")
         void __async_single() {
             final var array = Mono.fromCompletionStage(
                             () -> asynchronousService().applyAsync(HelloWorldUtils::array)
@@ -100,8 +107,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             assertPayload(array);
         }
 
+        @DisplayName("""
+                should emit <N> copies of <hello-world-bytes> from <AsynchronousHelloWorld>
+                through <Flux.range(0, N).flatMap>""")
         @Test
-        @DisplayName("AsynchronousHelloWorld → N byte[]")
         void __async_multiple() {
             final var list = Flux.range(0, N)
                     .flatMap(i -> Mono.fromCompletionStage(
@@ -114,12 +123,12 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single-value idioms")
     @Nested
-    @DisplayName("Mono<byte[]> — single-value idioms")
     class Mono_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Mono.just(byte[])>")
         @Test
-        @DisplayName("Mono.just(byte[]) → eager single value")
         void __just() {
             StepVerifier.create(Mono.just(array(synchronousService())))
                     .assertNext(HelloWorldReactive_Reactor_Test::assertPayload)
@@ -127,8 +136,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Mono.fromSupplier(Supplier)>")
         @Test
-        @DisplayName("Mono.fromSupplier(Supplier) → lazy single value")
         void __fromSupplier() {
             StepVerifier.create(
                             Mono.fromSupplier(() -> array(synchronousService()))
@@ -138,8 +147,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Mono.fromCallable(Callable)>")
         @Test
-        @DisplayName("Mono.fromCallable(Callable) → lazy single value, may throw")
         void __fromCallable() {
             StepVerifier.create(
                             Mono.fromCallable(() -> array(synchronousService()))
@@ -149,8 +158,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Mono.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
         @Test
-        @DisplayName("Mono.fromCompletionStage(AsynchronousHelloWorld#applyAsync)")
         void __fromCompletionStage() {
             StepVerifier.create(
                             Mono.fromCompletionStage(() -> asynchronousService()
@@ -161,8 +172,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should return <BYTES> via <Mono.fromSupplier(...).map(byte[]::length)>")
         @Test
-        @DisplayName("Mono.fromSupplier(...).map(...) → transform")
         void __map() {
             StepVerifier.create(
                             Mono.fromSupplier(() -> array(synchronousService()))
@@ -174,12 +185,12 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("stream idioms")
     @Nested
-    @DisplayName("Flux<byte[]> — stream idioms")
     class Flux_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Flux.just(byte[])>")
         @Test
-        @DisplayName("Flux.just(byte[]) → one item + onComplete")
         void __just_single() {
             StepVerifier.create(
                             Flux.just(array(synchronousService())))
@@ -188,8 +199,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flux.just(byte[]...)>")
         @Test
-        @DisplayName("Flux.just(byte[]...) → varargs stream + onComplete")
         void __just_varargs() {
             StepVerifier.create(Flux.just(
                             array(synchronousService()),
@@ -202,8 +213,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flux.fromIterable(List)>")
         @Test
-        @DisplayName("Flux.fromIterable(List) → from existing collection")
         void __fromIterable() {
             StepVerifier.create(Flux.fromIterable(List.of(
                             array(synchronousService()),
@@ -214,8 +225,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flux.create(FluxSink)>")
         @Test
-        @DisplayName("Flux.create(FluxSink) → manual push sink")
         void __create() {
             StepVerifier.create(Flux.<byte[]>create(sink -> {
                         sink.next(array(synchronousService()));
@@ -228,8 +239,8 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Flux.range(0, n).map(...)>")
         @Test
-        @DisplayName("Flux.range(0, n).map(...) → indexed stream")
         void __range_map() {
             final var n = 5;
             StepVerifier.create(
@@ -240,8 +251,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Flux.from(Mono.fromCompletionStage(AsynchronousHelloWorld.applyAsync))>""")
         @Test
-        @DisplayName("Flux.from(Mono.fromCompletionStage(AsynchronousHelloWorld#applyAsync))")
         void __from_mono_completionStage() {
             StepVerifier.create(Flux.from(
                             Mono.fromCompletionStage(() -> asynchronousService().applyAsync(

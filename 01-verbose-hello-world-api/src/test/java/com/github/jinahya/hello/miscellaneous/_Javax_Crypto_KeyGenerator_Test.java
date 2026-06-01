@@ -27,10 +27,14 @@ import org.junit.jupiter.api.*;
 import javax.crypto.*;
 import java.security.*;
 
+@DisplayName("KeyGenerator")
 @Slf4j
 class _Javax_Crypto_KeyGenerator_Test {
 
     // ELSIE PREPARE TO MEET THY GOD
+    @DisplayName("""
+            should generate a <SecretKey>
+            for every registered <KeyGenerator> algorithm and keysize""")
     @Test
     void __() throws NoSuchAlgorithmException {
         for (var e : _Javax_Crypto_TestUtils.KEY_GENERATOR_ALGORITHMS_AND_KEYSIZES.entrySet()) {

@@ -31,12 +31,14 @@ import java.util.concurrent.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("JavaSecurityMessageDigestUtils")
 class JavaSecurityMessageDigestUtilsTest {
 
     @DisplayName("updateDigest(digest, buffer, bytes)")
     @Nested
     class UpdateDigestTest {
 
+        @DisplayName("should update the <digest> with the given count of bytes from the <buffer>")
         @Test
         void __()
                 throws NoSuchAlgorithmException {

@@ -85,8 +85,9 @@ public final class HelloWorldUtils {
 
     /**
      * The single-argument convenience of
-     * {@link #buffer(HelloWorld, Supplier) buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES))}
-     * — supplies a freshly heap-allocated {@value HelloWorld#BYTES}-byte buffer to the service.
+     * {@link #buffer(HelloWorld, Supplier) buffer(service, () ->
+     * ByteBuffer.allocate(HelloWorld.BYTES))} — supplies a freshly heap-allocated
+     * {@value HelloWorld#BYTES}-byte buffer to the service.
      *
      * @param service the {@link HelloWorld} service that produces the bytes; must not be
      *                {@code null}.

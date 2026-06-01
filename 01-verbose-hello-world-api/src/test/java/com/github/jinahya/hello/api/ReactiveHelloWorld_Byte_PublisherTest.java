@@ -55,6 +55,7 @@ import static org.mockito.Mockito.*;
  * @see ReactiveHelloWorld__PublisherTest
  * @see ReactiveHelloWorldBytePublisher
  */
+@DisplayName("byte publisher")
 @Slf4j
 class ReactiveHelloWorld_Byte_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<Byte> {
@@ -67,8 +68,9 @@ class ReactiveHelloWorld_Byte_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should emit <12> elements and <onComplete> when the subscriber calls <request(12)>")
     @Test
-    @DisplayName("request(12) → 12 elements, onComplete")
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
@@ -97,8 +99,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <n> elements with no <onComplete>
+            when the subscriber calls <request(n)> with <n> in <[1, 12)>""")
     @Test
-    @DisplayName("request(n), n ∈ [1, 12) → n elements, no onComplete")
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
@@ -125,8 +129,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <12> elements and <onComplete>
+            when the subscriber calls <request(n)> with <n > 12>""")
     @Test
-    @DisplayName("request(n), n > 12 → 12 elements, onComplete")
     void __requestMoreThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextLong(HelloWorld.BYTES + 1L, 1024L);
@@ -154,7 +160,9 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
-    @DisplayName("request(1) repeatedly with concurrent cancel → no onError, no onComplete")
+    @DisplayName("""
+            should signal neither <onError> nor <onComplete>
+            when <request(1)> is called repeatedly with concurrent <cancel>""")
     @Test
     void __cancel() throws InterruptedException { // @formatter:off
         // ----------------------------------------------------------------------------------- given

@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("update(cipher, consumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
@@ -123,6 +124,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real AES/CBC/NoPadding> cipher""")
         @ValueSource(ints = {
                 128
         })
@@ -179,6 +183,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real AES/CBC/PKCS5Padding> cipher""")
         @ValueSource(ints = {
                 128
         })
@@ -224,6 +231,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real AES/ECB/NoPadding> cipher""")
         @ValueSource(ints = {
                 128
         })
@@ -277,6 +287,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real AES/ECB/PKCS5Padding> cipher""")
         @ValueSource(ints = {
                 128
         })
@@ -322,6 +335,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final int GCM_TAG_LENGTH = 128;  // 128 bits
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real AES/GCM/NoPadding> cipher""")
         @ValueSource(ints = {
                 128, 256
         })
@@ -380,6 +396,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final int NONCE_LENGTH = 12;  // 96 bits
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real ChaCha20-Poly1305> cipher""")
         @ValueSource(ints = {
                 256  // ChaCha20 only supports 256-bit keys
         })
@@ -426,6 +445,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real DESede/CBC/NoPadding> cipher""")
         @ValueSource(ints = {
                 168
         })
@@ -487,6 +509,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real DESede/CBC/PKCS5Padding> cipher""")
         @ValueSource(ints = {
                 168
         })
@@ -534,6 +559,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real DESede/ECB/NoPadding> cipher""")
         @ValueSource(ints = {
                 168
         })
@@ -588,6 +616,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real DESede/ECB/PKCS5Padding> cipher""")
         @ValueSource(ints = {
                 168
         })
@@ -627,6 +658,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = "PBEWithHmacSHA256AndAES_128";
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real PBEWithHmacSHA256AndAES_128> cipher""")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -669,6 +703,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = "PBEWithHmacSHA256AndAES_256";
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real PBEWithHmacSHA256AndAES_256> cipher""")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -721,6 +758,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real RSA/ECB/PKCS1Padding> cipher""")
         @ValueSource(ints = {
                 1024, 2048
         })
@@ -765,6 +805,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real RSA/ECB/OAEPWithSHA-1AndMGF1Padding> cipher""")
         @ValueSource(ints = {
                 1024, 2048
         })
@@ -807,6 +850,9 @@ class HelloWorld_Update_Cipher_Consumer__Test extends HelloWorld__Test {
 
         private static final String TRANSFORMATION = ALGORITHM + '/' + MODE + '/' + PADDING;
 
+        @DisplayName("""
+                should encrypt and decrypt the hello-world bytes
+                with a <real RSA/ECB/OAEPWithSHA-256AndMGF1Padding> cipher""")
         @ValueSource(ints = {
                 1024, 2048
         })

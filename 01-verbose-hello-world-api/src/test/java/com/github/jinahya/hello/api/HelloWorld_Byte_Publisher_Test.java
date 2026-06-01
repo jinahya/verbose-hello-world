@@ -40,6 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("byte publisher")
 @Slf4j
 class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
 
@@ -51,8 +52,10 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("""
+            should emit exactly <12> elements and <onComplete>
+            when the subscriber calls <request(12)>""")
     @Test
-    @DisplayName("request(12) → exactly 12 elements + onComplete")
     void __singleExactly12() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
@@ -84,9 +87,10 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should give each subscriber <min(n, 12)> elements and <onComplete>
+            when <n >= 12>, given multiple subscribers each requesting <n> in <[1, 24)>""")
     @Test
-    @DisplayName("multiple subscribers, each request(n) in [1, 24) → "
-                 + "each gets min(n, 12) elements (+ onComplete if n ≥ 12)")
     void __multiRandom1To24() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var count = ThreadLocalRandom.current().nextInt(2, 5);
@@ -142,8 +146,10 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should signal <onError> with no <onNext> and no <onComplete>
+            when <service.set> throws""")
     @Test
-    @DisplayName("service.set throws → subscriber gets onError, no onNext, no onComplete")
     void __serviceThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
@@ -171,9 +177,11 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         assertSame(error, errorCaptor.getValue()); // @formatter:on
     }
 
+    @DisplayName("""
+            should deliver <onError> via <SubmissionPublisher>
+            and let <subscribe> return normally
+            when <subscriber.onSubscribe> throws""")
     @Test
-    @DisplayName("subscriber.onSubscribe throws → SubmissionPublisher delivers onError, "
-                 + "subscribe returns normally")
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated onSubscribe failure");

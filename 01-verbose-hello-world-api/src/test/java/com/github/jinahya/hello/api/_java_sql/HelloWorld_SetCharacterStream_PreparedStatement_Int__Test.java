@@ -29,6 +29,7 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+@DisplayName("setCharacterStream(statement, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
@@ -39,7 +40,8 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
         Mockito.doAnswer(invocation -> {
             final var ps = invocation.getArgument(0, PreparedStatement.class);
             final var pi = invocation.getArgument(1, Integer.class);
-            ps.setCharacterStream(pi, new StringReader(HelloWorld__TestConstants.HELLO_WORLD_STRING));
+            ps.setCharacterStream(pi,
+                                  new StringReader(HelloWorld__TestConstants.HELLO_WORLD_STRING));
             return ps;
         }).when(service()).setCharacterStream(
                 ArgumentMatchers.<PreparedStatement>notNull(),
@@ -48,6 +50,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -62,6 +65,9 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world string
+                through a <real H2 PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -98,6 +104,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -112,6 +119,9 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world string
+                through a <real HSQLDB PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -148,6 +158,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Nested
     class SQLite_Test {
 
@@ -161,6 +172,9 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world string
+                through a <real SQLite PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

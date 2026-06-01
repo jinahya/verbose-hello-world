@@ -28,9 +28,11 @@ import org.junit.jupiter.params.provider.*;
 import java.security.*;
 import java.security.spec.*;
 
+@DisplayName("KeyPairGenerator")
 @Slf4j
 class _Java_Security_KeyPairGenerator_Test {
 
+    @DisplayName("should generate an <RSA> key pair at <4096> bits")
     @Test
     void __RSA() throws NoSuchAlgorithmException {
         final var generator = KeyPairGenerator.getInstance("RSA");
@@ -42,6 +44,7 @@ class _Java_Security_KeyPairGenerator_Test {
         _Java_Security_Key_Test.__(publicKey);
     }
 
+    @DisplayName("should generate an <EC> key pair over the <secp256r1> curve")
     @Test
     void __secp256r1() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         final var generator = KeyPairGenerator.getInstance("EC");
@@ -54,6 +57,7 @@ class _Java_Security_KeyPairGenerator_Test {
         _Java_Security_Key_Test.__(publicKey);
     }
 
+    @DisplayName("should generate an <EC> key pair over the given <stdName> curve")
     @ValueSource(strings = {
             "secp256r1", "secp384r1"
     })

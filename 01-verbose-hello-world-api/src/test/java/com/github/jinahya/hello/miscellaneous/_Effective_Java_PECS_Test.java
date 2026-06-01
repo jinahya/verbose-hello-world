@@ -31,6 +31,7 @@ import java.util.stream.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("PECS")
 @Slf4j
 class _Effective_Java_PECS_Test {
 
@@ -95,6 +96,7 @@ class _Effective_Java_PECS_Test {
      * alongside commented-out call sites that would NOT compile, making the wildcard rules
      * compiler-enforced lessons rather than prose.
      */
+    @DisplayName("Zoo")
     @Nested
     class Zoo_Test {
 
@@ -369,6 +371,7 @@ class _Effective_Java_PECS_Test {
         }
 
         // roundUpMammal1 is invariant: the caller MUST pass exactly Collection<Mammal>.
+        @DisplayName("should accept only an invariant <Collection<Mammal>> in <roundUpMammal1>")
         @Test
         void roundUpMammal1__() {
             {
@@ -393,6 +396,7 @@ class _Effective_Java_PECS_Test {
 
         // roundUpMammal2 follows PECS "Consumer Super":
         // the caller can pass any Collection whose element type is Mammal or a supertype.
+        @DisplayName("should accept any <Collection<? super Mammal>> via PECS in <roundUpMammal2>")
         @Test
         void roundUpMammal2__() {
             {
@@ -416,6 +420,7 @@ class _Effective_Java_PECS_Test {
         }
 
         // roundUp1<T> is invariant: the caller MUST pass exactly Collection<T>.
+        @DisplayName("should accept only an invariant <Collection<T>> in <roundUp1>")
         @Test
         void roundUp1__() {
             {
@@ -446,6 +451,7 @@ class _Effective_Java_PECS_Test {
 
         // roundUp2<T> follows PECS "Consumer Super":
         // the caller can pass any Collection whose element type is <T> or a supertype of <T>.
+        @DisplayName("should accept any <Collection<? super T>> via PECS in <roundUp2>")
         @Test
         void roundUp2__() {
             // T = Mammal
@@ -483,6 +489,7 @@ class _Effective_Java_PECS_Test {
         }
 
         // inspect1<T> is invariant: the caller MUST pass exactly Consumer<T>.
+        @DisplayName("should accept only an invariant <Consumer<T>> in <inspect1>")
         @Test
         void inspect1__() {
             {
@@ -508,6 +515,7 @@ class _Effective_Java_PECS_Test {
 
         // inspect2<T> follows PECS "Consumer Super":
         // the caller can pass any Consumer whose element type is <T> or a supertype of <T>.
+        @DisplayName("should accept any <Consumer<? super T>> via PECS in <inspect2>")
         @Test
         void inspect2__() {
             // T = Mammal
@@ -552,6 +560,7 @@ class _Effective_Java_PECS_Test {
         // ========================================================== capture (wild → zoo) tests
 
         // capture1 is invariant: the caller MUST pass exactly Collection<Animal>.
+        @DisplayName("should accept only an invariant <Collection<Animal>> in <capture1>")
         @Test
         void capture1__() {
             {
@@ -582,6 +591,7 @@ class _Effective_Java_PECS_Test {
 
         // capture2 follows PECS "Producer Extends":
         // the caller can pass Collection<Animal> or any Collection<SubtypeOfAnimal>.
+        @DisplayName("should accept any <Collection<? extends Animal>> via PECS in <capture2>")
         @Test
         void capture2__() {
             {
@@ -617,6 +627,7 @@ class _Effective_Java_PECS_Test {
         // ============================================================== breed (none → zoo) tests
 
         // breed1<T> is invariant: the caller MUST pass exactly Supplier<T> for the inferred T.
+        @DisplayName("should accept only an invariant <Supplier<T>> in <breed1>")
         @Test
         void breed1__() {
             {
@@ -648,6 +659,7 @@ class _Effective_Java_PECS_Test {
 
         // breed2<T> follows PECS "Producer Extends":
         // the caller can pass Supplier<T> or any Supplier<SubtypeOfT>.
+        @DisplayName("should accept any <Supplier<? extends T>> via PECS in <breed2>")
         @Test
         void breed2__() {
             {
@@ -682,6 +694,7 @@ class _Effective_Java_PECS_Test {
         // =========================================================== release (zoo → wild) tests
 
         // release1 is invariant: the caller MUST pass exactly Collection<Animal>.
+        @DisplayName("should accept only an invariant <Collection<Animal>> in <release1>")
         @Test
         void release1__() {
             {
@@ -701,6 +714,7 @@ class _Effective_Java_PECS_Test {
 
         // release2 follows PECS "Consumer Super":
         // the caller can pass Collection<Animal>, Collection<Object>, or anything in between.
+        @DisplayName("should accept any <Collection<? super Animal>> via PECS in <release2>")
         @Test
         void release2__() {
             {
@@ -721,6 +735,7 @@ class _Effective_Java_PECS_Test {
         // ========================================================== map (Function: BOTH PECS sides)
 
         // tag1: both sides invariant — caller MUST pass exactly Function<T, R>.
+        @DisplayName("should accept only an invariant <Function<T, R>> in <tag1>")
         @Test
         void tag1__() {
             // T = Cat, R = Animal
@@ -748,6 +763,7 @@ class _Effective_Java_PECS_Test {
 
         // tag2: full PECS — input "? super T", output "? extends R".
         // Caller can pass Function<SuperOfT, SubtypeOfR>.
+        @DisplayName("should accept any <Function<? super T, ? extends R>> via full PECS in <tag2>")
         @Test
         void tag2__() {
             // T = Cat, R = Animal
@@ -785,6 +801,8 @@ class _Effective_Java_PECS_Test {
 
         // Caller must pass <List<T>> for the SAME T as the Cats / Mammals / Animals they're
         // swapping. Neither <? extends T> nor <? super T> would compile inside <swap>.
+        @DisplayName(
+                "should require an invariant <List<T>> in <swap> when both reading and writing")
         @Test
         void swap__() {
             // T = Cat
@@ -818,6 +836,7 @@ class _Effective_Java_PECS_Test {
 
         // roster1 returns invariant Collection<Animal> — easy to use.
         // roster2 returns Collection<? extends Animal> — caller is stuck with wildcards.
+        @DisplayName("should prefer an invariant return type over a wildcard return in <roster>")
         @Test
         void roster__() {
             final var zoo = new Zoo();
@@ -848,6 +867,9 @@ class _Effective_Java_PECS_Test {
         // Cats are NOT Comparable<Cat>; they ARE Comparable<Animal> (via Animal's
         // implements Comparable<Animal>). The <? super T> in the bound is what lets <Cat> bind:
         // <Cat extends Comparable<? super Cat>> ✅ because Comparable<Animal> satisfies it.
+        @DisplayName("""
+                should bind any <T>
+                via the recursive <T extends Comparable<? super T>> bound in <heaviest>""")
         @Test
         void heaviest__() {
             // T = Cat

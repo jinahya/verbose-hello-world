@@ -25,9 +25,8 @@ import java.util.*;
 import java.util.function.*;
 
 /**
- * Helpers for the
- * {@link CompletionHandler java.nio.channels.CompletionHandler} interface — currently a single
- * factory that adapts two {@link BiConsumer}s into a {@link CompletionHandler}.
+ * Helpers for the {@link CompletionHandler java.nio.channels.CompletionHandler} interface —
+ * currently a single factory that adapts two {@link BiConsumer}s into a {@link CompletionHandler}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

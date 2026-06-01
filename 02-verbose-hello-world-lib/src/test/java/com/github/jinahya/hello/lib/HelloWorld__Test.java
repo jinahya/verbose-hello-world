@@ -76,10 +76,7 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <array> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <array> argument is <null>")
     @TestFactory
     Stream<DynamicTest> _ThrowNullPointerException_ArrayIsNull() {
         return services().map(s -> {
@@ -103,10 +100,8 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("""
-            should throw an <IndexOutOfBoundsException>
-            when the <index> argument is negative"""
-    )
+    @DisplayName(
+            "should throw an <IndexOutOfBoundsException> when the <index> argument is negative")
     @TestFactory
     Stream<DynamicTest> _ThrowIndexOutOfBoundsException_IndexIsNegative() {
         return services().map(s -> {
@@ -133,8 +128,7 @@ abstract class HelloWorld__Test {
      */
     @DisplayName("""
             should throw an <IndexOutOfBoundsException>
-            when <array.length> is less than <index + HelloWorld.BYTES>"""
-    )
+            when <array.length> is less than <index + HelloWorld.BYTES>""")
     @TestFactory
     Stream<DynamicTest> _ThrowIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
         return services().map(s -> {

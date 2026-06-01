@@ -36,11 +36,12 @@ import java.util.concurrent.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Blob#setBinaryStream(long)
  */
+@DisplayName("setBinaryStream(blob, pos)")
 @Slf4j
 class HelloWorld_SetBinaryStream_Blob_Long_Test
         extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <blob> argument is <null>")
     @Test
     void _ThrowNullPointerException_BlobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -54,7 +55,7 @@ class HelloWorld_SetBinaryStream_Blob_Long_Test
         );
     }
 
-    @DisplayName("(blob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -68,7 +69,7 @@ class HelloWorld_SetBinaryStream_Blob_Long_Test
         );
     }
 
-    @DisplayName("write(blob.setBinaryStream(pos))")
+    @DisplayName("should invoke <write(blob.setBinaryStream(pos))>, and return the <blob>")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given

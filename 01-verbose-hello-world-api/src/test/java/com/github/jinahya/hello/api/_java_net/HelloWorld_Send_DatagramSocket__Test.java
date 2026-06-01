@@ -33,6 +33,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("send(socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -47,6 +48,7 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
         }).when(service()).send(argThat(DatagramSocket::isConnected));
     }
 
+    @DisplayName("should send <hello-world-bytes> through a real connected <DatagramSocket>")
     @Test
     void __() throws IOException {
         try (var server = new DatagramSocket(

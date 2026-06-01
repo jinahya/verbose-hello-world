@@ -54,10 +54,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
      * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a
      * {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -74,26 +71,21 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if an I/O error occurs.
      */
-    @DisplayName("""
-            should write all <hello-world-bytes> across partial writes,
-            and return the <channel>"""
-    )
+    @DisplayName(
+            "should write all <hello-world-bytes> across partial writes, and return the <channel>")
     @Test
+    @SuppressWarnings({"rawtypes"})
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = put_buffer12_increases_buffer_position_by_12(service());
         final var channel = mock(AsynchronousByteChannel.class);
         final var bufferPositions = new ArrayList<Integer>();
-        final var futureReference = new AtomicReference<Future<Integer>>();
+        final var futureReference = new AtomicReference<Future>();
         doAnswer(w -> {
             assert futureReference.get() == null;
             final var src = w.getArgument(0, ByteBuffer.class);
-            assert src != null;
-            assert src.limit() == HelloWorld.BYTES;
             bufferPositions.add(src.position());
-            assert src.hasRemaining();
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) mock(Future.class);
+            final var future = mock(Future.class);
             futureReference.set(future);
             doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
@@ -102,7 +94,12 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(any());
+        }).when(channel).write(argThat(v -> {
+            return v != null
+                   && v.capacity() == HelloWorld.BYTES
+                   && v.limit() == HelloWorld.BYTES
+                   && v.hasRemaining();
+        }));
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
@@ -123,21 +120,20 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
      */
     @DisplayName("""
             should propagate an <ExecutionException>
-            when the <channel> fails on or after partial writes"""
-    )
+            when the <channel> fails on or after partial writes""")
     @Test
+    @SuppressWarnings({"rawtypes"})
     void __fails() {
         // ----------------------------------------------------------------------------------- given
         final var service = put_buffer12_increases_buffer_position_by_12(service());
         final var channel = mock(AsynchronousByteChannel.class);
-        final var reference = new AtomicReference<Future<Integer>>();
+        final var reference = new AtomicReference<Future>();
         final var cause = new IOException("simulated write failure");
         final var errored = new AtomicBoolean();
         doAnswer(w -> {
             assert !errored.get();
             final var src = w.getArgument(0, ByteBuffer.class);
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) mock(Future.class);
+            final var future = mock(Future.class);
             reference.set(future);
             doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
@@ -150,7 +146,12 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(argThat(b -> b != null && b.hasRemaining()));
+        }).when(channel).write(argThat(v -> {
+            return v != null
+                   && v.capacity() == HelloWorld.BYTES
+                   && v.limit() == HelloWorld.BYTES
+                   && v.hasRemaining();
+        }));
         // ------------------------------------------------------------------------------- when/then
 //        final var thrown = assertThrows(
 //                ExecutionException.class,

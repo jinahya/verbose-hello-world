@@ -33,6 +33,7 @@ import java.nio.channels.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("send(socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,9 +49,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("socket")
     @Nested
     class SocketTest {
 
+        @DisplayName(
+                "should send <hello-world-bytes> through a real <Socket> over <InetSocketAddress>")
         @Test
         void ___InetSocketAddress() throws IOException {
             try (var server = new ServerSocket()) {
@@ -71,6 +75,9 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("""
+                should send <hello-world-bytes> through a real <Socket>
+                over <UnixDomainSocketAddress>""")
         @Disabled("unsupported")
         @Test
         void ___UnixDomainSocketAddress() throws IOException {
@@ -96,9 +103,13 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("echo server")
     @Nested
     class EchoServer_Test {
 
+        @DisplayName("""
+                should round-trip <hello-world-bytes> through a real <Socket> echo server
+                over <InetSocketAddress>""")
         @Test
         void ___InetSocketAddress() throws IOException {
             try (var server = new ServerSocket()) {
@@ -125,6 +136,9 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("""
+                should round-trip <hello-world-bytes> through a real <Socket> echo server
+                over <UnixDomainSocketAddress>""")
         @Disabled("unsupported")
         @Test
         void ___UnixDomainSocketAddress() throws IOException {

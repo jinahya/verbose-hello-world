@@ -25,9 +25,11 @@ import org.junit.jupiter.api.*;
 
 import java.security.*;
 
+@DisplayName("Security")
 @Slf4j
 class _Java_Security_Security_Test {
 
+    @DisplayName("should print every <Provider> and its <Service> entries")
     @Test
     void getProviders__() {
         for (final var provider : Security.getProviders()) {

@@ -32,6 +32,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
+@DisplayName("send(socket)")
 @Disabled
 @Slf4j
 class HelloWorld_Send_MulticastSocket_Test
@@ -55,7 +56,7 @@ class HelloWorld_Send_MulticastSocket_Test
             ThreadLocalRandom.current().nextInt(49152, 65536);
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("IPv4")
+    @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv4>")
     @Test
     void __IPv4() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -136,7 +137,7 @@ class HelloWorld_Send_MulticastSocket_Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("IPv6")
+    @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv6>")
     @Test
     void __IPv6() throws Exception {
         // ----------------------------------------------------------------------------------- given

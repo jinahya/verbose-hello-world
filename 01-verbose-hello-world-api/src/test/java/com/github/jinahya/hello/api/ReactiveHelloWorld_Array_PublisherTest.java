@@ -51,6 +51,7 @@ import static org.mockito.Mockito.*;
  * @see ReactiveHelloWorld__PublisherTest
  * @see ReactiveHelloWorldArrayPublisher
  */
+@DisplayName("array publisher")
 @Slf4j
 class ReactiveHelloWorld_Array_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<byte[]> {
@@ -63,8 +64,9 @@ class ReactiveHelloWorld_Array_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should emit <1> element with no <onComplete> when the subscriber calls <request(1)>")
     @Test
-    @DisplayName("request(1) → 1 element, no onComplete")
     void __exactly1() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
@@ -85,8 +87,10 @@ class ReactiveHelloWorld_Array_PublisherTest
         assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue()); // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <n> elements with no <onComplete>
+            when the subscriber calls <request(n)> with <n > 0>""")
     @Test
-    @DisplayName("request(n), n > 0 → n elements, no onComplete")
     void __random() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 8);

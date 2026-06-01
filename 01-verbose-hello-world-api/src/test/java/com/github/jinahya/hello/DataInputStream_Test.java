@@ -30,6 +30,7 @@ import java.lang.classfile.*;
 import java.nio.file.*;
 import java.util.spi.*;
 
+@DisplayName("DataInputStream")
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 class DataInputStream_Test {
@@ -57,6 +58,7 @@ class DataInputStream_Test {
         };
     }
 
+    @DisplayName("should parse a minimal class file <bytecode> with <DataInputStream>")
     @Test
     void __bytecode() throws IOException {
         // -----------------------------------------------------------------------------------------
@@ -86,6 +88,7 @@ class DataInputStream_Test {
         log.debug("attributes_count: {}", input.readUnsignedShort());
     }
 
+    @DisplayName("should disassemble a class file <bytecode> with the <javap> <ToolProvider>")
     @Test
     void __ToolProvider() throws IOException {
         final var file = Files.createTempFile(null, ".class");
@@ -98,6 +101,7 @@ class DataInputStream_Test {
         }
     }
 
+    @DisplayName("should parse a class file <bytecode> with the <ClassFile> API")
     @Test
     void __ClassFileApi() {
         final var model = ClassFile.of().parse(bytecode());

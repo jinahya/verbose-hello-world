@@ -25,9 +25,11 @@ import org.junit.jupiter.api.*;
 
 import java.security.*;
 
+@DisplayName("MessageDigest")
 @Slf4j
 class _Java_Security_MessageDigest_Test {
 
+    @DisplayName("should print every <MessageDigest> algorithm registered with <Security>")
     @Test
     void algorithms__() {
         for (var algorithm : Security.getAlgorithms("MessageDigest")) {

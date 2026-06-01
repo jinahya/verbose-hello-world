@@ -42,6 +42,7 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — Mutiny")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
@@ -51,12 +52,12 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
     // ---------------------------------------------------------------------------------------------
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single-value idioms")
     @Nested
-    @DisplayName("Uni<byte[]> — single-value idioms")
     class Uni_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(byte[])>")
         @Test
-        @DisplayName("Uni.createFrom().item(byte[]) → eager single value")
         void __createFrom_item() {
             // -------------------------------------------------------------------------- given/when
             final var array = Uni.createFrom()
@@ -66,8 +67,8 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(Supplier)>")
         @Test
-        @DisplayName("Uni.createFrom().item(Supplier) → lazy single value")
         void __createFrom_item_supplier() {
             // -------------------------------------------------------------------------- given/when
             final var array = Uni.createFrom()
@@ -77,8 +78,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Uni.createFrom().completionStage(AsynchronousHelloWorld.applyAsync)>""")
         @Test
-        @DisplayName("Uni.createFrom().completionStage(AsynchronousHelloWorld#applyAsync)")
         void __createFrom_completionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Uni.createFrom()
@@ -90,8 +93,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should return <BYTES>
+                via <Uni.createFrom().item(...).onItem().transform(byte[]::length)>""")
         @Test
-        @DisplayName("Uni.createFrom().item(...).onItem().transform(...) → map")
         void __onItem_transform() {
             // -------------------------------------------------------------------------- given/when
             final var length = Uni.createFrom()
@@ -104,12 +109,12 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("stream idioms")
     @Nested
-    @DisplayName("Multi<byte[]> — stream idioms")
     class Multi_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().item(byte[])>")
         @Test
-        @DisplayName("Multi.createFrom().item(byte[]) → one item + onComplete")
         void __createFrom_item() {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.createFrom()
@@ -118,11 +123,12 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                         list.get(0));
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().items(byte[]...)>")
         @Test
-        @DisplayName("Multi.createFrom().items(byte[]...) → varargs stream + onComplete")
         void __createFrom_items() {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.createFrom()
@@ -136,12 +142,13 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().iterable(List)>")
         @Test
-        @DisplayName("Multi.createFrom().iterable(List) → from existing collection")
         void __createFrom_iterable() {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.createFrom()
@@ -154,12 +161,14 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName(
+                "should emit <hello-world-bytes> via <Multi.createFrom().<byte[]>emitter(...)>")
         @Test
-        @DisplayName("Multi.createFrom().<byte[]>emitter(...) → manual push emitter")
         void __createFrom_emitter() {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.createFrom().<byte[]>emitter(emitter -> {
@@ -172,12 +181,15 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Multi.createBy().repeating().supplier(...).atMost(n)>""")
         @Test
-        @DisplayName("Multi.createBy().repeating().supplier(...).atMost(n) → repeated supplier")
         void __createBy_repeating() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
@@ -189,13 +201,15 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Multi.createFrom().completionStage(AsynchronousHelloWorld.applyAsync)>""")
         @Test
-        @DisplayName(
-                "Multi.createFrom().completionStage(AsynchronousHelloWorld#applyAsync) → single-item Multi")
         void __createFrom_completionStage() {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.createFrom()
@@ -204,7 +218,8 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                         list.get(0));
         }
     }
 }

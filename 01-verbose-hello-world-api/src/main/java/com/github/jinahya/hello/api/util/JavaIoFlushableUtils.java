@@ -32,8 +32,8 @@ public final class JavaIoFlushableUtils {
 
     /**
      * Invokes {@link Flushable#flush() flushable.flush()} and returns the {@code flushable},
-     * wrapping any thrown {@link IOException} in a {@link RuntimeException} so callers can use
-     * this in lambda contexts that disallow checked exceptions.
+     * wrapping any thrown {@link IOException} in a {@link RuntimeException} so callers can use this
+     * in lambda contexts that disallow checked exceptions.
      *
      * @param flushable the {@link Flushable} to flush; must not be {@code null}.
      * @param <T>       the concrete {@link Flushable} subtype.

@@ -121,13 +121,6 @@ The `generate-executables` profile (active by default) produces multiple artifac
 
 - **Test class javadoc**: Every concrete test class must specify which class and method it tests, using `{@link}` references. Example: `"A class for testing {@link HelloWorld#write(OutputStream) write(stream)} method."`
 - **Test method javadoc**: Every test method must be documented starting with "Asserts" or "Verifies". Example: `"Verifies that the method throws a {@link NullPointerException} when the {@code channel} argument is {@code null}."`
-- **Test-module language**: Javadoc on **non-public** elements in any test module — package-private / protected / private classes (including `@Nested` inner classes), methods, helper utilities — is written in **Korean (한국어)**. This covers nearly every test class and test method, since test types are almost always package-private. Public test utilities (e.g., shared helpers exported from `*TestUtils`) keep the same English Javadoc style as main-module code.
-  - `{@link}` / `{@code}` references, annotation names, type names, ASCII diagrams, and `@see` URLs are language-agnostic — only the prose changes.
-  - Korean equivalents of the templates above:
-    - Test class: `"{@link HelloWorld#write(OutputStream) write(stream)} 메서드를 테스트하는 클래스."`
-    - Test method (verifies): `"{@link HelloWorld#write(OutputStream) write(stream)} 메서드가 ... 검증한다."`
-    - Test method (asserts NPE on null arg): `"{@code stream} 인수가 {@code null} 일 때 {@link NullPointerException} 이 발생함을 검증한다."`
-  - Follow the same plain-Korean discipline used in the book's asciidoc: pick the everyday word, avoid literary / book-author voice, no em-dash glue between clauses.
 
 ## Key Conventions
 

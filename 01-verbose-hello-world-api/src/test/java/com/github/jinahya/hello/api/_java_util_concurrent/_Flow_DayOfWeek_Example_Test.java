@@ -36,6 +36,7 @@ import java.util.stream.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("Flow / DayOfWeek example")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
@@ -207,7 +208,7 @@ class _Flow_DayOfWeek_Example_Test {
         });
     }
 
-    @DisplayName("single subscriber for a publisher")
+    @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -242,7 +243,7 @@ class _Flow_DayOfWeek_Example_Test {
         subscription.request(1L);
     }
 
-    @DisplayName("multiple subscribers for a publisher")
+    @DisplayName("should deliver items to multiple <subscribers> from the <publisher>")
     @Test
     void __multipleSubscribers() {
         // ----------------------------------------------------------------------------------- given

@@ -41,6 +41,7 @@ import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(output)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
@@ -55,9 +56,11 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("data output stream")
     @Nested
     class DataOutputStream_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -74,9 +77,11 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("random access file")
     @Nested
     class RandomAccessFile_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <RandomAccessFile>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -99,9 +104,11 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("UTF-8")
     @Nested
     class UTF8_Test {
 
+        @DisplayName("should round-trip the <string> through <writeUTF>/<readUTF>")
         @ValueSource(strings = {
                 HELLO_WORLD_STRING,
                 "홍길동",

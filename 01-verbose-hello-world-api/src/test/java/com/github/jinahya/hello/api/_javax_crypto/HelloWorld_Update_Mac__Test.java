@@ -48,7 +48,7 @@ import java.util.concurrent.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018">RFC 8018 &mdash; PKCS #5:
  * Password-Based Cryptography Specification Version 2.1 (PBE)</a>
  */
-@DisplayName("HelloWorld#update(Mac) — HMAC and PBE-MAC")
+@DisplayName("update(mac)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Mac__Test
@@ -109,6 +109,7 @@ class HelloWorld_Update_Mac__Test
          * {@link Mac#getInstance(String) HmacSHA1} instances initialized with the same key produces
          * byte-identical tags.
          */
+        @DisplayName("should produce byte-identical tags through a <real HmacSHA1> mac")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -154,6 +155,7 @@ class HelloWorld_Update_Mac__Test
          * {@link Mac#getInstance(String) HmacSHA256} instances initialized with the same key
          * produces byte-identical tags.
          */
+        @DisplayName("should produce byte-identical tags through a <real HmacSHA256> mac")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -201,6 +203,7 @@ class HelloWorld_Update_Mac__Test
          * {@code PBEWithHmacSHA256} instances initialized with the same password-derived key and
          * parameters produces byte-identical tags.
          */
+        @DisplayName("should produce byte-identical tags through a <real PBEWithHmacSHA256> mac")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given

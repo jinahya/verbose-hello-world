@@ -77,7 +77,7 @@ public interface HelloWorld {
      * Field (Constant) Declarations</a> (The Java® Language Specification)
      */
     public static final // redundant
-    int BYTES = 12;
+            int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
 
@@ -852,7 +852,6 @@ public interface HelloWorld {
         put(buffer);
         buffer.flip();
         while (buffer.hasRemaining()) {
-            assert buffer.remaining() == BYTES;
             channel.send(buffer, target);
         }
         return channel;
@@ -900,7 +899,7 @@ public interface HelloWorld {
             send(socket);
             return channel;
         }
-        write((WritableByteChannel) channel);
+        write(channel);
         return channel;
     }
 
@@ -929,7 +928,7 @@ public interface HelloWorld {
         buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            final var future = channel.write(buffer);
-//            future.get();
+//            final var written = future.get();
 //        }
         return channel;
     }
@@ -1040,7 +1039,7 @@ public interface HelloWorld {
                 StandardOpenOption.APPEND
         };
 //        try (var channel = FileChannel.open(path, options)) {
-//            write((WritableByteChannel) channel);
+//            write(channel);
 //        }
         return path;
     }

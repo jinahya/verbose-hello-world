@@ -42,11 +42,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("send(channel, target)")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("(null, ?)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -57,7 +58,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.send(channel, target));
     }
 
-    @DisplayName("(?, null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <target> argument is <null>")
     @Test
     void _ThrowNullPointerException_TargetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,6 +69,8 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.send(channel, target));
     }
 
+    @DisplayName(
+            "should delegate to <send(socket, target)> when the <channel> is in <blocking> mode")
     @Test
     void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -86,6 +89,9 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
         assertSame(channel, result);
     }
 
+    @DisplayName("""
+            should send <hello-world-bytes> via the <channel> to the <target>
+            when the <channel> is in <non-blocking> mode""")
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -94,15 +100,14 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
         when(channel.isBlocking()).thenReturn(false);
         doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            assert src != null;
             assert src.capacity() == HelloWorld.BYTES;
-            assert src.remaining() == HelloWorld.BYTES;
-            if (ThreadLocalRandom.current().nextBoolean()) {
+            assert src.position() == 0;
+            if (ThreadLocalRandom.current().nextInt() % 3 == 1) {
                 return 0;
             }
-            src.position(HelloWorld.BYTES);
-            return HelloWorld.BYTES;
-        }).when(channel).send(any(), any());
+            src.position(src.limit());
+            return src.capacity();
+        }).when(channel).send(notNull(), notNull());
         final var target = mock(SocketAddress.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(channel, target);

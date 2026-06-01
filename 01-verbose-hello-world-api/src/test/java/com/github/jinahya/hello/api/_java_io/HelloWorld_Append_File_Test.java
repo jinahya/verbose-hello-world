@@ -50,10 +50,7 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <file> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <file> argument is <null>")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -74,11 +71,8 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("""
-            should create a <new FileOutputStream> as <appending mode>,
-            and invoke <write(stream)> method with it,
-            and <flushes/closes> the stream"""
-    )
+    @DisplayName(
+            "should open the <file> as <appending mode>, write <hello-world-bytes>, and close it")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -102,8 +96,8 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("should increase the <file>'s length by <12> through a real <file>")
     @畵蛇添足("testing with an existing file doesn't add any value")
-    @DisplayName("<file>'s length should be increased by <12>")
     @Test
     void _添足_畵蛇(@TempDir final File dir)
             throws IOException {

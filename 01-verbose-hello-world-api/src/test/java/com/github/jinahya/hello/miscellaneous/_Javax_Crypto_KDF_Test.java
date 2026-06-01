@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
+@DisplayName("KDF")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KDF_Test {
 
@@ -96,6 +97,7 @@ class _Javax_Crypto_KDF_Test {
     // picked; algorithm name passed to KDF.deriveKey(String, AlgorithmParameterSpec)
     private static final String KEY_ALGORITHM = "AES";
 
+    @DisplayName("should derive deterministic <data> for the given <HKDF> algorithm")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __deriveData(final String algorithm) throws Exception {
@@ -128,6 +130,7 @@ class _Javax_Crypto_KDF_Test {
         Assertions.assertArrayEquals(out1, out2);
     }
 
+    @DisplayName("should derive a deterministic <SecretKey> for the given <HKDF> algorithm")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __deriveKey(final String algorithm) throws Exception {

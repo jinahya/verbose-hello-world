@@ -49,10 +49,7 @@ class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method throws a
      * {@link NullPointerException} when the {@code writer} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <writer> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <writer> argument is <null>")
     @Test
     void _ThrowNullPointerException_WriterIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -69,7 +66,7 @@ class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <append(writer)>")
+    @DisplayName("should invoke <append(writer)>, and return the <writer>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

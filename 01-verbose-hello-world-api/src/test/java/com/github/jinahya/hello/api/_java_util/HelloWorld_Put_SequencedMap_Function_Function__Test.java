@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("put(map, keyMapper, valueMapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Test {
@@ -86,12 +87,15 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("putLast")
     @Nested
     class PutLast_Test {
 
+        @DisplayName("sequenced map")
         @Nested
         class SequencedMap_Test {
 
+            @DisplayName("should put through <LinkedHashMap>")
             @Test
             void __LinkedHashMap() {
                 // --------------------------------------------------------------------------- given
@@ -112,9 +116,11 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         }
 
         // -----------------------------------------------------------------------------------------
+        @DisplayName("sorted map")
         @Nested
         class SortedMap_Test {
 
+            @DisplayName("should put through <TreeMap>")
             @Test
             void __TreeMap() {
                 // --------------------------------------------------------------------------- given
@@ -135,6 +141,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         }
 
         // -----------------------------------------------------------------------------------------
+        @DisplayName("navigable map")
         @Nested
         class NavigableMap_Test {
 
@@ -157,6 +164,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
 //            assertEquals(expected, map.keySet());
 //        }
 
+            @DisplayName("should put through <ConcurrentSkipListMap>")
             @Test
             void __ConcurrentSkipListMap() {
                 // --------------------------------------------------------------------------- given
@@ -178,12 +186,15 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("put")
     @Nested
     class Put_Test {
 
+        @DisplayName("LinkedHashMap")
         @Nested
         class LinkedHashMap_Test {
 
+            @DisplayName("should put through <LinkedHashMap#put>")
             @Test
             void __() {
                 // --------------------------------------------------------------------------- given
@@ -203,9 +214,11 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("LinkedHashMap trace")
     @Nested
     class LinkedHashMap_Trace_Test {
 
+        @DisplayName("should trace <putLast> over <LinkedHashMap>")
         @Test
         void __putLast() {
             final var map = new LinkedHashMap<String, String>();
@@ -216,6 +229,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
             }
         }
 
+        @DisplayName("should trace <put> over <LinkedHashMap>")
         @Test
         void __put() {
             final var map = new LinkedHashMap<String, String>();

@@ -44,6 +44,7 @@ import java.util.stream.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — JDK")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
@@ -116,8 +117,10 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("""
+            should emit a single <hello-world-bytes> from <HelloWorld>
+            through a <SubmissionPublisher>""")
     @Test
-    @DisplayName("HelloWorld → single byte[]")
     void __sync_single() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
         final var done = new CompletableFuture<Void>();
@@ -131,8 +134,10 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         assertPayload(items.get(0)); // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <N> copies of <hello-world-bytes> from <HelloWorld>
+            through a <SubmissionPublisher>""")
     @Test
-    @DisplayName("HelloWorld → N byte[]")
     void __sync_multiple() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
         final var done = new CompletableFuture<Void>();
@@ -148,8 +153,10 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         items.forEach(HelloWorldReactive_Jdk_Test::assertPayload); // @formatter:on
     }
 
+    @DisplayName("""
+            should emit a single <hello-world-bytes> from <AsynchronousHelloWorld>
+            through a <SubmissionPublisher>""")
     @Test
-    @DisplayName("AsynchronousHelloWorld → single byte[]")
     void __async_single() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
         final var done = new CompletableFuture<Void>();
@@ -166,8 +173,10 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         assertPayload(items.get(0)); // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <N> copies of <hello-world-bytes> from <AsynchronousHelloWorld>
+            through a <SubmissionPublisher>""")
     @Test
-    @DisplayName("AsynchronousHelloWorld → N byte[]")
     void __async_multiple() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
         final var done = new CompletableFuture<Void>();

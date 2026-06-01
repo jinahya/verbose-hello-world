@@ -36,11 +36,12 @@ import java.util.concurrent.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Clob#setCharacterStream(long)
  */
+@DisplayName("setCharacterStream(clob, pos)")
 @Slf4j
 class HelloWorld_SetCharacterStream_Clob_Long_Test
         extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -54,7 +55,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
         );
     }
 
-    @DisplayName("(clob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -68,7 +69,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
         );
     }
 
-    @DisplayName("write(clob.setCharacterStream(pos))")
+    @DisplayName("should invoke <write(clob.setCharacterStream(pos))>, and return the <clob>")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given

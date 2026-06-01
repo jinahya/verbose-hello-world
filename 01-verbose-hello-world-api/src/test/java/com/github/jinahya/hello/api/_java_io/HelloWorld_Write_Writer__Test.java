@@ -37,6 +37,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.io.File.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -56,6 +57,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("output stream writer")
     @Nested
     class OutputStreamWriter_Test {
 
@@ -63,6 +65,9 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
+        @DisplayName("""
+                should write <hello-world-string> through an
+                <OutputStreamWriter> with the <charset>""")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -79,6 +84,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("should round-trip <hello-world-string> through an <OutputStreamWriter>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -95,6 +101,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("file writer")
     @Nested
     class FileWriter_Test {
 
@@ -102,6 +109,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
+        @DisplayName("should write <hello-world-string> through a <FileWriter> with the <charset>")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -116,6 +124,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             }
         }
 
+        @DisplayName("should round-trip <hello-world-string> through a <FileWriter>")
         @Test
         void __() throws IOException {
             final var file = createTempFile("tmp", null, tempDir);

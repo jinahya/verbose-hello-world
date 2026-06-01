@@ -23,7 +23,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.nio.*;
@@ -52,10 +51,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -71,10 +67,8 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * throws an {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
-    @DisplayName("""
-            should throw an <IllegalArgumentException>
-            when the <position> argument is <not positive>"""
-    )
+    @DisplayName(
+            "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
@@ -93,29 +87,24 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("""
-            should write all <hello-world-bytes> across partial writes,
-            and return the <channel>"""
-    )
+    @DisplayName(
+            "should write all <hello-world-bytes> across partial writes, and return the <channel>")
     @Test
+    @SuppressWarnings({"rawtypes"})
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
         final var service = put_buffer12_increases_buffer_position_by_12(service());
         final var channel = mock(AsynchronousFileChannel.class);
         final var channelPositions = new ArrayList<Long>();
         final var bufferPositions = new ArrayList<Integer>();
-        final var futureReference = new AtomicReference<Future<Integer>>();
+        final var futureReference = new AtomicReference<Future>();
         doAnswer(w -> {
             assert futureReference.get() == null;
             final var src = w.getArgument(0, ByteBuffer.class);
+            bufferPositions.add(src.position());
             final var position = w.getArgument(1, Long.class);
             channelPositions.add(position);
-            assert src != null;
-            assert src.limit() == HelloWorld.BYTES;
-            bufferPositions.add(src.position());
-            assert src.hasRemaining();
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) mock(Future.class);
+            final var future = mock(Future.class);
             futureReference.set(future);
             doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
@@ -124,7 +113,13 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(any(), anyLong());
+        }).when(channel).write(
+                argThat(v -> v != null
+                             && v.capacity() == HelloWorld.BYTES
+                             && v.limit() == HelloWorld.BYTES
+                             && v.hasRemaining()),
+                longThat(v -> v >= 0L)
+        );
         final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
@@ -151,8 +146,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      */
     @DisplayName("""
             should propagate an <ExecutionException>
-            when the <channel> fails on or after partial writes"""
-    )
+            when the <channel> fails on or after partial writes""")
     @Test
     void __fails() {
         // ----------------------------------------------------------------------------------- given
@@ -161,8 +155,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
         final var cause = new IOException("simulated write failure");
         doAnswer(w -> {
             final var src = w.getArgument(0, ByteBuffer.class);
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) mock(Future.class);
+            final var future = mock(Future.class);
             doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
@@ -173,15 +166,17 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
             }).when(future).get();
             return future;
         }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                ArgumentMatchers.longThat(p -> p >= 0L)
+                argThat(v -> v != null
+                             && v.capacity() == HelloWorld.BYTES
+                             && v.limit() == HelloWorld.BYTES
+                             && v.hasRemaining()),
+                longThat(v -> v >= 0L)
         );
-        final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------- when/then
-//        final var thrown = Assertions.assertThrows(
+//        final var thrown = assertThrows(
 //                ExecutionException.class,
-//                () -> service.write(channel, position)
+//                () -> service.write(channel, 0)
 //        );
-//        Assertions.assertSame(cause, thrown.getCause());
+//        assertSame(cause, thrown.getCause());
     }
 }

@@ -43,6 +43,7 @@ import static org.mockito.Mockito.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#signature-algorithms">Signature
  * Algorithms</a>
  */
+@DisplayName("update(signature)")
 @Slf4j
 class HelloWorld_Update_Signature_Test
         extends HelloWorld__Test {
@@ -52,7 +53,7 @@ class HelloWorld_Update_Signature_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} 메서드가
      * {@link NullPointerException} 을 던지는지 검증한다.
      */
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <signature> argument is <null>")
     @Test
     void _ThrowNullPointerException_DigestIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,7 +69,7 @@ class HelloWorld_Update_Signature_Test
      * {@link Signature#update(byte[]) signature.update(array)} 를 호출하고, 전달된 signature 를 그대로 반환하는지
      * 검증한다.
      */
-    @DisplayName("signature.update(set(byte[12]))")
+    @DisplayName("should invoke <signature.update(buffer)>, and return the <signature>")
     @Test
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given

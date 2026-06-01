@@ -28,15 +28,17 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("HelloWorld's Constants")
+@DisplayName("HelloWorld constants")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Constants_Test {
 
-    @DisplayName("BYTE")
+    @DisplayName("BYTES")
     @Nested
     class BYTES_Test {
 
+        @DisplayName(
+                "should equal <12> (the byte length of the <hello-world-string> in <US_ASCII>)")
         @Test
         void _12_BYTES() {
             final var expected = HELLO_WORLD_STRING.getBytes(US_ASCII).length;

@@ -120,6 +120,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("byte buffer")
     @Nested
     class ByteBufferTest {
 
@@ -150,7 +151,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             return getArrayLengthStream();
         }
 
-        @DisplayName("wrap(array)")
+        @DisplayName("should produce a backed <buffer> from <ByteBuffer.wrap(array)>")
         @MethodSource({"getArrayArgumentsStream"})
         @ParameterizedTest
         void _wrap_array(final byte[] array) {
@@ -176,7 +177,8 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert sliced.array() == buffer.array();
         }
 
-        @DisplayName("wrap(array, offset, length)")
+        @DisplayName(
+                "should produce a backed <buffer> from <ByteBuffer.wrap(array, offset, length)>")
         @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
         @ParameterizedTest
         void _wrap_arrayOffsetAndLength(final ArgumentsAccessor accessor) {
@@ -204,7 +206,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert sliced.array() == buffer.array();
         }
 
-        @DisplayName("allocate(capacity)")
+        @DisplayName("should allocate a backed <buffer> via <ByteBuffer.allocate(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocate(final int capacity) {
@@ -226,7 +228,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert sliced.hasArray();
         }
 
-        @DisplayName("allocateDirect(capacity)")
+        @DisplayName("should allocate a direct <buffer> via <ByteBuffer.allocateDirect(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocateDirect(final int capacity) {
@@ -256,10 +258,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <buffer> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <buffer> argument is <null>")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -275,10 +274,8 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * {@link ByteBuffer#remaining() remaining} is less than
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName("""
-            should throw a <BufferOverflowException>
-            when <buffer.remaining()> is less than <12>"""
-    )
+    @DisplayName(
+            "should throw a <BufferOverflowException> when <buffer.remaining()> is less than <12>")
     @TestFactory
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
@@ -305,8 +302,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      */
     @DisplayName("""
             should invoke <set(buffer.array(), buffer.arrayOffset() + buffer.position())>
-            when the <buffer> has a backing array"""
-    )
+            when the <buffer> has a backing array""")
     @Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
@@ -332,9 +328,8 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * bytes, puts the {@code array} to {@code buffer}, and returns the {@code buffer}.
      */
     @DisplayName("""
-            should invoke <set(array[12])>,
-            and put the <array> to the <buffer>"""
-    )
+            should invoke <set(array[12])>, put the <array> to the <buffer>,
+            and return the <buffer>""")
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given

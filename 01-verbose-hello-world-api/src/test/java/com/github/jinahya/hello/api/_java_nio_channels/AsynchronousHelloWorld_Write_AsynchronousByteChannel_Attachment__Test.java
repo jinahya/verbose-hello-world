@@ -34,6 +34,7 @@ import java.util.function.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("write(channel, attachment)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -72,9 +73,13 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("echo server")
     @Nested
     class EchoServer_Test {
 
+        @DisplayName("""
+                should write <hello-world-bytes> to an <echo server>
+                with a real <AsynchronousChannelGroup>""")
         @Test
         void __() throws Exception { // @formatter:on
             final var group = AsynchronousChannelGroup.withCachedThreadPool(

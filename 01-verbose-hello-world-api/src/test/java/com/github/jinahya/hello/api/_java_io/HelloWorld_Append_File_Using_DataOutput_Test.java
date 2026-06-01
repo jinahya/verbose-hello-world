@@ -34,13 +34,14 @@ import java.util.concurrent.*;
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("appends using DataOutput")
+@DisplayName("append(file) using DataOutput")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_File_Using_DataOutput_Test
         extends HelloWorld__Test {
 
+    @DisplayName("should append <hello-world-bytes> to the <file> through a <DataOutputStream>")
     @Test
     void __(@TempDir final File dir)
             throws IOException {

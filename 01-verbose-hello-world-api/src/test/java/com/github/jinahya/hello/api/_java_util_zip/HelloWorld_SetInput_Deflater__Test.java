@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("setInput(deflater)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
@@ -147,6 +148,7 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should round-trip <hello, world> through a raw <Deflater> at the given <level>")
     @MethodSource({"levelStream"})
     @ParameterizedTest
     void __Deflator(final int level) throws IOException, DataFormatException {
@@ -181,6 +183,9 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("""
+            should round-trip <hello, world> through a raw <Deflater>
+            at the given <level> and <nowrap> flag""")
     @MethodSource({"levelAndNowrapStream"})
     @ParameterizedTest
     void __Deflator(final int level, final boolean nowrap) throws IOException, DataFormatException {
@@ -229,6 +234,8 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName(
+            "should round-trip <hello, world> through <DeflaterOutputStream> at the given <level>")
     @MethodSource({"levelStream"})
     @ParameterizedTest
     void __DeflatorOutputStream(final int level) throws IOException {
@@ -250,6 +257,9 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("""
+            should round-trip <hello, world> through <DeflaterOutputStream>
+            at the given <level> and <nowrap> flag""")
     @MethodSource({"levelAndNowrapStream"})
     @ParameterizedTest
     void __DeflatorOutputStream(final int level, final boolean nowrap) throws IOException {
@@ -273,6 +283,9 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("""
+            should round-trip <hello, world> through <GZIPOutputStream>
+            with a valid <gzip> wrapper""")
     @Test
     void __GZIPOutputStream() throws IOException {
         // -------------------------------------------------------------------------------- compress
@@ -295,6 +308,9 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("""
+            should round-trip <hello, world> through <GZIPOutputStream>
+            with the <syncFlush> branch toggled""")
     @Test
     void __syncFlush_GZIPOutputStream() throws IOException {
         // -------------------------------------------------------------------------------- compress

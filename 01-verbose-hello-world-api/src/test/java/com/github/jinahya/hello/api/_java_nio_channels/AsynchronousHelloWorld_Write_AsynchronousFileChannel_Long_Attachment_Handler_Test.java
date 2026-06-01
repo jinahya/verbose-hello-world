@@ -58,7 +58,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("should throw NullPointerException when channel is null")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_ChannelIsNull() {
@@ -72,7 +72,8 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
                      () -> service.write(channel, position, null, handler));
     }
 
-    @DisplayName("should throw IllegalArgumentException when position is negative")
+    @DisplayName(
+            "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowIllegalArgumentException_PositionIsNegative() {
@@ -86,7 +87,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
                      () -> service.write(channel, position, null, handler));
     }
 
-    @DisplayName("should throw NullPointerException when handler is null")
+    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -101,8 +102,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
 
     @DisplayName("""
             should write all <hello-world-bytes> across partial writes,
-            and invoke <handler.completed(channel, attachment)>"""
-    )
+            and invoke <handler.completed(channel, attachment)>""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() {
@@ -156,8 +156,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
 
     @DisplayName("""
             should invoke <handler.failed(exc, attachment)>
-            when the <channel> fails on or after partial writes"""
-    )
+            when the <channel> fails on or after partial writes""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

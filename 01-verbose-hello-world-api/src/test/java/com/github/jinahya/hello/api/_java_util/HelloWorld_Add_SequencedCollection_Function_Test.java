@@ -39,14 +39,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("add(SequencedCollection, Function)")
+@DisplayName("add(collection, mapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <collection> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <collection> argument is <null>")
     @Test
     void _ThrowNullPointerException_CollectionIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -57,9 +55,7 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
         assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <mapper> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     void _ThrowNullPointerException_MapperIsNull() {
         // ----------------------------------------------------------------------------------- given

@@ -31,6 +31,7 @@ import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+@DisplayName("append(path, attachment, handler)")
 @Slf4j
 @SuppressWarnings({"java:S101"})
 abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
@@ -43,6 +44,9 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
         super(HelloWorld.class, initializer);
     }
 
+    @DisplayName("""
+            should append <hello-world-bytes> to a real <Path>,
+            and invoke <handler.completed(path, attachment)>""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __(final @TempDir Path tempDir) throws Exception {

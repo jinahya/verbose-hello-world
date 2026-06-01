@@ -29,6 +29,7 @@ import org.mockito.*;
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.file.*;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(Path)")
+@DisplayName("append(path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -50,10 +51,7 @@ class HelloWorld_Append_Path_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <path> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -79,7 +77,7 @@ class HelloWorld_Append_Path_Test extends HelloWorld__Test {
             // -------------------------------------------------------------------------------- then
             final var captor = ArgumentCaptor.forClass(OpenOption[].class);
 //            mockStatic.verify(
-//                    () -> FileChannel.open(ArgumentMatchers.same(path), captor.capture()),
+//                    () -> FileChannel.open(same(path), captor.capture()),
 //                    times(1)
 //            );
 //            final var value = captor.getValue();

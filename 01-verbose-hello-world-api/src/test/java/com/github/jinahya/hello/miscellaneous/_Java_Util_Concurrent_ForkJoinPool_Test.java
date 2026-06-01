@@ -26,12 +26,14 @@ import org.junit.jupiter.api.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+@DisplayName("ForkJoinPool")
 @Slf4j
 class _Java_Util_Concurrent_ForkJoinPool_Test {
 
     /**
      * "Hello world" of work-stealing: pure deque mechanics, almost no real work per task.
      */
+    @DisplayName("Fibonacci")
     @Nested
     class Fibonacci_Test {
 
@@ -56,6 +58,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
             }
         }
 
+        @DisplayName("should compute <fib(25) = 75025> via <RecursiveTask> on the common pool")
         @Test
         void __() {
             // ------------------------------------------------------------------------------- given
@@ -72,6 +75,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
      * Irregular tree-shaped parallelism: branches die early, others explode — work-stealing's sweet
      * spot.
      */
+    @DisplayName("N-queens")
     @Nested
     class NQueens_Test {
 
@@ -124,6 +128,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
             }
         }
 
+        @DisplayName("should count <92> solutions to the <8>-queens problem via <RecursiveTask>")
         @Test
         void __() {
             // ------------------------------------------------------------------------------- given
@@ -140,6 +145,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
      * Balanced divide-and-conquer with real data movement: catches join/merge bugs that "compute a
      * number" tests miss.
      */
+    @DisplayName("merge sort")
     @Nested
     class MergeSort_Test {
 
@@ -192,6 +198,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
             }
         }
 
+        @DisplayName("should sort an <int[100_000]> array via <RecursiveAction> divide-and-conquer")
         @Test
         void __() {
             // ------------------------------------------------------------------------------- given

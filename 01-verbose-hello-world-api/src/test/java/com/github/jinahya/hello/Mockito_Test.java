@@ -29,6 +29,7 @@ import java.time.*;
 import java.time.temporal.*;
 import java.util.concurrent.*;
 
+@DisplayName("Mockito")
 @Slf4j
 class Mockito_Test {
 
@@ -52,9 +53,11 @@ class Mockito_Test {
         }
     }
 
+    @DisplayName("how old is")
     @Nested
     class HowOldIs_Test {
 
+        @DisplayName("should compute age under <4> for a baby and <0> for a person born <today>")
         @Test
         void __() {
             {
@@ -89,7 +92,7 @@ class Mockito_Test {
         }
     }
 
-    @DisplayName("오늘 태어난 아기는 영 살이다")
+    @DisplayName("should compute age as <0> for a person born <today>")
     @Test
     void _AgeZero_BornToday() {
         // given
@@ -102,7 +105,7 @@ class Mockito_Test {
         Assertions.assertEquals(0, age);
     }
 
-    @DisplayName("1년 전 태어난 아기는 한 살이다")
+    @DisplayName("should compute age as <1> for a person born <one year> ago")
     @Test
     void _AgeOne_YearPrior() {
         // given
@@ -115,7 +118,7 @@ class Mockito_Test {
         Assertions.assertEquals(1, age);
     }
 
-    @DisplayName("calculateAge(person) should invoke calculateAgeAt(person, )")
+    @DisplayName("should delegate <calculateAge(person)> to <calculateAgeAt(person, ?)>")
     @Test
     void calculateAge_InvokeCalculateAgeAtWithPerson_() {
         // given
@@ -134,7 +137,9 @@ class Mockito_Test {
         Assertions.assertEquals(expected, actual);
     }
 
-    @DisplayName("calculateAge(person) should return calculateAgeAt(person, now())")
+    @DisplayName("""
+            should delegate <calculateAge(person)> to <calculateAgeAt(person, now())>
+            (may fail across midnight)""")
     @Test
     void calculateAge_InvokeCalculateAgeAtWithPersonAndNow_MayFail() {
         // given
@@ -154,7 +159,9 @@ class Mockito_Test {
         Assertions.assertEquals(expected, age);
     }
 
-    @DisplayName("calculateAge(person) should return calculateAgeAt(person, now())")
+    @DisplayName("""
+            should delegate <calculateAge(person)> to <calculateAgeAt(person, now())>
+            with <mockStatic> on <LocalDate>""")
     @Test
     void calculateAge_InvokeCalculateAgeAtWithPersonAndNow_() {
         final var now = LocalDate.now();

@@ -40,11 +40,12 @@ import static org.mockito.Mockito.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/BreakIterator.html">java.text.BreakIterator</a>
  */
+@DisplayName("setText(iterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
 
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <iterator> argument is <null>")
     @Test
     void _ThrowNullPointerException_IteratorIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -54,7 +55,7 @@ class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.setText(iterator));
     }
 
-    @DisplayName("iterator.setText(<string from set(byte[12])>)")
+    @DisplayName("should invoke <iterator.setText(string)>, and return the <iterator>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

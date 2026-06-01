@@ -34,6 +34,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("method(builder, method)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorld__Test {
@@ -51,6 +52,7 @@ class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorld__Test
         }).when(service()).method(any(), anyString());
     }
 
+    @DisplayName("should send <hello-world-bytes> through a real <HttpClient> request")
     @Test
     void __() {
         executeWithHttpEchoStarted(p -> () -> {

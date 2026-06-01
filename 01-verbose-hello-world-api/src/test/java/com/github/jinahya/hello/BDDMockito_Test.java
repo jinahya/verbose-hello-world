@@ -27,10 +27,11 @@ import org.mockito.*;
 import java.time.*;
 import java.util.concurrent.*;
 
+@DisplayName("BDDMockito")
 @Slf4j
 class BDDMockito_Test {
 
-    @DisplayName("오늘 태어난 아기는 0살이다")
+    @DisplayName("should compute age as <0> for a person born <today>")
     @Test
     void _AgeZero_BornToday() {
         // given
@@ -43,7 +44,7 @@ class BDDMockito_Test {
         Assertions.assertEquals(0, age);
     }
 
-    @DisplayName("calculateAge(person) should return calculateAgeAt(person, now())")
+    @DisplayName("should delegate <calculateAge(person)> to <calculateAgeAt(person, now())>")
     @Test
     void calculateAge_InvokeCalculateAgeAtWithPersonAndNow_() {
         final var now = LocalDate.now();

@@ -23,8 +23,8 @@ package com.github.jinahya.hello.api;
 import java.lang.annotation.*;
 
 /**
- * The {@link Repeatable} container annotation that holds multiple {@link 畵蛇添足} markers on the
- * same element.
+ * The {@link Repeatable} container annotation that holds multiple {@link 畵蛇添足} markers on the same
+ * element.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see 畵蛇添足

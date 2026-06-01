@@ -51,10 +51,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
      * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
      * {@link NullPointerException} when {@code channel} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -135,23 +132,22 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
      * {@code flip()} (or an equivalent) was called — but the check is implicit, not direct.
      */
     @DisplayName("""
-            should invoke <put(buffer[12])>
-            and writes the <buffer> to the <channel> while the <buffer> has <remaining>"""
-    )
+            should invoke <put(buffer[12])> and write the <buffer> to the <channel>
+            while the <buffer> has <remaining>""")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.put_buffer12_put_random_bytes(service());
+        final var service = put_buffer12_put_random_bytes(service());
         final var channel = mock(WritableByteChannel.class);
         final var bufferPositions = new ArrayList<Integer>();
         doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             assert src.hasRemaining();
             assert src.limit() == HelloWorld.BYTES;
-            final var pos = src.position();
-            bufferPositions.add(pos);
+            final var position = src.position();
+            bufferPositions.add(position);
             final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
-            src.position(pos + n);
+            src.position(position + n);
             return n;
         }).when(channel).write(notNull());
         // ------------------------------------------------------------------------------------ when

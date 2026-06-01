@@ -26,9 +26,6 @@ import org.junit.jupiter.api.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
-import static java.lang.Thread.*;
-import static java.util.concurrent.Executors.*;
-
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Util_Concurrent_ExecutorService_TestUtils {
@@ -37,7 +34,8 @@ public final class _Java_Util_Concurrent_ExecutorService_TestUtils {
         return Stream.of(
                 Named.of(
                         "newFixedThreadPool(, ...)",
-                        Executors.newFixedThreadPool(127, Thread.ofPlatform().name("ch-", 0).factory())
+                        Executors.newFixedThreadPool(127,
+                                                     Thread.ofPlatform().name("ch-", 0).factory())
                 ),
                 Named.of(
                         "newCachedThreadPool(...)",
@@ -45,11 +43,13 @@ public final class _Java_Util_Concurrent_ExecutorService_TestUtils {
                 ),
                 Named.of(
                         "newThreadPerTaskExecutor(virtual)",
-                        Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("ch-", 0).factory())
+                        Executors.newThreadPerTaskExecutor(
+                                Thread.ofVirtual().name("ch-", 0).factory())
                 ),
                 Named.of(
                         "newThreadPerTaskExecutor(platform)",
-                        Executors.newThreadPerTaskExecutor(Thread.ofPlatform().name("ch-", 0).factory())
+                        Executors.newThreadPerTaskExecutor(
+                                Thread.ofPlatform().name("ch-", 0).factory())
                 )
         );
     }

@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(DatagramPacket)")
+@DisplayName("append(packet)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -56,9 +56,7 @@ class HelloWorld_Append_DatagramPacket_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(DatagramPacket) append(packet)} method throws a
      * {@link NullPointerException} when the {@code packet} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <packet> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <packet> argument is <null>")
     @Test
     void _ThrowNullPointerException_PacketIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -106,8 +104,8 @@ class HelloWorld_Append_DatagramPacket_Test extends HelloWorld__Test {
      */
     @DisplayName("""
             should invoke <set(packet.data, offset + length)>,
-            increment the packet's length by 12,
-            and return the packet""")
+            increment the <packet.length> by <12>,
+            and return the <packet>""")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

@@ -33,14 +33,12 @@ import java.util.concurrent.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("set(BitSet, int)")
+@DisplayName("set(bitset, index)")
 @Slf4j
 class HelloWorld_Set_BitSet_Index_Test
         extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <bitset> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <bitset> argument is <null>")
     @Test
     void _ThrowNullPointerException_BitSetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -54,9 +52,7 @@ class HelloWorld_Set_BitSet_Index_Test
         );
     }
 
-    @DisplayName("""
-            should throw an <IllegalArgumentException>
-            when the <index> argument is negative""")
+    @DisplayName("should throw an <IllegalArgumentException> when the <index> argument is negative")
     @Test
     void _ThrowIllegalArgumentException_IndexIsNegative() {
         // ----------------------------------------------------------------------------------- given

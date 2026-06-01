@@ -27,6 +27,7 @@ import java.util.function.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("applyAsync(mapper)")
 class ExecutorHelloWorld_ApplyAsync_Mapper_Test
         extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
 
@@ -35,6 +36,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper_Test
         super(HelloWorld.class, s -> new ExecutorHelloWorld<>(s, Runnable::run));
     }
 
+    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
@@ -45,6 +47,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper_Test
         assertThrows(NullPointerException.class, () -> asynchronousService.applyAsync(mapper));
     }
 
+    @DisplayName("should return a <CompletionStage> that completes with <mapper.apply> result")
     @Test
     @SuppressWarnings({"unchecked"})
     void __() throws Exception {

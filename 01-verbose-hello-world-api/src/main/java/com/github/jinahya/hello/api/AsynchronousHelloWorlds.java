@@ -69,7 +69,8 @@ final class AsynchronousHelloWorlds {
      */
     static <T extends HelloWorld> AsynchronousHelloWorld<T>
     structuredConcurrencyInstance(final T service) {
-        return new StructuredConcurrencyHelloWorld<>(service, java.util.function.UnaryOperator.identity());
+        return new StructuredConcurrencyHelloWorld<>(service,
+                                                     java.util.function.UnaryOperator.identity());
     }
 
     // ---------------------------------------------------------------------------------------------

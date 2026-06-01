@@ -28,6 +28,7 @@ import org.mockito.*;
 
 import java.util.*;
 
+@DisplayName("set(bitset, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Set_BitSet_Index__Test
@@ -51,6 +52,7 @@ class HelloWorld_Set_BitSet_Index__Test
         );
     }
 
+    @DisplayName("should set <hello, world> bits into a fresh <BitSet>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -68,10 +70,11 @@ class HelloWorld_Set_BitSet_Index__Test
      * {@link BitSet#and(BitSet)}, {@link BitSet#or(BitSet)}, and {@link BitSet#cardinality()}. Used
      * in deduplication, near-duplicate detection, and recommendation systems.
      */
+    @DisplayName("Jaccard")
     @Nested
     class Jaccard_Test {
 
-        @DisplayName("identical placements → Jaccard = 1.0")
+        @DisplayName("should compute <Jaccard = 1.0> when placements are identical")
         @Test
         void __identical() {
             final var a = new BitSet();
@@ -87,7 +90,7 @@ class HelloWorld_Set_BitSet_Index__Test
             Assertions.assertEquals(1.0, jaccard);
         }
 
-        @DisplayName("non-overlapping placements → Jaccard = 0.0")
+        @DisplayName("should compute <Jaccard = 0.0> when placements are non-overlapping")
         @Test
         void __disjoint() {
             final var a = new BitSet();
@@ -109,10 +112,11 @@ class HelloWorld_Set_BitSet_Index__Test
      * {@link BitSet#xor(BitSet)} and {@link BitSet#cardinality()}. Used in error-correcting codes
      * (Hamming, BCH), locality-sensitive hashing, and SimHash-style fingerprinting.
      */
+    @DisplayName("Hamming")
     @Nested
     class Hamming_Test {
 
-        @DisplayName("identical placements → distance = 0")
+        @DisplayName("should compute <distance = 0> when placements are identical")
         @Test
         void __identical() {
             final var a = new BitSet();
@@ -124,7 +128,7 @@ class HelloWorld_Set_BitSet_Index__Test
             Assertions.assertEquals(0, diff.cardinality());
         }
 
-        @DisplayName("disjoint placements → distance = |A| + |B|")
+        @DisplayName("should compute <distance = |A| + |B|> when placements are disjoint")
         @Test
         void __disjoint() {
             final var a = new BitSet();
@@ -141,10 +145,11 @@ class HelloWorld_Set_BitSet_Index__Test
      * Demonstrates the Sieve of Eratosthenes — the textbook BitSet application. Each index
      * represents an integer; set bits mark composites; primes are the unset bits up to {@code N}.
      */
+    @DisplayName("Sieve of Eratosthenes")
     @Nested
     class SieveOfEratosthenes_Test {
 
-        @DisplayName("primes ≤ 30 → 10 (2, 3, 5, 7, 11, 13, 17, 19, 23, 29)")
+        @DisplayName("should count <10> primes when sieving up to <30>")
         @Test
         void __primesUpTo30() {
             final int N = 30;

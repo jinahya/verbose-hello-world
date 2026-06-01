@@ -34,13 +34,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@DisplayName("update(cipher, consumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Consumer_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <cipher> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <cipher> argument is <null>")
     @Test
     @SuppressWarnings("unchecked")
     void _ThrowNullPointerException_CipherIsNull() {
@@ -52,9 +51,7 @@ class HelloWorld_Update_Cipher_Consumer_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.update(cipher, consumer));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <consumer> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <consumer> argument is <null>")
     @Test
     @SuppressWarnings("unchecked")
     void _ThrowNullPointerException_ConsumerIsNull() {
@@ -66,6 +63,9 @@ class HelloWorld_Update_Cipher_Consumer_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.update(cipher, consumer));
     }
 
+    @DisplayName("""
+            should invoke <cipher.update(buffer)>, forward the result to the <consumer>,
+            and return the <cipher>""")
     @Test
     @SuppressWarnings("unchecked")
     void __() {

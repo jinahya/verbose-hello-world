@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(data)")
+@DisplayName("write(output)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -49,10 +49,7 @@ class HelloWorld_Write_DataOutput_Test
      * Asserts {@link HelloWorld#write(DataOutput) write(output)} method throws a
      * {@link NullPointerException} when the {@code data} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <output> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <output> argument is <null>")
     @Test
     void _ThrowNullPointerException_DataIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -72,7 +69,9 @@ class HelloWorld_Write_DataOutput_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <set(array[12])>, and invoke output.write(array)")
+    @DisplayName("""
+            should invoke <set(array[12])>, write the <array> to the <output>,
+            and return the <output>""")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

@@ -20,13 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.junit.jupiter.api.*;
-
-import java.util.function.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class ExecutorHelloWorld_ApplyAsync_Mapper2_Test
         extends AsynchronousHelloWorld_ApplyAsync_Mapper_Test<ExecutorHelloWorld<HelloWorld>> {
 

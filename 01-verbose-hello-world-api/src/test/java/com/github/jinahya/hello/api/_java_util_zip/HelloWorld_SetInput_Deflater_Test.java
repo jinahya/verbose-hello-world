@@ -36,14 +36,12 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setInput(Deflater)")
+@DisplayName("setInput(deflater)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <deflater> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <deflater> argument is <null>")
     @Test
     void _ThrowNullPointerException_DeflaterIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -53,7 +51,7 @@ class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.setInput(deflator));
     }
 
-    @DisplayName("deflater.setInput(set(byte[12]))")
+    @DisplayName("should invoke <set(byte[12])> and pass the array to <deflater.setInput>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
