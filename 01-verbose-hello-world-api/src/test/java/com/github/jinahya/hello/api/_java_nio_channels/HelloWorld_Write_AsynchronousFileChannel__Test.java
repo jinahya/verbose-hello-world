@@ -20,46 +20,43 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
 
-@畵蛇添足
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+
+@DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
 
     @TempDir
     private static Path tempDir;
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() throws ExecutionException, InterruptedException {
-        HelloWorldTestUtils.write_asynchornousfilechannel_position_writes_hello_world(service());
+    void __stubService() throws ExecutionException, InterruptedException {
+        write_asynchronousfilechannel_long_writes_hello_world(service());
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should write <hello-world-bytes> to a real <AsynchronousFileChannel> at a <position>")
     @Test
-    void _添足_畵蛇() throws Exception {
+    void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var path = Files.createTempFile(tempDir, null, null);
         var position = ThreadLocalRandom.current().nextLong(0L, 128L);
         // ------------------------------------------------------------------------------------ when
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE)) {
-            service().write(channel, position).force(false);
+            service().write(channel, position);
         }
         // ------------------------------------------------------------------------------------ then
         try (var channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ)) {

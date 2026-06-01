@@ -20,13 +20,11 @@ package com.github.jinahya.hello.api._java_net_http;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.net.http.WebSocket;
+import java.net.http.*;
 
 /**
  * A class for testing
@@ -35,14 +33,14 @@ import java.net.http.WebSocket;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Disabled
-@DisplayName("send(WebSocket, boolean)")
+@DisplayName("sendBinary(socket, last)")
 @Slf4j
 class AsynchornousHelloWorld_SendBinary_WebSocket_Test
-        extends AsynchronousHelloWorldTest {
+        extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
     AsynchornousHelloWorld_SendBinary_WebSocket_Test() {
-        super();
+        super(HelloWorld.class, s -> new ExecutorHelloWorld<>(s, Runnable::run));
     }
 
 //    // ---------------------------------------------------------------------------------------------

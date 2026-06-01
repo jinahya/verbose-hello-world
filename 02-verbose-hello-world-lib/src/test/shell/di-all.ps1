@@ -9,7 +9,8 @@ $profiles = @(
     'di-spring'
 )
 Write-Host "at: $PSScriptRoot"
-foreach ($id in $profiles) {
+foreach ($id in $profiles)
+{
     Write-Host '------------------------------------------------------------------------'
     Write-Host $id
     & (Join-Path -Path $PSScriptRoot -ChildPath "$id.ps1")

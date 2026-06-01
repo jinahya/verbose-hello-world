@@ -20,14 +20,16 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.security.Security;
+import java.security.*;
 
+@DisplayName("Security")
 @Slf4j
 class _Java_Security_Security_Test {
 
+    @DisplayName("should print every <Provider> and its <Service> entries")
     @Test
     void getProviders__() {
         for (final var provider : Security.getProviders()) {

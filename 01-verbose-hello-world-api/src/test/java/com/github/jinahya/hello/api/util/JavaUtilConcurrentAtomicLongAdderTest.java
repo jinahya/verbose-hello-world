@@ -20,18 +20,19 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.atomic.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("LongAdder")
 @Slf4j
 class JavaUtilConcurrentAtomicLongAdderTest {
 
+    @DisplayName("should wrap around to <Long.MIN_VALUE> when the running sum overflows")
     @Test
     void __() {
         final var adder = new LongAdder();

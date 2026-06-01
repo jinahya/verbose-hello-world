@@ -20,7 +20,7 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.*;
 
 /**
  * A test-only {@link java.util.ServiceLoader ServiceLoader} SPI in which each provider supplies a

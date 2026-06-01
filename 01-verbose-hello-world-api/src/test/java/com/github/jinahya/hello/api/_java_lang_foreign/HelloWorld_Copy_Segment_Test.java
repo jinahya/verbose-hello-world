@@ -20,36 +20,32 @@ package com.github.jinahya.hello.api._java_lang_foreign;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.lang.foreign.Arena;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.io.*;
+import java.lang.foreign.*;
+import java.nio.channels.*;
+import java.nio.file.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("copy(segment)")
 @Slf4j
 class HelloWorld_Copy_Segment_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
+    @DisplayName("""
+            should invoke <set(array[12])>, copy the <array> to the <segment>,
+            and return the <segment>""")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
+        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
         try (var arena = Arena.ofConfined()) {
             final var segment = arena.allocate(HelloWorld.BYTES);
             try (var mockedStatic = Mockito.mockStatic(MemorySegment.class,
@@ -58,7 +54,7 @@ class HelloWorld_Copy_Segment_Test
                 final var result = service.copy(segment);
                 // ---------------------------------------------------------------------------- then
                 Assertions.assertSame(segment, result);
-                final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+                final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
                 mockedStatic.verify(() -> MemorySegment.copy(
                         Mockito.same(array),
                         Mockito.eq(0),
@@ -113,6 +109,7 @@ class HelloWorld_Copy_Segment_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should bridge Java-to-C through a compiled <reader> reading the mapped <segment>")
     @Test
     void testJavaToCBridge(@TempDir final Path tempDir)
             throws Exception {
@@ -131,7 +128,7 @@ class HelloWorld_Copy_Segment_Test
              final var arena = Arena.ofShared()) {
             // ---------------------------------------------------------------- write hello, world\0
             final var segment = channel.map(FileChannel.MapMode.READ_WRITE, 0, 13, arena);
-            HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+            HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
             service().copy(segment);
             segment.set(ValueLayout.JAVA_BYTE, 12, (byte) 0);
             log.debug("bytes written to the file");

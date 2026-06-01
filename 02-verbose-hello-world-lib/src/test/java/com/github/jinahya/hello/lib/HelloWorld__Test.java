@@ -20,17 +20,16 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Stream;
+import java.util.concurrent.*;
+import java.util.stream.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.DynamicTest.*;
 
 /**
  * An abstract base for tests that exercise the
@@ -77,25 +76,16 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <array> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <array> argument is <null>")
     @TestFactory
     Stream<DynamicTest> _ThrowNullPointerException_ArrayIsNull() {
         return services().map(s -> {
-            // ------------------------------------------------------------------------------- given
             final var array = (byte[]) null;
             final var index = ThreadLocalRandom.current().nextInt() & Integer.MAX_VALUE;
-            return DynamicTest.dynamicTest(
+            return dynamicTest(
                     String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
-                        // --------------------------------------------------------------- when/then
-                        // assert: s.set(array:null, index) throws a <NullPointerException>
-                        Assertions.assertThrows(
-                                NullPointerException.class,
-                                () -> s.set(array, index)
-                        );
+                        assertThrows(NullPointerException.class, () -> s.set(array, index));
                     }
             );
         });
@@ -110,26 +100,17 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("""
-            should throw an <IndexOutOfBoundsException>
-            when the <index> argument is negative"""
-    )
+    @DisplayName(
+            "should throw an <IndexOutOfBoundsException> when the <index> argument is negative")
     @TestFactory
     Stream<DynamicTest> _ThrowIndexOutOfBoundsException_IndexIsNegative() {
         return services().map(s -> {
-            // ------------------------------------------------------------------------------- given
             final var array = new byte[0];
             final var index = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
-            return DynamicTest.dynamicTest(
+            return dynamicTest(
                     String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
-                        // --------------------------------------------------------------- when/then
-                        // assert: <service<array, index:negative)>
-                        //         throws an <IndexOutOfBoundsException>
-                        Assertions.assertThrows(
-                                IndexOutOfBoundsException.class,
-                                () -> s.set(array, index)
-                        );
+                        assertThrows(IndexOutOfBoundsException.class, () -> s.set(array, index));
                     }
             );
         });
@@ -147,28 +128,20 @@ abstract class HelloWorld__Test {
      */
     @DisplayName("""
             should throw an <IndexOutOfBoundsException>
-            when <array.length> is less than <index + HelloWorld.BYTES>"""
-    )
+            when <array.length> is less than <index + HelloWorld.BYTES>""")
     @TestFactory
     Stream<DynamicTest> _ThrowIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
         return services().map(s -> {
-            // ------------------------------------------------------------------------------- given
             final var array = new byte[ThreadLocalRandom.current().nextInt(HelloWorld.BYTES << 1)];
             final var index = ThreadLocalRandom.current().nextInt(
                     Math.max(0, array.length - HelloWorld.BYTES + 1),
                     HelloWorld.BYTES << 2
             );
             assert array.length < (index + HelloWorld.BYTES);
-            return DynamicTest.dynamicTest(
+            return dynamicTest(
                     String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
-                        // --------------------------------------------------------------- when/then
-                        // assert: <s.set(array, index(> array.length - 12))>
-                        //         throws an <IndexOutOfBoundsException>
-                        Assertions.assertThrows(
-                                IndexOutOfBoundsException.class,
-                                () -> s.set(array, index)
-                        );
+                        assertThrows(IndexOutOfBoundsException.class, () -> s.set(array, index));
                     }
             );
         });
@@ -188,7 +161,6 @@ abstract class HelloWorld__Test {
     @TestFactory
     Stream<DynamicTest> _SetHelloWorldBytesOnArrayStartingAtIndex_() {
         return services().map(s -> {
-            // ------------------------------------------------------------------------------- given
             final var array = new byte[
                     ThreadLocalRandom.current().nextInt(HelloWorld.BYTES, HelloWorld.BYTES << 1)
                     ];
@@ -196,27 +168,23 @@ abstract class HelloWorld__Test {
                     array.length - HelloWorld.BYTES + 1
             );
             assert array.length >= index + HelloWorld.BYTES;
-            return DynamicTest.dynamicTest(
+            return dynamicTest(
                     String.format("%1$s.set(%2$s, %3$d)", s, array, index),
                     () -> {
-                        // -------------------------------------------------------------------- when
                         final var result = s.set(array, index);
-                        // -------------------------------------------------------------------- then
-                        // assert: <result> is same as <array>
-                        Assertions.assertSame(array, result);
-                        // assert: 'hello, world' set on the <array> starting at <index>
-                        Assertions.assertEquals('h', array[index]);
-                        Assertions.assertEquals('e', array[index + 0x1]);
-                        Assertions.assertEquals('l', array[index + 0x2]);
-                        Assertions.assertEquals('l', array[index + 0x3]);
-                        Assertions.assertEquals('o', array[index + 0x4]);
-                        Assertions.assertEquals(',', array[index + 005]); // ?
-                        Assertions.assertEquals(' ', array[index + 0x6]);
-                        Assertions.assertEquals('w', array[index + 0x7]);
-                        Assertions.assertEquals('o', array[index + 010]); // ?
-                        Assertions.assertEquals('r', array[index + 011]); // ?
-                        Assertions.assertEquals('l', array[index + 0xa]);
-                        Assertions.assertEquals(0x64, array[index + 11]);
+                        assertSame(array, result);
+                        assertEquals('h', array[index]);
+                        assertEquals('e', array[index + 0x1]);
+                        assertEquals('l', array[index + 0x2]);
+                        assertEquals('l', array[index + 0x3]);
+                        assertEquals('o', array[index + 0x4]);
+                        assertEquals(',', array[index + 005]); // ?
+                        assertEquals(' ', array[index + 0x6]);
+                        assertEquals('w', array[index + 0x7]);
+                        assertEquals('o', array[index + 010]); // ?
+                        assertEquals('r', array[index + 011]); // ?
+                        assertEquals('l', array[index + 0xa]);
+                        assertEquals(0x64, array[index + 11]);
                     }
             );
         });

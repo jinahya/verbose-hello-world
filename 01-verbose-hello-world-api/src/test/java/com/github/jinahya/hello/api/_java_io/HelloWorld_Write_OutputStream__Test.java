@@ -20,51 +20,26 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HexFormat;
-import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.zip.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.write_outputstream_writes_hello_world_bytes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(stream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
+class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -76,9 +51,11 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("byte array output stream")
     @Nested
     class ByteArrayOutputStream_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <ByteArrayOutputStream>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES)) {
@@ -87,12 +64,13 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
                     final var bytes = bais.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
     }
 
+    @DisplayName("filter output stream")
     @Nested
     class FilterOutputStream_Test {
 
@@ -143,9 +121,11 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
         }
     } // @formatter:on
 
+    @DisplayName("data output stream")
     @Nested
     class DataOutputStream_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -155,15 +135,17 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                      var dis = new DataInputStream(bais)) {
                     final var bytes = dis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
     }
 
+    @DisplayName("file output stream")
     @Nested
     class FileOutputStreamTest {
 
+        @DisplayName("should write <hello-world-bytes> through a real <FileOutputStream>")
         @Test
         void __() throws IOException {
             final var file = File.createTempFile("tmp", null, tempDir);
@@ -174,14 +156,18 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
             try (var stream = new FileInputStream(file)) {
                 final var bytes = stream.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
     }
 
+    @DisplayName("pipe")
     @Nested
     class PipeOutputStream_Test {
 
+        @DisplayName("""
+                should write <hello-world-bytes> through a
+                <PipedOutputStream> with sufficient pipe size""")
         @Test
         void __EnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -193,10 +179,13 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
 
+        @DisplayName("""
+                should write <hello-world-bytes> through a
+                <PipedOutputStream> with insufficient pipe size""")
         @Test
         void __NotEnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -215,15 +204,17 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
     }
 
     // ------------------------------------------------------------------------------- java.util.zip
+    @DisplayName("java.util.zip")
     @Nested
     class JavaUtilZipTest {
 
+        @DisplayName("should write <hello-world-bytes> through a <DeflaterOutputStream>")
         @Test
         void __DeflaterOutputStream() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -234,11 +225,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                      var iis = new InflaterInputStream(bais)) {
                     final var bytes = iis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
 
+        @DisplayName("should write <hello-world-bytes> through a <GZIPOutputStream>")
         @Test
         void __GZIPOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -257,11 +249,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorldTest {
                 final var decompressed = gzipis.readAllBytes();
                 log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
                           decompressed.length);
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
                                              decompressed);
             }
         }
 
+        @DisplayName("should write <hello-world-bytes> through a <ZipOutputStream>")
         @Test
         void __ZipOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given

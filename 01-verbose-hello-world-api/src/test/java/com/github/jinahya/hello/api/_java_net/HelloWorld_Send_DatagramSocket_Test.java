@@ -20,80 +20,58 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.net.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#send(DatagramSocket) send(socket)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(DatagramSocket)")
+@DisplayName("send(socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method throws a
      * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <socket> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <socket> argument is <null>")
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final DatagramSocket socket = null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(socket)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(socket));
     }
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method throws an
      * {@link IllegalArgumentException} when the {@code socket} is not connected.
      */
-    @DisplayName("""
-            should throw an <IllegalArgumentException>
-            when the <socket> is not connected"""
-    )
+    @DisplayName("should throw an <IllegalArgumentException> when the <socket> is not connected")
     @Test
     void _ThrowIllegalArgumentException_SocketIsNotConnected() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var socket = Mockito.mock(DatagramSocket.class);
-        Mockito.when(socket.isConnected()).thenReturn(false);
+        final var socket = mock(DatagramSocket.class);
+        when(socket.isConnected()).thenReturn(false);
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> service.send(socket)
-        );
+        assertThrows(IllegalArgumentException.class, () -> service.send(socket));
     }
 
     /**
@@ -105,66 +83,22 @@ class HelloWorld_Send_DatagramSocket_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <send(socket, socket.remoteAddress)>")
+    @DisplayName(
+            "should invoke <send(socket, socket.remoteSocketAddress)>, and return the <socket>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .send(ArgumentMatchers.<DatagramSocket>any(), ArgumentMatchers.any());
-        final var socket = Mockito.mock(DatagramSocket.class);
-        Mockito.when(socket.isConnected()).thenReturn(true);
-        final var target = Mockito.mock(SocketAddress.class);
-        Mockito.when(socket.getRemoteSocketAddress()).thenReturn(target);
+        doAnswer(returnsFirstArg()).when(service)
+                .send(ArgumentMatchers.<DatagramSocket>any(), any());
+        final var socket = mock(DatagramSocket.class);
+        when(socket.isConnected()).thenReturn(true);
+        final var target = mock(SocketAddress.class);
+        when(socket.getRemoteSocketAddress()).thenReturn(target);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1)).send(socket, target);
-        Assertions.assertSame(socket, result);
-    }
-
-    @畵蛇添足
-    @Test
-    void _添足_畵蛇() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        Mockito.doAnswer(i -> {
-            final var socket = i.getArgument(0, DatagramSocket.class);
-            socket.send(new DatagramPacket(
-                    HelloWorldTestUtils.hello_world_byte_array(),
-                    HelloWorld.BYTES
-            ));
-            return socket;
-        }).when(service).send(ArgumentMatchers.<DatagramSocket>any());
-        // ----------------------------------------------------------------------------- when / then
-        try (var server = new DatagramSocket(
-                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0))) {
-            // start a receiver thread
-            Thread.ofPlatform().start(() -> {
-                try {
-                    final DatagramPacket packet = new DatagramPacket(
-                            new byte[HelloWorld.BYTES << 1],                       // <buf>
-                            ThreadLocalRandom.current().nextInt(HelloWorld.BYTES), // <offset>
-                            HelloWorld.BYTES                                       // <length>
-                    );
-                    server.receive(packet);
-                    final var decoded = new String(
-                            packet.getData(),         // <bytes>
-                            packet.getOffset(),       // <offset>
-                            packet.getLength(),       // <length>
-                            StandardCharsets.US_ASCII // <charset>
-                    );
-                    log.debug("received: {}", decoded);
-                } catch (final IOException ioe) {
-                    log.error("failed to receive", ioe);
-                }
-            });
-            // send the 'hello, world' packet
-            try (var client = new DatagramSocket()) {
-                client.connect(server.getLocalSocketAddress());
-                service.send(client);
-            }
-        }
+//        verify(service, times(1)).send(socket, target);
+        assertSame(socket, result);
     }
 }

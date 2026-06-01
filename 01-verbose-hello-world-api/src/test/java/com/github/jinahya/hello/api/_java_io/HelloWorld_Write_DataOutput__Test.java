@@ -20,35 +20,31 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorld.BYTES;
-import static com.github.jinahya.hello.api.HelloWorldTestConstants.HELLO_WORLD_STRING;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.write_dataoutput_writes_hello_world_bytes;
-import static java.io.File.createTempFile;
-import static java.nio.charset.StandardCharsets.US_ASCII;
-import static java.util.concurrent.ThreadLocalRandom.current;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.github.jinahya.hello.api.HelloWorld.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static java.io.File.*;
+import static java.lang.String.*;
+import static java.nio.charset.StandardCharsets.*;
+import static java.util.concurrent.ThreadLocalRandom.*;
+import static java.util.stream.Collectors.*;
+import static java.util.stream.IntStream.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(output)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Write_DataOutput__Test extends HelloWorldTest {
+class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -60,9 +56,11 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorldTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("data output stream")
     @Nested
     class DataOutputStream_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -79,9 +77,11 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("random access file")
     @Nested
     class RandomAccessFile_Test {
 
+        @DisplayName("should write <hello-world-bytes> through a real <RandomAccessFile>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -100,6 +100,37 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorldTest {
                 final var b = new byte[BYTES];
                 file.readFully(b);
                 log.debug("read: {}", new String(b, US_ASCII));
+            }
+        }
+    }
+
+    @DisplayName("UTF-8")
+    @Nested
+    class UTF8_Test {
+
+        @DisplayName("should round-trip the <string> through <writeUTF>/<readUTF>")
+        @ValueSource(strings = {
+                HELLO_WORLD_STRING,
+                "홍길동",
+                "\uD83C\uDD30",
+                "\uD83D\uDE00"
+        })
+        @ParameterizedTest
+        void __(final String expected) throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 final var dos = new DataOutputStream(baos)) {
+                dos.writeUTF(expected);
+                baos.flush();
+                final var bytes = baos.toByteArray();
+                System.out.printf("%-50s %s%n",
+                                  range(0, bytes.length)
+                                          .mapToObj(i -> format("%02x", bytes[i]))
+                                          .collect(joining(" ", "", "")), expected);
+                try (var bais = new ByteArrayInputStream(bytes);
+                     final var dis = new DataInputStream(bais)) {
+                    final var actual = dis.readUTF();
+                    assertEquals(expected, actual);
+                }
             }
         }
     }

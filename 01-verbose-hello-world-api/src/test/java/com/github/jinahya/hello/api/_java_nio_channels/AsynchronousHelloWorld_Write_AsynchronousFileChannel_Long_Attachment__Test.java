@@ -20,75 +20,70 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
-@畵蛇添足
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@DisplayName("write(channel, position, attachment)")
 @Slf4j
-class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test
-        extends AsynchronousHelloWorldTest {
+abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
+
+    AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
+    }
 
     @BeforeEach
-    void __() { // @formatter:off
-        Mockito.doAnswer(i -> {
-            var channel = i.getArgument(0, AsynchronousFileChannel.class);
-            var position = i.getArgument(1, Long.class);
-            var attachment = i.getArgument(2);
-            var future = new CompletableFuture<>();
-            var src = HelloWorldTestUtils.hello_world_byte_buffer();
-            channel.write(src, position, position, new CompletionHandler<>() {
-                @Override
-                public void completed(Integer n, Long p) {
+    void __stubService() {
+        doAnswer(i -> {
+            final var channel = i.getArgument(0, AsynchronousFileChannel.class);
+            final var position = i.getArgument(1, Long.class);
+            final var attachment = i.getArgument(2);
+            final var future = new CompletableFuture<>();
+            final var src = hello_world_byte_buffer();
+            channel.write(src, position, position, new CompletionHandler<>() { // @formatter:off
+                @Override public void completed(final Integer result, Long attachment_) {
                     if (src.hasRemaining()) {
-                        long next = p + n;
-                        channel.write(src, next, next, this);
+                        attachment_ += result;
+                        channel.write(src, attachment_, attachment_, this);
                         return;
                     }
                     future.complete(attachment);
                 }
-                @Override
-                public void failed(Throwable t, Long p) {
-                    future.completeExceptionally(t);
-                }
+                @Override public void failed(final Throwable exc, final Long attachment_) {
+                    future.completeExceptionally(exc);
+                }  // @formatter:on
             });
             return future;
-        }).when(asynchronousService()).write(
-                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
-                ArgumentMatchers.anyLong(),
-                ArgumentMatchers.any()
-        ); // @formatter:on
+        }).when(asynchronousService()).write(any(), anyLong(), any());
     }
 
+    @DisplayName(
+            "should write <hello-world-bytes> to a real <AsynchronousFileChannel> at a <position>")
     @Test
-    void __(@TempDir final Path dir) throws Exception { // @formatter:off
+    void __(@TempDir final Path dir) throws Exception {
         var file = Files.createTempFile(dir, null, null);
         try (var channel = AsynchronousFileChannel.open(file, StandardOpenOption.WRITE)) {
-            AsynchronousHelloWorld asynchronousService = asynchronousService();
-            var attachment = new Object();
-            var result = asynchronousService.write(channel, 0L, attachment).toCompletableFuture().get(8L, TimeUnit.SECONDS);
-            Assertions.assertSame(attachment, result);
+            final var position = ThreadLocalRandom.current().nextLong(1024L);
+            final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+            final var result = asynchronousService()
+                    .write(channel, position, attachment).toCompletableFuture()
+                    .get(8L, TimeUnit.SECONDS);
+            assertSame(attachment, result);
+            assertEquals(position + HelloWorld.BYTES, Files.size(file));
         }
-        Assertions.assertEquals(HelloWorld.BYTES, Files.size(file)); // @formatter:on
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The Verbose Hello World API package. Centers on the
  * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld}
- * {@link FunctionalInterface functional interface} — whose single abstract method
+ * {@link java.lang.FunctionalInterface functional interface} — whose single abstract method
  * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[], int) set(array, index)} writes the
  * {@value com.github.jinahya.hello.api.HelloWorld#BYTES} {@code US-ASCII} bytes of
  * {@code "hello, world"} — and surrounds it with {@code default} methods that exercise every major

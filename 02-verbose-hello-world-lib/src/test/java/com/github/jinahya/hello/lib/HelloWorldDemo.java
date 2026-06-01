@@ -20,9 +20,9 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.*;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
 
 /**
  * A class, for demonstration purposes only, implements the {@link HelloWorld} interface.
@@ -32,10 +32,6 @@ import java.nio.charset.StandardCharsets;
 class HelloWorldDemo implements HelloWorld {
 
     private static final String STRING = "hello, world";
-
-    HelloWorldDemo() {
-        super();
-    }
 
     @Override
     public String toString() {

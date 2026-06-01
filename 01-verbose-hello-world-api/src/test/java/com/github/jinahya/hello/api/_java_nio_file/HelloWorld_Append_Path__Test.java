@@ -20,54 +20,51 @@ package com.github.jinahya.hello.api._java_nio_file;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static java.nio.charset.StandardCharsets.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("append(path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Append_Path__Test extends HelloWorldTest {
+class HelloWorld_Append_Path__Test extends HelloWorld__Test {
 
+    @TempDir
+    private static Path tempDir;
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeEach
+    void beforeEach() throws IOException {
+        append_path_appends_hello_world(service());
+    }
+
+    @DisplayName("should append <hello-world-bytes> to a real <Path>")
     @Test
-    void __(final @TempDir Path tempDir) throws Exception {
-        // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.append_path_appends_hello_world(service());
-        Mockito.doAnswer(i -> {
-            final var path = i.getArgument(0, Path.class);
-            try (var channel = FileChannel.open(path, StandardOpenOption.APPEND)) {
-                for (final var b = ByteBuffer.allocate(HelloWorld.BYTES);
-                     b.hasRemaining(); ) {
-                    final var written = channel.write(b);
-                    assert written >= 0;
-                }
-                channel.force(true);
-            }
-            return path;
-        }).when(service).append(ArgumentMatchers.notNull(Path.class));
+    void __() throws Exception {
         final var path = Files.createTempFile(tempDir, null, null);
-        HelloWorldTestUtils.writeSome(path);
-        final var size = Files.size(path);
-        // ------------------------------------------------------------------------------------ when
-        service.append(path);
-        // ------------------------------------------------------------------------------------ then
-        Assertions.assertEquals(
-                size + HelloWorld.BYTES,
-                Files.size(path)
-        );
+        final var size = Files.size(writeSome(path));
+        service().append(path);
+        assertEquals(size + HelloWorld.BYTES, Files.size(path));
+        try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
+            channel.position(size);
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            while (buffer.hasRemaining() ) {
+                channel.read(buffer);
+            }
+            assertEquals(HELLO_WORLD_STRING, US_ASCII.decode(buffer.flip()).toString());
+        }
     }
 }

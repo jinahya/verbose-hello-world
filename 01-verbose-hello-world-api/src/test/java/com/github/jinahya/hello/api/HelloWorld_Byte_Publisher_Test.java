@@ -20,29 +20,19 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentCaptor.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Subscription-level tests for {@link HelloWorldBytePublisher} against the
@@ -50,6 +40,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("byte publisher")
 @Slf4j
 class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
 
@@ -61,11 +52,13 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("""
+            should emit exactly <12> elements and <onComplete>
+            when the subscriber calls <request(12)>""")
     @Test
-    @DisplayName("request(12) → exactly 12 elements + onComplete")
     void __singleExactly12() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -76,7 +69,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onComplete());
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -94,9 +87,10 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should give each subscriber <min(n, 12)> elements and <onComplete>
+            when <n >= 12>, given multiple subscribers each requesting <n> in <[1, 24)>""")
     @Test
-    @DisplayName("multiple subscribers, each request(n) in [1, 24) → "
-                 + "each gets min(n, 12) elements (+ onComplete if n ≥ 12)")
     void __multiRandom1To24() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var count = ThreadLocalRandom.current().nextInt(2, 5);
@@ -105,7 +99,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES << 1); // [1, 24)
             demands[i] = n;
-            subscribers.add(loggingSpy(new Flow.Subscriber<>() {
+            subscribers.add(Mockito__TestUtils.loggingSpy(new Flow.Subscriber<>() {
                 @Override public void onSubscribe(final Flow.Subscription subscription) {
                     subscription.request(n);
                 }
@@ -121,14 +115,16 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             for (final var subscriber : subscribers) {
                 p.subscribe(subscriber);
             }
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < count; i++) {
-                    final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
-                    final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
-                    verify(subscribers.get(i), times(expectedNext)).onNext(any());
-                    verify(subscribers.get(i), times(expectedComplete)).onComplete();
+            for (int i = 0; i < count; i++) {
+                final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
+                final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
+                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(expectedNext))
+                        .onNext(any());
+                if (expectedComplete > 0) {
+                    verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(expectedComplete))
+                            .onComplete();
                 }
-            });
+            }
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -150,13 +146,15 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should signal <onError> with no <onNext> and no <onComplete>
+            when <service.set> throws""")
     @Test
-    @DisplayName("service.set throws → subscriber gets onError, no onNext, no onComplete")
     void __serviceThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
-        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -167,8 +165,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            await().atMost(TIMEOUT)
-                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -180,13 +177,15 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         assertSame(error, errorCaptor.getValue()); // @formatter:on
     }
 
+    @DisplayName("""
+            should deliver <onError> via <SubmissionPublisher>
+            and let <subscribe> return normally
+            when <subscriber.onSubscribe> throws""")
     @Test
-    @DisplayName("subscriber.onSubscribe throws → SubmissionPublisher delivers onError, "
-                 + "subscribe returns normally")
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated onSubscribe failure");
-        final var subscriber = loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 throw error;
             }
@@ -197,8 +196,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);                  // returns normally
-            await().atMost(TIMEOUT)
-                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then

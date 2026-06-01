@@ -20,25 +20,17 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.reactivestreams.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
+import java.time.*;
+import java.util.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link ReactiveHelloWorldByteProcessor} with multiple downstream subscribers
@@ -47,6 +39,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("byte processor")
 @Slf4j
 class ReactiveHelloWorld_Byte_ProcessorTest {
 
@@ -61,16 +54,20 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void stubService() {
-        set_array_sets_actual_hello_world_bytes(service);
+        set_array_sets_hello_world_bytes(service);
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
         try (final var processor = new ReactiveHelloWorldByteProcessor(service)) {
         }
     }
 
+    @DisplayName("""
+            should deliver <min(d, 12)> elements to each subscriber and <onComplete>
+            when <d >= 12>, given two subscribers requesting <BYTES - 1> and <BYTES + 1>""")
     @Test
     void __() { // @formatter:on
         // ----------------------------------------------------------------------------------- given
@@ -80,7 +77,7 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
         try (final var processor = new ReactiveHelloWorldByteProcessor(service)) {
             final var subscribers = new ArrayList<Subscriber<Byte>>();
             for (final int d : ds) {
-                final var subscriber = loggingSpy(new Subscriber<Byte>() {
+                final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
                         Thread.ofVirtual().start(() -> {
@@ -103,16 +100,14 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
                 processor.subscribe(subscriber);
             }
             // -------------------------------------------------------------------------------- then
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < ds.length; i++) {
-                    final var sub = subscribers.get(i);
-                    if (ds[i] >= HelloWorld.BYTES) {
-                        verify(sub, times(1)).onComplete();
-                    } else {
-                        verify(sub, times(ds[i])).onNext(any());
-                    }
+            for (int i = 0; i < ds.length; i++) {
+                final var sub = subscribers.get(i);
+                if (ds[i] >= HelloWorld.BYTES) {
+                    verify(sub, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
+                } else {
+                    verify(sub, timeout(TIMEOUT.toMillis()).times(ds[i])).onNext(any());
                 }
-            });
+            }
             for (int i = 0; i < ds.length; i++) {
                 final var subscriber = subscribers.get(i);
                 verify(subscriber, times(1)).onSubscribe(notNull());

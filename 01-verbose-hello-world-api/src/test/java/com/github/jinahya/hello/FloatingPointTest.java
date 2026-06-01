@@ -20,15 +20,14 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import org.junit.jupiter.api.*;
 
 // Raw Bit Field	Official IEEE 754 Name	Common "Math" Name
 // Sign	Sign	Sign
 // Exponent	Biased Exponent	Characteristic
 // Fraction	Trailing Significand	Mantissa
+@DisplayName("floating point")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class FloatingPointTest {
 
@@ -55,6 +54,8 @@ class FloatingPointTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should print bit patterns of positive and negative <zero> for <float> and <double>")
     @Test
     void Zeros() {
         {
@@ -67,6 +68,7 @@ class FloatingPointTest {
         }
     }
 
+    @DisplayName("should print bit patterns of <normal> <float> and <double> values")
     @Test
     void NormalNumbers() {
         {
@@ -97,6 +99,7 @@ class FloatingPointTest {
         }
     }
 
+    @DisplayName("should print bit patterns of <subnormal> <float> and <double> values")
     @Test
     void SubnormalNumbers() {
         {
@@ -119,6 +122,9 @@ class FloatingPointTest {
         }
     }
 
+    @DisplayName("""
+            should print bit patterns of positive and negative <infinity>
+            for <float> and <double>""")
     @Test
     void Infinities() {
         {
@@ -131,6 +137,7 @@ class FloatingPointTest {
         }
     }
 
+    @DisplayName("should recognize <quiet NaN> bit patterns as <NaN> for <float> and <double>")
     @Test
     void qNaNs() {
         {
@@ -157,6 +164,7 @@ class FloatingPointTest {
         }
     }
 
+    @DisplayName("should recognize <signaling NaN> bit patterns as <NaN> for <float> and <double>")
     @Test
     void sNaNs() {
         {

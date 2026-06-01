@@ -20,25 +20,19 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.Console;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("write(console)")
 class HelloWorld_Console_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     private interface PrivateHelloWorld
             extends HelloWorld {
@@ -57,7 +51,7 @@ class HelloWorld_Console_Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <console> argument is <null>")
     @Test
     void _ThrowNullPointerException_ConsoleIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -70,7 +64,7 @@ class HelloWorld_Console_Test
         );
     }
 
-    @DisplayName("invoke write(console.writer)")
+    @DisplayName("should invoke <write(console.writer)>, and return the <console>")
     @Test
     void __()
             throws IOException {

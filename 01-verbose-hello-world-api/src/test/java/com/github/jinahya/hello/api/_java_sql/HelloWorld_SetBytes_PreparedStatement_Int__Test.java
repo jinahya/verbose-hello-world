@@ -20,28 +20,20 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.nio.charset.StandardCharsets;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.nio.charset.*;
+import java.sql.*;
 
+@DisplayName("setBytes(statement, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBytes_PreparedStatement_Int__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws SQLException {
@@ -54,10 +46,11 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
                 ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
-        HelloWorldTestUtils.set_array_returns_the_array(service());
+        HelloWorld__TestUtils.set_array_returns_the_array(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -72,6 +65,9 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real H2 PreparedStatement>""")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -109,6 +105,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -122,6 +119,9 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real HSQLDB PreparedStatement>""")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -159,6 +159,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Nested
     class SQLite_Test {
 
@@ -172,6 +173,9 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real SQLite PreparedStatement>""")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

@@ -20,62 +20,23 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.StandardSocketOptions;
-import java.net.URLConnection;
-import java.net.http.HttpRequest;
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.BreakIterator;
-import java.util.BitSet;
-import java.util.Objects;
-import java.util.SequencedCollection;
-import java.util.SequencedMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
-import java.util.zip.Checksum;
-import java.util.zip.Deflater;
+import javax.crypto.*;
+import java.io.*;
+import java.lang.foreign.*;
+import java.lang.invoke.*;
+import java.net.*;
+import java.net.http.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.security.*;
+import java.sql.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.zip.*;
 
 /**
  * An interface for writing <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
@@ -103,6 +64,10 @@ import java.util.zip.Deflater;
 })
 public interface HelloWorld {
 
+    private static System.Logger log() {
+        return System.getLogger(MethodHandles.lookup().lookupClass().getName());
+    }
+
     // ----------------------------------------------------------------------------------- constants
 
     /**
@@ -111,8 +76,8 @@ public interface HelloWorld {
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.3">9.3.
      * Field (Constant) Declarations</a> (The Java® Language Specification)
      */
-    /* public static final */
-    int BYTES = 12;
+    public static final // redundant
+            int BYTES = 12;
 
     // ----------------------------------------------------------------------------------- java.lang
 
@@ -191,39 +156,6 @@ public interface HelloWorld {
     }
 
     /**
-     * Returns an array of {@value #BYTES} bytes on which the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> are set.
-     * <p>
-     * The result array, on successful return, will be set as follows.
-     * <pre>
-     *  0                       12
-     *  ↓                       ↓
-     * |h|e|l|l|o|,| |w|o|r|l|d|
-     * </pre>
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * final var array = new byte[BYTES];
-     * set(array);
-     * return array;
-     *}
-     *
-     * @return an array of {@value #BYTES} bytes containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and returns the result.
-     */
-    @Deprecated(forRemoval = true)
-    default byte[] byteArray() {
-        return set(new byte[BYTES]);
-    }
-
-    @Deprecated(forRemoval = true)
-    default String string() {
-        return new String(byteArray(), StandardCharsets.US_ASCII);
-    }
-
-    /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified appendable.
      * <p>
      * The default implementation would be as follows.
@@ -260,9 +192,9 @@ public interface HelloWorld {
         }
 //        final var array = new byte[BYTES];
 //        set(array);
-        for (final var b : set(new byte[BYTES])) {
-            appendable.append((char) b);
-        }
+//        for (final var b : array) {
+//            appendable.append((char) b);
+//        }
         return appendable;
     }
 
@@ -360,10 +292,6 @@ public interface HelloWorld {
         set(new byte[BYTES]);
 //        stream.write(array);
         return stream;
-    }
-
-    default InputStream inputStream() {
-        return new ByteArrayInputStream(byteArray());
     }
 
     /**
@@ -516,10 +444,6 @@ public interface HelloWorld {
         return file;
     }
 
-    default InputStream asInputStream() throws IOException {
-        return new ByteArrayInputStream(byteArray());
-    }
-
     // ------------------------------------------------------------------------------------ java.net
 
     /**
@@ -634,7 +558,6 @@ public interface HelloWorld {
             throw new IllegalArgumentException("not connected; " + socket);
         }
         final var target = socket.getRemoteSocketAddress();
-        assert target != null;
 //        send(socket, target);
         return socket;
     }
@@ -702,7 +625,8 @@ public interface HelloWorld {
         if (connection == null) {
             throw new NullPointerException("connection is null");
         }
-        write(connection.getOutputStream());
+        final var stream = connection.getOutputStream();
+        write(stream);
         return connection;
     }
 
@@ -737,12 +661,6 @@ public interface HelloWorld {
     }
 
     // -------------------------------------------------------------------------------- java.net.ssl
-//    @Deprecated(forRemoval = true)
-//    @屋上架屋("SSLSocket extends Socket")
-//    @SuppressWarnings({"unchecked"})
-//    default <T extends SSLSocket> T send(final T socket) throws IOException {
-//        return (T) send((Socket) socket);
-//    }
 
     // ------------------------------------------------------------------------------------ java.nio
 
@@ -822,62 +740,16 @@ public interface HelloWorld {
             throw new BufferOverflowException();
         }
         if (buffer.hasArray()) {
-//            final var array = buffer.array();
-//            final var index = buffer.arrayOffset() + buffer.position();
+            final var array = buffer.array();
+            final var index = buffer.arrayOffset() + buffer.position();
 //            set(array, index);
 //            buffer.position(buffer.position() + BYTES);
         } else {
-//            final var array = new byte[BYTES];
-//            set(array);
+            final var array = new byte[BYTES];
+            set(array);
 //            buffer.put(array);
         }
         return buffer;
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings({"unchecked"})
-    default <T extends ByteBuffer> T byteBuffer(final Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return (T) put(Objects.requireNonNull(supplier.get(), "supplier.get() is null")).flip();
-    }
-
-    @Deprecated(forRemoval = true)
-    default ByteBuffer byteBuffer() {
-        return byteBuffer(() -> ByteBuffer.allocate(BYTES));
-    }
-
-    /**
-     * Returns a byte buffer of {@value #BYTES} bytes, containing the <a
-     * href="#hello-world-bytes">hello-world-bytes</a>, whose {@code position}, {@code limit} is
-     * equal to the {@code capacity}.
-     * <p>
-     * The result buffer's state, on successful return, is as follows.
-     * <pre>
-     *  0                       12
-     *                          position = limit = capacity
-     *  ↓                       ↓
-     * |h|e|l|l|o|,| |w|o|r|l|d|
-     *                         |
-     *                         remaining(0)
-     * </pre>
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * var buffer = ByteBuffer.allocate(BYTES);
-     * put(buffer);
-     * return buffer;
-     *}
-     *
-     * @return a byte buffer ready to be drained.
-     * @implSpec Default implementation invokes {@link #put(ByteBuffer)} with a byte buffer of
-     * {@value #BYTES}, and returns the byte buffer.
-     * @apiNote The returned buffer has no remaining. Callers should {@link ByteBuffer#flip() flip}
-     * the buffer before reading from it.
-     * @see #put(ByteBuffer)
-     * @see ByteBuffer#flip()
-     */
-    default ByteBuffer put() {
-        return ByteBuffer.wrap(byteArray());
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
@@ -913,8 +785,8 @@ public interface HelloWorld {
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
-//        final var buffer = ByteBuffer.allocate(BYTES);
-//        put(buffer);
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
 //        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            channel.write(buffer);
@@ -967,33 +839,30 @@ public interface HelloWorld {
      * @see #put(ByteBuffer)
      * @see DatagramChannel#send(ByteBuffer, SocketAddress)
      */
-    @SuppressWarnings({"unchecked"})
     default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
             throws IOException {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(target, "target is null");
         if (channel.isBlocking()) {
-            return (T) send(channel.socket(), target).getChannel();
+            final var socket = channel.socket();
+            send(socket, target);
+            return channel;
         }
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
-//        while (channel.send(buffer, target) == 0) {
-//            {
-//                final var sndbuf = channel.getOption(StandardSocketOptions.SO_SNDBUF);
-//                if (sndbuf == null || sndbuf < BYTES) {
-//                    throw new IOException("channel.SNDBUF is not enough: " + sndbuf);
-//                }
-//            }
-//            Thread.onSpinWait();
-//        }
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            channel.send(buffer, target);
+        }
         return channel;
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified connected
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified connected
      * datagram channel.
      *
      * @param <T>     channel type parameter
-     * @param channel the connected datagram channel to which bytes are written.
+     * @param channel the connected datagram channel to which bytes are sent.
      * @return the given {@code channel}.
      * @throws NullPointerException     if {@code channel} is {@code null}.
      * @throws IllegalArgumentException if the {@code channel} is not
@@ -1021,15 +890,17 @@ public interface HelloWorld {
      * @see #send(DatagramSocket)
      * @see #write(WritableByteChannel)
      */
-    @SuppressWarnings({"unchecked"})
-    default <T extends DatagramChannel> T write(final T channel) throws IOException {
+    default <T extends DatagramChannel> T send(final T channel) throws IOException {
         if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
             throw new IllegalArgumentException("not connected: " + channel);
         }
         if (channel.isBlocking()) {
-            return (T) send(channel.socket()).getChannel();
+            final var socket = channel.socket();
+            send(socket);
+            return channel;
         }
-        return (T) write((WritableByteChannel) channel);
+        write(channel);
+        return channel;
     }
 
     /**
@@ -1052,11 +923,12 @@ public interface HelloWorld {
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
         Objects.requireNonNull(channel, "channel is null");
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            final var future = channel.write(buffer);
 //            final var written = future.get();
-//            assert written > 0;
 //        }
         return channel;
     }
@@ -1114,11 +986,12 @@ public interface HelloWorld {
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
-        final var buffer = put(ByteBuffer.allocate(BYTES)).flip();
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
 //        while (buffer.hasRemaining()) {
 //            final var future = channel.write(buffer, position);
 //            final var written = future.get();
-//            assert written > 0; // why?
 //            position += written;
 //        }
         return channel;
@@ -1138,7 +1011,6 @@ public interface HelloWorld {
      *                                     StandardOpenOption.CREATE,
      *                                     StandardOpenOption.APPEND)) {
      *     write(channel);
-     *     channel.force(true);
      * } // @end
      * return path;
      *}
@@ -1151,13 +1023,11 @@ public interface HelloWorld {
      * @implSpec Default implementation opens a {@link FileChannel} from {@code path} with
      * {@link StandardOpenOption#CREATE CREATE} and {@link StandardOpenOption#APPEND APPEND},
      * invokes {@link #write(WritableByteChannel) write(channel)} method with it,
-     * {@link FileChannel#force(boolean) forces channel including metadata},
      * {@link WritableByteChannel#close() closes} the channel, and returns the {@code path}.
      * @see FileChannel#open(Path, OpenOption...)
      * @see StandardOpenOption#CREATE
      * @see StandardOpenOption#APPEND
      * @see #write(WritableByteChannel)
-     * @see FileChannel#force(boolean)
      * @see <a
      * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
      * try-with-resources</a> (The Java® Language Specification)
@@ -1168,10 +1038,9 @@ public interface HelloWorld {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND
         };
-        try (var channel = FileChannel.open(path, options)) {
-            write((WritableByteChannel) channel);
-            channel.force(true);
-        }
+//        try (var channel = FileChannel.open(path, options)) {
+//            write(channel);
+//        }
         return path;
     }
 
@@ -1195,7 +1064,7 @@ public interface HelloWorld {
         Objects.requireNonNull(digest, "digest is null");
         final var array = new byte[BYTES];
         set(array);
-//        digest.update(array);
+        digest.update(array);
         return digest;
     }
 
@@ -1547,7 +1416,7 @@ public interface HelloWorld {
         final var array = new byte[BYTES];
         set(array);
         final var string = new String(array, StandardCharsets.UTF_8);
-//        iterator.setText(string);
+        iterator.setText(string);
         return iterator;
     }
 
@@ -1594,30 +1463,6 @@ public interface HelloWorld {
         return bitset;
     }
 
-//    /**
-//     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
-//     * {@link Byte}, into the specified collection.
-//     *
-//     * @param <T>        collection type parameter
-//     * @param collection the collection into which each byte is collected.
-//     * @return the given {@code collection}.
-//     * @throws NullPointerException if {@code collection} is {@code null}.
-//     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-//     * of {@value #BYTES} bytes, and {@link Collection#add(Object) adds} each byte in the array,
-//     * boxed as {@link Byte}, to the {@code collection}.
-//     * @see #set(byte[])
-//     * @see Collection#add(Object)
-//     */
-//    default <T extends Collection<? super Byte>> T collect(final T collection) {
-//        Objects.requireNonNull(collection, "collection is null");
-//        final var array = new byte[BYTES];
-//        set(array);
-//        for (final var b : array) {
-//            collection.add(b);
-//        }
-//        return collection;
-//    }
-
     /**
      * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
      * specified mapper, into the specified collection.
@@ -1631,11 +1476,11 @@ public interface HelloWorld {
      * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, boxed as
-     * {@link Byte}, and {@link SequencedCollection#add(Object) adds} the result to the
-     * {@code collection}.
+     * {@link Byte}, and {@link SequencedCollection#addLast(Object) appends} the result to the end
+     * of the {@code collection}.
      * @see #set(byte[])
      * @see Function#apply(Object)
-     * @see SequencedCollection#add(Object)
+     * @see SequencedCollection#addLast(Object)
      */
     default <T extends SequencedCollection<? super U>, U>
     T add(final T collection, final Function<? super Byte, ? extends U> mapper) {
@@ -1644,44 +1489,7 @@ public interface HelloWorld {
         final var array = new byte[BYTES];
         set(array);
         for (final var b : array) {
-            collection.add(mapper.apply(b));
-        }
-        return collection;
-    }
-
-    /**
-     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the
-     * specified mapper, into the specified collection.
-     * <p>
-     * Each byte is applied to the {@code mapper} as an {@code int}. Because every
-     * <a href="#hello-world-bytes">hello-world-byte</a> is non-negative (within
-     * {@code [0x20..0x77]}), the widening conversion preserves the byte's numeric value with no
-     * masking required.
-     *
-     * @param <T>        collection type parameter
-     * @param <R>        element type parameter
-     * @param collection the collection into which each mapped value is collected.
-     * @param mapper     the function applied to each byte, widened to an {@code int}, to produce
-     *                   the value to be collected.
-     * @return the given {@code collection}.
-     * @throws NullPointerException if either {@code collection} or {@code mapper} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, widened to an
-     * {@code int}, and {@link SequencedCollection#add(Object) adds} the result to the
-     * {@code collection}.
-     * @see #set(byte[])
-     * @see IntFunction#apply(int)
-     * @see SequencedCollection#add(Object)
-     */
-    default <T extends SequencedCollection<? super R>, R>
-    T add(final T collection, final IntFunction<? extends R> mapper) {
-        Objects.requireNonNull(collection, "collection is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-//            collection.add(mapper.apply(b & 0xFF));
-            collection.add(mapper.apply(b));
+            collection.addLast(mapper.apply(b));
         }
         return collection;
     }
@@ -1698,75 +1506,37 @@ public interface HelloWorld {
      * @param <K>         key type parameter
      * @param <V>         value type parameter
      * @param map         the sequenced map into which each entry is put.
-     * @param keyMapper   the function applied to each byte index, in
-     *                    {@code [0, }{@value #BYTES}{@code )}, to produce the key.
+     * @param keyMapper   the function applied to each byte, boxed as {@link Byte}, to produce the
+     *                    key.
      * @param valueMapper the function applied to each byte, boxed as {@link Byte}, to produce the
      *                    value.
      * @return the given {@code map}.
      * @throws NullPointerException if any of {@code map}, {@code keyMapper}, or {@code valueMapper}
      *                              is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and, for each byte index {@code i} in
-     * {@code [0, }{@value #BYTES}{@code )}, {@link SequencedMap#put(Object, Object) puts}
-     * {@code (keyMapper.apply(i), valueMapper.apply(array[i]))} into the {@code map}.
+     * of {@value #BYTES} bytes, and, for each byte {@code b} in the array, appends
+     * {@code (keyMapper.apply(b), valueMapper.apply(b))} to the end of the {@code map} via
+     * {@link SequencedMap#putLast(Object, Object)}.
      * @see #set(byte[])
-     * @see IntFunction#apply(int)
      * @see Function#apply(Object)
-     * @see SequencedMap#put(Object, Object)
+     * @see SequencedMap#putLast(Object, Object)
      */
     default <T extends SequencedMap<? super K, ? super V>, K, V> T put(
             final T map,
-            final IntFunction<? extends K> keyMapper,
+            final Function<? super Byte, ? extends K> keyMapper,
             final Function<? super Byte, ? extends V> valueMapper) {
         Objects.requireNonNull(map, "map is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final var array = new byte[BYTES];
         set(array);
-        for (var i = 0; i < array.length; i++) {
-            map.put(keyMapper.apply(i), valueMapper.apply(array[i]));
+        for (final var b : array) {
+            map.putLast(keyMapper.apply(b), valueMapper.apply(b));
         }
         return map;
     }
 
     // -------------------------------------------------------------------------- java.util.function
-
-    /**
-     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
-     * {@link Byte}, to the specified consumer.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(consumer, "consumer is null");
-     * final var array = new byte[BYTES];
-     * set(array);
-     * for (final var b : array) { // @highlight region
-     *     consumer.accept(b);
-     * } // @end
-     * return consumer;
-     *}
-     *
-     * @param <T>      consumer type parameter
-     * @param consumer the consumer to which each byte is accepted.
-     * @return the given {@code consumer}.
-     * @throws NullPointerException if {@code consumer} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link Consumer#accept(Object) accepts} each byte in the array,
-     * boxed as {@link Byte}, to the {@code consumer}.
-     * @see #set(byte[])
-     * @see Consumer#accept(Object)
-     * @deprecated Use {@link #acceptEach(Consumer, Function)}
-     */
-    @Deprecated
-    default <T extends Consumer<? super Byte>> T accept(final T consumer) {
-        Objects.requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-            consumer.accept(b);
-        }
-        return consumer;
-    }
 
     /**
      * Accepts a value, mapped from each of the <a href="#hello-world-bytes">hello-world-bytes</a>
@@ -1800,7 +1570,7 @@ public interface HelloWorld {
      * @see Consumer#accept(Object)
      */
     default <T extends Consumer<? super U>, U>
-    T acceptEach(final T consumer, final Function<? super Byte, ? extends U> mapper) {
+    T accept(final T consumer, final Function<? super Byte, ? extends U> mapper) {
         Objects.requireNonNull(consumer, "consumer is null");
         Objects.requireNonNull(mapper, "mapper is null");
         final var array = new byte[BYTES];
@@ -1811,87 +1581,7 @@ public interface HelloWorld {
         return consumer;
     }
 
-    /**
-     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, widened to
-     * {@code int}, to the specified consumer.
-     * <p>
-     * The default implementation would be as follows.
-     * {@snippet lang = "java":
-     * Objects.requireNonNull(consumer, "consumer is null");
-     * final var array = new byte[BYTES];
-     * set(array);
-     * for (final var b : array) { // @highlight region
-     *     consumer.accept(b);
-     * } // @end
-     * return consumer;
-     *}
-     *
-     * @param <T>      consumer type parameter
-     * @param consumer the consumer to which each byte, widened to {@code int}, is accepted.
-     * @return the given {@code consumer}.
-     * @throws NullPointerException if {@code consumer} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, and {@link IntConsumer#accept(int) accepts} each byte in the array,
-     * widened to {@code int}, to the {@code consumer}.
-     * @see #set(byte[])
-     * @see IntConsumer#accept(int)
-     */
-    default <T extends IntConsumer> T acceptEach(final T consumer) {
-        Objects.requireNonNull(consumer, "consumer is null");
-        final var array = new byte[BYTES];
-        set(array);
-        for (final var b : array) {
-            consumer.accept(b);
-        }
-        return consumer;
-    }
-
     // ------------------------------------------------------------------------------- java.util.jar
-
-    // ------------------------------------------------------------------------------- java.util.zip
-
-    /**
-     * Updates the specified checksum with the <a href="#hello-world-bytes">hello-world-bytes</a>.
-     *
-     * @param <T>      checksum type parameter
-     * @param checksum the checksum to be updated.
-     * @return the given {@code checksum}.
-     * @throws NullPointerException if {@code checksum} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, {@link Checksum#update(byte[]) updates} the {@code checksum} with
-     * the array, and returns the {@code checksum}.
-     * @see #set(byte[])
-     * @see Checksum#update(byte[])
-     */
-    default <T extends Checksum> T update(final T checksum) {
-        Objects.requireNonNull(checksum, "checksum is null");
-        final var array = new byte[BYTES];
-        set(array);
-        checksum.update(array);
-        return checksum;
-    }
-
-    /**
-     * Sets, as an input data for compression, the <a
-     * href="#hello-world-bytes">hello-world-bytes</a> to the specified deflater.
-     *
-     * @param <T>      deflater type parameter
-     * @param deflater the deflater to which the input data is set.
-     * @return the given {@code deflater}.
-     * @throws NullPointerException if {@code deflater} is {@code null}.
-     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, {@link Deflater#setInput(byte[]) sets} the array as the input data
-     * of the {@code deflater}, and returns the {@code deflater}.
-     * @see #set(byte[])
-     * @see Deflater#setInput(byte[])
-     */
-    default <T extends Deflater> T setInput(final T deflater) {
-        Objects.requireNonNull(deflater, "deflater is null");
-        final var array = new byte[BYTES];
-        set(array);
-        deflater.setInput(array);
-        return deflater;
-    }
 
     // ---------------------------------------------------------------------------- java.util.stream
 
@@ -1938,6 +1628,51 @@ public interface HelloWorld {
 //        Objects.requireNonNull(builder, "builder is null");
 //        return (T) acceptEach((IntConsumer) builder);
 //    }
+
+    // ------------------------------------------------------------------------------- java.util.zip
+
+    /**
+     * Updates the specified checksum with the <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param <T>      checksum type parameter
+     * @param checksum the checksum to be updated.
+     * @return the given {@code checksum}.
+     * @throws NullPointerException if {@code checksum} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Checksum#update(byte[]) updates} the {@code checksum} with
+     * the array, and returns the {@code checksum}.
+     * @see #set(byte[])
+     * @see Checksum#update(byte[])
+     */
+    default <T extends Checksum> T update(final T checksum) {
+        Objects.requireNonNull(checksum, "checksum is null");
+        final var array = new byte[BYTES];
+        set(array);
+        checksum.update(array);
+        return checksum;
+    }
+
+    /**
+     * Sets, as an input data for compression, the <a
+     * href="#hello-world-bytes">hello-world-bytes</a> to the specified deflater.
+     *
+     * @param <T>      deflater type parameter
+     * @param deflater the deflater to which the input data is set.
+     * @return the given {@code deflater}.
+     * @throws NullPointerException if {@code deflater} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link Deflater#setInput(byte[]) sets} the array as the input data
+     * of the {@code deflater}, and returns the {@code deflater}.
+     * @see #set(byte[])
+     * @see Deflater#setInput(byte[])
+     */
+    default <T extends Deflater> T setInput(final T deflater) {
+        Objects.requireNonNull(deflater, "deflater is null");
+        final var array = new byte[BYTES];
+        set(array);
+        deflater.setInput(array);
+        return deflater;
+    }
 
     // -------------------------------------------------------------------------------- javax.crypto
 

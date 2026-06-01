@@ -1,0 +1,28 @@
+= Method usages — Mockito / JUnit Jupiter / Awaitility
+
+== FQCN only
+
+[%unbreakable]
+[source]
+----
+org.awaitility.Awaitility
+org.junit.jupiter.api.Assertions
+org.junit.jupiter.api.DynamicTest
+org.mockito.AdditionalAnswers
+org.mockito.ArgumentCaptor
+org.mockito.ArgumentMatchers
+org.mockito.Mockito
+----
+
+== FQCN.method
+
+[%unbreakable]
+[source]
+----
+org.junit.jupiter.api.Assertions.assertEquals
+org.junit.jupiter.api.Assertions.assertInstanceOf
+org.junit.jupiter.api.Assertions.assertSame
+org.junit.jupiter.api.Assertions.assertThrows
+org.junit.jupiter.api.DynamicTest.dynamicTest
+----
+

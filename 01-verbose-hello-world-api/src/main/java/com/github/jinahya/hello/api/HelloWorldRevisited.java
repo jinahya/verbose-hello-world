@@ -20,42 +20,20 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.Writer;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.http.HttpRequest;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.util.BitSet;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
-import java.util.zip.Checksum;
-import java.util.zip.Deflater;
+import javax.crypto.*;
+import java.io.*;
+import java.lang.foreign.*;
+import java.net.*;
+import java.net.http.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.zip.*;
 
 /**
  * Just a revisited implementation.
@@ -75,7 +53,7 @@ interface HelloWorldRevisited
         assert array != null;
         assert index >= 0;
         assert index + BYTES <= array.length;
-        final var src = "hello, world".getBytes(StandardCharsets.US_ASCII);
+        final var src = HelloWorldConstants.HELL_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
         System.arraycopy(src, 0, array, index, src.length);
         return array;
     }
@@ -85,8 +63,7 @@ interface HelloWorldRevisited
         return set(array, 0);
     }
 
-    @Override
-    default byte[] byteArray() {
+    private byte[] byteArray() {
         return set(new byte[BYTES]);
     }
 
@@ -135,7 +112,7 @@ interface HelloWorldRevisited
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
-    default <T extends PrintStream> T write(final T stream) throws IOException {
+    default <T extends PrintStream> T send(final T stream) throws IOException {
         return HelloWorld.super.write(stream);
     }
 
@@ -216,9 +193,8 @@ interface HelloWorldRevisited
         return buffer;
     }
 
-    @Override
-    default ByteBuffer byteBuffer() {
-        return put(ByteBuffer.allocate(BYTES));
+    private ByteBuffer byteBuffer() {
+        return ByteBuffer.wrap(byteArray());
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
@@ -251,7 +227,7 @@ interface HelloWorldRevisited
     }
 
     @Override
-    default <T extends DatagramChannel> T write(final T channel) throws IOException {
+    default <T extends DatagramChannel> T send(final T channel) throws IOException {
         if (channel.write(byteBuffer().flip()) != BYTES) {
             throw new IOException("packet dropped; OS's send buffer is full");
         }
@@ -301,13 +277,6 @@ interface HelloWorldRevisited
     }
 
     // -------------------------------------------------------------------------- java.util.function
-    @Override
-    default <T extends Consumer<? super Byte>> T accept(final T consumer) {
-        for (final var b : byteArray()) {
-            consumer.accept(b);
-        }
-        return consumer;
-    }
 
     // ------------------------------------------------------------------------------- java.util.jar
 

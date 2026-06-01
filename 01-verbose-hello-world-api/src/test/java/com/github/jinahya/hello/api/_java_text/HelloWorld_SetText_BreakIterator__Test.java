@@ -20,75 +20,77 @@ package com.github.jinahya.hello.api._java_text;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.nio.charset.StandardCharsets;
-import java.text.BreakIterator;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.nio.charset.*;
+import java.text.*;
+import java.util.*;
+import java.util.stream.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@DisplayName("setText(iterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
+class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
 
     @BeforeEach
-    void __() {
-        Mockito.doAnswer(i -> {
+    void __stubService() {
+        doAnswer(i -> {
             final var iterator = i.getArgument(0, BreakIterator.class);
-            iterator.setText(HelloWorldTestConstants.HELLO_WORLD_STRING);
+            iterator.setText(HelloWorld__TestConstants.HELLO_WORLD_STRING);
             return iterator;
-        }).when(service()).setText(ArgumentMatchers.notNull());
+        }).when(service()).setText(notNull());
     }
 
+    @DisplayName("should iterate the hello-world string with a <real character> <BreakIterator>")
     @Test
     void __CharacterInstance() {
         final var iterator = service().setText(BreakIterator.getCharacterInstance(Locale.ROOT));
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
+    @DisplayName("should iterate the hello-world string with a <real word> <BreakIterator>")
     @Test
     void __WordInstance() {
         final var iterator = service().setText(BreakIterator.getWordInstance(Locale.ROOT));
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
+    @DisplayName("should iterate the hello-world string with a <real line> <BreakIterator>")
     @Test
     void __LineInstance() {
         final var iterator = service().setText(BreakIterator.getLineInstance(Locale.ROOT));
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
+    @DisplayName("should iterate the hello-world string with a <real sentence> <BreakIterator>")
     @Test
     void __SentenceInstance() {
         final var iterator = service().setText(BreakIterator.getSentenceInstance(Locale.ROOT));
         int s = iterator.first();
         for (int e = iterator.next(); e != BreakIterator.DONE; s = e, e = iterator.next()) {
             System.out.printf("[%2d, %2d): %s%n", s, e,
-                              HelloWorldTestConstants.HELLO_WORLD_STRING.substring(s, e));
+                              HelloWorld__TestConstants.HELLO_WORLD_STRING.substring(s, e));
         }
     }
 
@@ -103,6 +105,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         );
     }
 
+    @DisplayName("should iterate a <multilingual string> with every kind of <BreakIterator>")
     @MethodSource("strings")
     @ParameterizedTest
     void __Iterators(final String string) {
@@ -175,6 +178,9 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         return string;
     }
 
+    @DisplayName("""
+            should truncate a <multilingual string>
+            to at most <20> UTF-8 bytes via <BreakIterator>""")
     @MethodSource("strings")
     @ParameterizedTest
     void __ChopAtMost20Bytes(final String string) {
@@ -183,7 +189,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorldTest {
         final var truncatedBytes = truncated.getBytes(StandardCharsets.UTF_8).length;
         System.out.printf(" original: (%2d) ⁨%s⁩%n", originalBytes, string);
         System.out.printf("truncated: (%2d) ⁨%s⁩%n", truncatedBytes, truncated);
-        Assertions.assertTrue(truncatedBytes <= 20);
-        Assertions.assertTrue(string.startsWith(truncated));
+        assertTrue(truncatedBytes <= 20);
+        assertTrue(string.startsWith(truncated));
     }
 }

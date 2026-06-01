@@ -20,27 +20,19 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.reactivestreams.*;
 
-import java.time.Duration;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.*;
+import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentCaptor.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Subscription-level tests for {@link ReactiveHelloWorldArrayPublisher} — verifies the Reactive
@@ -59,6 +51,7 @@ import static org.mockito.Mockito.verify;
  * @see ReactiveHelloWorld__PublisherTest
  * @see ReactiveHelloWorldArrayPublisher
  */
+@DisplayName("array publisher")
 @Slf4j
 class ReactiveHelloWorld_Array_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<byte[]> {
@@ -71,11 +64,12 @@ class ReactiveHelloWorld_Array_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should emit <1> element with no <onComplete> when the subscriber calls <request(1)>")
     @Test
-    @DisplayName("request(1) → 1 element, no onComplete")
     void __exactly1() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = loggingSpy(new Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
             @Override public void onSubscribe(final Subscription s) { s.request(1L); }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable t) { }
@@ -83,7 +77,7 @@ class ReactiveHelloWorld_Array_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onNext(any()));
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onNext(any());
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
@@ -93,12 +87,14 @@ class ReactiveHelloWorld_Array_PublisherTest
         assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue()); // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <n> elements with no <onComplete>
+            when the subscriber calls <request(n)> with <n > 0>""")
     @Test
-    @DisplayName("request(n), n > 0 → n elements, no onComplete")
     void __random() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 8);
-        final var subscriber = loggingSpy(new Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable t) { }
@@ -106,7 +102,7 @@ class ReactiveHelloWorld_Array_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(n)).onNext(any()));
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());

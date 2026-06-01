@@ -20,21 +20,14 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.pekko.actor.ActorSystem;
-import org.apache.pekko.stream.javadsl.Sink;
-import org.apache.pekko.stream.javadsl.Source;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.apache.pekko.actor.*;
+import org.apache.pekko.stream.javadsl.*;
+import org.junit.jupiter.api.*;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * A pedagogical tour of <a href="https://pekko.apache.org/docs/pekko/current/stream/">Apache Pekko
@@ -52,6 +45,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — Pekko")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
@@ -70,12 +64,13 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single-value sinks")
     @Nested
-    @DisplayName("Source → Sink.head — single-value idioms")
     class Sink_head_Test {
 
+        @DisplayName(
+                "should emit <hello-world-bytes> via <Source.single(byte[]).runWith(Sink.head())>")
         @Test
-        @DisplayName("Source.single(byte[]).runWith(Sink.head()) → first element")
         void __single() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.single(HelloWorldUtils.array(synchronousService()))
@@ -84,11 +79,13 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.lazySingle(Supplier).runWith(Sink.head())>""")
         @Test
-        @DisplayName("Source.lazySingle(Supplier).runWith(Sink.head()) → lazy single")
         void __lazySingle() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.lazySingle(
@@ -98,12 +95,14 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.completionStage(AsynchronousHelloWorld.applyAsync)
+                .runWith(Sink.head())>""")
         @Test
-        @DisplayName(
-                "Source.completionStage(AsynchronousHelloWorld#applyAsync).runWith(Sink.head())")
         void __completionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.completionStage(
@@ -113,17 +112,18 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("multi-value sinks")
     @Nested
-    @DisplayName("Source → Sink.seq — stream idioms")
     class Sink_seq_Test {
 
+        @DisplayName(
+                "should emit <hello-world-bytes> via <Source.from(Iterable).runWith(Sink.seq())>")
         @Test
-        @DisplayName("Source.from(Iterable).runWith(Sink.seq()) → collected list")
         void __from_iterable() {
             // -------------------------------------------------------------------------- given/when
             final var list = Source.from(List.of(
@@ -138,12 +138,15 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.range(0, n-1).map(...).runWith(Sink.seq())>""")
         @Test
-        @DisplayName("Source.range(0, n-1).map(...).runWith(Sink.seq()) → indexed stream")
         void __range_map() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
@@ -156,12 +159,15 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.repeat(byte[]).take(n).runWith(Sink.seq())>""")
         @Test
-        @DisplayName("Source.repeat(byte[]).take(n).runWith(Sink.seq()) → repeated value")
         void __repeat_take() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
@@ -174,7 +180,8 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
     }

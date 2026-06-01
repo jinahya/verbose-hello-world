@@ -20,34 +20,23 @@ package com.github.jinahya.hello.api._java_util_concurrent;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AwaitilityTestUtils;
-import com.github.jinahya.hello.api.util.JavaLangObjectUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.util.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.IntStream;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.stream.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("Flow / DayOfWeek example")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
@@ -219,7 +208,7 @@ class _Flow_DayOfWeek_Example_Test {
         });
     }
 
-    @DisplayName("single subscriber for a publisher")
+    @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -243,10 +232,8 @@ class _Flow_DayOfWeek_Example_Test {
         final var n = ThreadLocalRandom.current().nextInt(5, 14);
         subscription.request(n);
         // await, <subscriber.onNext(item)> invoked, at most <n> times
-        Awaitility.await().untilAsserted(() -> {
-            Mockito.verify(subscriber, Mockito.times(Math.min(n, 7)))
-                    .onNext(ArgumentMatchers.notNull());
-        });
+        Mockito.verify(subscriber, Mockito.timeout(10_000L).times(Math.min(n, 7)))
+                .onNext(ArgumentMatchers.notNull());
         if (n >= DayOfWeek.values().length) {
             Mockito.verify(subscriber, Mockito.times(1)).onComplete();
         }
@@ -256,7 +243,7 @@ class _Flow_DayOfWeek_Example_Test {
         subscription.request(1L);
     }
 
-    @DisplayName("multiple subscribers for a publisher")
+    @DisplayName("should deliver items to multiple <subscribers> from the <publisher>")
     @Test
     void __multipleSubscribers() {
         // ----------------------------------------------------------------------------------- given

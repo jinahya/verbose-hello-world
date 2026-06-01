@@ -20,35 +20,28 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.mockito.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.concurrent.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append using RandomAccessFile")
+@DisplayName("append(file) using RandomAccessFile")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_File_Using_RandomAccessFile_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
+    @DisplayName("should write <hello-world-bytes> to the <file> through a <RandomAccessFile>")
     @Test
     void __(@TempDir final File dir)
             throws IOException {
@@ -57,7 +50,7 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
         // stub: <service.write(RandomAccessFile)> will write the <hello, world> bytes.
         Mockito.doAnswer(i -> {
             final var file = i.getArgument(0, RandomAccessFile.class);
-            file.write(HelloWorldTestUtils.hello_world_byte_array());
+            file.write(HelloWorld__TestUtils.hello_world_byte_array());
             return file;
         }).when(service).write(ArgumentMatchers.<RandomAccessFile>notNull());
         // prepare: create a temp file

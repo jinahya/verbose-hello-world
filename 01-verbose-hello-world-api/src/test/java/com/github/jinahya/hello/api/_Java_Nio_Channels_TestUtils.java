@@ -20,8 +20,17 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util._ExcludeFromCoverage_PrivateConstructor_Obviously;
-import lombok.extern.slf4j.Slf4j;
+import com.github.jinahya.hello.api.util.*;
+import lombok.extern.slf4j.*;
+
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.util.concurrent.atomic.*;
+
+import static com.github.jinahya.hello.api._Java_Nio_TestUtils.*;
+import static com.github.jinahya.hello.api._Java__TestUtils.*;
 
 /**
  * Utilities for testing {@link HelloWorld} service classes.
@@ -29,12 +38,191 @@ import lombok.extern.slf4j.Slf4j;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-@SuppressWarnings({
-        "java:S101"
-})
 public final class _Java_Nio_Channels_TestUtils {
 
     // ---------------------------------------------------------------------------------------------
+    public static long copy1(final ByteBuffer b, final ReadableByteChannel in,
+                             final WritableByteChannel out)
+            throws IOException {
+        requireNonZeroCapacity(b);
+        long count = 0L;
+        try {
+            while (in.read(b.clear()) != -1) {
+                for (b.flip(); b.hasRemaining(); ) {
+                    count += out.write(b);
+                }
+            }
+            return count;
+        } finally {
+            fillZeros(b);
+        }
+    }
+
+    public static long copy2(final ByteBuffer b, final ReadableByteChannel in,
+                             final WritableByteChannel out)
+            throws IOException {
+        requireNonZeroCapacity(b);
+        b.clear();
+        long count = 0L;
+        try {
+            while (in.read(b) != -1) {
+                count += out.write(b.flip());
+                b.compact();
+            }
+            for (b.flip(); b.hasRemaining(); ) {
+                count += out.write(b);
+            }
+            return count;
+        } finally {
+            fillZeros(b);
+        }
+    }
+
+    public static long copy1(final int capacity, final ReadableByteChannel in,
+                             final WritableByteChannel out)
+            throws IOException {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("non-positive capacity: " + capacity);
+        }
+        final var b = ByteBuffer.allocate(capacity);
+        return copy1(b, in, out);
+    }
+
+    public static long copy2(final int capacity, final ReadableByteChannel in,
+                             final WritableByteChannel out)
+            throws IOException {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("non-positive capacity: " + capacity);
+        }
+        final var b = ByteBuffer.allocate(capacity);
+        return copy2(b, in, out);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    public static <A> void copy1(final ByteBuffer b, final AsynchronousByteChannel in,
+                                 final AsynchronousByteChannel out, final A attachment,
+                                 final CompletionHandler<Long, ? super A> handler) {
+        requireNonZeroCapacity(b);
+        requireNotSame(in, out);
+        Objects.requireNonNull(handler, "handler is null");
+        final var count = new LongAdder();
+        final var readerReference = new AtomicReference<CompletionHandler<Integer, Object>>();
+        final var writeHandler = new CompletionHandler<Integer, Object>() {
+            @Override
+            public void completed(final Integer result, final Object y) {
+                if (!b.hasRemaining()) {
+                    final var r = readerReference.get();
+                    if (r != null) {
+                        in.read(b.clear(), null, r);
+                    } else {
+                        fillZeros(b);
+                        handler.completed(count.longValue(), attachment);
+                    }
+                    return;
+                }
+                out.write(b, null, this);
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Object y) {
+                fillZeros(b);
+                handler.failed(exc, attachment);
+            }
+        };
+        in.read(b.clear(), null, new CompletionHandler<>() {
+            @Override
+            public void completed(final Integer result, final Object x) {
+                if (result == -1) {
+                    readerReference.set(null);
+                } else {
+                    readerReference.compareAndSet(null, this);
+                    count.add(result);
+                }
+                out.write(b.flip(), null, writeHandler);
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Object x) {
+                fillZeros(b);
+                handler.failed(exc, attachment);
+            }
+        });
+    }
+
+    public static <A> void copy2(final ByteBuffer b, final AsynchronousByteChannel in,
+                                 final AsynchronousByteChannel out, final A attachment,
+                                 final CompletionHandler<Long, ? super A> handler) {
+        requireNonZeroCapacity(b);
+        requireNotSame(in, out);
+        Objects.requireNonNull(handler, "handler is null");
+        b.clear();
+        final var count = new LongAdder();
+        final var readerReference = new AtomicReference<CompletionHandler<Integer, Object>>();
+        final var writeHandler = new CompletionHandler<Integer, Object>() {
+            @Override
+            public void completed(final Integer result, final Object y) {
+                count.add(result);
+                final var r = readerReference.get();
+                if (r != null) {
+                    b.compact();
+                    in.read(b, null, r);
+                } else if (b.hasRemaining()) {
+                    out.write(b, null, this);
+                } else {
+                    fillZeros(b);
+                    handler.completed(count.longValue(), attachment);
+                }
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Object y) {
+                fillZeros(b);
+                handler.failed(exc, attachment);
+            }
+        };
+        in.read(b, null, new CompletionHandler<>() {
+            @Override
+            public void completed(final Integer result, final Object x) {
+                if (result == -1) {
+                    readerReference.set(null);
+                    if (b.position() == 0) {
+                        fillZeros(b);
+                        handler.completed(count.longValue(), attachment);
+                        return;
+                    }
+                    out.write(b.flip(), null, writeHandler);
+                    return;
+                }
+                readerReference.compareAndSet(null, this);
+                out.write(b.flip(), null, writeHandler);
+            }
+
+            @Override
+            public void failed(final Throwable exc, final Object x) {
+                fillZeros(b);
+                handler.failed(exc, attachment);
+            }
+        });
+    }
+
+    public static <A> void copy1(final int capacity, final AsynchronousByteChannel in,
+                                 final AsynchronousByteChannel out, final A attachment,
+                                 final CompletionHandler<Long, ? super A> handler) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("non-positive capacity: " + capacity);
+        }
+        copy1(ByteBuffer.allocate(capacity), in, out, attachment, handler);
+    }
+
+    public static <A> void copy2(final int capacity, final AsynchronousByteChannel in,
+                                 final AsynchronousByteChannel out, final A attachment,
+                                 final CompletionHandler<Long, ? super A> handler) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("non-positive capacity: " + capacity);
+        }
+        copy2(ByteBuffer.allocate(capacity), in, out, attachment, handler);
+    }
+
     @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private _Java_Nio_Channels_TestUtils() {
         throw new AssertionError("instantiation is not allowed");

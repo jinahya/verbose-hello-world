@@ -20,24 +20,20 @@ package com.github.jinahya.hello.api._java_net_http;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
+import java.net.*;
+import java.net.http.*;
+import java.nio.charset.*;
+import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -45,17 +41,13 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("method(HttpRequest.Builder, String)")
+@DisplayName("method(builder, method)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Method_HttpRequestBuilder_String_Test
-        extends HelloWorldTest {
+class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <builder> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <builder> argument is <null>")
     @Test
     void _ThrowNullPointerException_BuilderIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -63,52 +55,43 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test
         final HttpRequest.Builder builder = null;
         final var method = "";
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.method(builder, method)
-        );
+        assertThrows(NullPointerException.class, () -> service.method(builder, method));
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <method> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <method> argument is <null>")
     @Test
     void _ThrowNullPointerException_MethodIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var builder = Mockito.mock(HttpRequest.Builder.class);
+        final var builder = mock(HttpRequest.Builder.class);
         final String method = null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.method(builder, method)
-        );
+        assertThrows(NullPointerException.class, () -> service.method(builder, method));
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("should invoke builder.method(method, publisher)")
+    @DisplayName("should invoke <builder.method(method, publisher)>, and return the <builder>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-//        final var builder = HttpRequest.newBuilder();
-        final var builder = Mockito.mock(HttpRequest.Builder.class);
+        final var service = set_array_returns_the_array(service());
+        final var builder = mock(HttpRequest.Builder.class);
         final var method = "WHATEVER";
-        try (var mockStatic = Mockito.mockStatic(HttpRequest.BodyPublishers.class,
-                                                 Mockito.CALLS_REAL_METHODS)) {
+        try (var mockStatic = mockStatic(HttpRequest.BodyPublishers.class,
+                                         Mockito.CALLS_REAL_METHODS)) {
             // -------------------------------------------------------------------------------- when
             final var result = service.method(builder, method);
             // -------------------------------------------------------------------------------- then
-            final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+            final var array = set_array12_invoked_once(service);
             mockStatic.verify(
                     () -> HttpRequest.BodyPublishers.ofByteArray(array),
-                    Mockito.times(1)
+                    times(1)
             );
-            Assertions.assertSame(builder, result);
+            assertSame(builder, result);
         }
     }
 
+    @DisplayName("should send <hello-world-bytes> through a real <HttpClient> request")
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws Exception {
@@ -125,7 +108,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test
             );
             return builder;
         }).when(service).method(Mockito.<HttpRequest.Builder>any(), Mockito.anyString());
-        HelloWorldTestUtils.executeWithHttpServerStarted(p -> () -> {
+        HelloWorld__TestUtils.executeWithHttpEchoStarted(p -> () -> {
             final HttpClient.Version version;
             {
                 final var versions = HttpClient.Version.values();

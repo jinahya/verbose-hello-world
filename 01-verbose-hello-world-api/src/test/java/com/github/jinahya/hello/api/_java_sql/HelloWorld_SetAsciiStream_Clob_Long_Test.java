@@ -20,20 +20,14 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.Clob;
-import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.sql.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)}
@@ -42,11 +36,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Clob#setAsciiStream(long)
  */
+@DisplayName("setAsciiStream(clob, pos)")
 @Slf4j
 class HelloWorld_SetAsciiStream_Clob_Long_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -60,7 +55,7 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
         );
     }
 
-    @DisplayName("(clob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -74,11 +69,11 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
         );
     }
 
-    @DisplayName("write(clob.setAsciiStream(pos))")
+    @DisplayName("should invoke <write(clob.setAsciiStream(pos))>, and return the <clob>")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_outputstream_writes_hello_world_bytes(
+        final var service = HelloWorld__TestUtils.write_outputstream_writes_hello_world_bytes(
                 service());
         final var sink = new ByteArrayOutputStream();
         final var clob = Mockito.mock(Clob.class);
@@ -89,7 +84,7 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(clob, Mockito.times(1)).setAsciiStream(pos);
         Mockito.verify(service, Mockito.times(1)).write((OutputStream) sink);
-        Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(),
+        Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
                                      sink.toByteArray());
         Assertions.assertSame(clob, result);
     }

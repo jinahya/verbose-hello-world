@@ -20,23 +20,15 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.Nullable;
-import org.reactivestreams.Processor;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import org.jspecify.annotations.*;
+import org.reactivestreams.*;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.loggingProxy;
+import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
 
 /**
  * A package-private <em>cycle-batched multicast</em> {@link Processor} of {@link Byte} elements.

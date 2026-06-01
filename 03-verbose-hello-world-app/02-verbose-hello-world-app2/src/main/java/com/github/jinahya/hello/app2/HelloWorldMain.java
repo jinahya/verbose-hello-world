@@ -20,13 +20,12 @@ package com.github.jinahya.hello.app2;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
+import com.github.jinahya.hello.api.*;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
-import java.util.ServiceLoader;
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
 
 /**
  * A program whose {@link #main()} method obtains a {@link HelloWorld} via the
@@ -46,15 +45,15 @@ class HelloWorldMain {
      * Loads the first registered {@link HelloWorld} provider through {@link ServiceLoader}, wraps
      * {@link System#out} into a {@link WritableByteChannel} via
      * {@link Channels#newChannel(java.io.OutputStream)}, writes {@code hello, world} to that
-     * channel via {@link HelloWorld#write(WritableByteChannel) write(channel)} (which returns
-     * the channel), and then writes the {@link System#lineSeparator() line separator} bytes by
-     * chaining a {@link WritableByteChannel#write(ByteBuffer)} call on the returned channel.
+     * channel via {@link HelloWorld#write(WritableByteChannel) write(channel)} (which returns the
+     * channel), and then writes the {@link System#lineSeparator() line separator} bytes by chaining
+     * a {@link WritableByteChannel#write(ByteBuffer)} call on the returned channel.
      *
      * @throws IOException if an I/O error occurs while writing.
      * @see ServiceLoader#load(Class)
      * @see HelloWorld#write(WritableByteChannel)
      */
-    public static void main() throws IOException {
+    static void main() throws IOException {
         ServiceLoader.load(HelloWorld.class)
                 .iterator()
                 .next()

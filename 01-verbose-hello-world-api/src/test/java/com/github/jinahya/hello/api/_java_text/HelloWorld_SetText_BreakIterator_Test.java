@@ -20,17 +20,16 @@ package com.github.jinahya.hello.api._java_text;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.text.BreakIterator;
+import java.text.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -41,35 +40,32 @@ import java.text.BreakIterator;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/BreakIterator.html">java.text.BreakIterator</a>
  */
+@DisplayName("setText(iterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetText_BreakIterator_Test extends HelloWorldTest {
+class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
 
-    @DisplayName("(null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <iterator> argument is <null>")
     @Test
     void _ThrowNullPointerException_IteratorIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final BreakIterator iterator = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setText(iterator)
-        );
+        assertThrows(NullPointerException.class, () -> service.setText(iterator));
     }
 
-    @DisplayName("iterator.setText(<string from set(byte[12])>)")
+    @DisplayName("should invoke <iterator.setText(string)>, and return the <iterator>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        final var iterator = Mockito.mock(BreakIterator.class);
+        final var service = set_array_sets_hello_world_bytes(service());
+        final var iterator = mock(BreakIterator.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setText(iterator);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.set_array12_invoked_once(service);
-//        Mockito.verify(iterator, Mockito.times(1))
-//                .setText(HelloWorldTestUtils.hello_world_string());
-        Assertions.assertSame(iterator, result);
+        HelloWorld__TestUtils.set_array12_invoked_once(service);
+        verify(iterator, times(1)).setText(hello_world_string());
+        assertSame(iterator, result);
     }
 }

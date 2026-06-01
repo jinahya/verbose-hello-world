@@ -20,41 +20,28 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import com.github.jinahya.hello.api._Java_Nio_Charset_TestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.stream.Stream;
+import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.util.stream.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.write_writer_writes_hello_world_string;
-import static java.io.File.createTempFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static java.io.File.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("write(writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Write_Writer__Test extends HelloWorldTest {
+class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -65,11 +52,12 @@ class HelloWorld_Write_Writer__Test extends HelloWorldTest {
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() throws IOException {
+    void __stubService() throws IOException {
         write_writer_writes_hello_world_string(service());
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("output stream writer")
     @Nested
     class OutputStreamWriter_Test {
 
@@ -77,6 +65,9 @@ class HelloWorld_Write_Writer__Test extends HelloWorldTest {
             return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
+        @DisplayName("""
+                should write <hello-world-string> through an
+                <OutputStreamWriter> with the <charset>""")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -88,27 +79,29 @@ class HelloWorld_Write_Writer__Test extends HelloWorldTest {
                 try (var out = new ByteArrayInputStream(buf);
                      var reader = new InputStreamReader(out, charset)) {
                     final var string = reader.readAllAsString();
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
 
+        @DisplayName("should round-trip <hello-world-string> through an <OutputStreamWriter>")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
                  var writer = new OutputStreamWriter(baos, StandardCharsets.US_ASCII)) {
-                writer.write(HelloWorldTestConstants.HELLO_WORLD_STRING);
+                writer.write(HelloWorld__TestConstants.HELLO_WORLD_STRING);
                 writer.flush();
                 try (var bais = new ByteArrayInputStream(baos.toByteArray());
                      final var reader = new InputStreamReader(bais, StandardCharsets.US_ASCII)) {
                     final var string = reader.readAllAsString();
-                    assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
                 }
             }
         }
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("file writer")
     @Nested
     class FileWriter_Test {
 
@@ -116,6 +109,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorldTest {
             return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
+        @DisplayName("should write <hello-world-string> through a <FileWriter> with the <charset>")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -126,19 +120,20 @@ class HelloWorld_Write_Writer__Test extends HelloWorldTest {
             log.debug("charset: {} ({})", String.format("%14s", charset), file.length());
             try (var reader = new FileReader(file, charset)) {
                 final var string = reader.readAllAsString();
-                assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
             }
         }
 
+        @DisplayName("should round-trip <hello-world-string> through a <FileWriter>")
         @Test
         void __() throws IOException {
             final var file = createTempFile("tmp", null, tempDir);
             try (var writer = new FileWriter(file, StandardCharsets.US_ASCII, true)) {
-                writer.write(HelloWorldTestConstants.HELLO_WORLD_STRING);
+                writer.write(HelloWorld__TestConstants.HELLO_WORLD_STRING);
                 writer.flush();
             }
             assertEquals(HelloWorld.BYTES, file.length());
-            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING,
+            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING,
                          Files.readString(file.toPath()));
         }
     }

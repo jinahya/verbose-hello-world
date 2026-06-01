@@ -20,26 +20,25 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.*;
+import java.security.*;
+import java.util.concurrent.*;
 
 /**
  * A class testing methods defined in {@link JavaSecurityMessageDigestUtils} class.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("JavaSecurityMessageDigestUtils")
 class JavaSecurityMessageDigestUtilsTest {
 
     @DisplayName("updateDigest(digest, buffer, bytes)")
     @Nested
     class UpdateDigestTest {
 
+        @DisplayName("should update the <digest> with the given count of bytes from the <buffer>")
         @Test
         void __()
                 throws NoSuchAlgorithmException {

@@ -20,10 +20,10 @@ package com.github.jinahya.hello.app1;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.lib.HelloWorldImpl;
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.lib.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * A program whose {@link #main()} method obtains a {@link HelloWorld} by directly instantiating

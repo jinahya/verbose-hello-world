@@ -20,18 +20,16 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import jakarta.annotation.Priority;
-import jakarta.interceptor.AroundInvoke;
-import jakarta.interceptor.Interceptor;
-import jakarta.interceptor.InvocationContext;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.annotation.*;
+import jakarta.interceptor.*;
+import lombok.extern.slf4j.*;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
- * A CDI {@link jakarta.interceptor.Interceptor &#64;Interceptor} bound to {@link HelloWorld_Logging}
- * that {@code DEBUG}-logs every invocation it intercepts.
+ * A CDI {@link jakarta.interceptor.Interceptor &#64;Interceptor} bound to
+ * {@link HelloWorld_Logging} that {@code DEBUG}-logs every invocation it intercepts.
  *
  * <p>For every bound call the interceptor emits an entry / exit pair:
  * <ul>
@@ -56,8 +54,8 @@ import java.util.Arrays;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@HelloWorld_Logging
-@Interceptor
+//@HelloWorld_Logging
+//@Interceptor
 @Priority(Interceptor.Priority.APPLICATION)
 @Slf4j
 class HelloWorld_LoggingInterceptor {

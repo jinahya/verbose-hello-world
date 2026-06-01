@@ -20,12 +20,10 @@ package com.github.jinahya.hello.api._java_lang;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
 /**
  * A class for testing {@link HelloWorld#set(byte[], int) set(array, index)} method.
@@ -38,8 +36,7 @@ import org.junit.jupiter.api.DisplayName;
 @SuppressWarnings({
         "java:S2187" // empty
 })
-class HelloWorld_Set_Array_Index_Test
-        extends HelloWorldTest {
+class HelloWorld_Set_Array_Index_Test extends HelloWorld__Test {
 
     // empty; we're not going to implement the method in this module.
 }

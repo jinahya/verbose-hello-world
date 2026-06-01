@@ -20,17 +20,22 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.*;
 
 /**
+ * Helpers for {@link Executor java.util.concurrent.Executor} — currently a single same-thread
+ * factory useful for deterministic tests and synchronous fixtures.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaUtilConcurrentExecutorUtils {
 
     /**
-     * Returns an executor runs submitted commands in current thread.
+     * Returns an {@link Executor} that runs every submitted command on the calling thread,
+     * equivalent to {@code Runnable::run}. Useful for tests where async ordering must be
+     * deterministic.
      *
-     * @return an executor runs commands in current thread.
+     * @return a same-thread {@link Executor}; never {@code null}.
      * @see <a href="https://stackoverflow.com/q/6581188/330457">Is there an ExecutorService that
      * uses the current thread?</a>
      */

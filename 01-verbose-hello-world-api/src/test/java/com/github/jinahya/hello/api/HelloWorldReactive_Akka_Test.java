@@ -20,25 +20,18 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import akka.actor.ActorSystem;
-import akka.stream.javadsl.Sink;
-import akka.stream.javadsl.Source;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import akka.actor.*;
+import akka.stream.javadsl.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static com.github.jinahya.hello.api.HelloWorldUtils.array;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static com.github.jinahya.hello.api.HelloWorldUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A pedagogical tour of <a href="https://doc.akka.io/docs/akka/current/stream/">Akka Streams</a>'s
@@ -53,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — Akka")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
@@ -73,12 +67,13 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
     // ---------------------------------------------------------------------------------------------
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single-value sinks")
     @Nested
-    @DisplayName("Source → Sink.head — single-value idioms")
     class Sink_head_Test {
 
+        @DisplayName(
+                "should emit <hello-world-bytes> via <Source.single(byte[]).runWith(Sink.head())>")
         @Test
-        @DisplayName("Source.single(byte[]).runWith(Sink.head()) → first element")
         void __single() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.single(array(synchronousService()))
@@ -90,8 +85,10 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.lazySingle(Supplier).runWith(Sink.head())>""")
         @Test
-        @DisplayName("Source.lazySingle(Supplier).runWith(Sink.head()) → lazy single")
         void __lazySingle() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.lazySingle(
@@ -104,9 +101,11 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.completionStage(AsynchronousHelloWorld.applyAsync)
+                .runWith(Sink.head())>""")
         @Test
-        @DisplayName(
-                "Source.completionStage(AsynchronousHelloWorld#applyAsync).runWith(Sink.head())")
         void __completionStage() {
             // -------------------------------------------------------------------------- given/when
             final var array = Source.completionStage(
@@ -121,12 +120,13 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("multi-value sinks")
     @Nested
-    @DisplayName("Source → Sink.seq — stream idioms")
     class Sink_seq_Test {
 
+        @DisplayName(
+                "should emit <hello-world-bytes> via <Source.from(Iterable).runWith(Sink.seq())>")
         @Test
-        @DisplayName("Source.from(Iterable).runWith(Sink.seq()) → collected list")
         void __from_iterable() {
             // -------------------------------------------------------------------------- given/when
             final var list = Source.from(List.of(
@@ -145,8 +145,10 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.range(0, n-1).map(...).runWith(Sink.seq())>""")
         @Test
-        @DisplayName("Source.range(0, n-1).map(...).runWith(Sink.seq()) → indexed stream")
         void __range_map() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
@@ -163,8 +165,10 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
             }
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes>
+                via <Source.repeat(byte[]).take(n).runWith(Sink.seq())>""")
         @Test
-        @DisplayName("Source.repeat(byte[]).take(n).runWith(Sink.seq()) → repeated value")
         void __repeat_take() {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;

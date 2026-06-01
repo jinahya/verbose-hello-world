@@ -20,31 +20,18 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.io.*;
+import java.net.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)}
@@ -52,11 +39,11 @@ import static org.mockito.Mockito.verify;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(DatagramSocket, SocketAddress)")
+@DisplayName("send(socket, target)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test {
 
     static {
         final var pin = new Runnable[] {
@@ -73,10 +60,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
      * method throws a {@link NullPointerException} when the {@code socket} argument is
      * {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <socket> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <socket> argument is <null>")
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -84,10 +68,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
         final DatagramSocket socket = null;
         final var target = mock(SocketAddress.class);
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(socket, target)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(socket, target));
     }
 
     /**
@@ -95,10 +76,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
      * method throws a {@link NullPointerException} when the {@code target} argument is
      * {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <target> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <target> argument is <null>")
     @Test
     void _ThrowNullPointerException_TargetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -106,10 +84,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
         final var socket = mock(DatagramSocket.class);
         final SocketAddress target = null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(socket, target)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(socket, target));
     }
 
     /**
@@ -122,14 +97,16 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <set(packet)> and <socket.send(packet)> with the same packet")
+    @DisplayName("""
+            should invoke <append(packet)> and <socket.send(packet)> with the same <packet>,
+            and return the <socket>""")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         doAnswer(returnsFirstArg()).when(service).append(Mockito.<DatagramPacket>any());
         final var socket = mock(DatagramSocket.class);
-        final var target = new InetSocketAddress("127.0.0.1", 1234);
+        final var target = new InetSocketAddress("127.0.0.1", 12345);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket, target);
         // ------------------------------------------------------------------------------------ then

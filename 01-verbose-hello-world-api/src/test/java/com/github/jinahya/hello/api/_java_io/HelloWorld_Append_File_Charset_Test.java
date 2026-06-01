@@ -20,31 +20,20 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api._Java_Nio_Charset_TestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
+import org.mockito.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.util.HexFormat;
-import java.util.stream.Stream;
+import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * A class for testing {@link HelloWorld#append(File, Charset)} method.
@@ -56,7 +45,7 @@ import java.util.stream.Stream;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_File_Charset_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     private static Stream<Charset> charsetStream() {
         return _Java_Nio_Charset_TestUtils.charsetStream();
@@ -68,10 +57,7 @@ class HelloWorld_Append_File_Charset_Test
      * Verifies that the {@link HelloWorld#append(File, Charset)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <file> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <file> argument is <null>")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -89,10 +75,7 @@ class HelloWorld_Append_File_Charset_Test
      * Verifies that the {@link HelloWorld#append(File, Charset)} method throws a
      * {@link NullPointerException} when the {@code charset} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <charset> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <charset> argument is <null>")
     @Test
     void _ThrowNullPointerException_CharsetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -115,11 +98,8 @@ class HelloWorld_Append_File_Charset_Test
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("""
-            should create a <new FileOutputStream> as <appending mode>,
-            should create a <new OutputStreamWriter> with the stream and charset,
-            should invoke <write(writer)> method with it,
-            and should <flushes/closes> the writer"""
-    )
+            should create a <new FileWriter> with the <file>, <charset>,
+            and <true>, invoke <write(writer)>, and return the <file>""")
     @MethodSource("charsetStream")
     @ParameterizedTest
     void __(final Charset charset) throws IOException, NoSuchMethodException {
@@ -166,6 +146,7 @@ class HelloWorld_Append_File_Charset_Test
         });
     }
 
+    @DisplayName("should write <hello-world-bytes> to a real <file> using the <charset>")
     @MethodSource({"fileAndCharsetArgumentsStream"})
     @ParameterizedTest(name = "[{index}]: {1}")
     void _添足_畵蛇(final File file, final Charset charset) throws IOException {

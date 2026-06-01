@@ -20,17 +20,21 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api._Javax_Crypto_TestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import javax.crypto.KeyGenerator;
-import java.security.NoSuchAlgorithmException;
+import javax.crypto.*;
+import java.security.*;
 
+@DisplayName("KeyGenerator")
 @Slf4j
 class _Javax_Crypto_KeyGenerator_Test {
 
     // ELSIE PREPARE TO MEET THY GOD
+    @DisplayName("""
+            should generate a <SecretKey>
+            for every registered <KeyGenerator> algorithm and keysize""")
     @Test
     void __() throws NoSuchAlgorithmException {
         for (var e : _Javax_Crypto_TestUtils.KEY_GENERATOR_ALGORITHMS_AND_KEYSIZES.entrySet()) {

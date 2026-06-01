@@ -20,38 +20,23 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.stream.*;
 
+@DisplayName("send(socket)")
 @Disabled
 @Slf4j
 class HelloWorld_Send_MulticastSocket_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     // "232.1.1.1"   source-specific multicast, SSM (RFC 4607)
     // "224.1.1.1"   transient, global scope (not well-known)
@@ -71,7 +56,7 @@ class HelloWorld_Send_MulticastSocket_Test
             ThreadLocalRandom.current().nextInt(49152, 65536);
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("IPv4")
+    @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv4>")
     @Test
     void __IPv4() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -79,7 +64,7 @@ class HelloWorld_Send_MulticastSocket_Test
         Mockito.doAnswer(i -> {
             final var socket = i.getArgument(0, DatagramSocket.class);
             socket.send(new DatagramPacket(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+                    HelloWorld__TestUtils.hello_world_byte_array(),
                     HelloWorld.BYTES
             ));
             return socket;
@@ -152,7 +137,7 @@ class HelloWorld_Send_MulticastSocket_Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("IPv6")
+    @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv6>")
     @Test
     void __IPv6() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -160,7 +145,7 @@ class HelloWorld_Send_MulticastSocket_Test
         Mockito.doAnswer(i -> {
             final var socket = i.getArgument(0, DatagramSocket.class);
             socket.send(new DatagramPacket(
-                    HelloWorldTestUtils.hello_world_byte_array(),
+                    HelloWorld__TestUtils.hello_world_byte_array(),
                     HelloWorld.BYTES
             ));
             return socket;

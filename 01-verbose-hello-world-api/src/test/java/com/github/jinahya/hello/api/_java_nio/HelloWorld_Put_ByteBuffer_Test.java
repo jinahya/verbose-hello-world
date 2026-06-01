@@ -20,39 +20,28 @@ package com.github.jinahya.hello.api._java_nio;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.util.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.aggregator.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.IntFunction;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.nio.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.stream.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.DynamicTest.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#put(ByteBuffer) put(buffer)} method.
@@ -63,8 +52,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Put_ByteBuffer_Test
-        extends HelloWorldTest {
+class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
 
     private static final Random RANDOM;
 
@@ -132,6 +120,7 @@ class HelloWorld_Put_ByteBuffer_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("byte buffer")
     @Nested
     class ByteBufferTest {
 
@@ -162,7 +151,7 @@ class HelloWorld_Put_ByteBuffer_Test
             return getArrayLengthStream();
         }
 
-        @DisplayName("wrap(array)")
+        @DisplayName("should produce a backed <buffer> from <ByteBuffer.wrap(array)>")
         @MethodSource({"getArrayArgumentsStream"})
         @ParameterizedTest
         void _wrap_array(final byte[] array) {
@@ -188,7 +177,8 @@ class HelloWorld_Put_ByteBuffer_Test
             assert sliced.array() == buffer.array();
         }
 
-        @DisplayName("wrap(array, offset, length)")
+        @DisplayName(
+                "should produce a backed <buffer> from <ByteBuffer.wrap(array, offset, length)>")
         @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
         @ParameterizedTest
         void _wrap_arrayOffsetAndLength(final ArgumentsAccessor accessor) {
@@ -216,7 +206,7 @@ class HelloWorld_Put_ByteBuffer_Test
             assert sliced.array() == buffer.array();
         }
 
-        @DisplayName("allocate(capacity)")
+        @DisplayName("should allocate a backed <buffer> via <ByteBuffer.allocate(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocate(final int capacity) {
@@ -238,7 +228,7 @@ class HelloWorld_Put_ByteBuffer_Test
             assert sliced.hasArray();
         }
 
-        @DisplayName("allocateDirect(capacity)")
+        @DisplayName("should allocate a direct <buffer> via <ByteBuffer.allocateDirect(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocateDirect(final int capacity) {
@@ -268,20 +258,14 @@ class HelloWorld_Put_ByteBuffer_Test
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <buffer> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <buffer> argument is <null>")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var buffer = (ByteBuffer) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.put(buffer)
-        );
+        assertThrows(NullPointerException.class, () -> service.put(buffer));
     }
 
     /**
@@ -290,10 +274,8 @@ class HelloWorld_Put_ByteBuffer_Test
      * {@link ByteBuffer#remaining() remaining} is less than
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName("""
-            should throw a <BufferOverflowException>
-            when <buffer.remaining()> is less than <12>"""
-    )
+    @DisplayName(
+            "should throw a <BufferOverflowException> when <buffer.remaining()> is less than <12>")
     @TestFactory
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
@@ -302,13 +284,10 @@ class HelloWorld_Put_ByteBuffer_Test
         return Stream.of(
                 ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
                 ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
-        ).map(b -> DynamicTest.dynamicTest(
+        ).map(b -> dynamicTest(
                 "should throw a <BufferOverflowException> for " + b + " (" + b.remaining() + ")",
                 () -> {
-                    Assertions.assertThrows(
-                            BufferOverflowException.class,
-                            () -> service.put(b)
-                    );
+                    assertThrows(BufferOverflowException.class, () -> service.put(b));
                 }
         ));
     }
@@ -323,18 +302,13 @@ class HelloWorld_Put_ByteBuffer_Test
      */
     @DisplayName("""
             should invoke <set(buffer.array(), buffer.arrayOffset() + buffer.position())>
-            when the <buffer> has a backing array"""
-    )
+            when the <buffer> has a backing array""")
     @Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .set(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyInt());
-        final var buffer = Mockito.spy(
-                slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES)
-        );
+        doAnswer(returnsFirstArg()).when(service).set(any(byte[].class), anyInt());
+        final var buffer = spy(slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES));
         JavaNioByteBufferUtils.print(buffer);
         assert buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
@@ -342,15 +316,9 @@ class HelloWorld_Put_ByteBuffer_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-//        Mockito.verify(service, Mockito.times(1)).set(
-//                buffer.array(),
-//                buffer.arrayOffset() + position
-//        );
-//        Assertions.assertEquals(
-//                position + HelloWorld.BYTES,
-//                buffer.position()
-//        );
-        Assertions.assertSame(buffer, result);
+//        verify(service, times(1)).set(buffer.array(), buffer.arrayOffset() + position);
+//        assertEquals(position + HelloWorld.BYTES, buffer.position());
+        assertSame(buffer, result);
     }
 
     /**
@@ -360,14 +328,13 @@ class HelloWorld_Put_ByteBuffer_Test
      * bytes, puts the {@code array} to {@code buffer}, and returns the {@code buffer}.
      */
     @DisplayName("""
-            should invoke <set(array[12])>,
-            and put the <array> to the <buffer>"""
-    )
+            should invoke <set(array[12])>, put the <array> to the <buffer>,
+            and return the <buffer>""")
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
-        final var buffer = Mockito.spy(
+        final var service = set_array_returns_the_array(service());
+        final var buffer = spy(
                 slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
         );
         JavaNioByteBufferUtils.print(buffer);
@@ -376,8 +343,8 @@ class HelloWorld_Put_ByteBuffer_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-//        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-//        Mockito.verify(buffer, Mockito.times(1)).put(array);
-        Assertions.assertSame(buffer, result);
+        final var array = set_array12_invoked_once(service);
+//        verify(buffer, times(1)).put(array);
+        assertSame(buffer, result);
     }
 }

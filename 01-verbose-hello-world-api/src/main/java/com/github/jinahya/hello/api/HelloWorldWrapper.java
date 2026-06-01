@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.util.Objects;
+import java.util.*;
 
 abstract class HelloWorldWrapper {
 

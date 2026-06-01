@@ -20,33 +20,23 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.reactivestreams.*;
 
-import java.time.Duration;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
+import java.time.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static com.github.jinahya.hello.api.ReactiveHelloWorld__PublisherTestUtils.sleep;
-import static java.util.Arrays.copyOf;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.api.ReactiveHelloWorld__PublisherTestUtils.*;
+import static java.util.Arrays.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentCaptor.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Subscription-level tests for {@link ReactiveHelloWorldBytePublisher} — verifies the Reactive
@@ -65,6 +55,7 @@ import static org.mockito.Mockito.verify;
  * @see ReactiveHelloWorld__PublisherTest
  * @see ReactiveHelloWorldBytePublisher
  */
+@DisplayName("byte publisher")
 @Slf4j
 class ReactiveHelloWorld_Byte_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<Byte> {
@@ -77,11 +68,12 @@ class ReactiveHelloWorld_Byte_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should emit <12> elements and <onComplete> when the subscriber calls <request(12)>")
     @Test
-    @DisplayName("request(12) → 12 elements, onComplete")
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 s.request(HelloWorld.BYTES);
             }
@@ -91,7 +83,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onComplete());
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
@@ -107,12 +99,14 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <n> elements with no <onComplete>
+            when the subscriber calls <request(n)> with <n> in <[1, 12)>""")
     @Test
-    @DisplayName("request(n), n ∈ [1, 12) → n elements, no onComplete")
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -120,7 +114,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(n)).onNext(any()));
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
@@ -135,12 +129,14 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should emit <12> elements and <onComplete>
+            when the subscriber calls <request(n)> with <n > 12>""")
     @Test
-    @DisplayName("request(n), n > 12 → 12 elements, onComplete")
     void __requestMoreThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextLong(HelloWorld.BYTES + 1L, 1024L);
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -148,7 +144,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         });
         // ------------------------------------------------------------------------------------ when
         publisher().subscribe(subscriber);
-        await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(1)).onComplete());
+        verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
         // ------------------------------------------------------------------------------------ then
         final var inOrder = inOrder(subscriber);
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
@@ -164,7 +160,9 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
-    @DisplayName("request(1) repeatedly with concurrent cancel → no onError, no onComplete")
+    @DisplayName("""
+            should signal neither <onError> nor <onComplete>
+            when <request(1)> is called repeatedly with concurrent <cancel>""")
     @Test
     void __cancel() throws InterruptedException { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -172,7 +170,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         final var terminated = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();
-        final var subscriber = loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 requester.set(Thread.ofVirtual().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {

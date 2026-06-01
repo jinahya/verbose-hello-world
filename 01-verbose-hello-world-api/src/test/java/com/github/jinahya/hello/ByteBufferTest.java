@@ -20,26 +20,21 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.JavaNioBufferUtils;
-import com.github.jinahya.hello.api.util.JavaNioByteBufferUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.util.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.nio.ByteBuffer;
-import java.time.LocalDate;
-import java.util.concurrent.ThreadLocalRandom;
+import java.nio.*;
+import java.time.*;
+import java.util.concurrent.*;
 
+@DisplayName("ByteBuffer")
 @Slf4j
 class ByteBufferTest {
 
-    @DisplayName("32")
+    @DisplayName(
+            "should print state of a <ByteBuffer> after <allocate(32)>, <limit(25)>, <position(4)>")
     @Test
     void __() {
         final var buffer = ByteBuffer.allocate(32);
@@ -50,13 +45,14 @@ class ByteBufferTest {
         JavaNioByteBufferUtils.print(buffer);
     }
 
-    @DisplayName("오늘 태어난 아기는 0살이다")
+    @DisplayName("should print state of a <ByteBuffer> with <capacity> of <0>")
     @Test
     void __ZeroCapacity() {
         final var buffer = ByteBuffer.allocate(0);
         JavaNioByteBufferUtils.print(buffer);
     }
 
+    @DisplayName("should print state changes across absolute and relative <get>/<put> operations")
     @Test
     void __AbsRel() {
         final var buffer = ByteBuffer.allocate(10);
@@ -79,7 +75,7 @@ class ByteBufferTest {
         }
     }
 
-    @DisplayName("calculateAge(person) should return calculateAgeAt(person, now())")
+    @DisplayName("should delegate <calculateAge(person)> to <calculateAgeAt(person, now())>")
     @Test
     void calculateAge_InvokeCalculateAgeAtWithPersonAndNow_() {
         final var now = LocalDate.now();
@@ -103,6 +99,9 @@ class ByteBufferTest {
         }
     }
 
+    @DisplayName("""
+            should print state of a <ByteBuffer> after <position(1)>,
+            <limit(9)>, then <position += 3>""")
     @Test
     void __29() {
         final var buffer = ByteBuffer.allocate(10).position(1).limit(9);
@@ -112,9 +111,11 @@ class ByteBufferTest {
         JavaNioBufferUtils.print(buffer);
     }
 
+    @DisplayName("int buffer view")
     @Nested
     class IntBufferTest {
 
+        @DisplayName("should view a <ByteBuffer> as an <IntBuffer> and read <Integer.MAX_VALUE>")
         @Test
         void __() {
             final var bbuf = ByteBuffer.allocate(Integer.BYTES);
@@ -132,9 +133,11 @@ class ByteBufferTest {
         }
     }
 
+    @DisplayName("manipulation")
     @Nested
     class ManipulationTest {
 
+        @DisplayName("should reset position and limit when <clear()> is invoked")
         @Test
         void __clear() {
             final var b = ByteBuffer.allocate(10);
@@ -145,6 +148,7 @@ class ByteBufferTest {
             JavaNioBufferUtils.print(b);
         }
 
+        @DisplayName("should swap position and limit when <flip()> is invoked")
         @Test
         void __flip() {
             final var b = ByteBuffer.allocate(10);
@@ -155,6 +159,7 @@ class ByteBufferTest {
             JavaNioBufferUtils.print(b);
         }
 
+        @DisplayName("should reset position to <0> when <rewind()> is invoked")
         @Test
         void __rewind() {
             final var b = ByteBuffer.allocate(10).limit(7).position(4);
@@ -163,6 +168,9 @@ class ByteBufferTest {
             JavaNioBufferUtils.print(b);
         }
 
+        @DisplayName("""
+                should shift remaining bytes to the start
+                when <compact()> is invoked with <position> below <limit>""")
         @Test
         void __compact1() {
             final var b = ByteBuffer.allocate(10);
@@ -176,6 +184,9 @@ class ByteBufferTest {
             JavaNioBufferUtils.print(b);
         }
 
+        @DisplayName("""
+                should leave buffer empty
+                when <compact()> is invoked with <position> equal to <limit>""")
         @Test
         void __compact2() {
             final var b = ByteBuffer.allocate(10);
@@ -189,9 +200,11 @@ class ByteBufferTest {
         }
     }
 
+    @DisplayName("mark and reset")
     @Nested
     class MarkResetTest {
 
+        @DisplayName("should restore position to the marked value when <reset()> is invoked")
         @Test
         void __markReset() {
             final var b = ByteBuffer.allocate(10);
@@ -203,6 +216,7 @@ class ByteBufferTest {
         }
     }
 
+    @DisplayName("should reflect explicit <position> and <limit> assignments")
     @Test
     void __positionLimit() {
         final var b = ByteBuffer.allocate(10);
@@ -211,6 +225,8 @@ class ByteBufferTest {
         JavaNioBufferUtils.print(b);
     }
 
+    @DisplayName(
+            "should reflect <remaining> and <hasRemaining> as position advances toward <limit>")
     @Test
     void __remainingHasRemaining() {
         final var b = ByteBuffer.allocate(10).limit(8).position(3);

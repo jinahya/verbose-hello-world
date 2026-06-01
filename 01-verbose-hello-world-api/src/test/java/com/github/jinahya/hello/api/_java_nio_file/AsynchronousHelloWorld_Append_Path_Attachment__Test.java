@@ -20,33 +20,38 @@ package com.github.jinahya.hello.api._java_nio_file;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
+import java.nio.file.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@DisplayName("append(path, attachment)")
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class AsynchronousHelloWorld_Append_Path_Attachment__Test
-        extends AsynchronousHelloWorldTest {
+abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
+    AsynchronousHelloWorld_Append_Path_Attachment__Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
+    }
+
+    @DisplayName("""
+            should append <hello-world-bytes> to a real <Path>,
+            and complete the returned stage with the <attachment>""")
     @Test
     void __(final @TempDir Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        HelloWorldTestUtils.append_path_appends_hello_world(synchronousService());
+        HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());
         final var path = Files.createTempFile(tempDir, null, null);
-        HelloWorldTestUtils.writeSome(path);
+        HelloWorld__TestUtils.writeSome(path);
         final var size = Files.size(path);
         final var attachment = new Object();
         // ---------------------------------------------------------------------------------- when

@@ -18,9 +18,9 @@
  * #L%
  */
 /**
- * The Verbose Hello World Lib — a concrete implementation of {@link
- * com.github.jinahya.hello.api.HelloWorld HelloWorld} ({@link
- * com.github.jinahya.hello.lib.HelloWorldImpl HelloWorldImpl}) layered on top of
+ * The Verbose Hello World Lib — a concrete implementation of
+ * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld}
+ * ({@link com.github.jinahya.hello.lib.HelloWorldImpl HelloWorldImpl}) layered on top of
  * {@code com.github.jinahya.hello.api} and discoverable via
  * {@link java.util.ServiceLoader ServiceLoader}.
  */

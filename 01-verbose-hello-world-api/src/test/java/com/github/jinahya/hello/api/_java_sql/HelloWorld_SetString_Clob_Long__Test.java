@@ -20,35 +20,26 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.sql.Clob;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
+@DisplayName("setString(clob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetString_Clob_Long__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws SQLException {
         Mockito.doAnswer(invocation -> {
             final var c = invocation.getArgument(0, Clob.class);
             final var p = invocation.getArgument(1, Long.class);
-            c.setString(p, HelloWorldTestConstants.HELLO_WORLD_STRING);
+            c.setString(p, HelloWorld__TestConstants.HELLO_WORLD_STRING);
             return c;
         }).when(service()).setString(
                 ArgumentMatchers.<Clob>notNull(),
@@ -57,6 +48,7 @@ class HelloWorld_SetString_Clob_Long__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -67,6 +59,7 @@ class HelloWorld_SetString_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real H2 Clob> through <setString(clob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -76,12 +69,13 @@ class HelloWorld_SetString_Clob_Long__Test
                 final var result = service().setString(clob, pos);
                 Assertions.assertSame(clob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING,
+                Assertions.assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING,
                                         clob.getSubString(1L, HelloWorld.BYTES));
             }
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -91,6 +85,7 @@ class HelloWorld_SetString_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real HSQLDB Clob> through <setString(clob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -104,6 +99,7 @@ class HelloWorld_SetString_Clob_Long__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Disabled("SQLite JDBC driver does not implement Connection.createClob()")
     @Nested
     class SQLite_Test {
@@ -114,6 +110,7 @@ class HelloWorld_SetString_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real SQLite Clob> through <setString(clob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

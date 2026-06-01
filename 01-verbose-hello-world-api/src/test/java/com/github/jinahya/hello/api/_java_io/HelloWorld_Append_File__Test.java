@@ -20,29 +20,21 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.append_file_appends_hello_world;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("append(file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Append_File__Test extends HelloWorldTest {
+class HelloWorld_Append_File__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -52,7 +44,7 @@ class HelloWorld_Append_File__Test extends HelloWorldTest {
         append_file_appends_hello_world(service());
     }
 
-    @DisplayName("(directory)FileNotFoundException")
+    @DisplayName("should throw a <FileNotFoundException> when the <file> is a <directory>")
     @Test
     void __Directory() {
         // ----------------------------------------------------------------------------------- given
@@ -67,7 +59,7 @@ class HelloWorld_Append_File__Test extends HelloWorldTest {
         assertThrows(FileNotFoundException.class, () -> service.append(directory));
     }
 
-    @DisplayName("(existing)")
+    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
     @Test
     void __Existing() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -76,7 +68,7 @@ class HelloWorld_Append_File__Test extends HelloWorldTest {
         assert file.exists();
         assert file.isFile();
         assert !file.isDirectory();
-        HelloWorldTestUtils.writeSome(file);
+        HelloWorld__TestUtils.writeSome(file);
         final var length = file.length();
         // ------------------------------------------------------------------------------------ when
         service.append(file);
@@ -84,7 +76,7 @@ class HelloWorld_Append_File__Test extends HelloWorldTest {
         assertEquals(length + HelloWorld.BYTES, file.length());
     }
 
-    @DisplayName("(!existing)")
+    @DisplayName("should create the <file> with <12> bytes when the <file> does not exist")
     @Test
     void __NotExisting() throws IOException {
         // ----------------------------------------------------------------------------------- given

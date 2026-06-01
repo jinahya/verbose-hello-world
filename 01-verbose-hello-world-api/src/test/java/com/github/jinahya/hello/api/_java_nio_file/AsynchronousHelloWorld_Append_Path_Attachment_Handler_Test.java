@@ -20,19 +20,16 @@ package com.github.jinahya.hello.api._java_nio_file;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.AsynchronousHelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.nio.channels.CompletionHandler;
-import java.nio.file.Path;
+import java.io.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * A class for testing
@@ -42,15 +39,18 @@ import java.nio.file.Path;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("append(path, attachment, handler)")
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
-        extends AsynchronousHelloWorldTest {
+abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <path> argument is <null>"""
-    )
+    AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
+    }
+
+    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_PathIsNull() {
@@ -66,10 +66,7 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
         );
     }
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <handler> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -84,9 +81,8 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
     }
 
     @DisplayName("""
-            should invoke <synchronousService.append(path)>
-            and notify <handler.completed(path, attachment)>"""
-    )
+            should invoke <synchronousService.append(path)>,
+            and invoke <handler.completed(path, attachment)>""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws IOException {
@@ -100,16 +96,16 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+                .completed(path, attachment);
         Mockito.verify(synchronousService(), Mockito.times(1)).append(path);
-        Mockito.verify(handler, Mockito.times(1)).completed(path, attachment);
         Mockito.verify(handler, Mockito.never())
                 .failed(Mockito.any(), Mockito.any());
     }
 
     @DisplayName("""
-            should notify <handler.failed(exc, attachment)>
-            when <synchronousService.append(path)> throws"""
-    )
+            should invoke <handler.failed(exc, attachment)>
+            when <synchronousService.append(path)> throws""")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() throws IOException {
@@ -124,7 +120,8 @@ class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(handler, Mockito.times(1)).failed(exc, attachment);
+        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+                .failed(exc, attachment);
         Mockito.verify(handler, Mockito.never())
                 .completed(Mockito.any(), Mockito.any());
     }

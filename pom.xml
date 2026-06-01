@@ -66,7 +66,7 @@
     <!-- https://central.sonatype.com/artifact/com.google.errorprone/error_prone_core/versions -->
     <version.com.google.errorprone>2.49.0</version.com.google.errorprone>
     <version.com.uber.nullaway>0.13.4</version.com.uber.nullaway>
-    <version.maven-surefire>3.5.5</version.maven-surefire>
+    <version.maven-surefire>3.5.6</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
     <version.io.avaje>12.5</version.io.avaje>
@@ -302,13 +302,13 @@
         <artifactId>aspectjtools</artifactId>
         <version>${version.org.aspectj}</version>
       </dependency>
-<!--      <dependency>-->
-<!--        <groupId>org.assertj</groupId>-->
-<!--        <artifactId>assertj-bom</artifactId>-->
-<!--        <version>${version.org.assertj}</version>-->
-<!--        <type>pom</type>-->
-<!--        <scope>import</scope>-->
-<!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>org.assertj</groupId>-->
+      <!--        <artifactId>assertj-bom</artifactId>-->
+      <!--        <version>${version.org.assertj}</version>-->
+      <!--        <type>pom</type>-->
+      <!--        <scope>import</scope>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
@@ -508,6 +508,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.15.0</version>
           <configuration>
+            <enablePreview>true</enablePreview>
             <compilerArgs>
               <!--              <arg>-Xlint</arg>-->
               <!--              <arg>-XDcompilePolicy=simple</arg>-->
@@ -515,7 +516,6 @@
               <!--              &lt;!&ndash; https://github.com/google/error-prone/issues/5354 &ndash;&gt;-->
               <!--              &lt;!&ndash;              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>&ndash;&gt;-->
               <!--              <arg>-Xlint:preview</arg>-->
-              <!--              <arg>&#45;&#45;enable-preview</arg>-->
             </compilerArgs>
             <annotationProcessorPaths>
               <path>
@@ -539,7 +539,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>3.10.0</version>
+          <version>3.11.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -568,7 +568,19 @@
               </configuration>
             </execution>
             <execution>
-              <!--              <id>enforce-require-maven-version</id>-->
+              <id>enforce-java</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireJavaVersion>
+                    <version>[25,26)</version>
+                  </requireJavaVersion>
+                </rules>
+              </configuration>
+            </execution>
+            <execution>
               <id>enforce-maven</id> <!-- https://github.com/mojohaus/versions/issues/1034 -->
               <goals>
                 <goal>enforce</goal>
@@ -660,6 +672,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
+          <!-- https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-site-plugin/versions -->
           <version>4.0.0-M16</version>
         </plugin>
         <plugin>
@@ -670,6 +683,7 @@
             <!-- https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3 -->
             <!--            <argLine>@{argLine} -XX:+EnableDynamicAgentLoading -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
             <!--            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
+            <argLine>&#45;&#45;enable-preview</argLine>
             <!--            <argLine>&#45;&#45;enable-preview -Djdk.httpclient.HttpClient.log=all</argLine>-->
             <redirectTestOutputToFile>false</redirectTestOutputToFile>
             <!--            <trimStackTrace>false</trimStackTrace>-->

@@ -20,22 +20,16 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.*;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.WebSocket;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousByteChannel;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
-import java.nio.file.Path;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
-import java.util.function.Function;
+import java.lang.invoke.*;
+import java.net.http.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 /**
  * An interface for writing the
@@ -43,10 +37,13 @@ import java.util.function.Function;
  * Java I/O APIs.
  * <p>
  * Each instance wraps a service of type {@code T} (a {@link HelloWorld} subtype) that supplies the
- * bytes, and an {@link Executor} on which the synchronous {@link HelloWorld} calls are dispatched.
- * Every method on this interface uses that stored executor — directly via
- * {@link #applyAsync(Function)} (the primitive every default method is built on) or indirectly via
- * the default methods themselves.
+ * bytes, and a dispatch strategy of the implementation's choosing on which the synchronous
+ * {@link HelloWorld} calls are run — an {@link Executor} for {@link ExecutorHelloWorld}, a per-call
+ * {@link java.util.concurrent.StructuredTaskScope StructuredTaskScope} on a virtual thread for
+ * {@link StructuredConcurrencyAsynchronousHelloWorld}. Every method on this interface uses that
+ * strategy — directly via the two shape-paired primitives {@link #applyAsync(Function)}
+ * ({@link CompletionStage}-based) and {@link #applyAsync(Function, Object, CompletionHandler)}
+ * ({@link CompletionHandler}-based), or indirectly via the default methods built on them.
  * <p>
  * Channel and path operations come as a matched pair:
  * <ul>
@@ -59,8 +56,8 @@ import java.util.function.Function;
  * The {@link java.net.http.WebSocket} convenience methods —
  * {@link #sendBinary(WebSocket, boolean) sendBinary}, {@link #sendPing(WebSocket) sendPing}, and
  * {@link #sendPong(WebSocket) sendPong} — return a {@link CompletionStage} of the same socket.
- * The synchronous buffer preparation runs on the stored executor; the actual send is dispatched
- * and completed by the underlying {@link WebSocket}'s {@link HttpClient} infrastructure.
+ * The synchronous buffer preparation runs on the instance's dispatch strategy; the actual send is
+ * dispatched and completed by the underlying {@link WebSocket}'s {@link HttpClient} infrastructure.
  * <p>
  * For HTTP/2, {@link #sendAsync(Function, HttpClient, HttpResponse.BodyHandler) sendAsync}
  * prepares an {@link HttpRequest.BodyPublisher} of the
@@ -71,29 +68,39 @@ import java.util.function.Function;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorld
  */
-public interface AsynchronousHelloWorld {
+public interface AsynchronousHelloWorld<T extends HelloWorld> {
 
-    // ---------------------------------------------------------------------- STATIC_FACTORY_METHODS
-
-    /**
-     * Creates a new instance wrapping the specified service and dispatching on the specified
-     * executor.
-     *
-     * @param service  the service to wrap.
-     * @param executor the executor on which the synchronous {@link HelloWorld} calls are
-     *                 dispatched.
-     * @return a new instance wrapping the {@code service} on the {@code executor}.
-     * @throws NullPointerException if either {@code service} or {@code executor} is {@code null}.
-     */
-    static AsynchronousHelloWorld from(final HelloWorld service, final Executor executor) {
-        return new DefaultAsynchronousHelloWorld(service, executor);
+    private static System.Logger log() {
+        return System.getLogger(MethodHandles.lookup().lookupClass().getName());
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
      * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
-     * instance's executor, and returns the result as a {@link CompletionStage}.
+     * instance's dispatch strategy, and notifies the specified handler with the result and the
+     * specified attachment.
+     *
+     * @param <R>        result type parameter.
+     * @param <A>        attachment type parameter.
+     * @param mapper     the mapper to apply; receives the wrapped {@link HelloWorld} service and
+     *                   returns a result.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with the result (or a failure) and
+     *                   the {@code attachment}.
+     * @throws NullPointerException if either {@code mapper} or {@code handler} is {@code null}.
+     * @apiNote This method is the {@link CompletionHandler}-based primitive on which every
+     * handler-based default method in this interface — {@code write(..., handler)},
+     * {@code append(..., handler)}, and any future {@code CompletionHandler}-based variant — is
+     * built. Its {@link CompletionStage}-based counterpart is {@link #applyAsync(Function)}.
+     */
+    <R, A> void applyAsync(Function<? super T, ? extends R> mapper,
+                           @Nullable A attachment,
+                           CompletionHandler<? super R, ? super A> handler);
+
+    /**
+     * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
+     * instance's dispatch strategy, and returns the result as a {@link CompletionStage}.
      *
      * @param <R>    result type parameter.
      * @param mapper the mapper to apply; receives the wrapped {@link HelloWorld} service and
@@ -101,12 +108,15 @@ public interface AsynchronousHelloWorld {
      * @return a {@link CompletionStage} that completes with the value produced by the
      * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
      * @throws NullPointerException if {@code mapper} is {@code null}.
-     * @apiNote This method is the primitive that every default method in this interface is built
-     * on. The {@link CompletionHandler}-based and {@link CompletionStage}-based variants of
-     * {@code write}, {@code append}, {@code sendXxx}, and {@code sendAsync} all delegate here for
-     * dispatch onto the instance's executor.
+     * @apiNote This method is the {@link CompletionStage}-based primitive on which every
+     * stage-based default method in this interface — {@code write(...)} (no-handler overload),
+     * {@code append(...)} (no-handler overload), {@code sendBinary}, {@code sendPing},
+     * {@code sendPong}, and {@code sendAsync} — is built. Its {@link CompletionHandler}-based
+     * counterpart is
+     * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
+     * handler)}.
      */
-    <R> CompletionStage<R> applyAsync(Function<? super HelloWorld, ? extends R> mapper);
+    <R> CompletionStage<R> applyAsync(Function<? super T, ? extends R> mapper);
 
     // ------------------------------------------------------------------------------- java.net.http
 
@@ -281,31 +291,31 @@ public interface AsynchronousHelloWorld {
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * @see #applyAsync(Function)
      */
-    default <C extends AsynchronousByteChannel, A>
-    void write(final C channel, @Nullable final A attachment,
-               final CompletionHandler<? super C, ? super A> handler) { // @formatter:off
+    default <C extends AsynchronousByteChannel, A> void write(
+            final C channel, @Nullable final A attachment,
+            final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).whenComplete((b, t) -> {
+        applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
             }
-            channel.write(b, attachment, new CompletionHandler<>() {
-                @Override public void completed(final Integer result, final A attachment) {
+            channel.write(b, attachment, new CompletionHandler<>() { // @formatter:off
+                @Override
+                public void completed(final Integer result, final A attachment) {
                     if (b.hasRemaining()) {
                         channel.write(b, attachment, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
-                @Override public void failed(final Throwable exc, final A attachment) {
+                @Override
+                public void failed(final Throwable exc, final A attachment) {
                     handler.failed(exc, attachment);
-                }
+                } // @formatter:on
             });
-        }); // @formatter:on
+        });
     }
 
     /**
@@ -325,12 +335,11 @@ public interface AsynchronousHelloWorld {
      * success, or completes it exceptionally on failure.
      * @see #write(AsynchronousByteChannel, Object, CompletionHandler)
      */
-    default <A>
-    CompletionStage<A> write(final AsynchronousByteChannel channel,
-                             final @Nullable A attachment) { // @formatter:off
+    default <A> CompletionStage<A> write(final AsynchronousByteChannel channel,
+                                         final @Nullable A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         final var future = new CompletableFuture<A>();
-        write(channel, attachment, new CompletionHandler<>() {
+        write(channel, attachment, new CompletionHandler<>() { // @formatter:off
             @Override
             public void completed(final AsynchronousByteChannel result, final A attachment) {
                 future.complete(attachment);
@@ -338,9 +347,9 @@ public interface AsynchronousHelloWorld {
             @Override
             public void failed(final Throwable exc, final A attachment) {
                 future.completeExceptionally(exc);
-            }
+            } // @formatter:on
         });
-        return future; // @formatter:on
+        return future;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -372,38 +381,36 @@ public interface AsynchronousHelloWorld {
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      * @see #applyAsync(Function)
      */
-    default <C extends AsynchronousFileChannel, A>
-    void write(final C channel, final long position,
-               final @Nullable A attachment,
-               final CompletionHandler<? super C, ? super A> handler) { // @formatter:off
+    default <C extends AsynchronousFileChannel, A> void write(
+            final C channel, final long position, final @Nullable A attachment,
+            final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).whenComplete((buffer, t) -> {
+        applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
             }
-            channel.write(buffer, position, position, new CompletionHandler<>() {
+            channel.write(b, position, position, new CompletionHandler<>() { // @formater:off
                 @Override
-                public void completed(final Integer result, Long position_) {
-                    if (buffer.hasRemaining()) {
-                        position_ += result;
-                        channel.write(buffer, position_, position_, this);
+                public void completed(final Integer result, Long attachment_) {
+                    if (b.hasRemaining()) {
+                        attachment_ += result;
+                        channel.write(b, attachment_, attachment_, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
+
                 @Override
-                public void failed(final Throwable exc, final Long position_) {
+                public void failed(final Throwable exc, final Long attachment_) {
                     handler.failed(exc, attachment);
-                }
+                } // @formater:off
             });
-        }); // @formatter:on
+        });
     }
 
     /**
@@ -425,25 +432,24 @@ public interface AsynchronousHelloWorld {
      * success, or completes it exceptionally on failure.
      * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
      */
-    default <A>
-    CompletionStage<A> write(final AsynchronousFileChannel channel,
-                             final long position, final @Nullable A attachment) { // @formatter:off
+    default <A> CompletionStage<A> write(final AsynchronousFileChannel channel,
+                                         final long position, final @Nullable A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         final var future = new CompletableFuture<A>();
-        write(channel, position, attachment,
-              new CompletionHandler<>() {
-                  @Override
-                  public void completed(final AsynchronousFileChannel result, final A attachment) {
-                      future.complete(attachment);
-                  }
-                  @Override public void failed(final Throwable exc, final A attachment) {
-                      future.completeExceptionally(exc);
-                  }
-              });
-        return future; // @formatter:on
+        write(channel, position, attachment, new CompletionHandler<>() { // @formatter:off
+            @Override
+            public void completed(final AsynchronousFileChannel result, final A attachment) {
+                future.complete(attachment);
+            }
+            @Override
+            public void failed(final Throwable exc, final A attachment) {
+                future.completeExceptionally(exc);
+            } // @formatter:on
+        });
+        return future;
     }
 
     // ------------------------------------------------------------------------------- java.nio.file
@@ -468,7 +474,7 @@ public interface AsynchronousHelloWorld {
      */
     default <P extends Path, A>
     void append(final P path, final @Nullable A attachment,
-                final CompletionHandler<? super P, ? super A> handler) { // @formatter:off
+                final CompletionHandler<? super P, ? super A> handler) {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
         applyAsync(
@@ -482,7 +488,7 @@ public interface AsynchronousHelloWorld {
                     handler.completed(path, attachment);
                     return null;
                 }
-        ); // @formatter:on
+        );
     }
 
     /**

@@ -20,20 +20,14 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Clob;
-import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.sql.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing
@@ -42,11 +36,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Clob#setCharacterStream(long)
  */
+@DisplayName("setCharacterStream(clob, pos)")
 @Slf4j
 class HelloWorld_SetCharacterStream_Clob_Long_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -60,7 +55,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
         );
     }
 
-    @DisplayName("(clob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -74,11 +69,11 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
         );
     }
 
-    @DisplayName("write(clob.setCharacterStream(pos))")
+    @DisplayName("should invoke <write(clob.setCharacterStream(pos))>, and return the <clob>")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.write_writer_writes_hello_world_string(service());
+        final var service = HelloWorld__TestUtils.write_writer_writes_hello_world_string(service());
         final var sink = new StringWriter();
         final var clob = Mockito.mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
@@ -88,7 +83,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
         // ------------------------------------------------------------------------------------ then
         Mockito.verify(clob, Mockito.times(1)).setCharacterStream(pos);
         Mockito.verify(service, Mockito.times(1)).write((Writer) sink);
-        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), sink.toString());
+        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), sink.toString());
         Assertions.assertSame(clob, result);
     }
 }

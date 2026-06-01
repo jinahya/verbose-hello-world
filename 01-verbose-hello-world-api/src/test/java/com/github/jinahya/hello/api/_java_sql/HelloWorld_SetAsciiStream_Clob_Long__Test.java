@@ -20,36 +20,27 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.sql.Clob;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.io.*;
+import java.sql.*;
 
+@DisplayName("setAsciiStream(clob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_Clob_Long__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
         Mockito.doAnswer(invocation -> {
             final var clob = invocation.getArgument(0, Clob.class);
             final var pos = invocation.getArgument(1, Long.class);
-            clob.setString(pos, HelloWorldTestConstants.HELLO_WORLD_STRING);
+            clob.setString(pos, HelloWorld__TestConstants.HELLO_WORLD_STRING);
             return clob;
         }).when(service()).setAsciiStream(
                 ArgumentMatchers.<Clob>notNull(),
@@ -58,6 +49,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -68,6 +60,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real H2 Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -76,13 +69,14 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
                 Assertions.assertSame(clob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, clob.length());
                 Assertions.assertEquals(
-                        HelloWorldTestConstants.HELLO_WORLD_STRING,
+                        HelloWorld__TestConstants.HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
             }
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -92,6 +86,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real HSQLDB Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -100,13 +95,14 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
                 Assertions.assertSame(clob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, clob.length());
                 Assertions.assertEquals(
-                        HelloWorldTestConstants.HELLO_WORLD_STRING,
+                        HelloWorld__TestConstants.HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
             }
         }
     }
 
+    @DisplayName("SQLite")
     @Disabled("SQLite JDBC driver does not implement Connection.createClob()")
     @Nested
     class SQLite_Test {
@@ -117,6 +113,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real SQLite Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

@@ -20,137 +20,136 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousChannelGroup;
-import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.concurrent.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+
+@DisplayName("write(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
 
+    // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() throws ExecutionException, InterruptedException {
-        HelloWorldTestUtils.write_asynchornousbytechannel_writes_hello_world(service());
+    void __stubService() throws ExecutionException, InterruptedException {
+        write_asynchornousbytechannel_writes_hello_world(service());
     }
 
+    // ---------------------------------------------------------------------------------------------
+    @DisplayName("echo server")
     @Nested
-    class AsynchronousServerSocketChannelTest {
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    class EchoServer_Test {
 
-        @Test
-        void __() throws Exception { // @formatter:off
-            var group = AsynchronousChannelGroup.withThreadPool(
-                    Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory())
-            );
-            try (var server = AsynchronousServerSocketChannel.open(group)) {
-                server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
-                Thread.ofPlatform().start(() -> {
-                    while (server.isOpen()) {
-                        try {
-                            var c = server.accept().get();
-                            Thread.ofPlatform().start(() -> {
-                                try (c) { service().write(c); } catch (Exception _) { }
-                            });
-                        } catch (Exception _) {
-                            return;
-                        }
+        private static void doServer(final AsynchronousServerSocketChannel server)
+                throws Exception {
+            try (final var client = server.accept().get()) {
+                log.debug("[server] accepted from {}", client.getRemoteAddress());
+                final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                while (buffer.hasRemaining()) {
+                    if (client.read(buffer).get() == -1) {
+                        throw new EOFException("unexpected end of stream");
                     }
-                });
-                var clients = 4;
-                var threads = new Thread[clients];
-                for (var i = 0; i < clients; i++) {
-                    threads[i] = Thread.ofPlatform().start(() -> {
-                        try (var client = AsynchronousSocketChannel.open(group)) {
-                            client.connect(server.getLocalAddress()).get();
-                            var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-                            while (dst.hasRemaining()) {
-                                client.read(dst).get();
-                            }
-                            IO.println("[" + Thread.currentThread().getName() + "] "
-                                    + StandardCharsets.US_ASCII.decode(dst.flip()));
-                        } catch (Exception t) {
-                            throw new RuntimeException(t);
-                        }
-                    });
                 }
-                for (var t : threads) {
-                    t.join();
+                log.debug("[server] received from {}", client.getRemoteAddress());
+                for (buffer.flip(); buffer.hasRemaining(); ) {
+                    client.write(buffer).get();
                 }
-            } finally {
-                group.shutdown();
-                if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
-                    log.warn("channel group did not terminate within 8s");
-                }
-            } // @formatter:on
+                log.debug("[server] sent to {}", client.getRemoteAddress());
+            }
         }
-    }
 
-    @Nested
-    class AsynchronousSocketChannelTest {
+        private void doClient(final AsynchronousSocketChannel client, final SocketAddress target)
+                throws Exception {
+            client.connect(target).get();
+            log.debug("[client] connected to {}", client.getRemoteAddress());
+            service().write(client);
+            log.debug("[client] sent to {}", target);
+            final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+            while (dst.hasRemaining()) {
+                if (client.read(dst).get() == -1) {
+                    break;
+                }
+            }
+            log.debug("[client] received from {}", client.getRemoteAddress());
+        }
 
+        @DisplayName(
+                "should write <hello-world-bytes> to an <echo server> over a <loopback> address")
         @Test
-        void __() throws Exception { // @formatter:off
-            var group = AsynchronousChannelGroup.withThreadPool(
-                    Executors.newCachedThreadPool(Thread.ofPlatform().name("ch-", 0).factory())
-            );
-            try (var server = AsynchronousServerSocketChannel.open(group)) {
-                server.bind(new InetSocketAddress(InetAddress.getLocalHost(), 0));
+        void __() throws Exception {
+            try (final var server = AsynchronousServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
-                    while (server.isOpen()) {
-                        try {
-                            var c = server.accept().get();
-                            Thread.ofPlatform().start(() -> {
-                                try (c) {
-                                    var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-                                    while (dst.hasRemaining()) {
-                                        c.read(dst).get();
-                                    }
-                                    IO.println("[" + Thread.currentThread().getName() + "] "
-                                            + StandardCharsets.US_ASCII.decode(dst.flip()));
-                                } catch (Exception _) { }
-                            });
-                        } catch (Exception _) {
-                            return;
-                        }
+                    try {
+                        doServer(server);
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
                     }
                 });
-                var clients = 4;
-                var threads = new Thread[clients];
-                for (var i = 0; i < clients; i++) {
-                    threads[i] = Thread.ofPlatform().start(() -> {
-                        try (var client = AsynchronousSocketChannel.open(group)) {
-                            client.connect(server.getLocalAddress()).get();
-                            service().write(client); // blocks on Future.get() internally
-                        } catch (Exception t) {
-                            throw new RuntimeException(t);
-                        }
-                    });
+                try (final var client = AsynchronousSocketChannel.open()) {
+                    doClient(client, server.getLocalAddress());
                 }
-                for (var t : threads) {
-                    t.join();
+            }
+        }
+
+        @DisplayName("should write <hello-world-bytes> to an <echo server> over an <IPv4> address")
+        @Test
+        void __INET() throws Exception {
+            try (final var server = AsynchronousServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        doServer(server);
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                try (final var client = AsynchronousSocketChannel.open()) {
+                    doClient(client, server.getLocalAddress());
                 }
-            } finally {
-                group.shutdown();
-                if (!group.awaitTermination(8L, TimeUnit.SECONDS)) {
-                    log.warn("channel group did not terminate within 8s");
+            }
+        }
+
+        @DisplayName("should write <hello-world-bytes> to an <echo server> over an <IPv6> address")
+        @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
+                                  disabledReason = "IPv6 disabled by preferIPv4Stack=true")
+        @Test
+        void __INET6() throws Exception {
+            try (final var server = AsynchronousServerSocketChannel.open()) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("::1"), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        doServer(server);
+                    } catch (final Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                try (final var client = AsynchronousSocketChannel.open()) {
+                    doClient(client, server.getLocalAddress());
                 }
-            } // @formatter:on
+            }
+        }
+
+        @DisplayName(
+                "should write <hello-world-bytes> to an <echo server> over a <UNIX domain> address")
+        @Disabled("AsynchronousServerSocketChannel does not support UNIX domain")
+        @Test
+        void __UNIX() {
+            // AsynchronousServerSocketChannel has no open(ProtocolFamily) overload
         }
     }
 }

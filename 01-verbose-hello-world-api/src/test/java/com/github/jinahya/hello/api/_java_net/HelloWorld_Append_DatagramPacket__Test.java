@@ -20,23 +20,21 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.ArgumentMatchers;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.net.DatagramPacket;
+import java.net.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static org.mockito.Mockito.doAnswer;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.mockito.Mockito.*;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Append_DatagramPacket__Test extends HelloWorldTest {
+class HelloWorld_Append_DatagramPacket__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() {

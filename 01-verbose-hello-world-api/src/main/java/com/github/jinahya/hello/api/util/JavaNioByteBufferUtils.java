@@ -20,24 +20,32 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.PrintStream;
-import java.nio.ByteBuffer;
-import java.util.Objects;
+import java.io.*;
+import java.nio.*;
+import java.util.*;
 
 /**
- * Utilities for {@link ByteBuffer}.
+ * Helpers for {@link ByteBuffer java.nio.ByteBuffer} — a textual visualizer that, in addition to
+ * the buffer-shape strip emitted by {@link JavaNioBufferUtils}, also renders the underlying
+ * {@code array} when {@link ByteBuffer#hasArray() hasArray()}, marking the {@code arrayOffset()}
+ * window so a reader can see the buffer's view into its backing storage.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaNioByteBufferUtils {
 
     /**
-     * Prints out the specified byte buffer's current status.
+     * Prints a multi-line, human-readable snapshot of {@code buffer}'s current state to
+     * {@code printer}: identity hash, {@code remaining}, {@code direct}, {@code hasArray},
+     * {@code arrayOffset} (when present), an ASCII strip marking {@code position}, {@code limit},
+     * and {@code capacity}, and (when array-backed) a second strip overlaying the buffer's view on
+     * its backing array.
      *
-     * @param buffer  the byte buffer.
-     * @param printer the print stream to which {@code buffer}'s status is printed.
-     * @param <T>     buffer type parameter
-     * @return given {@code buffer}.
+     * @param buffer  the byte buffer to render; must not be {@code null}.
+     * @param printer the destination of the rendering; must not be {@code null}.
+     * @param <T>     the concrete {@link ByteBuffer} subtype.
+     * @return the given {@code buffer}, unchanged; never {@code null}.
+     * @throws NullPointerException if either argument is {@code null}.
      */
     @SuppressWarnings({
             "java:S1192"
@@ -100,11 +108,13 @@ public final class JavaNioByteBufferUtils {
     }
 
     /**
-     * Prints out the specified byte buffer's status.
+     * The single-argument convenience of
+     * {@link #print(ByteBuffer, PrintStream) print(buffer, System.out)}.
      *
-     * @param buffer the byte buffer.
-     * @param <T>    buffer type parameter
-     * @return given {@code buffer}.
+     * @param buffer the byte buffer to render; must not be {@code null}.
+     * @param <T>    the concrete {@link ByteBuffer} subtype.
+     * @return the given {@code buffer}, unchanged; never {@code null}.
+     * @throws NullPointerException if {@code buffer} is {@code null}.
      */
     @SuppressWarnings({
             "java:S106"

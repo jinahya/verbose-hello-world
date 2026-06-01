@@ -20,11 +20,10 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import org.junit.jupiter.api.*;
 
+@DisplayName("integral")
 class IntegralTest {
 
     /**
@@ -132,10 +131,12 @@ class IntegralTest {
 
     // =================================================================================================================
 
+    @DisplayName("byte")
     @Nested
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     class ByteTests {
 
+        @DisplayName("should print bit patterns of representative <byte> values")
         @Test
         void values() {
             printf("Byte.MIN_VALUE", Byte.MIN_VALUE);
@@ -146,10 +147,12 @@ class IntegralTest {
         }
     }
 
+    @DisplayName("short")
     @Nested
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     class ShortTests {
 
+        @DisplayName("should print bit patterns of representative <short> values")
         @Test
         void values() {
             printf("Short.MIN_VALUE", Short.MIN_VALUE);
@@ -160,10 +163,12 @@ class IntegralTest {
         }
     }
 
+    @DisplayName("int")
     @Nested
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     class IntTests {
 
+        @DisplayName("should print bit patterns of representative <int> values")
         @Test
         void values() {
             printf("Integer.MIN_VALUE", Integer.MIN_VALUE);
@@ -174,10 +179,12 @@ class IntegralTest {
         }
     }
 
+    @DisplayName("long")
     @Nested
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     class LongTests {
 
+        @DisplayName("should print bit patterns of representative <long> values")
         @Test
         void values() {
             printf("Long.MIN_VALUE", Long.MIN_VALUE);
@@ -188,10 +195,12 @@ class IntegralTest {
         }
     }
 
+    @DisplayName("char")
     @Nested
     @NoArgsConstructor(access = AccessLevel.PACKAGE)
     class CharTests {
 
+        @DisplayName("should print bit patterns of representative <char> values")
         @Test
         void values() {
             printf("Character.MIN_VALUE", Character.MIN_VALUE);

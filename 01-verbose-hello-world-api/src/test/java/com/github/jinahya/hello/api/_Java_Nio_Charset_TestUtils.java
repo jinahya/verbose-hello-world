@@ -20,13 +20,12 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.*;
 
-import java.lang.reflect.Modifier;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.stream.Stream;
+import java.lang.reflect.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.stream.*;
 
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -51,6 +50,17 @@ public final class _Java_Nio_Charset_TestUtils {
                 Stream.of("X-UTF-32BE-BOM", "X-UTF-32LE-BOM")
                         .map(Charset::forName)
         );
+    }
+
+    public static Stream<CharsetEncoder> charsetEncoderStream() {
+        return charsetStream()
+                .filter(Charset::canEncode)
+                .map(Charset::newEncoder);
+    }
+
+    public static Stream<CharsetDecoder> charsetDecoderStream() {
+        return charsetStream()
+                .map(Charset::newDecoder);
     }
 
     private _Java_Nio_Charset_TestUtils() {

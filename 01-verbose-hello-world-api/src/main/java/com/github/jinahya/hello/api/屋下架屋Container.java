@@ -20,14 +20,21 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.lang.annotation.Documented;
+import java.lang.annotation.*;
 
 /**
+ * The {@link Repeatable} container annotation that holds multiple {@link 屋下架屋} markers on the same
+ * element.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see 屋下架屋
  */
 @Documented
 @SuppressWarnings({"UnicodeInCode"})
 public @interface 屋下架屋Container {
 
+    /**
+     * @return the contained {@link 屋下架屋} markers; never {@code null}.
+     */
     屋下架屋[] value();
 }

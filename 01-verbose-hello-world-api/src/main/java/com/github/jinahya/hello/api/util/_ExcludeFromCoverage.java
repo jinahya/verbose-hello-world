@@ -20,17 +20,32 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
+ * A documentation-only marker indicating that the annotated type, constructor, or method is
+ * intentionally excluded from coverage measurements, with the {@link #value() value} carrying a
+ * short reason. Retained at {@link RetentionPolicy#CLASS} since coverage tooling reads it from the
+ * compiled classfiles (not via reflection at runtime).
+ * <p>
+ * For the two common, narrower exclusion shapes, prefer the dedicated markers:
+ * {@link _ExcludeFromCoverage_FailingCase} (a test method that asserts a failure path) and
+ * {@link _ExcludeFromCoverage_PrivateConstructor_Obviously} (the conventional uninstantiable
+ * private constructor of a utility class). Use this generic marker when neither fits.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see _ExcludeFromCoverage_FailingCase
+ * @see _ExcludeFromCoverage_PrivateConstructor_Obviously
  */
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD})
 public @interface _ExcludeFromCoverage {
 
+    /**
+     * A short human-readable reason explaining why the annotated element is excluded from
+     * coverage.
+     *
+     * @return the exclusion reason; never {@code null}.
+     */
     String value();
 }

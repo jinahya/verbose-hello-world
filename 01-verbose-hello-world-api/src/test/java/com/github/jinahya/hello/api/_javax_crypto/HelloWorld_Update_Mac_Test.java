@@ -20,15 +20,12 @@ package com.github.jinahya.hello.api._javax_crypto;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import javax.crypto.Mac;
+import javax.crypto.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#update(Mac)} method.
@@ -37,11 +34,13 @@ import javax.crypto.Mac;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  */
+@DisplayName("update(mac)")
 @Slf4j
 class HelloWorld_Update_Mac_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should throw a <NullPointerException> when the <mac> argument is <null>")
     @Test
     void _ThrowNullPointerException_MacIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -51,16 +50,16 @@ class HelloWorld_Update_Mac_Test
         Assertions.assertThrows(NullPointerException.class, () -> service.update(mac));
     }
 
-    @DisplayName("mac.update(set(byte[12]))")
+    @DisplayName("should invoke <mac.update(buffer)>, and return the <mac>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_returns_the_array(service());
+        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
         final var mac = Mockito.mock(Mac.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(mac);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(mac, Mockito.times(1)).update(array);
         Assertions.assertSame(mac, result);
     }

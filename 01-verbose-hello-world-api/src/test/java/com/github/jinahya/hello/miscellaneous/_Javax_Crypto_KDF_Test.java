@@ -20,20 +20,19 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import lombok.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import javax.crypto.KDF;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.HKDFParameterSpec;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Stream;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
+@DisplayName("KDF")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KDF_Test {
 
@@ -98,6 +97,7 @@ class _Javax_Crypto_KDF_Test {
     // picked; algorithm name passed to KDF.deriveKey(String, AlgorithmParameterSpec)
     private static final String KEY_ALGORITHM = "AES";
 
+    @DisplayName("should derive deterministic <data> for the given <HKDF> algorithm")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __deriveData(final String algorithm) throws Exception {
@@ -130,6 +130,7 @@ class _Javax_Crypto_KDF_Test {
         Assertions.assertArrayEquals(out1, out2);
     }
 
+    @DisplayName("should derive a deterministic <SecretKey> for the given <HKDF> algorithm")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __deriveKey(final String algorithm) throws Exception {

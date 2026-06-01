@@ -20,21 +20,14 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.sql.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing
@@ -44,11 +37,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see PreparedStatement#setCharacterStream(int, Reader)
  */
+@DisplayName("setCharacterStream(statement, index)")
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
-    @DisplayName("(null, parameterIndex)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
     @Test
     void _ThrowNullPointerException_PreparedStatementIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -62,7 +56,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         );
     }
 
-    @DisplayName("(preparedStatement, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
     @Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -76,11 +70,13 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         );
     }
 
-    @DisplayName("preparedStatement.setCharacterStream(parameterIndex, <reader of set(byte[12])>)")
+    @DisplayName("""
+            should invoke <statement.setCharacterStream(index, reader)>,
+            and return the <statement>""")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
         final var sink = new StringWriter();
         final var statement = Mockito.mock(PreparedStatement.class);
         Mockito.doAnswer(i -> {
@@ -94,10 +90,10 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.setCharacterStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.set_array12_invoked_once(service);
+        HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(statement, Mockito.times(1))
                 .setCharacterStream(Mockito.eq(index), Mockito.<Reader>notNull());
-        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), sink.toString());
+        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), sink.toString());
         Assertions.assertSame(statement, result);
     }
 }

@@ -20,40 +20,23 @@ package com.github.jinahya.hello.api._java_util_zip;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
 
+@DisplayName("java.util.zip")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Java_Util_Zip__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -61,13 +44,17 @@ class HelloWorld_Java_Util_Zip__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
-        HelloWorldTestUtils.write_stream_will_write_actual_hello_world_bytes(service());
+        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
+        HelloWorld__TestUtils.write_stream_writes_hello_world_bytes(service());
     }
 
+    @DisplayName("ZipOutputStream")
     @Nested
     class ZipOutputStream_Test {
 
+        @DisplayName("""
+                should round-trip a <hello, world> entry
+                through <ZipOutputStream> and <ZipInputStream>""")
         @Test
         void __ZipInputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -84,13 +71,15 @@ class HelloWorld_Java_Util_Zip__Test
                     final var entry = zis.getNextEntry();
                     assert entry != null;
                     Assertions.assertArrayEquals(
-                            HelloWorldTestUtils.hello_world_byte_array(),
+                            HelloWorld__TestUtils.hello_world_byte_array(),
                             zis.readAllBytes()
                     );
                 }
             }
         }
 
+        @DisplayName(
+                "should round-trip a <hello, world> entry through <ZipOutputStream> and <ZipFile>")
         @Test
         void __ZipFile() throws IOException {
             // ----------------------------------------------------------------------------- given
@@ -110,7 +99,7 @@ class HelloWorld_Java_Util_Zip__Test
                 assert entry != null;
                 try (var in = zipFile.getInputStream(entry)) {
                     Assertions.assertArrayEquals(
-                            HelloWorldTestUtils.hello_world_byte_array(),
+                            HelloWorld__TestUtils.hello_world_byte_array(),
                             in.readAllBytes()
                     );
                 }
@@ -119,9 +108,13 @@ class HelloWorld_Java_Util_Zip__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("DeflaterOutputStream")
     @Nested
     class DeflaterOutputStream_Test {
 
+        @DisplayName("""
+                should round-trip <hello, world>
+                through <DeflaterOutputStream> at the given <level>""")
         @MethodSource(
                 "com.github.jinahya.hello.api._java_util_zip.HelloWorld_SetInput_Deflater__Test#levelStream"
         )
@@ -142,12 +135,15 @@ class HelloWorld_Java_Util_Zip__Test
             try (var inflater = new InflaterInputStream(
                     new ByteArrayInputStream(baos.toByteArray()))) {
                 Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
+                        HelloWorld__TestUtils.hello_world_byte_array(),
                         inflater.readAllBytes()
                 );
             }
         }
 
+        @DisplayName("""
+                should round-trip the <HelloWorld.class> bytecode
+                through <DeflaterOutputStream> across all levels""")
         @Test
         void __bytecode() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -176,9 +172,12 @@ class HelloWorld_Java_Util_Zip__Test
         }
     }
 
+    @DisplayName("GZIPOutputStream")
     @Nested
     class GZIPOutputStream_Test {
 
+        @DisplayName(
+                "should round-trip <hello, world> through <GZIPOutputStream> and <GZIPInputStream>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -195,7 +194,7 @@ class HelloWorld_Java_Util_Zip__Test
             try (var gzipis = new GZIPInputStream(
                     new ByteArrayInputStream(baos.toByteArray()))) {
                 Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
+                        HelloWorld__TestUtils.hello_world_byte_array(),
                         gzipis.readAllBytes()
                 );
             }

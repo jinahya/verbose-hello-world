@@ -20,54 +20,45 @@ package com.github.jinahya.hello.api._java_nio_file;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
+import java.io.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#append(Path) append(path)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(Path)")
+@DisplayName("append(path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Append_Path_Test extends HelloWorldTest {
+class HelloWorld_Append_Path_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <path> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var path = (Path) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.append(path)
-        );
+        assertThrows(NullPointerException.class, () -> service.append(path));
     }
 
     @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
@@ -75,32 +66,28 @@ class HelloWorld_Append_Path_Test extends HelloWorldTest {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
-                .when(service)
-                .write(ArgumentMatchers.<WritableByteChannel>any());
-        final var path = Mockito.mock(Path.class);
-        final var channel = Mockito.mock(FileChannel.class);
-        try (var mockStatic = Mockito.mockStatic(FileChannel.class)) {
-            mockStatic.when(() -> FileChannel.open(ArgumentMatchers.same(path),
-                                                   ArgumentMatchers.any(OpenOption[].class)))
+        doAnswer(returnsFirstArg()).when(service).<WritableByteChannel>write(any());
+        final var path = mock(Path.class);
+        final var channel = mock(FileChannel.class);
+        try (var mockStatic = mockStatic(FileChannel.class)) {
+            mockStatic.when(() -> FileChannel.open(same(path), any(OpenOption[].class)))
                     .thenReturn(channel);
             // -------------------------------------------------------------------------------- when
             final var result = service.append(path);
             // -------------------------------------------------------------------------------- then
             final var captor = ArgumentCaptor.forClass(OpenOption[].class);
 //            mockStatic.verify(
-//                    () -> FileChannel.open(ArgumentMatchers.same(path), captor.capture()),
-//                    Mockito.times(1)
+//                    () -> FileChannel.open(same(path), captor.capture()),
+//                    times(1)
 //            );
 //            final var value = captor.getValue();
 //            final var options = new HashSet<>(Arrays.asList(value));
-//            Assertions.assertTrue(options.remove(StandardOpenOption.CREATE));
-//            Assertions.assertTrue(options.remove(StandardOpenOption.APPEND));
-//            Assertions.assertTrue(options.isEmpty());
-//            Mockito.verify(service, Mockito.times(1)).write(channel);
-//            Mockito.verify(channel, Mockito.times(1)).force(true);
-//            Mockito.verify(channel, Mockito.times(1)).close();
-            Assertions.assertSame(path, result);
+//            assertTrue(options.remove(StandardOpenOption.CREATE));
+//            assertTrue(options.remove(StandardOpenOption.APPEND));
+//            assertTrue(options.isEmpty());
+//            verify(service, times(1)).write(channel);
+//            verify(channel, times(1)).close();
+            assertSame(path, result);
         }
     }
 }

@@ -20,21 +20,26 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 /**
- * Utilities for {@link java.lang} package.
+ * Helpers for {@link java.lang java.lang} — currently two families of utilities:
+ * <ul>
+ *   <li>Daemon-thread {@code System.in}-watcher factories
+ *       ({@code readLinesAndCallWhenTests} / {@code …CloseWhenTests} / {@code …RunWhenTests}) that
+ *       start a background daemon thread that reads stdin lines until a caller-supplied
+ *       {@link Predicate} matches, then performs the bound action (call a
+ *       {@link Callable}, close a {@link Closeable}, or run a {@link Runnable}). Useful for
+ *       interactive sample apps that want a "press q to quit" affordance.</li>
+ *   <li>{@link #trimByCodepoints(String, Charset, int)} — a binary-search trim that returns the
+ *       longest prefix of a string whose encoded byte length under a given {@link Charset} does
+ *       not exceed a budget. Codepoint-aware, so it never truncates inside a surrogate pair.</li>
+ * </ul>
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -235,12 +240,18 @@ public final class JavaLangUtils {
     }
 
     /**
-     * Trims specified string that its number of bytes is not greater than specified number.
+     * Returns the longest codepoint-aligned prefix of {@code string} whose encoded length under
+     * {@code charset} is at most {@code bytes}. The result never splits a surrogate pair, since
+     * trimming is performed at codepoint boundaries.
      *
-     * @param string  the string to trim.
-     * @param charset the charset to encode {@code string}.
-     * @param bytes   the number of maximum bytes.
-     * @return a trimmed string whose number of bytes is not greater than {@code bytes}.
+     * @param string  the string to trim; must not be {@code null}.
+     * @param charset the charset under which the byte budget is measured; must not be
+     *                {@code null}.
+     * @param bytes   the maximum allowed byte length of the encoded result; must be positive.
+     * @return a trimmed string whose {@code charset}-encoded byte length does not exceed
+     * {@code bytes}; never {@code null}.
+     * @throws NullPointerException     if {@code string} or {@code charset} is {@code null}.
+     * @throws IllegalArgumentException if {@code bytes} is not positive.
      */
     public static String trimByCodepoints(final String string, final Charset charset,
                                           final int bytes) {

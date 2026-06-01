@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdi_Producer.class})
-@org.jboss.weld.junit5.auto.AddEnabledInterceptors({HelloWorld_LoggingInterceptor.class})
 @org.jboss.weld.junit5.auto.EnableAutoWeld
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

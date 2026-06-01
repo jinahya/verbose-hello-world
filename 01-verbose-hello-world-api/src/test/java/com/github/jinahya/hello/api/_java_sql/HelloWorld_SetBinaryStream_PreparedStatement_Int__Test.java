@@ -20,29 +20,20 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.io.*;
+import java.sql.*;
 
+@DisplayName("setBinaryStream(statement, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
@@ -51,17 +42,18 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
             final var pi = invocation.getArgument(1, Integer.class);
             ps.setBinaryStream(
                     pi,
-                    new ByteArrayInputStream(HelloWorldTestUtils.hello_world_byte_array())
+                    new ByteArrayInputStream(HelloWorld__TestUtils.hello_world_byte_array())
             );
             return ps;
         }).when(service()).setBinaryStream(
                 ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
-        HelloWorldTestUtils.set_array_returns_the_array(service());
+        HelloWorld__TestUtils.set_array_returns_the_array(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -76,6 +68,9 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real H2 PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -109,7 +104,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                             final var bytes = stream.readAllBytes();
                             Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
                             Assertions.assertArrayEquals(
-                                    HelloWorldTestUtils.hello_world_byte_array(),
+                                    HelloWorld__TestUtils.hello_world_byte_array(),
                                     bytes
                             );
                         }
@@ -119,6 +114,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -133,6 +129,9 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real HSQLDB PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -166,7 +165,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                             final var bytes = stream.readAllBytes();
                             Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
                             Assertions.assertArrayEquals(
-                                    HelloWorldTestUtils.hello_world_byte_array(),
+                                    HelloWorld__TestUtils.hello_world_byte_array(),
                                     bytes
                             );
                         }
@@ -176,6 +175,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
         }
     }
 
+    @DisplayName("SQLite")
     @Nested
     class SQLite_Test {
 
@@ -189,6 +189,9 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        @DisplayName("""
+                should insert and read back the hello-world bytes
+                through a <real SQLite PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -222,7 +225,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                             final var bytes = stream.readAllBytes();
                             Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
                             Assertions.assertArrayEquals(
-                                    HelloWorldTestUtils.hello_world_byte_array(),
+                                    HelloWorld__TestUtils.hello_world_byte_array(),
                                     bytes
                             );
                         }

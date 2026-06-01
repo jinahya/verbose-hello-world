@@ -20,19 +20,29 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
+import java.util.*;
 
 /**
  * (Internal) Constants for the {@link HelloWorld}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Deprecated(forRemoval = true)
 final class HelloWorldConstants {
 
-    static final String HELLO_WORLD_STRING = "hello, world";
+    static final String HELL_WORLD_STRING = "hello, world";
 
-    static final Charset HELLO_WORLD_CHARSET = StandardCharsets.US_ASCII;
+    static final List<Charset> HELLO_WORLD_CHARSETS;
+
+    static {
+        final byte[] ascii = HELL_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
+        HELLO_WORLD_CHARSETS = Charset.availableCharsets().values().stream()
+                .filter(Charset::canEncode)
+                .filter(c -> Arrays.equals(HELL_WORLD_STRING.getBytes(c), ascii)
+                             && HELL_WORLD_STRING.equals(new String(ascii, c)))
+                .toList();
+    }
 
     private HelloWorldConstants() {
         throw new AssertionError("instantiation is not allowed");

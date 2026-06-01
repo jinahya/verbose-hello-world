@@ -20,14 +20,13 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
+import lombok.*;
+import lombok.experimental.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
 /**
  * An abstract base for tests that demonstrate a reactive library's <em>own</em> publisher-creation
@@ -47,14 +46,14 @@ abstract class HelloWorldReactive__Test {
         super();
         this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
         this.asynchronousService = Mockito.spy(
-                new DefaultAsynchronousHelloWorld(synchronousService, Runnable::run)
+                new ExecutorHelloWorld<>(synchronousService, Runnable::run)
         );
     }
 
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void stubService() {
-        set_array_sets_actual_hello_world_bytes(synchronousService);
+        set_array_sets_hello_world_bytes(synchronousService);
     }
 
     // -------------------------------------------------------------------------- synchronousService
@@ -68,5 +67,5 @@ abstract class HelloWorldReactive__Test {
 
     @Accessors(fluent = true)
     @Getter(AccessLevel.PACKAGE)
-    private final AsynchronousHelloWorld asynchronousService;
+    private final AsynchronousHelloWorld<HelloWorld> asynchronousService;
 }

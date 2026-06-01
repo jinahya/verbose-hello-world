@@ -20,27 +20,14 @@ package com.github.jinahya.hello.api._java_lang_foreign;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
+import org.mockito.*;
 
-import java.lang.foreign.Arena;
-import java.lang.foreign.FunctionDescriptor;
-import java.lang.foreign.Linker;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.SymbolLookup;
-import java.lang.foreign.ValueLayout;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
+import java.lang.foreign.*;
+import java.nio.charset.*;
+import java.util.*;
 
 /**
  * Tests {@link HelloWorld#copy(MemorySegment)} with various native libraries via FFM API. Tests are
@@ -48,6 +35,7 @@ import java.util.Optional;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("copy(segment) via FFM")
 class HelloWorld_Copy_Segment_FFM_Test {
 
     // ----------------------------------------------------------------------------------- Utilities
@@ -118,9 +106,10 @@ class HelloWorld_Copy_Segment_FFM_Test {
      * @see <a href="https://en.cppreference.com/w/c/string/byte/memcmp">memcmp -
      * cppreference.com</a>
      */
+    @DisplayName("libc")
     @Nested
     class Libc_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using C {@code puts()}.
@@ -128,6 +117,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code int puts(const char *s)} writes the string {@code s} and a trailing newline to
          * {@code stdout}. Requires null-terminated string.
          */
+        @DisplayName("should verify the <segment> content through C <puts>")
         @Test
         void _puts__()
                 throws Throwable {
@@ -140,7 +130,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 // ----------------------------------------------------------------------------when
                 service.copy(segment);
                 // ---------------------------------------------------------------------------- then
-                final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+                final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
                 final var content = readSegmentAsString(segment);
                 Assertions.assertEquals("hello, world", content);
                 final var linker = Linker.nativeLinker();
@@ -158,6 +148,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code size_t strlen(const char *s)} returns the number of bytes in string {@code s}, not
          * counting the terminating null character.
          */
+        @DisplayName("should verify the <segment> length through C <strlen>")
         @Test
         void _strlen__()
                 throws Throwable {
@@ -185,6 +176,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code int memcmp(const void *s1, const void *s2, size_t n)} compares the first {@code n}
          * bytes of memory areas {@code s1} and {@code s2}. Returns 0 if they are equal.
          */
+        @DisplayName("should verify the <segment> content through C <memcmp>")
         @Test
         void _memcmp__()
                 throws Throwable {
@@ -236,9 +228,10 @@ class HelloWorld_Copy_Segment_FFM_Test {
      * href="https://docs.python.org/3/c-api/veryhigh.html#c.PyRun_SimpleString">PyRun_SimpleString</a>
      * @see <a href="https://docs.python.org/3/c-api/init.html#c.Py_Finalize">Py_Finalize</a>
      */
+    @DisplayName("python")
     @Nested
     class Python_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         private static final List<String> PYTHON_LIBS_MACOS = List.of(
                 // Homebrew Cellar paths (versioned)
@@ -273,6 +266,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * This test embeds the Python interpreter, builds a Python script dynamically, and executes
          * it to print the "hello, world" content.
          */
+        @DisplayName("should verify the <segment> content through Python <print>")
         @Disabled
         @Test
         void _print_()
@@ -343,16 +337,18 @@ class HelloWorld_Copy_Segment_FFM_Test {
      * href="https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/write.2.html">write(2)
      * - Apple</a>
      */
+    @DisplayName("macOS")
     @Nested
     @EnabledOnOs(OS.MAC)
     class MacOS_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
          * <p>
          * Writes directly to file descriptor 1 (stdout) bypassing buffered I/O.
          */
+        @DisplayName("should verify the <segment> content through POSIX <write> on macOS")
         @Test
         void _write_()
                 throws Throwable {
@@ -391,14 +387,16 @@ class HelloWorld_Copy_Segment_FFM_Test {
      *
      * @see <a href="https://man7.org/linux/man-pages/man2/write.2.html">write(2) - Linux manual</a>
      */
+    @DisplayName("Linux")
     @Nested
     @EnabledOnOs(OS.LINUX)
     class Linux_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
          */
+        @DisplayName("should verify the <segment> content through POSIX <write> on Linux")
         @Test
         void _write_()
                 throws Throwable {
@@ -449,10 +447,11 @@ class HelloWorld_Copy_Segment_FFM_Test {
      * @see <a
      * href="https://learn.microsoft.com/en-us/windows/console/writeconsolea">WriteConsoleA</a>
      */
+    @DisplayName("Windows")
     @Nested
     @EnabledOnOs(OS.WINDOWS)
     class Windows_Test
-            extends HelloWorldTest {
+            extends HelloWorld__Test {
 
         /**
          * Verifies segment content using Windows {@code WriteConsoleA()}.
@@ -460,6 +459,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * Gets the stdout handle via {@code GetStdHandle(STD_OUTPUT_HANDLE)} and writes the segment
          * content to the console.
          */
+        @DisplayName("should verify the <segment> content through Windows <WriteConsoleA>")
         @Test
         void _WriteConsoleA_()
                 throws Throwable {

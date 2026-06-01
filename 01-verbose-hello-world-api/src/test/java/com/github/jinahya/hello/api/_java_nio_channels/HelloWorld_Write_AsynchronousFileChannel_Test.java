@@ -20,23 +20,21 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -46,17 +44,14 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @DisplayName("write(channel, position)")
 @Slf4j
-class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
+class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -64,10 +59,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
         final var channel = (AsynchronousFileChannel) null;
         final var position = ThreadLocalRandom.current().nextLong() >>> 1;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(channel, position)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(channel, position));
     }
 
     /**
@@ -75,21 +67,16 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * throws an {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
-    @DisplayName("""
-            should throw an <IllegalArgumentException>
-            when the <position> argument is <not positive>"""
-    )
+    @DisplayName(
+            "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var channel = mock(AsynchronousFileChannel.class);
         final var position = ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> service.write(channel, position)
-        );
+        assertThrows(IllegalArgumentException.class, () -> service.write(channel, position));
     }
 
     /**
@@ -100,53 +87,56 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName("""
-            should write all <hello-world-bytes> across partial writes,
-            and return the <channel>"""
-    )
+    @DisplayName(
+            "should write all <hello-world-bytes> across partial writes, and return the <channel>")
     @Test
-    void __succeeds() throws InterruptedException, ExecutionException {
+    @SuppressWarnings({"rawtypes"})
+    void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
-                service());
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
-        final var increments = new ArrayList<Integer>();
-        Mockito.doAnswer(w -> {
+        final var service = put_buffer12_increases_buffer_position_by_12(service());
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var channelPositions = new ArrayList<Long>();
+        final var bufferPositions = new ArrayList<Integer>();
+        final var futureReference = new AtomicReference<Future>();
+        doAnswer(w -> {
+            assert futureReference.get() == null;
             final var src = w.getArgument(0, ByteBuffer.class);
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) Mockito.mock(Future.class);
-            // stub, <future.get()> will increase <src>'s <position> by a random value
-            Mockito.doAnswer(g -> {
+            bufferPositions.add(src.position());
+            final var position = w.getArgument(1, Long.class);
+            channelPositions.add(position);
+            final var future = mock(Future.class);
+            futureReference.set(future);
+            doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
-                increments.add(n);
+                futureReference.set(null);
                 return n;
             }).when(future).get();
             return future;
         }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()), // <src>
-                ArgumentMatchers.longThat(p -> p >= 0L)                       // <position>
+                argThat(v -> v != null
+                             && v.capacity() == HelloWorld.BYTES
+                             && v.limit() == HelloWorld.BYTES
+                             && v.hasRemaining()),
+                longThat(v -> v >= 0L)
         );
         final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-//        final List<Long> positions;
-//        {
-//            final var captor = ArgumentCaptor.forClass(long.class);
-//            Mockito.verify(channel, Mockito.atLeastOnce())
-//                    .write(ArgumentMatchers.same(buffer), captor.capture());
-//            positions = captor.getAllValues();
+        final var buffer = put_buffer12_invoked_once(service);
+//        assertFalse(bufferPositions.isEmpty());
+//        assertEquals(0, bufferPositions.getFirst());
+//        for (var i = 1; i < bufferPositions.size(); i++) {
+//            assertTrue(bufferPositions.get(i) > bufferPositions.get(i - 1));
 //        }
-//        Assertions.assertEquals(increments.size(), positions.size());
-//        Assertions.assertEquals(position, positions.getFirst());
-//        final var iterator = increments.iterator();
-//        positions.stream().reduce((p1, p2) -> {
-//            Assertions.assertEquals(p1 + iterator.next(), p2);
-//            return p2;
-//        });
-        Assertions.assertSame(channel, result);
+//        assertFalse(buffer.hasRemaining());
+//        assertEquals(bufferPositions.size(), channelPositions.size());
+//        assertEquals(position, channelPositions.getFirst());
+//        for (var i = 1; i < channelPositions.size(); i++) {
+//            assertEquals(position + bufferPositions.get(i), channelPositions.get(i));
+//        }
+        assertSame(channel, result);
     }
 
     /**
@@ -156,20 +146,17 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
      */
     @DisplayName("""
             should propagate an <ExecutionException>
-            when the <channel> fails on or after partial writes"""
-    )
+            when the <channel> fails on or after partial writes""")
     @Test
     void __fails() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.put_buffer_will_increase_buffer_position_by_12(
-                service());
-        final var channel = Mockito.mock(AsynchronousFileChannel.class);
+        final var service = put_buffer12_increases_buffer_position_by_12(service());
+        final var channel = mock(AsynchronousFileChannel.class);
         final var cause = new IOException("simulated write failure");
-        Mockito.doAnswer(w -> {
+        doAnswer(w -> {
             final var src = w.getArgument(0, ByteBuffer.class);
-            @SuppressWarnings({"unchecked"})
-            final var future = (Future<Integer>) Mockito.mock(Future.class);
-            Mockito.doAnswer(g -> {
+            final var future = mock(Future.class);
+            doAnswer(g -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
                 if (!src.hasRemaining() || ThreadLocalRandom.current().nextBoolean()) {
@@ -179,15 +166,17 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorldTest {
             }).when(future).get();
             return future;
         }).when(channel).write(
-                ArgumentMatchers.argThat(b -> b != null && b.hasRemaining()),
-                ArgumentMatchers.longThat(p -> p >= 0L)
+                argThat(v -> v != null
+                             && v.capacity() == HelloWorld.BYTES
+                             && v.limit() == HelloWorld.BYTES
+                             && v.hasRemaining()),
+                longThat(v -> v >= 0L)
         );
-        final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------- when/then
-//        final var thrown = Assertions.assertThrows(
+//        final var thrown = assertThrows(
 //                ExecutionException.class,
-//                () -> service.write(channel, position)
+//                () -> service.write(channel, 0)
 //        );
-//        Assertions.assertSame(cause, thrown.getCause());
+//        assertSame(cause, thrown.getCause());
     }
 }

@@ -20,17 +20,13 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.sql.Clob;
-import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
+import java.sql.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)}
@@ -41,11 +37,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
  */
+@DisplayName("setString(clob, pos)")
 @Slf4j
 class HelloWorld_SetString_Clob_Long_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
-    @DisplayName("(null, pos)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -59,7 +56,7 @@ class HelloWorld_SetString_Clob_Long_Test
         );
     }
 
-    @DisplayName("(clob, non-positive)IllegalArgumentException")
+    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -73,19 +70,19 @@ class HelloWorld_SetString_Clob_Long_Test
         );
     }
 
-    @DisplayName("clob.setString(pos, <string from set(byte[12])>)")
+    @DisplayName("should invoke <clob.setString(pos, string)>, and return the <clob>")
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
         final var clob = Mockito.mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setString(clob, pos);
         // ------------------------------------------------------------------------------------ then
-        HelloWorldTestUtils.set_array12_invoked_once(service);
+        HelloWorld__TestUtils.set_array12_invoked_once(service);
         Mockito.verify(clob, Mockito.times(1))
-                .setString(pos, HelloWorldTestUtils.hello_world_string());
+                .setString(pos, HelloWorld__TestUtils.hello_world_string());
         Assertions.assertSame(clob, result);
     }
 }

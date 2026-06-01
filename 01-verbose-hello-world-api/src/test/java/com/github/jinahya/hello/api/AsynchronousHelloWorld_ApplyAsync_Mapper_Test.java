@@ -20,44 +20,50 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.*;
 
-import java.util.function.Function;
+import java.util.function.*;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-class AsynchronousHelloWorld_ApplyAsync_Mapper_Test
-        extends AsynchronousHelloWorldTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@DisplayName("applyAsync(mapper)")
+abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
+        T extends AsynchronousHelloWorld<HelloWorld>
+        >
+        extends AsynchronousHelloWorld__Test<HelloWorld, T> {
+
+    // ---------------------------------------------------------------------------------------------
+    AsynchronousHelloWorld_ApplyAsync_Mapper_Test(
+            final Function<? super HelloWorld, ? extends T> initializer) {
+        super(HelloWorld.class, initializer);
+    }
+
+    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
+    @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        final var mapper = (Function<HelloWorld, Object>) null;
+        final Function mapper = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.applyAsync(mapper)
-        );
+        assertThrows(NullPointerException.class, () -> asynchronousService.applyAsync(mapper));
     }
 
+    @DisplayName("should return a <CompletionStage> that completes with <mapper.apply> result")
     @Test
     @SuppressWarnings({"unchecked"})
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var synchronousService = synchronousService();
         final var asynchronousService = asynchronousService();
-        final var result = 42;
-        final var mapper = (Function<HelloWorld, Integer>) Mockito.mock(Function.class);
-        Mockito.when(mapper.apply(ArgumentMatchers.same(synchronousService))).thenReturn(result);
+        final var value = 42;
+        final var mapper = mock(Function.class);
+        when(mapper.apply(synchronousService)).thenReturn(value);
         // ------------------------------------------------------------------------------------ when
-        final var stage = asynchronousService.applyAsync(mapper);
+        final var result = asynchronousService.applyAsync(mapper);
         // ------------------------------------------------------------------------------------ then
-        Assertions.assertSame(result, stage.toCompletableFuture().get());
-        Mockito.verify(mapper, Mockito.times(1)).apply(ArgumentMatchers.same(synchronousService));
+        assertSame(value, result.toCompletableFuture().get());
+        verify(mapper, times(1)).apply(synchronousService);
     }
 }

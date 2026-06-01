@@ -20,14 +20,16 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.io.*;
+import java.lang.invoke.*;
+import java.util.*;
+import java.util.function.*;
 
 /**
- * Utilities for {@link java.io.Closeable} interface.
+ * Helpers for {@link Closeable java.io.Closeable} — three flavors of
+ * {@link Closeable#close() close()} that all hide the checked {@link IOException}: route the
+ * exception to a caller {@link Consumer}, wrap it as a {@link RuntimeException}, or swallow it with
+ * an {@code ERROR}-level log line.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -36,6 +38,16 @@ public final class JavaIoCloseableUtils {
     private static final System.Logger logger =
             System.getLogger(MethodHandles.lookup().lookupClass().getName());
 
+    /**
+     * Closes {@code closeable} and, on any {@link IOException}, passes it to {@code consumer}
+     * instead of rethrowing. A non-{@link IOException} {@link Exception} (unlikely but possible if
+     * {@code close()} throws an undeclared one) is wrapped in a {@link RuntimeException}.
+     *
+     * @param closeable the resource to close; must not be {@code null}.
+     * @param consumer  the consumer to receive a thrown {@link IOException}; must not be
+     *                  {@code null}.
+     * @throws NullPointerException if either argument is {@code null}.
+     */
     public static void closeUnchecked(final Closeable closeable,
                                       final Consumer<? super IOException> consumer) {
         Objects.requireNonNull(closeable, "closeable is null");
@@ -55,6 +67,17 @@ public final class JavaIoCloseableUtils {
         );
     }
 
+    /**
+     * Closes {@code closeable} and returns it, wrapping any thrown {@link IOException} in an
+     * {@link UncheckedIOException} via
+     * {@link JavaUtilConcurrentCallableUtils#callUnchecked(java.util.concurrent.Callable)}.
+     *
+     * @param closeable the resource to close; must not be {@code null}.
+     * @param <T>       the concrete {@link Closeable} subtype.
+     * @return the given {@code closeable}, after closing.
+     * @throws NullPointerException if {@code closeable} is {@code null}.
+     * @throws UncheckedIOException if {@code closeable.close()} threw an {@link IOException}.
+     */
     public static <T extends Closeable> T closeUnchecked(final T closeable) {
         Objects.requireNonNull(closeable, "closeable is null");
         return JavaUtilConcurrentCallableUtils.callUnchecked(() -> {
@@ -63,6 +86,14 @@ public final class JavaIoCloseableUtils {
         });
     }
 
+    /**
+     * Closes {@code closeable}, swallowing any {@link IOException} by logging it at {@code ERROR}
+     * level. Intended for finalizer-style cleanup paths where rethrowing the failure would mask a
+     * more important pending exception.
+     *
+     * @param closeable the resource to close; must not be {@code null}.
+     * @throws NullPointerException if {@code closeable} is {@code null}.
+     */
     public static void closeSilently(final Closeable closeable) {
         Objects.requireNonNull(closeable, "closeable is null");
         try {

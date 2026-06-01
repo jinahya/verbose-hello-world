@@ -20,23 +20,21 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.util.concurrent.atomic.AtomicReference;
+import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#send(DatagramChannel, SocketAddress) send(channel, target)}
@@ -44,88 +42,78 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("send(channel, target)")
 @Slf4j
-class HelloWorld_Send_DatagramChannel_Target_Test
-        extends HelloWorldTest {
+class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("(null, ?)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var channel = (DatagramChannel) null;
-        final var target = Mockito.mock(SocketAddress.class);
+        final var target = mock(SocketAddress.class);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(channel, target)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(channel, target));
     }
 
-    @DisplayName("(?, null)NullPointerException")
+    @DisplayName("should throw a <NullPointerException> when the <target> argument is <null>")
     @Test
     void _ThrowNullPointerException_TargetIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = Mockito.mock(DatagramChannel.class);
+        final var channel = mock(DatagramChannel.class);
         final var target = (SocketAddress) null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.send(channel, target)
-        );
+        assertThrows(NullPointerException.class, () -> service.send(channel, target));
     }
 
+    @DisplayName(
+            "should delegate to <send(socket, target)> when the <channel> is in <blocking> mode")
     @Test
     void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var channel = Mockito.mock(DatagramChannel.class);
-        Mockito.when(channel.isBlocking()).thenReturn(true);
-        final var socket = Mockito.mock(DatagramSocket.class);
-        Mockito.when(channel.socket()).thenReturn(socket);
-        Mockito.when(socket.getChannel()).thenReturn(channel);
-        final var target = Mockito.mock(SocketAddress.class);
-        Mockito.doReturn(socket).when(service).send(
-                ArgumentMatchers.<DatagramSocket>same(socket),
-                ArgumentMatchers.same(target)
-        );
+        doAnswer(returnsFirstArg()).when(service).<DatagramSocket>send(any(), any());
+        final var channel = mock(DatagramChannel.class);
+        when(channel.isBlocking()).thenReturn(true);
+        final var socket = mock(DatagramSocket.class);
+        when(channel.socket()).thenReturn(socket);
+        when(socket.getChannel()).thenReturn(channel);
+        final var target = mock(SocketAddress.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(channel, target);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).send(
-                ArgumentMatchers.<DatagramSocket>same(socket),
-                ArgumentMatchers.same(target)
-        );
-        Assertions.assertSame(channel, result);
+        verify(service, times(1)).send(socket, target);
+        assertSame(channel, result);
     }
 
+    @DisplayName("""
+            should send <hello-world-bytes> via the <channel> to the <target>
+            when the <channel> is in <non-blocking> mode""")
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var srcRef = new AtomicReference<byte[]>();
-        HelloWorldTestUtils.put_buffer_will_put_12_random_bytes(service, srcRef::set);
-        final var channel = Mockito.mock(DatagramChannel.class);
-        Mockito.when(channel.isBlocking()).thenReturn(false);
-        final var target = Mockito.mock(SocketAddress.class);
-        final var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-        Mockito.when(channel.send(
-                ArgumentMatchers.argThat(v -> v != null && v.remaining() == HelloWorld.BYTES),
-                ArgumentMatchers.same(target)
-        )).thenAnswer(i -> {
+        final var service = put_buffer12_increases_buffer_position_by_12(service());
+        final var channel = mock(DatagramChannel.class);
+        when(channel.isBlocking()).thenReturn(false);
+        doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            final var dst = new byte[src.remaining()];
-            src.get(dst);
-            baos.write(dst);
-            return dst.length;
-        });
+            assert src.capacity() == HelloWorld.BYTES;
+            assert src.position() == 0;
+            if (ThreadLocalRandom.current().nextInt() % 3 == 1) {
+                return 0;
+            }
+            src.position(src.limit());
+            return src.capacity();
+        }).when(channel).send(notNull(), notNull());
+        final var target = mock(SocketAddress.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(channel, target);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = HelloWorldTestUtils.put_buffer12_invoked_once(service);
-//        Assertions.assertArrayEquals(srcRef.get(), baos.toByteArray());
-        Assertions.assertSame(channel, result);
+        final var buffer = put_buffer12_invoked_once(service);
+        verify(channel, atLeastOnce()).send(buffer, target);
+        assertSame(channel, result);
     }
 }

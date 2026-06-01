@@ -21,13 +21,32 @@ package com.github.jinahya.hello.api;
  */
 
 import java.awt.*;
-import java.util.Objects;
+import java.util.*;
 
 /**
+ * A graphics-oriented adapter around a {@link HelloWorld} service that re-interprets the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> as colors and drawing
+ * primitives — three or four {@link Color} samples and an {@code AWT} {@link Graphics}-fill
+ * convenience.
+ * <p>
+ * Use {@link #newInstance(HelloWorld)} for the default implementation; alternative implementations
+ * may be supplied by users who want different byte-to-color groupings.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see HelloWorld
  */
 public interface HelloWorldGraphics {
 
+    /**
+     * Creates the default implementation of this interface, wrapping the specified
+     * {@link HelloWorld} service.
+     *
+     * @param service the {@link HelloWorld} service that supplies the
+     *                <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to be
+     *                interpreted as colors; must not be {@code null}.
+     * @return a new {@link HelloWorldGraphics} backed by {@code service}; never {@code null}.
+     * @throws NullPointerException if {@code service} is {@code null}.
+     */
     static HelloWorldGraphics newInstance(final HelloWorld service) {
         return new DefaultHelloWorldGraphics(
                 Objects.requireNonNull(service, "service is null")
@@ -67,7 +86,22 @@ public interface HelloWorldGraphics {
      */
     Color[] getFourColors();
 
-    // fill three, horizontally divided, rectangles with getThreeColors
-    // use Rectangle2D.Double if graphics is Graphics2D
+    /**
+     * Fills the specified {@code (x, y, width, height)} rectangle on the given graphics with three
+     * horizontally-divided bands, each painted with one of the colors returned by
+     * {@link #getThreeColors()}.
+     *
+     * @param graphics the AWT graphics surface to draw onto; must not be {@code null}.
+     * @param x        the x-coordinate of the rectangle's upper-left corner.
+     * @param y        the y-coordinate of the rectangle's upper-left corner.
+     * @param width    the width of the rectangle, in pixels.
+     * @param height   the height of the rectangle, in pixels.
+     * @param <T>      the concrete {@link Graphics} subtype of {@code graphics}.
+     * @return the given {@code graphics}, unchanged save for the side-effect fill.
+     * @throws NullPointerException if {@code graphics} is {@code null}.
+     * @implNote Implementations using {@link Graphics2D} may use
+     * {@link java.awt.geom.Rectangle2D.Double Rectangle2D.Double} for sub-pixel band placement.
+     * @see #getThreeColors()
+     */
     <T extends Graphics> T fillWithThreeColors(T graphics, int x, int y, int width, int height);
 }

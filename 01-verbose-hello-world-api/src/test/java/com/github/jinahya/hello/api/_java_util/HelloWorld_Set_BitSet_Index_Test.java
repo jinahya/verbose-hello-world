@@ -20,31 +20,25 @@ package com.github.jinahya.hello.api._java_util;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.util.BitSet;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing {@link HelloWorld#set(BitSet, int)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("set(BitSet, int)")
+@DisplayName("set(bitset, index)")
 @Slf4j
 class HelloWorld_Set_BitSet_Index_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <bitset> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <bitset> argument is <null>")
     @Test
     void _ThrowNullPointerException_BitSetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -58,9 +52,7 @@ class HelloWorld_Set_BitSet_Index_Test
         );
     }
 
-    @DisplayName("""
-            should throw an <IllegalArgumentException>
-            when the <index> argument is negative""")
+    @DisplayName("should throw an <IllegalArgumentException> when the <index> argument is negative")
     @Test
     void _ThrowIllegalArgumentException_IndexIsNegative() {
         // ----------------------------------------------------------------------------------- given
@@ -78,13 +70,13 @@ class HelloWorld_Set_BitSet_Index_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
+        final var service = HelloWorld__TestUtils.set_array_sets_random_bytes(service());
         final var bitset = Mockito.spy(new BitSet(HelloWorld.BYTES << 3));
         final var index = 0;
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
+        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
         Assertions.assertArrayEquals(array, bitset.toByteArray());
         Assertions.assertSame(bitset, result);
     }

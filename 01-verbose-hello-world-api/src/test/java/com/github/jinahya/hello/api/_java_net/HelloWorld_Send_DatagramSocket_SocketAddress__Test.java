@@ -20,33 +20,25 @@ package com.github.jinahya.hello.api._java_net;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
+@DisplayName("send(socket, target)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorldTest {
+class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() throws IOException {
@@ -61,6 +53,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorldTest 
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should send <hello-world-bytes> through a real <DatagramSocket> to the <target>")
     @Test
     void __() throws IOException {
         try (var server = new DatagramSocket(
@@ -69,9 +62,8 @@ class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorldTest 
             Thread.ofPlatform().start(() -> {
                 try {
                     final var packet = new DatagramPacket(
-                            new byte[HelloWorld.BYTES << 1],                       // <buf>
-                            ThreadLocalRandom.current().nextInt(HelloWorld.BYTES), // <offset>
-                            HelloWorld.BYTES                                       // <length>
+                            new byte[HelloWorld.BYTES], // <buf>
+                            HelloWorld.BYTES            // <length>
                     );
                     server.receive(packet);
                     final var decoded = new String(
@@ -80,7 +72,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorldTest 
                             packet.getLength(),       // <length>
                             StandardCharsets.US_ASCII // <charset>
                     );
-                    log.debug("received: {}", decoded);
+                    log.debug("'{}' received from {}", decoded, packet.getSocketAddress());
                 } catch (final IOException ioe) {
                     throw new UncheckedIOException(ioe);
                 }

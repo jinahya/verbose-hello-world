@@ -20,21 +20,18 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.concurrent.atomic.*;
+import java.util.function.*;
+import java.util.stream.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("PECS")
 @Slf4j
 class _Effective_Java_PECS_Test {
 
@@ -47,18 +44,18 @@ class _Effective_Java_PECS_Test {
      *
      * <h3>The PECS rule itself</h3>
      * <ol>
-     *   <li>{@code roundUpSynapsida1} / {@code roundUpSynapsida2} —
-     *       {@code Collection<? super T>}: <b>Consumer Super</b>, concrete {@code T = Synapsida}.</li>
+     *   <li>{@code roundUpMammal1} / {@code roundUpMammal2} —
+     *       {@code Collection<? super T>}: <b>Consumer Super</b>, concrete {@code T = Mammal}.</li>
      *   <li>{@code roundUp1} / {@code roundUp2} —
-     *       {@code Collection<? super T>}: <b>Consumer Super</b>, generic {@code T extends Amniota}.</li>
+     *       {@code Collection<? super T>}: <b>Consumer Super</b>, generic {@code T extends Animal}.</li>
      *   <li>{@code inspect1} / {@code inspect2} —
      *       {@code Consumer<? super T>}: Consumer Super on a <b>functional interface</b>.</li>
      *   <li>{@code capture1} / {@code capture2} (wild → zoo) —
-     *       {@code Collection<? extends Amniota>}: <b>Producer Extends</b>, collection.</li>
+     *       {@code Collection<? extends Animal>}: <b>Producer Extends</b>, collection.</li>
      *   <li>{@code breed1} / {@code breed2} (none → zoo) —
      *       {@code Supplier<? extends T>}: Producer Extends on a <b>functional interface</b>.</li>
      *   <li>{@code release1} / {@code release2} (zoo → wild) —
-     *       {@code Collection<? super Amniota>}: Consumer Super, with the "12 Monkeys" payoff
+     *       {@code Collection<? super Animal>}: Consumer Super, with the "12 Monkeys" payoff
      *       (the wild is modelled by {@code Nature.wildlife}, a {@code List<Object>}).</li>
      *   <li>{@code tag1} / {@code tag2} —
      *       {@code Function<? super T, ? extends R>}: <b>BOTH PECS sides at once</b>; the climactic
@@ -71,27 +68,27 @@ class _Effective_Java_PECS_Test {
      *       written. {@code List<T>} can be neither {@code <? extends T>} nor {@code <? super T>}
      *       in {@code list.set(i, list.set(j, list.get(i)))}.</li>
      *   <li>{@code roster1} / {@code roster2} — <b>Don't use wildcards as return types</b>.
-     *       {@code Collection<? extends Amniota>} forces wildcard plumbing on every caller; the
-     *       invariant {@code Collection<Amniota>} return is preferable.</li>
+     *       {@code Collection<? extends Animal>} forces wildcard plumbing on every caller; the
+     *       invariant {@code Collection<Animal>} return is preferable.</li>
      *   <li>{@code heaviest} — <b>Recursive PECS bound</b>:
-     *       {@code <T extends Comparable<? super T>>}. {@code Cat} is {@code Comparable<Amniota>}
+     *       {@code <T extends Comparable<? super T>>}. {@code Cat} is {@code Comparable<Animal>}
      *       via inheritance, which is-a {@code Comparable<? super Cat>} — but is <i>not</i> a
      *       {@code Comparable<Cat>}. The {@code <? super T>} inside the bound is what makes the
-     *       method accept any {@code T extends Amniota}.</li>
+     *       method accept any {@code T extends Animal}.</li>
      * </ol>
      *
      * <h3>Type lattice</h3>
      * <pre>
-     *   Amniota (implements Comparable&lt;Amniota&gt;, abstract averageWeight())
-     *   ├── Synapsida
-     *   │   ├── Cat       (4.5  kg)
-     *   │   └── Whale     (5000 kg)
-     *   └── Sauropsida
-     *       ├── Tortoise  (2    kg)
-     *       └── Eagle     (5    kg)
+     *   Animal (implements Comparable&lt;Animal&gt;, abstract averageWeight())
+     *   ├── Mammal
+     *   │   ├── Cat       (    4.5 kg)
+     *   │   └── Whale     (130000.0 kg)
+     *   └── Reptile
+     *       ├── Tortoise  (    2.0 kg)
+     *       └── Snake     (    0.2 kg)
      * </pre>
      * <p>
-     * {@code Amniota implements Comparable<Amniota>} (not {@code Comparable<T>} per species) is
+     * {@code Animal implements Comparable<Animal>} (not {@code Comparable<T>} per subclass) is
      * <i>intentional</i>: it is what makes the recursive {@code <? super T>} bound necessary in
      * {@code heaviest}.
      * <p>
@@ -99,6 +96,7 @@ class _Effective_Java_PECS_Test {
      * alongside commented-out call sites that would NOT compile, making the wildcard rules
      * compiler-enforced lessons rather than prose.
      */
+    @DisplayName("Zoo")
     @Nested
     class Zoo_Test {
 
@@ -111,140 +109,140 @@ class _Effective_Java_PECS_Test {
             final List<Object> wildlife = new ArrayList<>();
         }
 
-        // Cladistic taxonomy: Synapsida and Sauropsida are the two amniote clades; Mammalia
-        // (cats, whales, ...) is the only living group within Synapsida, and Reptilia / Aves
-        // (snakes, eagles, ...) live within Sauropsida.
-        //
-        // Amniota implements Comparable<Amniota> (not Comparable<T> per species). This is the
+        // Animal implements Comparable<Animal> (not Comparable<T> per subclass). This is the
         // INTENTIONAL shape that makes the recursive bound <T extends Comparable<? super T>>
-        // necessary in <heaviest>: Cat is Comparable<Amniota> via inheritance, which is-a
+        // necessary in <heaviest>: Cat is Comparable<Animal> via inheritance, which is-a
         // Comparable<? super Cat> — but NOT a Comparable<Cat>.
-        private abstract static class Amniota implements Comparable<Amniota> {
+        @NoArgsConstructor(access = AccessLevel.PACKAGE)
+        private abstract static class Animal implements Comparable<Animal> {
 
-            abstract double averageWeight(); // kg, approximate — for ordering
+//            static final Comparator<Animal> COMPARING_AVERAGE_WEIGHT =
+//                    Comparator.comparingDouble(Animal::getAverageWeight);
+
+            abstract double getAverageWeight(); // kg, approximate — for ordering
 
             @Override
-            public final int compareTo(final Amniota o) {
-                return Double.compare(averageWeight(), o.averageWeight());
+            public final int compareTo(final Animal o) {
+//                return COMPARING_AVERAGE_WEIGHT.compare(this, o);
+                return Double.compare(getAverageWeight(), o.getAverageWeight());
             }
         }
 
-        private abstract static class Synapsida extends Amniota {
+        // -----------------------------------------------------------------------------------------
+        @NoArgsConstructor(access = AccessLevel.PACKAGE)
+        private abstract static class Mammal extends Animal {
 
         }
 
-        private abstract static class Sauropsida extends Amniota {
+        @NoArgsConstructor(access = AccessLevel.PACKAGE)
+        private abstract static class Reptile extends Animal {
 
         }
 
-        // -------------------------------------------------------------- synapsida (≈ mammals)
-        private static class Cat extends Synapsida {
+        // -----------------------------------------------------------------------------------------
+        private static class Cat extends Mammal {
 
             @Override
-            double averageWeight() {
-                return 4.5;
+            double getAverageWeight() {
+                return 4.5d;
             }
         }
 
-        private static class Whale extends Synapsida {
+        private static class Whale extends Mammal {
 
             @Override
-            double averageWeight() {
-                return 5_000;
+            double getAverageWeight() {
+                return 130_000d;
             }
         }
 
-        // -------------------------------------------------------------- sauropsida (reptiles + birds)
-        private static class Tortoise extends Sauropsida {
+        // -----------------------------------------------------------------------------------------
+        private static class Tortoise extends Reptile {
 
             @Override
-            double averageWeight() {
-                return 2;
+            double getAverageWeight() {
+                return 2.0d;
             }
         }
 
-        private static class Eagle extends Sauropsida {
+        private static class Snake extends Reptile {
 
             @Override
-            double averageWeight() {
-                return 5;
+            double getAverageWeight() {
+                return 0.2d;
             }
         }
 
+        // ------------------------------------------------------------------------------------------
         class Zoo {
 
             Zoo() {
-                amniotes = new ArrayList<>();
-                amniotes.add(new Cat());   // synapsida
-                amniotes.add(new Whale()); // synapsida
-                amniotes.add(new Tortoise()); // sauropsida
-                amniotes.add(new Eagle()); // sauropsida
+                animals = new ArrayList<>();
+                animals.add(new Cat());      // mammal
+                animals.add(new Whale());    // mammal
+                animals.add(new Tortoise()); // reptile
+                animals.add(new Snake());    // reptile
             }
 
-            // Invariant collection: the caller must pass exactly Collection<Synapsida>.
-            // Collection<Amniota> or Collection<Object> won't compile at the call site.
+            // Invariant collection: the caller must pass exactly Collection<Mammal>.
+            // Collection<Animal> or Collection<Object> won't compile at the call site.
             //
             // Inside this method, the parameter <collection> can be passed to
-            // <roundUpSynapsida2(Collection<? super Synapsida>)> — Collection<Synapsida> is-a
-            // Collection<? super Synapsida>, so #1 can call #2.
-            void roundUpSynapsida1(final Collection<Synapsida> collection) {
-                amniotes.stream()
-                        .filter(Synapsida.class::isInstance)
-                        .map(Synapsida.class::cast)
+            // <roundUpMammal2(Collection<? super Mammal>)> — Collection<Mammal> is-a
+            // Collection<? super Mammal>, so #1 can call #2.
+            void roundUpMammal1(final Collection<Mammal> collection) {
+                animals.stream()
+                        .filter(Mammal.class::isInstance)
+                        .map(Mammal.class::cast)
                         .forEach(collection::add);
             }
 
-            // PECS "Consumer Super": the caller can pass Collection<Synapsida>,
-            // Collection<Amniota>, or Collection<Object>.
+            // PECS "Consumer Super": the caller can pass Collection<Mammal>,
+            // Collection<Animal>, or Collection<Object>.
             //
             // Inside this method, the parameter <collection> CANNOT be passed to
-            // <roundUpSynapsida1(Collection<Synapsida>)> — the wildcard <? super Synapsida> may
-            // bind to a supertype (e.g., Amniota), and Collection<Amniota> is not a
-            // Collection<Synapsida>. So #2 cannot call #1.
-            void roundUpSynapsida2(final Collection<? super Synapsida> collection) {
-                amniotes.stream()
-                        .filter(Synapsida.class::isInstance)
-                        .map(Synapsida.class::cast)
+            // <roundUpMammal1(Collection<Mammal>)> — the wildcard <? super Mammal> may
+            // bind to a supertype (e.g., Animal), and Collection<Animal> is not a
+            // Collection<Mammal>. So #2 cannot call #1.
+            void roundUpMammal2(final Collection<? super Mammal> collection) {
+                animals.stream()
+                        .filter(Mammal.class::isInstance)
+                        .map(Mammal.class::cast)
                         .forEach(collection::add);
             }
 
-            // Generic version of roundUpSynapsida1: parameterized by any Amniota subtype <T>.
+            // Generic version of roundUpMammal1: parameterized by any Animal subtype <T>.
             // The collection is invariant — the caller must pass exactly Collection<T>.
-            <T extends Amniota> void roundUp1(final Class<T> clazz,
-                                              final Collection<T> collection) {
-                amniotes.stream()
+            <T extends Animal> void roundUp1(final Class<T> clazz,
+                                             final Collection<T> collection) {
+                animals.stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .forEach(collection::add);
             }
 
-            // Generic version of roundUpSynapsida2: parameterized by any Amniota subtype <T>.
+            // Generic version of roundUpMammal2: parameterized by any Animal subtype <T>.
             // PECS "Consumer Super" — the caller can pass any Collection whose element type is
             // <T> or a supertype of <T>.
-            <T extends Amniota> void roundUp2(final Class<T> clazz,
-                                              final Collection<? super T> collection) {
-                amniotes.stream()
+            <T extends Animal> void roundUp2(final Class<T> clazz,
+                                             final Collection<? super T> collection) {
+                animals.stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .forEach(collection::add);
             }
 
-            // Invariant Consumer<T>: the caller must pass exactly Consumer<T>.
-            // A Consumer<Amniota> or Consumer<Object> won't compile at the call site even though
-            // either could perfectly well accept a T.
-            <T extends Amniota> void inspect1(final Class<T> clazz,
-                                              final Consumer<T> consumer) {
-                amniotes.stream()
+            // -------------------------------------------------------------------------------------
+            <T extends Animal> void inspect1(final Class<T> clazz, final Consumer<T> consumer) {
+                animals.stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .forEach(consumer);
             }
 
-            // PECS "Consumer Super" — the caller can pass any Consumer whose element type is
-            // <T> or a supertype of <T> (e.g., Consumer<T>, Consumer<Amniota>, Consumer<Object>).
-            <T extends Amniota> void inspect2(final Class<T> clazz,
-                                              final Consumer<? super T> consumer) {
-                amniotes.stream()
+            <T extends Animal> void inspect2(final Class<T> clazz,
+                                             final Consumer<? super T> consumer) {
+                animals.stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .forEach(consumer);
@@ -252,61 +250,61 @@ class _Effective_Java_PECS_Test {
 
             // ------------------------------------------------------------------- capture (wild → zoo)
 
-            // Invariant: the caller MUST pass exactly Collection<Amniota>.
-            // Collection<Cat> or Collection<Synapsida> would NOT compile here even though their
-            // elements are perfectly valid Amniotas.
-            void capture1(final Collection<Amniota> source) {
-                amniotes.addAll(source);
+            // Invariant: the caller MUST pass exactly Collection<Animal>.
+            // Collection<Cat> or Collection<Mammal> would NOT compile here even though their
+            // elements are perfectly valid Animals.
+            void capture1(final Collection<Animal> source) {
+                animals.addAll(source);
             }
 
-            // PECS "Producer Extends": the caller can pass Collection<Amniota>,
-            // Collection<Synapsida>, Collection<Sauropsida>, Collection<Cat>, Collection<Whale>,
-            // Collection<Tortoise>, or Collection<Eagle>.
-            void capture2(final Collection<? extends Amniota> source) {
-                amniotes.addAll(source);
+            // PECS "Producer Extends": the caller can pass Collection<Animal>,
+            // Collection<Mammal>, Collection<Reptile>, Collection<Cat>, Collection<Whale>,
+            // Collection<Tortoise>, or Collection<Snake>.
+            void capture2(final Collection<? extends Animal> source) {
+                animals.addAll(source);
             }
 
             // -------------------------------------------------------------- breed (none → zoo)
 
             // Invariant: the caller MUST pass exactly Supplier<T>.
             // Drains the supplier until it returns null.
-            <T extends Amniota> void breed1(final Supplier<T> source) {
+            <T extends Animal> void breed1(final Supplier<T> source) {
                 Stream.generate(source)
                         .takeWhile(Objects::nonNull)
-                        .forEach(amniotes::add);
+                        .forEach(animals::add);
             }
 
             // PECS "Producer Extends": the caller can pass Supplier<T> or any
             // Supplier<SubtypeOfT> — wider acceptance for the same T binding.
             // Drains the supplier until it returns null.
-            <T extends Amniota> void breed2(final Supplier<? extends T> source) {
+            <T extends Animal> void breed2(final Supplier<? extends T> source) {
                 Stream.generate(source)
                         .takeWhile(Objects::nonNull)
-                        .forEach(amniotes::add);
+                        .forEach(animals::add);
             }
 
             // ----------------------------------------------------------- release (zoo → wild)
 
-            // 12 Monkeys, invariant: the caller MUST pass exactly Collection<Amniota>.
-            // Nature's <List<Object> wildlife> would NOT compile here even though Object :> Amniota.
-            void release1(final Collection<Amniota> destination) {
-                destination.addAll(amniotes);
-                amniotes.clear();
+            // 12 Monkeys, invariant: the caller MUST pass exactly Collection<Animal>.
+            // Nature's <List<Object> wildlife> would NOT compile here even though Object :> Animal.
+            void release1(final Collection<Animal> destination) {
+                destination.addAll(animals);
+                animals.clear();
             }
 
             // 12 Monkeys, PECS "Consumer Super": the caller can pass any Collection whose element
-            // type is Amniota or a supertype — including Nature's <List<Object> wildlife>.
-            void release2(final Collection<? super Amniota> destination) {
-                destination.addAll(amniotes);
-                amniotes.clear();
+            // type is Animal or a supertype — including Nature's <List<Object> wildlife>.
+            void release2(final Collection<? super Animal> destination) {
+                destination.addAll(animals);
+                animals.clear();
             }
 
             // ---------------------------------------------------- map (transform: BOTH PECS sides)
 
             // Both sides invariant: caller MUST pass exactly Function<T, R>.
-            <T extends Amniota, R> List<R> tag1(final Class<T> clazz,
-                                                final Function<T, R> mapper) {
-                return amniotes.stream()
+            <T extends Animal, R> List<R> tag1(final Class<T> clazz,
+                                               final Function<T, R> mapper) {
+                return animals.stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .map(mapper)
@@ -315,9 +313,9 @@ class _Effective_Java_PECS_Test {
 
             // Full PECS — input "Consumer Super", output "Producer Extends":
             // caller can pass Function<SuperOfT, SubtypeOfR>.
-            <T extends Amniota, R> List<R> tag2(final Class<T> clazz,
-                                                final Function<? super T, ? extends R> mapper) {
-                return amniotes.stream()
+            <T extends Animal, R> List<R> tag2(final Class<T> clazz,
+                                               final Function<? super T, ? extends R> mapper) {
+                return animals.stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .<R>map(mapper)
@@ -331,31 +329,31 @@ class _Effective_Java_PECS_Test {
             //   <? extends T>  ❌ list.set(j, ...) won't accept a T (capture mismatch)
             //   <? super T>    ❌ list.get(i) returns a wildcard, not a T
             // Invariance is the ONLY correct API here. PECS is not always "use a wildcard."
-            static <T extends Amniota> void swap(final List<T> list, final int i,
-                                                 final int j) {
+            static <T extends Animal> void swap(final List<T> list, final int i,
+                                                final int j) {
                 list.set(i, list.set(j, list.get(i)));
             }
 
             // -------------------------------------------- Gap 2: don't use wildcards as return types
             //
-            // GOOD — invariant return: caller gets a Collection<Amniota> they can use anywhere
-            // a Collection<Amniota> is expected.
-            Collection<Amniota> roster1() {
-                return List.copyOf(amniotes);
+            // GOOD — invariant return: caller gets a Collection<Animal> they can use anywhere
+            // a Collection<Animal> is expected.
+            Collection<Animal> roster1() {
+                return List.copyOf(animals);
             }
 
             // BAD (Item 31 anti-pattern) — wildcard return: callers are forced into wildcard
-            // plumbing. They can't pass the result to a method expecting Collection<Amniota>,
+            // plumbing. They can't pass the result to a method expecting Collection<Animal>,
             // and they can't add to it.
-            Collection<? extends Amniota> roster2() {
-                return List.copyOf(amniotes);
+            Collection<? extends Animal> roster2() {
+                return List.copyOf(animals);
             }
 
             // ------------------------------------------------ Gap 3: recursive bound `<? super T>`
             //
             // The recursive bound <T extends Comparable<? super T>> is what lets `heaviest` accept
             // any T whose comparison is defined at T or any of T's supertypes. Cat is
-            // Comparable<Amniota> via inheritance, which is-a Comparable<? super Cat>.
+            // Comparable<Animal> via inheritance, which is-a Comparable<? super Cat>.
             static <T extends Comparable<? super T>> T heaviest(
                     final Collection<? extends T> coll) {
                 final var it = coll.iterator();
@@ -369,260 +367,267 @@ class _Effective_Java_PECS_Test {
                 return result;
             }
 
-            private final Collection<Amniota> amniotes;
+            private final Collection<Animal> animals;
         }
 
-        // roundUpSynapsida1 is invariant: the caller MUST pass exactly Collection<Synapsida>.
+        // roundUpMammal1 is invariant: the caller MUST pass exactly Collection<Mammal>.
+        @DisplayName("should accept only an invariant <Collection<Mammal>> in <roundUpMammal1>")
         @Test
-        void roundUpSynapsida1__() {
+        void roundUpMammal1__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> list = new ArrayList<>();
-                zoo.roundUpSynapsida1(list);
-                Assertions.assertEquals(2, list.size()); // Cat + Whale
+                final Collection<Mammal> list = new ArrayList<>();
+                zoo.roundUpMammal1(list);
+                assertEquals(2, list.size()); // Cat + Whale
             }
 
             // these would NOT compile — the parameter is invariant:
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> list = new ArrayList<>();
-//                zoo.roundUpSynapsida1(list); // ❌ won't compile
+                final Collection<Animal> list = new ArrayList<>();
+//                zoo.roundUpMammal1(list); // ❌ won't compile
             }
             {
                 final var zoo = new Zoo();
                 final Collection<Object> list = new ArrayList<>();
-//                zoo.roundUpSynapsida1(list);  // ❌ won't compile
+//                zoo.roundUpMammal1(list);  // ❌ won't compile
             }
         }
 
-        // roundUpSynapsida2 follows PECS "Consumer Super":
-        // the caller can pass any Collection whose element type is Synapsida or a supertype.
+        // roundUpMammal2 follows PECS "Consumer Super":
+        // the caller can pass any Collection whose element type is Mammal or a supertype.
+        @DisplayName("should accept any <Collection<? super Mammal>> via PECS in <roundUpMammal2>")
         @Test
-        void roundUpSynapsida2__() {
+        void roundUpMammal2__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> list = new ArrayList<>();
-                zoo.roundUpSynapsida2(list);
-                Assertions.assertEquals(2, list.size());
+                final Collection<Mammal> list = new ArrayList<>();
+                zoo.roundUpMammal2(list);
+                assertEquals(2, list.size());
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> list = new ArrayList<>();
-                zoo.roundUpSynapsida2(list); // ✅ compiles (Amniota :> Synapsida)
-                Assertions.assertEquals(2, list.size());
+                final Collection<Animal> list = new ArrayList<>();
+                zoo.roundUpMammal2(list); // ✅ compiles (Animal :> Mammal)
+                assertEquals(2, list.size());
             }
             {
                 final var zoo = new Zoo();
                 final Collection<Object> list = new ArrayList<>();
-                zoo.roundUpSynapsida2(list); // ✅ compiles (Object :> Synapsida)
-                Assertions.assertEquals(2, list.size());
+                zoo.roundUpMammal2(list); // ✅ compiles (Object :> Mammal)
+                assertEquals(2, list.size());
             }
         }
 
         // roundUp1<T> is invariant: the caller MUST pass exactly Collection<T>.
+        @DisplayName("should accept only an invariant <Collection<T>> in <roundUp1>")
         @Test
         void roundUp1__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> list = new ArrayList<>();
-                zoo.roundUp1(Synapsida.class, list);
-                Assertions.assertEquals(2, list.size()); // Cat + Whale
+                final Collection<Mammal> list = new ArrayList<>();
+                zoo.roundUp1(Mammal.class, list);
+                assertEquals(2, list.size()); // Cat + Whale
             }
             {
                 final var zoo = new Zoo();
                 final Collection<Cat> list = new ArrayList<>();
                 zoo.roundUp1(Cat.class, list);
-                Assertions.assertEquals(1, list.size()); // Cat
+                assertEquals(1, list.size()); // Cat
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Sauropsida> list = new ArrayList<>();
-                zoo.roundUp1(Sauropsida.class, list);
-                Assertions.assertEquals(2, list.size()); // Tortoise + Eagle
+                final Collection<Reptile> list = new ArrayList<>();
+                zoo.roundUp1(Reptile.class, list);
+                assertEquals(2, list.size()); // Tortoise + Snake
             }
             {
                 // these would NOT compile — Collection<T> is invariant:
                 final var zoo = new Zoo();
-                final Collection<Amniota> list = new ArrayList<>();
-//                zoo.roundUp1(Synapsida.class, list); // ❌ T inferred as Synapsida; Amniota is not Synapsida
+                final Collection<Animal> list = new ArrayList<>();
+//                zoo.roundUp1(Mammal.class, list); // ❌ T inferred as Mammal; Animal is not Mammal
             }
         }
 
         // roundUp2<T> follows PECS "Consumer Super":
         // the caller can pass any Collection whose element type is <T> or a supertype of <T>.
+        @DisplayName("should accept any <Collection<? super T>> via PECS in <roundUp2>")
         @Test
         void roundUp2__() {
-            // T = Synapsida
+            // T = Mammal
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> list = new ArrayList<>();
-                zoo.roundUp2(Synapsida.class, list);
-                Assertions.assertEquals(2, list.size());
+                final Collection<Mammal> list = new ArrayList<>();
+                zoo.roundUp2(Mammal.class, list);
+                assertEquals(2, list.size());
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> list = new ArrayList<>();
-                zoo.roundUp2(Synapsida.class, list); // ✅ Amniota :> Synapsida
-                Assertions.assertEquals(2, list.size());
+                final Collection<Animal> list = new ArrayList<>();
+                zoo.roundUp2(Mammal.class, list); // ✅ Animal :> Mammal
+                assertEquals(2, list.size());
             }
             {
                 final var zoo = new Zoo();
                 final Collection<Object> list = new ArrayList<>();
-                zoo.roundUp2(Synapsida.class, list); // ✅ Object :> Synapsida
-                Assertions.assertEquals(2, list.size());
+                zoo.roundUp2(Mammal.class, list); // ✅ Object :> Mammal
+                assertEquals(2, list.size());
             }
-            // T = Cat — the supertype set widens further: Synapsida, Amniota, Object all OK
+            // T = Cat — the supertype set widens further: Mammal, Animal, Object all OK
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> list = new ArrayList<>();
-                zoo.roundUp2(Cat.class, list);       // ✅ Synapsida :> Cat
-                Assertions.assertEquals(1, list.size());
+                final Collection<Mammal> list = new ArrayList<>();
+                zoo.roundUp2(Cat.class, list);       // ✅ Mammal :> Cat
+                assertEquals(1, list.size());
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> list = new ArrayList<>();
-                zoo.roundUp2(Cat.class, list);       // ✅ Amniota :> Cat
-                Assertions.assertEquals(1, list.size());
+                final Collection<Animal> list = new ArrayList<>();
+                zoo.roundUp2(Cat.class, list);       // ✅ Animal :> Cat
+                assertEquals(1, list.size());
             }
         }
 
         // inspect1<T> is invariant: the caller MUST pass exactly Consumer<T>.
+        @DisplayName("should accept only an invariant <Consumer<T>> in <inspect1>")
         @Test
         void inspect1__() {
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
-                final Consumer<Synapsida> consumer = s -> counter.incrementAndGet();
-                zoo.inspect1(Synapsida.class, consumer);
-                Assertions.assertEquals(2, counter.get()); // Cat + Whale
+                final Consumer<Mammal> consumer = s -> counter.incrementAndGet();
+                zoo.inspect1(Mammal.class, consumer);
+                assertEquals(2, counter.get()); // Cat + Whale
             }
-
-            // these would NOT compile — Consumer<T> is invariant:
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
-                final Consumer<Amniota> consumer = a -> counter.incrementAndGet();
-//                zoo.inspect1(Synapsida.class, consumer); // ❌ T inferred as Synapsida; Amniota ≠ Synapsida
+                final Consumer<Animal> consumer = a -> counter.incrementAndGet();
+//                zoo.inspect1(Mammal.class, consumer); // ❌ T inferred as Mammal; Animal ≠ Mammal
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Object> consumer = o -> counter.incrementAndGet();
-//                zoo.inspect1(Synapsida.class, consumer); // ❌ same reason
+//                zoo.inspect1(Mammal.class, consumer); // ❌ same reason
             }
         }
 
         // inspect2<T> follows PECS "Consumer Super":
         // the caller can pass any Consumer whose element type is <T> or a supertype of <T>.
+        @DisplayName("should accept any <Consumer<? super T>> via PECS in <inspect2>")
         @Test
         void inspect2__() {
-            // T = Synapsida
+            // T = Mammal
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
-                final Consumer<Synapsida> consumer = s -> counter.incrementAndGet();
-                zoo.inspect2(Synapsida.class, consumer);
-                Assertions.assertEquals(2, counter.get());
+                final Consumer<Mammal> consumer = s -> counter.incrementAndGet();
+                zoo.inspect2(Mammal.class, consumer);
+                assertEquals(2, counter.get());
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
-                final Consumer<Amniota> consumer = a -> counter.incrementAndGet();
-                zoo.inspect2(Synapsida.class, consumer); // ✅ Amniota :> Synapsida
-                Assertions.assertEquals(2, counter.get());
+                final Consumer<Animal> consumer = a -> counter.incrementAndGet();
+                zoo.inspect2(Mammal.class, consumer); // ✅ Animal :> Mammal
+                assertEquals(2, counter.get());
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Object> consumer = o -> counter.incrementAndGet();
-                zoo.inspect2(Synapsida.class, consumer); // ✅ Object :> Synapsida
-                Assertions.assertEquals(2, counter.get());
+                zoo.inspect2(Mammal.class, consumer); // ✅ Object :> Mammal
+                assertEquals(2, counter.get());
             }
             // T = Cat — narrower T means a wider set of acceptable Consumer supertypes
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
-                final Consumer<Synapsida> consumer = s -> counter.incrementAndGet();
-                zoo.inspect2(Cat.class, consumer);       // ✅ Synapsida :> Cat
-                Assertions.assertEquals(1, counter.get());
+                final Consumer<Mammal> consumer = s -> counter.incrementAndGet();
+                zoo.inspect2(Cat.class, consumer);       // ✅ Mammal :> Cat
+                assertEquals(1, counter.get());
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
-                final Consumer<Amniota> consumer = a -> counter.incrementAndGet();
-                zoo.inspect2(Cat.class, consumer);       // ✅ Amniota :> Cat
-                Assertions.assertEquals(1, counter.get());
+                final Consumer<Animal> consumer = a -> counter.incrementAndGet();
+                zoo.inspect2(Cat.class, consumer);       // ✅ Animal :> Cat
+                assertEquals(1, counter.get());
             }
         }
 
         // ========================================================== capture (wild → zoo) tests
 
-        // capture1 is invariant: the caller MUST pass exactly Collection<Amniota>.
+        // capture1 is invariant: the caller MUST pass exactly Collection<Animal>.
+        @DisplayName("should accept only an invariant <Collection<Animal>> in <capture1>")
         @Test
         void capture1__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> source = new ArrayList<>();
+                final Collection<Animal> source = new ArrayList<>();
                 source.add(new Cat());
-                source.add(new Eagle());
+                source.add(new Snake());
                 zoo.capture1(source);
             }
 
-            // these would NOT compile — Collection<Amniota> is invariant:
+            // these would NOT compile — Collection<Animal> is invariant:
             {
                 final var zoo = new Zoo();
                 final Collection<Cat> source = new ArrayList<>();
-//                zoo.capture1(source); // ❌ Collection<Cat> is not Collection<Amniota>
+//                zoo.capture1(source); // ❌ Collection<Cat> is not Collection<Animal>
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> source = new ArrayList<>();
+                final Collection<Mammal> source = new ArrayList<>();
 //                zoo.capture1(source); // ❌ won't compile
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Sauropsida> source = new ArrayList<>();
+                final Collection<Reptile> source = new ArrayList<>();
 //                zoo.capture1(source); // ❌ won't compile
             }
         }
 
         // capture2 follows PECS "Producer Extends":
-        // the caller can pass Collection<Amniota> or any Collection<SubtypeOfAmniota>.
+        // the caller can pass Collection<Animal> or any Collection<SubtypeOfAnimal>.
+        @DisplayName("should accept any <Collection<? extends Animal>> via PECS in <capture2>")
         @Test
         void capture2__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> source = new ArrayList<>();
+                final Collection<Animal> source = new ArrayList<>();
                 source.add(new Cat());
-                source.add(new Eagle());
+                source.add(new Snake());
                 zoo.capture2(source);
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Synapsida> source = new ArrayList<>();
+                final Collection<Mammal> source = new ArrayList<>();
                 source.add(new Cat());
                 source.add(new Whale());
-                zoo.capture2(source); // ✅ Synapsida <: Amniota
+                zoo.capture2(source); // ✅ Mammal <: Animal
             }
             {
                 final var zoo = new Zoo();
-                final Collection<Sauropsida> source = new ArrayList<>();
+                final Collection<Reptile> source = new ArrayList<>();
                 source.add(new Tortoise());
-                source.add(new Eagle());
-                zoo.capture2(source); // ✅ Sauropsida <: Amniota
+                source.add(new Snake());
+                zoo.capture2(source); // ✅ Reptile <: Animal
             }
             {
                 final var zoo = new Zoo();
                 final Collection<Cat> source = new ArrayList<>();
                 source.add(new Cat());
                 source.add(new Cat());
-                zoo.capture2(source); // ✅ Cat <: Amniota
+                zoo.capture2(source); // ✅ Cat <: Animal
             }
         }
 
         // ============================================================== breed (none → zoo) tests
 
         // breed1<T> is invariant: the caller MUST pass exactly Supplier<T> for the inferred T.
+        @DisplayName("should accept only an invariant <Supplier<T>> in <breed1>")
         @Test
         void breed1__() {
             {
@@ -632,28 +637,29 @@ class _Effective_Java_PECS_Test {
                 final Supplier<Cat> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
                 zoo.breed1(source);
-                Assertions.assertEquals(0, remaining.get()); // drained to 0
+                assertEquals(0, remaining.get()); // drained to 0
             }
             {
-                // T explicitly Synapsida — supplier must be Supplier<Synapsida> exactly
+                // T explicitly Mammal — supplier must be Supplier<Mammal> exactly
                 final var zoo = new Zoo();
                 final var remaining = new AtomicInteger(3);
-                final Supplier<Synapsida> source = () ->
+                final Supplier<Mammal> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
                 zoo.breed1(source);
-                Assertions.assertEquals(0, remaining.get());
+                assertEquals(0, remaining.get());
             }
 
             // this would NOT compile — Supplier<T> is invariant, can't pass narrower-typed supplier:
             {
                 final var zoo = new Zoo();
                 final Supplier<Cat> source = Cat::new;
-//                zoo.<Synapsida>breed1(source); // ❌ Supplier<Cat> is not Supplier<Synapsida>
+//                zoo.<Mammal>breed1(source); // ❌ Supplier<Cat> is not Supplier<Mammal>
             }
         }
 
         // breed2<T> follows PECS "Producer Extends":
         // the caller can pass Supplier<T> or any Supplier<SubtypeOfT>.
+        @DisplayName("should accept any <Supplier<? extends T>> via PECS in <breed2>")
         @Test
         void breed2__() {
             {
@@ -663,134 +669,140 @@ class _Effective_Java_PECS_Test {
                 final Supplier<Cat> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
                 zoo.breed2(source);
-                Assertions.assertEquals(0, remaining.get());
+                assertEquals(0, remaining.get());
             }
             {
-                // T = Synapsida explicitly — Supplier<Cat> is accepted because Cat <: Synapsida
+                // T = Mammal explicitly — Supplier<Cat> is accepted because Cat <: Mammal
                 final var zoo = new Zoo();
                 final var remaining = new AtomicInteger(3);
                 final Supplier<Cat> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
-                zoo.<Synapsida>breed2(source); // ✅ Supplier<Cat> :< Supplier<? extends Synapsida>
-                Assertions.assertEquals(0, remaining.get());
+                zoo.<Mammal>breed2(source); // ✅ Supplier<Cat> :< Supplier<? extends Mammal>
+                assertEquals(0, remaining.get());
             }
             {
-                // T = Amniota explicitly — Supplier<Cat> is still accepted
+                // T = Animal explicitly — Supplier<Cat> is still accepted
                 final var zoo = new Zoo();
                 final var remaining = new AtomicInteger(3);
                 final Supplier<Cat> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
-                zoo.<Amniota>breed2(source); // ✅ Supplier<Cat> :< Supplier<? extends Amniota>
-                Assertions.assertEquals(0, remaining.get());
+                zoo.<Animal>breed2(source); // ✅ Supplier<Cat> :< Supplier<? extends Animal>
+                assertEquals(0, remaining.get());
             }
         }
 
         // =========================================================== release (zoo → wild) tests
 
-        // release1 is invariant: the caller MUST pass exactly Collection<Amniota>.
+        // release1 is invariant: the caller MUST pass exactly Collection<Animal>.
+        @DisplayName("should accept only an invariant <Collection<Animal>> in <release1>")
         @Test
         void release1__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> destination = new ArrayList<>();
+                final Collection<Animal> destination = new ArrayList<>();
                 zoo.release1(destination);
-                Assertions.assertEquals(4, destination.size()); // Cat + Whale + Tortoise + Eagle
+                assertEquals(4, destination.size()); // Cat + Whale + Tortoise + Snake
             }
 
             // 12 Monkeys: liberating zoo into Nature's <List<Object> wildlife> would NOT compile:
             {
                 final var zoo = new Zoo();
                 final var nature = new Nature();
-//                zoo.release1(nature.wildlife); // ❌ List<Object> is not Collection<Amniota>
+//                zoo.release1(nature.wildlife); // ❌ List<Object> is not Collection<Animal>
             }
         }
 
         // release2 follows PECS "Consumer Super":
-        // the caller can pass Collection<Amniota>, Collection<Object>, or anything in between.
+        // the caller can pass Collection<Animal>, Collection<Object>, or anything in between.
+        @DisplayName("should accept any <Collection<? super Animal>> via PECS in <release2>")
         @Test
         void release2__() {
             {
                 final var zoo = new Zoo();
-                final Collection<Amniota> destination = new ArrayList<>();
+                final Collection<Animal> destination = new ArrayList<>();
                 zoo.release2(destination);
-                Assertions.assertEquals(4, destination.size());
+                assertEquals(4, destination.size());
             }
             {
                 // 12 Monkeys: liberate the zoo into Nature.
                 final var zoo = new Zoo();
                 final var nature = new Nature();
-                zoo.release2(nature.wildlife); // ✅ List<Object> is Collection<? super Amniota>
-                Assertions.assertEquals(4, nature.wildlife.size());
+                zoo.release2(nature.wildlife); // ✅ List<Object> is Collection<? super Animal>
+                assertEquals(4, nature.wildlife.size());
             }
         }
 
         // ========================================================== map (Function: BOTH PECS sides)
 
         // tag1: both sides invariant — caller MUST pass exactly Function<T, R>.
+        @DisplayName("should accept only an invariant <Function<T, R>> in <tag1>")
         @Test
         void tag1__() {
-            // T = Cat, R = Amniota
+            // T = Cat, R = Animal
             {
                 final var zoo = new Zoo();
-                final Function<Cat, Amniota> mapper = c -> c;
-                final List<Amniota> result = zoo.tag1(Cat.class, mapper);
-                Assertions.assertEquals(1, result.size()); // one Cat in zoo
+                final Function<Cat, Animal> mapper = c -> c;
+                final List<Animal> result = zoo.tag1(Cat.class, mapper);
+                assertEquals(1, result.size()); // one Cat in zoo
             }
 
             // these would NOT compile — Function<T, R> is invariant on BOTH sides:
             {
-                // input mismatch: Function<Amniota, Amniota> is not Function<Cat, Amniota>
+                // input mismatch: Function<Animal, Animal> is not Function<Cat, Animal>
                 final var zoo = new Zoo();
-                final Function<Amniota, Amniota> mapper = a -> a;
+                final Function<Animal, Animal> mapper = a -> a;
 //                zoo.tag1(Cat.class, mapper); // ❌ won't compile
             }
             {
-                // output mismatch: Function<Cat, Cat> is not Function<Cat, Amniota>
+                // output mismatch: Function<Cat, Cat> is not Function<Cat, Animal>
                 final var zoo = new Zoo();
                 final Function<Cat, Cat> mapper = c -> c;
-//                final List<Amniota> result = zoo.tag1(Cat.class, mapper); // ❌ won't compile
+//                final List<Animal> result = zoo.tag1(Cat.class, mapper); // ❌ won't compile
             }
         }
 
         // tag2: full PECS — input "? super T", output "? extends R".
         // Caller can pass Function<SuperOfT, SubtypeOfR>.
+        @DisplayName("should accept any <Function<? super T, ? extends R>> via full PECS in <tag2>")
         @Test
         void tag2__() {
-            // T = Cat, R = Amniota
+            // T = Cat, R = Animal
             {
                 final var zoo = new Zoo();
-                final Function<Cat, Amniota> mapper = c -> c;
-                final List<Amniota> result = zoo.tag2(Cat.class, mapper);
-                Assertions.assertEquals(1, result.size());
+                final Function<Cat, Animal> mapper = c -> c;
+                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                assertEquals(1, result.size());
             }
             {
-                // input "super" accepts Function<Amniota, Amniota> (Amniota :> Cat)
+                // input "super" accepts Function<Animal, Animal> (Animal :> Cat)
                 final var zoo = new Zoo();
-                final Function<Amniota, Amniota> mapper = a -> a;
-                final List<Amniota> result = zoo.tag2(Cat.class, mapper);
-                Assertions.assertEquals(1, result.size());
+                final Function<Animal, Animal> mapper = a -> a;
+                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                assertEquals(1, result.size());
             }
             {
-                // output "extends" accepts Function<Cat, Cat> (Cat <: Amniota)
+                // output "extends" accepts Function<Cat, Cat> (Cat <: Animal)
                 final var zoo = new Zoo();
                 final Function<Cat, Cat> mapper = c -> c;
-                final List<Amniota> result = zoo.tag2(Cat.class, mapper);
-                Assertions.assertEquals(1, result.size());
+                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                assertEquals(1, result.size());
             }
             {
-                // BOTH sides exercised — Function<Amniota, Cat>:
+                // BOTH sides exercised — Function<Animal, Cat>:
                 // input super, output extends. THE PECS payoff: one mapper, multiple binding sites.
                 final var zoo = new Zoo();
-                final Function<Amniota, Cat> mapper = a -> new Cat();
-                final List<Amniota> result = zoo.tag2(Cat.class, mapper);
-                Assertions.assertEquals(1, result.size());
+                final Function<Animal, Cat> mapper = a -> new Cat();
+                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                assertEquals(1, result.size());
             }
         }
 
         // ====================================== Gap 1: invariance when read AND write (swap)
 
-        // Caller must pass <List<T>> for the SAME T as the Cats / Synapsidas / Amniotas they're
+        // Caller must pass <List<T>> for the SAME T as the Cats / Mammals / Animals they're
         // swapping. Neither <? extends T> nor <? super T> would compile inside <swap>.
+        @DisplayName(
+                "should require an invariant <List<T>> in <swap> when both reading and writing")
         @Test
         void swap__() {
             // T = Cat
@@ -800,19 +812,19 @@ class _Effective_Java_PECS_Test {
                 Zoo.swap(cats, 0, 1);
                 Assertions.assertSame(first, cats.get(1));
             }
-            // T = Synapsida
+            // T = Mammal
             {
-                final List<Synapsida> synapsidas = new ArrayList<>(List.of(new Cat(), new Whale()));
-                final var first = synapsidas.getFirst();
-                Zoo.swap(synapsidas, 0, 1);
-                Assertions.assertSame(first, synapsidas.get(1));
+                final List<Mammal> mammals = new ArrayList<>(List.of(new Cat(), new Whale()));
+                final var first = mammals.getFirst();
+                Zoo.swap(mammals, 0, 1);
+                Assertions.assertSame(first, mammals.get(1));
             }
-            // T = Amniota
+            // T = Animal
             {
-                final List<Amniota> amniotas = new ArrayList<>(List.of(new Cat(), new Eagle()));
-                final var first = amniotas.getFirst();
-                Zoo.swap(amniotas, 0, 1);
-                Assertions.assertSame(first, amniotas.get(1));
+                final List<Animal> animals = new ArrayList<>(List.of(new Cat(), new Snake()));
+                final var first = animals.getFirst();
+                Zoo.swap(animals, 0, 1);
+                Assertions.assertSame(first, animals.get(1));
             }
             // these would NOT have worked inside <swap> if we'd tried PECS — but unlike the
             // caller-side experiments we did for collect/inspect/etc., the failure here
@@ -822,38 +834,42 @@ class _Effective_Java_PECS_Test {
 
         // ============================ Gap 2: don't use wildcards as return types (roster)
 
-        // roster1 returns invariant Collection<Amniota> — easy to use.
-        // roster2 returns Collection<? extends Amniota> — caller is stuck with wildcards.
+        // roster1 returns invariant Collection<Animal> — easy to use.
+        // roster2 returns Collection<? extends Animal> — caller is stuck with wildcards.
+        @DisplayName("should prefer an invariant return type over a wildcard return in <roster>")
         @Test
         void roster__() {
             final var zoo = new Zoo();
 
-            // roster1: free flow into any Collection<Amniota> sink
+            // roster1: free flow into any Collection<Animal> sink
             {
-                final Collection<Amniota> snap = zoo.roster1();
-                final List<Amniota> sink = new ArrayList<>();
+                final Collection<Animal> snap = zoo.roster1();
+                final List<Animal> sink = new ArrayList<>();
                 sink.addAll(snap);                      // ✅ compiles
-                Assertions.assertEquals(4, sink.size());
+                assertEquals(4, sink.size());
             }
 
-            // roster2: caller has Collection<? extends Amniota>; can read but can't pass to
-            // any API that expects an invariant Collection<Amniota>:
+            // roster2: caller has Collection<? extends Animal>; can read but can't pass to
+            // any API that expects an invariant Collection<Animal>:
             {
-                final Collection<? extends Amniota> snap = zoo.roster2();
+                final Collection<? extends Animal> snap = zoo.roster2();
                 // this would NOT compile — wildcard return forces the caller into wildcard plumbing:
-                //     final List<Amniota> sink = new ArrayList<>();
+                //     final List<Animal> sink = new ArrayList<>();
                 //     sink.addAll(snap); // works (addAll accepts Collection<? extends E>)
-                //     final Collection<Amniota> reusable = snap; // ❌ wildcard not assignable to invariant
-                Assertions.assertEquals(4, snap.size()); // still fine to read
+                //     final Collection<Animal> reusable = snap; // ❌ wildcard not assignable to invariant
+                assertEquals(4, snap.size()); // still fine to read
             }
         }
 
         // ============================== Gap 3: recursive bound <T extends Comparable<? super T>>
 
         // <heaviest> demands T's elements know how to compare themselves to a T (or supertype of T).
-        // Cats are NOT Comparable<Cat>; they ARE Comparable<Amniota> (via Amniota's
-        // implements Comparable<Amniota>). The <? super T> in the bound is what lets <Cat> bind:
-        // <Cat extends Comparable<? super Cat>> ✅ because Comparable<Amniota> satisfies it.
+        // Cats are NOT Comparable<Cat>; they ARE Comparable<Animal> (via Animal's
+        // implements Comparable<Animal>). The <? super T> in the bound is what lets <Cat> bind:
+        // <Cat extends Comparable<? super Cat>> ✅ because Comparable<Animal> satisfies it.
+        @DisplayName("""
+                should bind any <T>
+                via the recursive <T extends Comparable<? super T>> bound in <heaviest>""")
         @Test
         void heaviest__() {
             // T = Cat
@@ -862,30 +878,30 @@ class _Effective_Java_PECS_Test {
                 final Cat heaviest = Zoo.heaviest(cats);
                 Assertions.assertNotNull(heaviest);
             }
-            // T = Synapsida — Cat (4.5kg) vs Whale (5_000kg) ⇒ Whale
+            // T = Mammal — Cat (4.5kg) vs Whale (130_000kg) ⇒ Whale
             {
-                final List<Synapsida> synapsidas = List.of(new Cat(), new Whale());
-                final Synapsida heaviest = Zoo.heaviest(synapsidas);
+                final List<Mammal> mammals = List.of(new Cat(), new Whale());
+                final Mammal heaviest = Zoo.heaviest(mammals);
                 Assertions.assertInstanceOf(Whale.class, heaviest);
             }
-            // T = Sauropsida — Tortoise (2kg) vs Eagle (5kg) ⇒ Eagle
+            // T = Reptile — Tortoise (2.0kg) vs Snake (0.2kg) ⇒ Tortoise
             {
-                final List<Sauropsida> sauropsidas = List.of(new Tortoise(), new Eagle());
-                final Sauropsida heaviest = Zoo.heaviest(sauropsidas);
-                Assertions.assertInstanceOf(Eagle.class, heaviest);
+                final List<Reptile> reptiles = List.of(new Tortoise(), new Snake());
+                final Reptile heaviest = Zoo.heaviest(reptiles);
+                Assertions.assertInstanceOf(Tortoise.class, heaviest);
             }
-            // T = Amniota — Whale wins overall
+            // T = Animal — Whale wins overall
             {
-                final List<Amniota> all = List.of(new Cat(), new Tortoise(), new Whale(),
-                                                  new Eagle());
-                final Amniota heaviest = Zoo.heaviest(all);
+                final List<Animal> all = List.of(new Cat(), new Tortoise(), new Whale(),
+                                                 new Snake());
+                final Animal heaviest = Zoo.heaviest(all);
                 Assertions.assertInstanceOf(Whale.class, heaviest);
             }
-            // Producer Extends side: passing Collection<Cat> when T = Synapsida is also fine,
+            // Producer Extends side: passing Collection<Cat> when T = Mammal is also fine,
             // because of <Collection<? extends T>>:
             {
                 final List<Cat> cats = List.of(new Cat(), new Cat());
-                final Synapsida heaviest = Zoo.<Synapsida>heaviest(cats); // ✅ Cat <: Synapsida
+                final Mammal heaviest = Zoo.<Mammal>heaviest(cats); // ✅ Cat <: Mammal
                 Assertions.assertInstanceOf(Cat.class, heaviest);
             }
         }

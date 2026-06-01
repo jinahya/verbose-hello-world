@@ -20,21 +20,20 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.jupiter.MockitoExtension;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.io.*;
+import org.mockito.junit.jupiter.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
+@DisplayName("FileOutputStream")
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 class FileOutputStream_Test {
 
+    @DisplayName("should create an empty file when target does not exist")
     @Test
     void __NotExist(final @TempDir File dir) throws IOException {
         final var file = new File(dir, "test.txt");
@@ -44,6 +43,7 @@ class FileOutputStream_Test {
         Assertions.assertEquals(0L, file.length());
     }
 
+    @DisplayName("should create an empty file when target does not exist and <append> is <true>")
     @Test
     void __NotExistAppend(final @TempDir File dir) throws IOException {
         final var file = new File(dir, "test.txt");
@@ -53,6 +53,7 @@ class FileOutputStream_Test {
         Assertions.assertEquals(0L, file.length());
     }
 
+    @DisplayName("should truncate existing file when <append> is <false>")
     @Test
     void __ExistNotAppend(final @TempDir File dir) throws IOException {
         final var file = new File(dir, "test.txt");

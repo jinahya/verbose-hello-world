@@ -20,18 +20,17 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.*;
+import org.mockito.junit.jupiter.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.lang.classfile.ClassFile;
-import java.nio.file.Files;
-import java.util.spi.ToolProvider;
+import java.io.*;
+import java.lang.classfile.*;
+import java.nio.file.*;
+import java.util.spi.*;
 
+@DisplayName("DataInputStream")
 @ExtendWith({MockitoExtension.class})
 @Slf4j
 class DataInputStream_Test {
@@ -59,6 +58,7 @@ class DataInputStream_Test {
         };
     }
 
+    @DisplayName("should parse a minimal class file <bytecode> with <DataInputStream>")
     @Test
     void __bytecode() throws IOException {
         // -----------------------------------------------------------------------------------------
@@ -88,6 +88,7 @@ class DataInputStream_Test {
         log.debug("attributes_count: {}", input.readUnsignedShort());
     }
 
+    @DisplayName("should disassemble a class file <bytecode> with the <javap> <ToolProvider>")
     @Test
     void __ToolProvider() throws IOException {
         final var file = Files.createTempFile(null, ".class");
@@ -100,6 +101,7 @@ class DataInputStream_Test {
         }
     }
 
+    @DisplayName("should parse a class file <bytecode> with the <ClassFile> API")
     @Test
     void __ClassFileApi() {
         final var model = ClassFile.of().parse(bytecode());

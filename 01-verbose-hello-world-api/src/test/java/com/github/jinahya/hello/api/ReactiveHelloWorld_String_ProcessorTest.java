@@ -20,24 +20,17 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.reactivestreams.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
+import java.time.*;
+import java.util.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link ReactiveHelloWorldStringProcessor} with multiple downstream
@@ -46,6 +39,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("string processor")
 @Slf4j
 class ReactiveHelloWorld_String_ProcessorTest {
 
@@ -60,10 +54,11 @@ class ReactiveHelloWorld_String_ProcessorTest {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void stubService() {
-        set_array_sets_actual_hello_world_bytes(service);
+        set_array_sets_hello_world_bytes(service);
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
         final var publisher = ReactiveHelloWorldArrayPublisher.from(service);
@@ -71,6 +66,9 @@ class ReactiveHelloWorld_String_ProcessorTest {
         }
     }
 
+    @DisplayName("""
+            should deliver <d> elements to each subscriber with no <onComplete>,
+            given two subscribers requesting <3> and <5>""")
     @Test
     void __() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -81,7 +79,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
         try (final var processor = new ReactiveHelloWorldStringProcessor(publisher)) {
             final var subscribers = new ArrayList<Subscriber<String>>();
             for (final int d : ds) {
-                final var subscriber = loggingSpy(new Subscriber<String>() {
+                final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<String>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
                         Thread.ofVirtual().start(() -> {
@@ -104,11 +102,9 @@ class ReactiveHelloWorld_String_ProcessorTest {
                 processor.subscribe(subscriber);
             }
             // -------------------------------------------------------------------------------- then
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < ds.length; i++) {
-                    verify(subscribers.get(i), times(ds[i])).onNext(any());
-                }
-            });
+            for (int i = 0; i < ds.length; i++) {
+                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(ds[i])).onNext(any());
+            }
             for (int i = 0; i < ds.length; i++) {
                 final var subscriber = subscribers.get(i);
                 verify(subscriber, times(1)).onSubscribe(notNull());

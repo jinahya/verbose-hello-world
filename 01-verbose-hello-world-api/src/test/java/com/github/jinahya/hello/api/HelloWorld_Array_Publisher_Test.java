@@ -20,30 +20,19 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.concurrent.Flow;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookTestUtils.loggingSpy;
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.hello_world_byte_array;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentCaptor.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Subscription-level tests for {@link HelloWorldArrayPublisher} against the
@@ -51,6 +40,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("array publisher")
 @Slf4j
 class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]> {
 
@@ -62,13 +52,14 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName(
+            "should emit at least <n> elements when the subscriber calls <request(n)> with <n > 0>")
     @Test
-    @DisplayName("request(n), n > 0 → at least n elements")
     void __singleRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 10);
         log.debug("n: {}", n);
-        final var subscriber = loggingSpy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
             private Flow.Subscription subscription;
             private int received;
             @Override public void onSubscribe(final Flow.Subscription s) {
@@ -84,7 +75,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             p.subscribe(subscriber);
-            await().atMost(TIMEOUT).untilAsserted(() -> verify(subscriber, times(n)).onNext(any()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -100,8 +91,10 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         } // @formatter:on
     }
 
+    @DisplayName("""
+            should give each subscriber its own <n> elements
+            when multiple subscribers each call <request(n)>""")
     @Test
-    @DisplayName("multiple subscribers, each request(n) → each gets its own n elements")
     void __multiRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var count = ThreadLocalRandom.current().nextInt(2, 5);
@@ -110,7 +103,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, 10);
             demands[i] = n;
-            subscribers.add(loggingSpy(new Flow.Subscriber<byte[]>() {
+            subscribers.add(Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
                 private Flow.Subscription subscription;
                 private int received;
                 @Override public void onSubscribe(final Flow.Subscription s) {
@@ -130,11 +123,10 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
             for (final var subscriber : subscribers) {
                 p.subscribe(subscriber);
             }
-            await().atMost(TIMEOUT).untilAsserted(() -> {
-                for (int i = 0; i < count; i++) {
-                    verify(subscribers.get(i), times(demands[i])).onNext(any());
-                }
-            });
+            for (int i = 0; i < count; i++) {
+                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(demands[i]))
+                        .onNext(any());
+            }
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -153,13 +145,13 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         } // @formatter:on
     }
 
+    @DisplayName("should signal <onError> with no further signals when <service.set> throws")
     @Test
-    @DisplayName("service.set throws → subscriber gets onError, no further signals")
     void __serviceThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
-        final var subscriber = loggingSpy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -170,8 +162,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            await().atMost(TIMEOUT)
-                    .untilAsserted(() -> verify(subscriber, times(1)).onError(notNull()));
+            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then

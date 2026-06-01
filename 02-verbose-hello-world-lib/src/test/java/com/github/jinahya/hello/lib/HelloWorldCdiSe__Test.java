@@ -20,14 +20,12 @@ package com.github.jinahya.hello.lib;
  * #L%
  */
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * An abstract base for tests that wire {@link HelloWorldDi__Test}'s injection points through a
- * Jakarta CDI <em>SE</em> container (Weld SE, OpenWebBeans SE, ...). Concrete subclasses live
- * under the {@code java-cdi-se-*} profile-specific test source trees and supply the container
- * bootstrap.
+ * Jakarta CDI <em>SE</em> container (Weld SE, OpenWebBeans SE, ...). Concrete subclasses live under
+ * the {@code java-cdi-se-*} profile-specific test source trees and supply the container bootstrap.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

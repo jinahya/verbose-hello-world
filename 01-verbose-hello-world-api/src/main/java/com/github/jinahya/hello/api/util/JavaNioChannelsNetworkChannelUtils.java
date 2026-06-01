@@ -20,18 +20,28 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.IOException;
-import java.net.SocketOption;
-import java.nio.channels.NetworkChannel;
-import java.util.Objects;
+import java.io.*;
+import java.net.*;
+import java.nio.channels.*;
+import java.util.*;
 
 /**
- * Utilities for {@link NetworkChannel} interface.
+ * Helpers for {@link NetworkChannel java.nio.channels.NetworkChannel} — option-set helpers that
+ * fail-fast against an unsupported {@link SocketOption} rather than passing the call straight
+ * through to the channel.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class JavaNioChannelsNetworkChannelUtils {
 
+    /**
+     * Tests whether {@code option} appears in {@code channel.supportedOptions()}.
+     *
+     * @param channel the network channel to query; must not be {@code null}.
+     * @param option  the socket option to test; must not be {@code null}.
+     * @return {@code true} if {@code channel} supports {@code option}; {@code false} otherwise.
+     * @throws NullPointerException if either argument is {@code null}.
+     */
     public static boolean isOptionSupported(final NetworkChannel channel,
                                             final SocketOption<?> option) {
         Objects.requireNonNull(channel, "channel is null");
@@ -39,6 +49,24 @@ public final class JavaNioChannelsNetworkChannelUtils {
         return channel.supportedOptions().contains(option);
     }
 
+    /**
+     * Sets {@code option} to {@code value} on {@code channel} — but first checks
+     * {@link #isOptionSupported(NetworkChannel, SocketOption)} and throws
+     * {@link UnsupportedOperationException} with a more descriptive message than the JDK's default
+     * if the option isn't supported.
+     *
+     * @param channel the network channel to configure; must not be {@code null}.
+     * @param option  the socket option to set; must not be {@code null}.
+     * @param value   the value to set; may be {@code null} (and may be rejected by the channel).
+     * @param <T>     the concrete {@link NetworkChannel} subtype.
+     * @param <U>     the option's value type.
+     * @return the given {@code channel} for chaining; never {@code null}.
+     * @throws NullPointerException          if {@code channel} or {@code option} is {@code null}.
+     * @throws UnsupportedOperationException if {@code channel} does not support {@code option}.
+     * @throws IOException                   if
+     *                                       {@link NetworkChannel#setOption(SocketOption, Object)
+     *                                       channel.setOption(option, value)} throws.
+     */
     @SuppressWarnings({"unchecked"})
     public static <T extends NetworkChannel, U> T setOption(final T channel,
                                                             final SocketOption<U> option,

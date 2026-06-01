@@ -20,13 +20,11 @@ package com.github.jinahya.hello.app3;
  * #L%
  */
 
-import com.github.jinahya.hello.api.AsynchronousHelloWorld;
-import com.github.jinahya.hello.api.HelloWorld;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.github.jinahya.hello.api.*;
+import org.springframework.context.annotation.*;
 
-import java.util.ServiceLoader;
-import java.util.concurrent.ForkJoinPool;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * A configuration for providing {@link HelloWorld}, {@link AsynchronousHelloWorld}, and
@@ -48,7 +46,7 @@ class HelloWorldConfiguration {
 
     @Bean
     AsynchronousHelloWorld asynchronousHelloWorld(final HelloWorld service) {
-        return AsynchronousHelloWorld.from(service, ForkJoinPool.commonPool());
+        return new ExecutorHelloWorld(service, ForkJoinPool.commonPool());
     }
 
     @Bean

@@ -20,33 +20,20 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentMatchers;
-import org.mockito.MockedConstruction;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
+import org.mockito.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#append(File) append(file)} method.
@@ -57,16 +44,13 @@ import static org.mockito.Mockito.mockConstruction;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
-class HelloWorld_Append_File_Test extends HelloWorldTest {
+class HelloWorld_Append_File_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <file> argument is <null>"""
-    )
+    @DisplayName("should throw a <NullPointerException> when the <file> argument is <null>")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -87,11 +71,8 @@ class HelloWorld_Append_File_Test extends HelloWorldTest {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("""
-            should create a <new FileOutputStream> as <appending mode>,
-            and invoke <write(stream)> method with it,
-            and <flushes/closes> the stream"""
-    )
+    @DisplayName(
+            "should open the <file> as <appending mode>, write <hello-world-bytes>, and close it")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -115,8 +96,8 @@ class HelloWorld_Append_File_Test extends HelloWorldTest {
         }
     }
 
+    @DisplayName("should increase the <file>'s length by <12> through a real <file>")
     @畵蛇添足("testing with an existing file doesn't add any value")
-    @DisplayName("<file>'s length should be increased by <12>")
     @Test
     void _添足_畵蛇(@TempDir final File dir)
             throws IOException {

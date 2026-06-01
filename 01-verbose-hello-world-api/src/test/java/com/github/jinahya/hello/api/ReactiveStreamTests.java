@@ -20,14 +20,11 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import lombok.extern.slf4j.*;
+import org.reactivestreams.*;
 
-import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * Shared test fixtures for the {@code ReactiveHelloWorld*Publisher} tests — currently a family of

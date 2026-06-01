@@ -20,35 +20,26 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.sql.Blob;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
+@DisplayName("setBytes(blob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBytes_Blob_Long__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws SQLException {
         Mockito.doAnswer(invocation -> {
             final var blob = invocation.getArgument(0, Blob.class);
             final var pos = invocation.getArgument(1, Long.class);
-            blob.setBytes(pos, HelloWorldTestUtils.hello_world_byte_array());
+            blob.setBytes(pos, HelloWorld__TestUtils.hello_world_byte_array());
             return blob;
         }).when(service()).setBytes(
                 ArgumentMatchers.<Blob>notNull(),
@@ -57,6 +48,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -66,6 +58,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real H2 Blob> through <setBytes(blob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -74,13 +67,14 @@ class HelloWorld_SetBytes_Blob_Long__Test
                 Assertions.assertSame(blob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, blob.length());
                 Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
+                        HelloWorld__TestUtils.hello_world_byte_array(),
                         blob.getBytes(1L, HelloWorld.BYTES)
                 );
             }
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -90,6 +84,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real HSQLDB Blob> through <setBytes(blob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -98,13 +93,14 @@ class HelloWorld_SetBytes_Blob_Long__Test
                 Assertions.assertSame(blob, result);
                 Assertions.assertEquals(HelloWorld.BYTES, blob.length());
                 Assertions.assertArrayEquals(
-                        HelloWorldTestUtils.hello_world_byte_array(),
+                        HelloWorld__TestUtils.hello_world_byte_array(),
                         blob.getBytes(1L, HelloWorld.BYTES)
                 );
             }
         }
     }
 
+    @DisplayName("SQLite")
     @Disabled("SQLite JDBC driver does not implement Connection.createBlob()")
     @Nested
     class SQLite_Test {
@@ -115,6 +111,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
 
         private static final String PASSWORD = "";
 
+        @DisplayName("should populate a <real SQLite Blob> through <setBytes(blob, 1L)>")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

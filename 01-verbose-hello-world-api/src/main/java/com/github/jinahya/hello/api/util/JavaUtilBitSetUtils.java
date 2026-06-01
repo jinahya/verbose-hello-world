@@ -20,12 +20,12 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import java.io.PrintStream;
-import java.util.BitSet;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
 
 /**
- * Utilities for the {@link java.util.BitSet BitSet}.
+ * Helpers for {@link BitSet java.util.BitSet} — currently a textual visualizer that prints a
+ * bit-set's bits grouped by 64-bit words with a hex byte-side decoration.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -42,10 +42,11 @@ public final class JavaUtilBitSetUtils {
      * length: 96, cardinality: 48, size: 128
      * </pre>
      *
-     * @param bitset  the bit set to print.
-     * @param printer the print stream to which the output is printed.
-     * @param <T>     bit set type parameter
-     * @return the given {@code bitset}.
+     * @param bitset  the bit set to print; must not be {@code null}.
+     * @param printer the print stream to which the output is printed; must not be {@code null}.
+     * @param <T>     the concrete {@link BitSet} subtype.
+     * @return the given {@code bitset}, unchanged; never {@code null}.
+     * @throws NullPointerException if either argument is {@code null}.
      */
     public static <T extends BitSet> T print(final T bitset, final PrintStream printer) {
         Objects.requireNonNull(bitset, "bitset is null");
@@ -87,11 +88,13 @@ public final class JavaUtilBitSetUtils {
     }
 
     /**
-     * Prints the specified bit set's bits to {@link System#out}.
+     * The single-argument convenience of
+     * {@link #print(BitSet, PrintStream) print(bitset, System.out)}.
      *
-     * @param bitset the bit set to print.
-     * @param <T>    bit set type parameter
-     * @return the given {@code bitset}.
+     * @param bitset the bit set to print; must not be {@code null}.
+     * @param <T>    the concrete {@link BitSet} subtype.
+     * @return the given {@code bitset}, unchanged; never {@code null}.
+     * @throws NullPointerException if {@code bitset} is {@code null}.
      */
     @SuppressWarnings({"java:S106"})
     public static <T extends BitSet> T print(final T bitset) {

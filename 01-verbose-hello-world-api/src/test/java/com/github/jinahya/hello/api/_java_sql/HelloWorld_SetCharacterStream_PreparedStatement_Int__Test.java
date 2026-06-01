@@ -20,37 +20,28 @@ package com.github.jinahya.hello.api._java_sql;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.io.*;
+import java.sql.*;
 
+@DisplayName("setCharacterStream(statement, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
         Mockito.doAnswer(invocation -> {
             final var ps = invocation.getArgument(0, PreparedStatement.class);
             final var pi = invocation.getArgument(1, Integer.class);
-            ps.setCharacterStream(pi, new StringReader(HelloWorldTestConstants.HELLO_WORLD_STRING));
+            ps.setCharacterStream(pi,
+                                  new StringReader(HelloWorld__TestConstants.HELLO_WORLD_STRING));
             return ps;
         }).when(service()).setCharacterStream(
                 ArgumentMatchers.<PreparedStatement>notNull(),
@@ -59,6 +50,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("H2")
     @Nested
     class H2_Test {
 
@@ -73,6 +65,9 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world string
+                through a <real H2 PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -102,13 +97,14 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         Assertions.assertTrue(resultSet.next());
                         final var string = resultSet.getString(COLUMN);
-                        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), string);
+                        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), string);
                     }
                 }
             }
         }
     }
 
+    @DisplayName("HSQLDB")
     @Nested
     class Hsql_Test {
 
@@ -123,6 +119,9 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world string
+                through a <real HSQLDB PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -152,13 +151,14 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         Assertions.assertTrue(resultSet.next());
                         final var string = resultSet.getString(COLUMN);
-                        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), string);
+                        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), string);
                     }
                 }
             }
         }
     }
 
+    @DisplayName("SQLite")
     @Nested
     class SQLite_Test {
 
@@ -172,6 +172,9 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "chars";
 
+        @DisplayName("""
+                should insert and read back the hello-world string
+                through a <real SQLite PreparedStatement>""")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -201,7 +204,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         Assertions.assertTrue(resultSet.next());
                         final var string = resultSet.getString(COLUMN);
-                        Assertions.assertEquals(HelloWorldTestUtils.hello_world_string(), string);
+                        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), string);
                     }
                 }
             }

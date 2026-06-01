@@ -20,44 +20,32 @@ package com.github.jinahya.hello.api._java_nio_channels;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import com.github.jinahya.hello.api.畵蛇添足;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.GatheringByteChannel;
-import java.nio.channels.Pipe;
-import java.nio.channels.ScatteringByteChannel;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.charset.*;
+import java.util.concurrent.*;
 
 /**
  * A class for testing {@link HelloWorld#write(GatheringByteChannel) write(channel)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(GatheringByteChannel)")
+@DisplayName("write(channel)")
 @Slf4j
 class HelloWorld_Write_GatheringByteChannel_Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(GatheringByteChannel) write(channel)} method throws
      * a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <channel> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -99,11 +87,12 @@ class HelloWorld_Write_GatheringByteChannel_Test
      *
      * @throws IOException if an I/O error occurs.
      */
+    @DisplayName("should write <hello-world-bytes> as <split buffers> through a real <Pipe>")
     @畵蛇添足
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given
-        final var bytes = HelloWorldTestUtils.hello_world_byte_array();
+        final var bytes = HelloWorld__TestUtils.hello_world_byte_array();
         final var pipe = Pipe.open();
         // ----------------------------------------------------------------------------------- write
         final var writer = Thread.ofVirtual().start(() -> {
@@ -274,6 +263,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the current thread is interrupted while waiting.
      */
+    @DisplayName("should write a <calculator instruction binary> through a real <Pipe>")
     @畵蛇添足
     @Test
     void __Calc() throws IOException, InterruptedException {

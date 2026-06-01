@@ -20,57 +20,49 @@ package com.github.jinahya.hello.api._java_util_zip;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorld;
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.zip.Deflater;
+import java.util.zip.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#setInput(Deflater) setInput(deflater)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setInput(Deflater)")
+@DisplayName("setInput(deflater)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetInput_Deflater_Test
-        extends HelloWorldTest {
+class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
 
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <deflater> argument is <null>""")
+    @DisplayName("should throw a <NullPointerException> when the <deflater> argument is <null>")
     @Test
     void _ThrowNullPointerException_DeflaterIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final Deflater deflator = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setInput(deflator)
-        );
+        assertThrows(NullPointerException.class, () -> service.setInput(deflator));
     }
 
-    @DisplayName("deflater.setInput(set(byte[12]))")
+    @DisplayName("should invoke <set(byte[12])> and pass the array to <deflater.setInput>")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorldTestUtils.set_array_sets_random_bytes(service());
-        final var deflater = Mockito.mock(Deflater.class);
+        final var service = set_array_sets_random_bytes(service());
+        final var deflater = mock(Deflater.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setInput(deflater);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorldTestUtils.set_array12_invoked_once(service);
-        Mockito.verify(deflater, Mockito.times(1)).setInput(array);
-        Mockito.verifyNoMoreInteractions(deflater);
-        Assertions.assertSame(deflater, result);
+        final var array = set_array12_invoked_once(service);
+        verify(deflater, times(1)).setInput(array);
+        verifyNoMoreInteractions(deflater);
+        assertSame(deflater, result);
     }
 }

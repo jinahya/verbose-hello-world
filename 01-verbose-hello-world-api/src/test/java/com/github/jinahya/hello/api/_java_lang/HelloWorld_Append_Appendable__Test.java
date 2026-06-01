@@ -20,35 +20,42 @@ package com.github.jinahya.hello.api._java_lang;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestConstants;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.io.IOException;
+import java.io.*;
 
-import static com.github.jinahya.hello.api.HelloWorldTestUtils.set_array_sets_actual_hello_world_bytes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Append_Appendable__Test extends HelloWorldTest {
+class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
 
+    @BeforeEach
+    void __stubService() throws IOException {
+        append_appendable_appends_hello_world_bytes(service());
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @DisplayName("string builder")
     @Nested
     class StringBuilder_Test {
 
+        @DisplayName("should append <hello-world-string> to a real <StringBuilder>")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_actual_hello_world_bytes(service());
+            final var service = set_array_sets_hello_world_bytes(service());
             final var appendable = new StringBuilder();
             // -------------------------------------------------------------------------------- when
             service.append(appendable);
             // -------------------------------------------------------------------------------- then
-            assertEquals(HelloWorldTestConstants.HELLO_WORLD_STRING, appendable.toString());
+            assertEquals(HELLO_WORLD_STRING, appendable.toString());
         }
     }
 }

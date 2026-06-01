@@ -20,18 +20,19 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
-import java.nio.ByteBuffer;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.nio.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("JavaNioByteBufferUtils")
 @Slf4j
 class JavaNioByteBufferUtilsTest {
 
@@ -55,6 +56,7 @@ class JavaNioByteBufferUtilsTest {
         });
     }
 
+    @DisplayName("should print the random <ByteBuffer> without error")
     @MethodSource({"randomByteBufferStream"})
     @ParameterizedTest
     void print__(final ByteBuffer buffer) {

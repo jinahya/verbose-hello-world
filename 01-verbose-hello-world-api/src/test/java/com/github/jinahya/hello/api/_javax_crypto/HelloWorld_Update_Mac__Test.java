@@ -20,29 +20,17 @@ package com.github.jinahya.hello.api._javax_crypto;
  * #L%
  */
 
-import com.github.jinahya.hello.api.HelloWorldTest;
-import com.github.jinahya.hello.api.HelloWorldTestUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
-import java.security.spec.AlgorithmParameterSpec;
-import java.util.Base64;
-import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.security.spec.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * An integration test class for
@@ -60,11 +48,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018">RFC 8018 &mdash; PKCS #5:
  * Password-Based Cryptography Specification Version 2.1 (PBE)</a>
  */
-@DisplayName("HelloWorld#update(Mac) — HMAC and PBE-MAC")
+@DisplayName("update(mac)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Mac__Test
-        extends HelloWorldTest {
+        extends HelloWorld__Test {
 
     /**
      * Prints a one-line summary of a MAC tag or derived hash &mdash; algorithm, optional parameter,
@@ -86,7 +74,7 @@ class HelloWorld_Update_Mac__Test
     /**
      * Stubs {@link com.github.jinahya.hello.api.HelloWorld#update(Mac) service().update(mac)} so
      * that, when invoked with any non-{@code null} {@link Mac}, it forwards the
-     * {@link HelloWorldTestUtils#hello_world_byte_array() hello-world bytes} to the mac's
+     * {@link HelloWorld__TestUtils#hello_world_byte_array() hello-world bytes} to the mac's
      * {@link Mac#update(byte[])} method and returns the mac.
      */
     // ---------------------------------------------------------------------------------------------
@@ -94,7 +82,7 @@ class HelloWorld_Update_Mac__Test
     void __() {
         Mockito.doAnswer(i -> {
             final var mac = i.getArgument(0, Mac.class);
-            mac.update(HelloWorldTestUtils.hello_world_byte_array());
+            mac.update(HelloWorld__TestUtils.hello_world_byte_array());
             return mac;
         }).when(service()).update(ArgumentMatchers.<Mac>notNull());
     }
@@ -121,6 +109,7 @@ class HelloWorld_Update_Mac__Test
          * {@link Mac#getInstance(String) HmacSHA1} instances initialized with the same key produces
          * byte-identical tags.
          */
+        @DisplayName("should produce byte-identical tags through a <real HmacSHA1> mac")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -166,6 +155,7 @@ class HelloWorld_Update_Mac__Test
          * {@link Mac#getInstance(String) HmacSHA256} instances initialized with the same key
          * produces byte-identical tags.
          */
+        @DisplayName("should produce byte-identical tags through a <real HmacSHA256> mac")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -213,6 +203,7 @@ class HelloWorld_Update_Mac__Test
          * {@code PBEWithHmacSHA256} instances initialized with the same password-derived key and
          * parameters produces byte-identical tags.
          */
+        @DisplayName("should produce byte-identical tags through a <real PBEWithHmacSHA256> mac")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given

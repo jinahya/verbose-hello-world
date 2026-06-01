@@ -20,19 +20,14 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import io.helidon.common.reactive.Multi;
-import io.helidon.common.reactive.Single;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import io.helidon.common.reactive.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 /**
  * A pedagogical tour of <a href="https://helidon.io/">Helidon</a> Common Reactive's own
@@ -45,38 +40,41 @@ import java.util.stream.Stream;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("reactive — Helidon")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("single-value idioms")
     @Nested
-    @DisplayName("Single<byte[]> — single-value idioms")
     class Single_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Single.just(byte[])>")
         @Test
-        @DisplayName("Single.just(byte[]) → eager single value")
         void __just() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var array = Single.just(HelloWorldUtils.array(synchronousService()))
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("""
+                should emit <hello-world-bytes> via <Single.create(CompletionStage)>
+                from <AsynchronousHelloWorld.applyAsync>""")
         @Test
-        @DisplayName("Single.create(CompletionStage) → from AsynchronousHelloWorld#applyAsync")
         void __create_completionStage() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var array = Single.create(
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), array);
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        @DisplayName("should return <BYTES> via <Single.just(...).map(byte[]::length)>")
         @Test
-        @DisplayName("Single.just(...).map(...) → transform")
         void __map() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var length = Single.just(HelloWorldUtils.array(synchronousService()))
@@ -88,12 +86,12 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("stream idioms")
     @Nested
-    @DisplayName("Multi<byte[]> — stream idioms")
     class Multi_Test {
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.just(byte[]...)>")
         @Test
-        @DisplayName("Multi.just(byte[]...) → varargs stream + onComplete")
         void __just_varargs() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.just(
@@ -106,12 +104,13 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.create(Iterable)>")
         @Test
-        @DisplayName("Multi.from(Iterable) → from existing collection")
         void __from_iterable() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.create(List.of(
@@ -123,12 +122,13 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.create(Stream)>")
         @Test
-        @DisplayName("Multi.create(Stream) → from java.util.stream.Stream")
         void __from_stream() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var n = 5;
@@ -140,12 +140,13 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), element);
+                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                             element);
             }
         }
 
+        @DisplayName("should emit <hello-world-bytes> via <Multi.singleton(byte[])>")
         @Test
-        @DisplayName("Multi.singleton(byte[]) → one item + onComplete")
         void __singleton() throws Exception {
             // -------------------------------------------------------------------------- given/when
             final var list = Multi.singleton(HelloWorldUtils.array(synchronousService()))
@@ -153,7 +154,8 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
             Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorldTestUtils.hello_world_byte_array(), list.get(0));
+            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                         list.get(0));
         }
     }
 }

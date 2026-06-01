@@ -20,9 +20,9 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.junit.platform.commons.util.ReflectionUtils;
+import org.junit.platform.commons.util.*;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
