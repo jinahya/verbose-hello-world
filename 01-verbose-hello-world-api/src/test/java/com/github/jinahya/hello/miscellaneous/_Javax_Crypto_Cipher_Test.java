@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
@@ -33,6 +34,16 @@ import java.util.concurrent.*;
 import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Cipher_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * .
+ *
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ * (Java 25)
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ * (Java 26)
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_Cipher_Test {
 
@@ -40,6 +51,8 @@ class _Javax_Crypto_Cipher_Test {
     private static Path tempDir;
 
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("AES/CBC/NoPadding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -60,6 +73,8 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("AES/CBC/PKCS5Padding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -80,6 +95,8 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("AES/ECB/NoPadding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -100,6 +117,8 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("AES/ECB/PKCS5Padding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -120,6 +139,8 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("AES/GCM/NoPadding")
     @ValueSource(ints = {128, 256})
     @ParameterizedTest
@@ -131,17 +152,23 @@ class _Javax_Crypto_Cipher_Test {
         final var cipher = symmetric.cipher();
         // --------------------------------------------------------------------------------- encrypt
         cipher.init(Cipher.ENCRYPT_MODE, symmetric.secretKey(), symmetric.params());
-        cipher.updateAAD(symmetric.aad());
+        if (symmetric.aad() != null) {
+            cipher.updateAAD(symmetric.aad());
+        }
         final var encrypted = cipher.doFinal(plain);
         // --------------------------------------------------------------------------------- decrypt
         cipher.init(Cipher.DECRYPT_MODE, symmetric.secretKey(), symmetric.params());
-        cipher.updateAAD(symmetric.aad());
+        if (symmetric.aad() != null) {
+            cipher.updateAAD(symmetric.aad());
+        }
         final var decrypted = cipher.doFinal(encrypted);
         // ------------------------------------------------------------------------------------ then
         assertArrayEquals(plain, decrypted);
     }
 
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("ChaCha20-Poly1305")
     @Test
     void __ChaCha20_Poly1305() throws Exception {
@@ -152,11 +179,15 @@ class _Javax_Crypto_Cipher_Test {
         final var cipher = symmetric.cipher();
         // --------------------------------------------------------------------------------- encrypt
         cipher.init(Cipher.ENCRYPT_MODE, symmetric.secretKey(), symmetric.params());
-        cipher.updateAAD(symmetric.aad());
+        if (symmetric.aad() != null) {
+            cipher.updateAAD(symmetric.aad());
+        }
         final var encrypted = cipher.doFinal(plain);
         // --------------------------------------------------------------------------------- decrypt
         cipher.init(Cipher.DECRYPT_MODE, symmetric.secretKey(), symmetric.params());
-        cipher.updateAAD(symmetric.aad());
+        if (symmetric.aad() != null) {
+            cipher.updateAAD(symmetric.aad());
+        }
         final var decrypted = cipher.doFinal(encrypted);
         // ------------------------------------------------------------------------------------ then
         assertArrayEquals(plain, decrypted);
@@ -165,6 +196,7 @@ class _Javax_Crypto_Cipher_Test {
     // ---------------------------------------------------------------------------------------------
     @DisplayName("DESede/CBC/NoPadding")
     @ValueSource(ints = {168})
+    @LatestLTS
     @ParameterizedTest
     void __DESede_CBC_NoPadding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -185,6 +217,7 @@ class _Javax_Crypto_Cipher_Test {
     // ---------------------------------------------------------------------------------------------
     @DisplayName("DESede/CBC/PKCS5Padding")
     @ValueSource(ints = {168})
+    @LatestLTS
     @ParameterizedTest
     void __DESede_CBC_PKCS5Padding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -205,6 +238,7 @@ class _Javax_Crypto_Cipher_Test {
     // ---------------------------------------------------------------------------------------------
     @DisplayName("DESede/ECB/NoPadding")
     @ValueSource(ints = {168})
+    @LatestLTS
     @ParameterizedTest
     void __DESede_ECB_NoPadding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -225,6 +259,7 @@ class _Javax_Crypto_Cipher_Test {
     // ---------------------------------------------------------------------------------------------
     @DisplayName("DESede/ECB/PKCS5Padding")
     @ValueSource(ints = {168})
+    @LatestLTS
     @ParameterizedTest
     void __DESede_ECB_PKCS5Padding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -243,8 +278,49 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("PBEWithHmacSHA256AndAES_128")
+    @LatestJDK
+    @Test
+    void __PBEWithHmacSHA256AndAES_128() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var plain = new byte[ThreadLocalRandom.current().nextInt(1024)];
+        ThreadLocalRandom.current().nextBytes(plain);
+        final var symmetric = PBEWithHmacSHA256AndAES_128();
+        final var cipher = symmetric.cipher();
+        // --------------------------------------------------------------------------------- encrypt
+        cipher.init(Cipher.ENCRYPT_MODE, symmetric.secretKey(), symmetric.params());
+        final var encrypted = cipher.doFinal(plain);
+        // --------------------------------------------------------------------------------- decrypt
+        cipher.init(Cipher.DECRYPT_MODE, symmetric.secretKey(), symmetric.params());
+        final var decrypted = cipher.doFinal(encrypted);
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(plain, decrypted);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @DisplayName("PBEWithHmacSHA256AndAES_256")
+    @LatestJDK
+    @Test
+    void __PBEWithHmacSHA256AndAES_256() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var plain = new byte[ThreadLocalRandom.current().nextInt(1024)];
+        ThreadLocalRandom.current().nextBytes(plain);
+        final var symmetric = PBEWithHmacSHA256AndAES_256();
+        final var cipher = symmetric.cipher();
+        // --------------------------------------------------------------------------------- encrypt
+        cipher.init(Cipher.ENCRYPT_MODE, symmetric.secretKey(), symmetric.params());
+        final var encrypted = cipher.doFinal(plain);
+        // --------------------------------------------------------------------------------- decrypt
+        cipher.init(Cipher.DECRYPT_MODE, symmetric.secretKey(), symmetric.params());
+        final var decrypted = cipher.doFinal(encrypted);
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(plain, decrypted);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     @DisplayName("RSA/ECB/PKCS1Padding")
     @ValueSource(ints = {1024, 2048})
+    @LatestLTS
     @ParameterizedTest
     void __RSA_ECB_PKCS1Padding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -265,6 +341,8 @@ class _Javax_Crypto_Cipher_Test {
     // ---------------------------------------------------------------------------------------------
     @DisplayName("RSA/ECB/OAEPWithSHA-1AndMGF1Padding")
     @ValueSource(ints = {1024, 2048})
+    @LatestLTS
+    @LatestJDK
     @ParameterizedTest
     void __RSA_ECB_OAEPWithSHA_1AndMGF1Padding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -285,6 +363,8 @@ class _Javax_Crypto_Cipher_Test {
     // ---------------------------------------------------------------------------------------------
     @DisplayName("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
     @ValueSource(ints = {1024, 2048})
+    @LatestLTS
+    @LatestJDK
     @ParameterizedTest
     void __RSA_ECB_OAEPWithSHA_256AndMGF1Padding(final int keysize) throws Exception {
         // ----------------------------------------------------------------------------------- given

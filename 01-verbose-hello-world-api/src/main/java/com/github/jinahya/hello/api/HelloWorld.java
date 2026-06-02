@@ -1814,41 +1814,6 @@ public interface HelloWorld {
 
     /**
      * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>,
-     * writes the result into an internally allocated output array, and accepts the output array
-     * along with the number of bytes stored to the specified consumer.
-     *
-     * @param cipher   the cipher to be updated.
-     * @param consumer the consumer to accept the output array and the number of bytes stored in
-     *                 it.
-     * @param <T>      cipher type parameter
-     * @return the given {@code cipher}.
-     * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
-     * @throws ShortBufferException if the output array, sized via
-     *                              {@link Cipher#getOutputSize(int) cipher.getOutputSize(BYTES)},
-     *                              is reported too small to hold the result.
-     * @implSpec Default implementation allocates an output array of
-     * {@link Cipher#getOutputSize(int) cipher.getOutputSize(BYTES)} bytes, invokes
-     * {@link #update(Cipher, byte[], int, IntConsumer) update(cipher, output, 0, intConsumer)}
-     * where the {@code intConsumer} forwards {@code (output, length)} to the {@code consumer}, and
-     * returns the {@code cipher}.
-     * @see #update(Cipher, byte[], int, IntConsumer)
-     * @see Cipher#getOutputSize(int)
-     * @see ObjIntConsumer#accept(Object, int)
-     * @see <a
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
-     */
-    default <T extends Cipher> T update(final T cipher,
-                                        final ObjIntConsumer<? super byte[]> consumer)
-            throws ShortBufferException {
-        Objects.requireNonNull(cipher, "cipher is null");
-        Objects.requireNonNull(consumer, "consumer is null");
-        final var output = new byte[cipher.getOutputSize(BYTES)];
-        update(cipher, output, 0, l -> consumer.accept(output, l));
-        return cipher;
-    }
-
-    /**
-     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>,
      * writing the result into the specified output buffer, and accepts the number of bytes stored
      * to the specified consumer.
      *

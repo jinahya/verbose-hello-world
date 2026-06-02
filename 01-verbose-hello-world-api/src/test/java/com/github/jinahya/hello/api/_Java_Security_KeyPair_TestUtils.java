@@ -22,9 +22,6 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 
-import java.security.*;
-import java.security.spec.*;
-
 /**
  * .
  *
@@ -38,8 +35,6 @@ import java.security.spec.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_KeyPair_TestUtils {
-
-
 
     private _Java_Security_KeyPair_TestUtils() {
         throw new AssertionError("instantiation is not allowed");

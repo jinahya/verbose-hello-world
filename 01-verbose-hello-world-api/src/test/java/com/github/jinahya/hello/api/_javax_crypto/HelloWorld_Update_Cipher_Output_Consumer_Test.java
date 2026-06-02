@@ -74,16 +74,16 @@ class HelloWorld_Update_Cipher_Output_Consumer_Test extends HelloWorld__Test {
         // ----------------------------------------------------------------------------------- given
         final var service = put_buffer12_increases_buffer_position_by_12(service());
         final var cipher = mock(Cipher.class);
-        final var output = ByteBuffer.allocate(HelloWorld.BYTES * 2);
-        final var bytesStored = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1);
-        doReturn(bytesStored).when(cipher).update(any(ByteBuffer.class), any(ByteBuffer.class));
+        final var output = ByteBuffer.allocate(HelloWorld.BYTES);                      // 12
+        final var bytes = ThreadLocalRandom.current().nextInt(output.remaining() + 1); // [0..12]
+        doReturn(bytes).when(cipher).update(any(ByteBuffer.class), any(ByteBuffer.class));
         final var consumer = mock(IntConsumer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(cipher, output, consumer);
         // ------------------------------------------------------------------------------------ then
         final var buffer = put_buffer12_invoked_once(service);
         verify(cipher).update(buffer, output);
-        verify(consumer).accept(bytesStored);
+        verify(consumer).accept(bytes);
         assertSame(cipher, result);
     }
 }
