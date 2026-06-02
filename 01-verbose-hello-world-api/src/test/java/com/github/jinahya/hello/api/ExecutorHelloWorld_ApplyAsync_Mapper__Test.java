@@ -570,16 +570,6 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     // ---------------------------------------------------------------------------- java.util.stream
 
     // -------------------------------------------------------------------------------- javax.crypto
-    @DisplayName("update(cipher, consumer)")
-    @Nested
-    class Cipher_Consumer_Test {
-
-        @DisplayName("should apply <mapper> via the <executor>")
-        @Test
-        void __() {
-        }
-    }
-
     @DisplayName("update(mac)")
     @Nested
     class Mac_Test {

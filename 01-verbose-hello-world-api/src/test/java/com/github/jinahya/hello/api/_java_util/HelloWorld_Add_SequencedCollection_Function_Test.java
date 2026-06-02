@@ -75,7 +75,7 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
         final var collection = (SequencedCollection<Byte>) mock(SequencedCollection.class);
         @SuppressWarnings("unchecked")
         final Function<Byte, Byte> mapper = mock(Function.class);
-        when(mapper.apply(any())).thenAnswer(i -> i.getArgument(0));
+        doAnswer(i -> i.getArgument(0)).when(mapper).apply(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.add(collection, mapper);
         // ------------------------------------------------------------------------------------ then

@@ -56,7 +56,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper_Test
         final var asynchronousService = asynchronousService();
         final var value = 42;
         final var mapper = mock(Function.class);
-        when(mapper.apply(synchronousService)).thenReturn(value);
+        doReturn(value).when(mapper).apply(synchronousService);
         // ------------------------------------------------------------------------------------ when
         final var result = asynchronousService.applyAsync(mapper);
         // ------------------------------------------------------------------------------------ then

@@ -185,6 +185,8 @@ public interface HelloWorld {
      * Casting Contexts</a> (The Java® Language Specification)
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-5.html#jls-5.1.4">5.1.4.
      * Widening and Narrowing Primitive Conversion</a> (The Java® Language Specification)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Appendable.html">java.lang.Appendable</a>
      */
     default <T extends Appendable> T append(final T appendable) throws IOException {
         if (appendable == null) {
@@ -225,15 +227,22 @@ public interface HelloWorld {
      * return segment;
      *}
      *
+     * @param <T>     memory segment type parameter
      * @param segment the memory segment on which bytes are set.
      * @return the given {@code segment}.
      * @throws NullPointerException      if {@code segment} is {@code null}.
      * @throws IndexOutOfBoundsException if {@code segment.byteSize()} is less than
      *                                   {@value #BYTES}.
      * @apiNote Callers can use {@link MemorySegment#asSlice(long)} to set at a specific offset.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, copies the array into the {@code segment} via
+     * {@link MemorySegment#copy(Object, int, MemorySegment, ValueLayout, long, int)}, and returns
+     * the {@code segment}.
      * @see MemorySegment#asSlice(long)
      * @see #set(byte[])
      * @see MemorySegment#copy(Object, int, MemorySegment, ValueLayout, long, int)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/foreign/MemorySegment.html">java.lang.foreign.MemorySegment</a>
      */
     default <T extends MemorySegment> T copy(final T segment) {
         Objects.requireNonNull(segment, "segment is null");
@@ -283,13 +292,15 @@ public interface HelloWorld {
      * the {@code stream}.
      * @see #set(byte[])
      * @see OutputStream#write(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/OutputStream.html">java.io.OutputStream</a>
      */
     default <T extends OutputStream> T write(final T stream) throws IOException {
         if (stream == null) {
             throw new NullPointerException("stream is null");
         }
         final var array = new byte[BYTES];
-        set(new byte[BYTES]);
+        set(array);
 //        stream.write(array);
         return stream;
     }
@@ -323,6 +334,8 @@ public interface HelloWorld {
      * @see java.io.FileOutputStream#FileOutputStream(File, boolean)
      * @see #write(OutputStream)
      * @see #append(File, Charset)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/File.html">java.io.File</a>
      */
     default <T extends File> T append(final T file) throws IOException {
         if (file == null) {
@@ -360,6 +373,8 @@ public interface HelloWorld {
      * returns the {@code output}.
      * @see #set(byte[])
      * @see DataOutput#write(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/DataOutput.html">java.io.DataOutput</a>
      */
     default <T extends DataOutput> T write(final T output) throws IOException {
         if (output == null) {
@@ -391,6 +406,8 @@ public interface HelloWorld {
      * @implSpec Default implementation invokes {@link #append(Appendable) append(appendable)}
      * method with {@code writer}, and returns the {@code writer}.
      * @see #append(Appendable)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/Writer.html">java.io.Writer</a>
      */
     default <T extends Writer> T write(final T writer) throws IOException {
         if (writer == null) {
@@ -420,11 +437,11 @@ public interface HelloWorld {
      *}
      *
      * @param <T>     file type parameter
-     * @param file    the file to append to
-     * @param charset the character set to use for encoding
+     * @param file    the file to append to.
+     * @param charset the character set to use for encoding.
      * @return the given {@code file}.
-     * @throws NullPointerException if {@code file} is {@code null}.
-     * @throws NullPointerException if {@code charset} is {@code null}.
+     * @throws NullPointerException if {@code file} is {@code null}, or if {@code charset} is
+     *                              {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation creates a new {@link FileWriter} with {@code file},
      * {@code charset}, and {@code true} for
@@ -433,6 +450,8 @@ public interface HelloWorld {
      * {@link Writer#close() closes} the writer, and returns {@code file}.
      * @see FileWriter#FileWriter(File, Charset, boolean)
      * @see #write(Writer)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/File.html">java.io.File</a>
      */
     default <T extends File> T append(final T file, final Charset charset) throws IOException {
         Objects.requireNonNull(file, "file is null");
@@ -486,6 +505,8 @@ public interface HelloWorld {
      * @see DatagramPacket#getLength()
      * @see DatagramPacket#setLength(int)
      * @see #set(byte[], int)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/DatagramPacket.html">java.net.DatagramPacket</a>
      */
     default DatagramPacket append(final DatagramPacket packet) {
         if (packet == null) {
@@ -518,6 +539,8 @@ public interface HelloWorld {
      * {@link DatagramSocket#send(DatagramPacket) sends} it through the {@code socket}.
      * @see #append(DatagramPacket)
      * @see DatagramSocket#send(DatagramPacket)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/DatagramSocket.html">java.net.DatagramSocket</a>
      */
     default <T extends DatagramSocket> T send(final T socket, final SocketAddress target)
             throws IOException {
@@ -544,11 +567,13 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if the {@code socket} is not
      *                                  {@link DatagramSocket#isConnected() connected}.
      * @throws IOException              if an I/O error occurs.
-     * @implSpec Default implementation invokes {@link #append(DatagramPacket) set(packet)} with a
-     * datagram packet of {@value #BYTES}-long data array, and
+     * @implSpec Default implementation invokes {@link #append(DatagramPacket) append(packet)} with
+     * a datagram packet of {@value #BYTES}-long data array, and
      * {@link DatagramSocket#send(DatagramPacket) sends} the packet through the {@code socket}.
      * @see #append(DatagramPacket)
      * @see DatagramSocket#send(DatagramPacket)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/DatagramSocket.html">java.net.DatagramSocket</a>
      */
     default <T extends DatagramSocket> T send(final T socket) throws IOException {
         if (socket == null) {
@@ -585,6 +610,8 @@ public interface HelloWorld {
      * output stream.
      * @see Socket#getOutputStream()
      * @see #write(OutputStream)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/Socket.html">java.net.Socket</a>
      */
     default <T extends Socket> T send(final T socket) throws IOException {
         if (socket == null) {
@@ -610,8 +637,8 @@ public interface HelloWorld {
      *
      * @param <T>        url connection type parameter
      * @param connection the url connection through which bytes are sent.
-     * @return the given {@code socket}.
-     * @throws NullPointerException if {@code socket} is {@code null}.
+     * @return the given {@code connection}.
+     * @throws NullPointerException if {@code connection} is {@code null}.
      * @throws IOException          if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #write(OutputStream)} method with
      * {@link URLConnection#getOutputStream() connection.outputStream}, and returns the
@@ -620,6 +647,8 @@ public interface HelloWorld {
      * {@code connection}'s output stream.
      * @see URLConnection#getOutputStream()
      * @see #write(OutputStream)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/URLConnection.html">java.net.URLConnection</a>
      */
     default <T extends URLConnection> T write(final T connection) throws IOException {
         if (connection == null) {
@@ -650,6 +679,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see HttpRequest.Builder#method(String, HttpRequest.BodyPublisher)
      * @see HttpRequest.BodyPublishers#ofByteArray(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">java.net.http.HttpRequest.Builder</a>
      */
     default <T extends HttpRequest.Builder> T method(final T builder, final String method) {
         Objects.requireNonNull(builder, "builder is null");
@@ -734,6 +765,8 @@ public interface HelloWorld {
      * @see ByteBuffer#position(int)
      * @see #set(byte[], int)
      * @see ByteBuffer#put(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/ByteBuffer.html">java.nio.ByteBuffer</a>
      */
     default <T extends ByteBuffer> T put(final T buffer) {
         if (Objects.requireNonNull(buffer, "buffer is null").remaining() < BYTES) {
@@ -769,7 +802,7 @@ public interface HelloWorld {
      *}
      *
      * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
+     * @param channel the writable byte channel to which bytes are written.
      * @return the given {@code channel}.
      * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws IOException          if an I/O error occurs.
@@ -782,6 +815,8 @@ public interface HelloWorld {
      * @see ByteBuffer#flip()
      * @see ByteBuffer#hasRemaining()
      * @see WritableByteChannel#write(ByteBuffer)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/channels/WritableByteChannel.html">java.nio.channels.WritableByteChannel</a>
      */
     default <T extends WritableByteChannel> T write(final T channel) throws IOException {
         Objects.requireNonNull(channel, "channel is null");
@@ -838,6 +873,8 @@ public interface HelloWorld {
      * @see #send(DatagramSocket, SocketAddress)
      * @see #put(ByteBuffer)
      * @see DatagramChannel#send(ByteBuffer, SocketAddress)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/channels/DatagramChannel.html">java.nio.channels.DatagramChannel</a>
      */
     default <T extends DatagramChannel> T send(final T channel, final SocketAddress target)
             throws IOException {
@@ -889,6 +926,8 @@ public interface HelloWorld {
      * @see DatagramSocket#getChannel()
      * @see #send(DatagramSocket)
      * @see #write(WritableByteChannel)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/channels/DatagramChannel.html">java.nio.channels.DatagramChannel</a>
      */
     default <T extends DatagramChannel> T send(final T channel) throws IOException {
         if (!Objects.requireNonNull(channel, "channel is null").isConnected()) {
@@ -907,8 +946,9 @@ public interface HelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified channel.
      *
      * @param <T>     channel type parameter
-     * @param channel the channel to which bytes are written.
+     * @param channel the asynchronous byte channel to which bytes are written.
      * @return the given {@code channel}.
+     * @throws NullPointerException if {@code channel} is {@code null}.
      * @throws InterruptedException if interrupted while executing.
      * @throws ExecutionException   if failed while writing.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
@@ -919,6 +959,8 @@ public interface HelloWorld {
      * method on {@code channel} with the {@code buffer}.
      * @see #put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/channels/AsynchronousByteChannel.html">java.nio.channels.AsynchronousByteChannel</a>
      */
     default <T extends AsynchronousByteChannel> T write(final T channel)
             throws InterruptedException, ExecutionException {
@@ -969,8 +1011,10 @@ public interface HelloWorld {
      * @param channel  the asynchronous file channel to which bytes are written.
      * @param position the file position at which the transfer is to begin; must be non-negative.
      * @return the given {@code channel}.
-     * @throws InterruptedException if interrupted while executing.
-     * @throws ExecutionException   if failed to write bytes.
+     * @throws NullPointerException     if {@code channel} is {@code null}.
+     * @throws IllegalArgumentException if {@code position} is negative.
+     * @throws InterruptedException     if interrupted while executing.
+     * @throws ExecutionException       if failed to write bytes.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
      * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel},
      * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
@@ -979,6 +1023,8 @@ public interface HelloWorld {
      * method with the {@code buffer} and {@code position} adjusted by the previous result.
      * @see #put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/channels/AsynchronousFileChannel.html">java.nio.channels.AsynchronousFileChannel</a>
      */
     default <T extends AsynchronousFileChannel> T write(final T channel, long position)
             throws InterruptedException, ExecutionException {
@@ -1031,6 +1077,8 @@ public interface HelloWorld {
      * @see <a
      * href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.20.3">14.20.3.
      * try-with-resources</a> (The Java® Language Specification)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Path.html">java.nio.file.Path</a>
      */
     default <T extends Path> T append(final T path) throws IOException {
         Objects.requireNonNull(path, "path is null");
@@ -1059,6 +1107,8 @@ public interface HelloWorld {
      * with the array, and returns the {@code digest}.
      * @see #set(byte[])
      * @see MessageDigest#update(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
      */
     default <T extends MessageDigest> T update(final T digest) {
         Objects.requireNonNull(digest, "digest is null");
@@ -1081,6 +1131,8 @@ public interface HelloWorld {
      * with the array.
      * @see #set(byte[])
      * @see Signature#update(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
      */
     default <T extends Signature> T update(final T signature) throws SignatureException {
         Objects.requireNonNull(signature, "signature is null");
@@ -1104,8 +1156,8 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL statement; if a database access error
-     *                                  occurs; or if this method is called on a closed
+     *                                  marker in the SQL statement, if a database access error
+     *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes
@@ -1115,6 +1167,8 @@ public interface HelloWorld {
      * {@code preparedStatement}.
      * @see #set(byte[])
      * @see PreparedStatement#setAsciiStream(int, InputStream)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
      */
     default <T extends PreparedStatement> T setAsciiStream(final T preparedStatement,
                                                            final int parameterIndex)
@@ -1143,8 +1197,8 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL statement; if a database access error
-     *                                  occurs; or if this method is called on a closed
+     *                                  marker in the SQL statement, if a database access error
+     *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes
@@ -1154,6 +1208,8 @@ public interface HelloWorld {
      * {@code preparedStatement}.
      * @see #set(byte[])
      * @see PreparedStatement#setBinaryStream(int, InputStream)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
      */
     default <T extends PreparedStatement> T setBinaryStream(final T preparedStatement,
                                                             final int parameterIndex)
@@ -1181,8 +1237,8 @@ public interface HelloWorld {
      * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL statement; if a database access error
-     *                                  occurs; or if this method is called on a closed
+     *                                  marker in the SQL statement, if a database access error
+     *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, invokes
@@ -1191,6 +1247,8 @@ public interface HelloWorld {
      * {@code preparedStatement}.
      * @see #set(byte[])
      * @see PreparedStatement#setBytes(int, byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
      */
     default <T extends PreparedStatement> T setBytes(final T preparedStatement,
                                                      final int parameterIndex)
@@ -1217,8 +1275,8 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL statement; if a database access error
-     *                                  occurs; or if this method is called on a closed
+     *                                  marker in the SQL statement, if a database access error
+     *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, wraps the array in an {@link InputStreamReader} decoded as
@@ -1228,6 +1286,8 @@ public interface HelloWorld {
      * reader, {@link Reader#close() closes} the reader, and returns the {@code preparedStatement}.
      * @see #set(byte[])
      * @see PreparedStatement#setCharacterStream(int, Reader)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
      */
     default <T extends PreparedStatement> T setCharacterStream(final T preparedStatement,
                                                                final int parameterIndex)
@@ -1266,6 +1326,8 @@ public interface HelloWorld {
      * returns the {@code blob}.
      * @see #write(OutputStream)
      * @see Blob#setBinaryStream(long)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Blob.html">java.sql.Blob</a>
      */
     default <T extends Blob> T setBinaryStream(final T blob, final long pos)
             throws SQLException, IOException {
@@ -1298,6 +1360,8 @@ public interface HelloWorld {
      * the {@code pos} and the array, and returns the {@code blob}.
      * @see #set(byte[])
      * @see Blob#setBytes(long, byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Blob.html">java.sql.Blob</a>
      */
     default <T extends Blob> T setBytes(final T blob, final long pos) throws SQLException {
         Objects.requireNonNull(blob, "blob is null");
@@ -1330,6 +1394,8 @@ public interface HelloWorld {
      * returns the {@code clob}.
      * @see #write(OutputStream)
      * @see Clob#setAsciiStream(long)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
      */
     default <T extends Clob> T setAsciiStream(final T clob, final long pos)
             throws SQLException, IOException {
@@ -1364,6 +1430,8 @@ public interface HelloWorld {
      * {@code clob}.
      * @see #write(Writer)
      * @see Clob#setCharacterStream(long)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
      */
     default <T extends Clob> T setCharacterStream(final T clob, final long pos)
             throws SQLException, IOException {
@@ -1397,6 +1465,8 @@ public interface HelloWorld {
      * with the {@code pos} and the string, and returns the {@code clob}.
      * @see #set(byte[])
      * @see Clob#setString(long, String)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
      */
     default <T extends Clob> T setString(final T clob, final long pos) throws SQLException {
         Objects.requireNonNull(clob, "clob is null");
@@ -1411,6 +1481,24 @@ public interface HelloWorld {
     }
 
     // ----------------------------------------------------------------------------------- java.text
+
+    /**
+     * Sets a string, decoded from the <a href="#hello-world-bytes">hello-world-bytes</a>, as the
+     * text to be scanned by the specified break iterator.
+     *
+     * @param iterator the break iterator whose text is set.
+     * @param <T>      break iterator type parameter
+     * @return the given {@code iterator}.
+     * @throws NullPointerException if {@code iterator} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, decodes the array as a
+     * {@link java.nio.charset.StandardCharsets#UTF_8 UTF-8} string, and invokes
+     * {@link BreakIterator#setText(String)} method, on the {@code iterator}, with the string.
+     * @see #set(byte[])
+     * @see BreakIterator#setText(String)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/BreakIterator.html">java.text.BreakIterator</a>
+     */
     default <T extends BreakIterator> T setText(final T iterator) {
         Objects.requireNonNull(iterator, "iterator is null");
         final var array = new byte[BYTES];
@@ -1440,10 +1528,12 @@ public interface HelloWorld {
      * @param index  the starting index in the bit set.
      * @param <T>    bit set type parameter
      * @return the given {@code bitset}.
-     * @throws NullPointerException     when the {@code bitset} is {@code null}.
-     * @throws IllegalArgumentException when the {@code index} is negative.
+     * @throws NullPointerException     if the {@code bitset} is {@code null}.
+     * @throws IllegalArgumentException if the {@code index} is negative.
      * @implSpec The default implementation invokes the {@link #set(byte[]) set(array)} method, and
      * sets each bit of the result into the given {@code bitset} in little-endian bit order.
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/BitSet.html">java.util.BitSet</a>
      */
     default <T extends BitSet> T set(final T bitset, int index) {
         if (bitset == null) {
@@ -1481,6 +1571,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see Function#apply(Object)
      * @see SequencedCollection#addLast(Object)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/SequencedCollection.html">java.util.SequencedCollection</a>
      */
     default <T extends SequencedCollection<? super U>, U>
     T add(final T collection, final Function<? super Byte, ? extends U> mapper) {
@@ -1520,6 +1612,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see Function#apply(Object)
      * @see SequencedMap#putLast(Object, Object)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/SequencedMap.html">java.util.SequencedMap</a>
      */
     default <T extends SequencedMap<? super K, ? super V>, K, V> T put(
             final T map,
@@ -1568,6 +1662,8 @@ public interface HelloWorld {
      * @see #set(byte[])
      * @see Function#apply(Object)
      * @see Consumer#accept(Object)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html">java.util.function.Consumer</a>
      */
     default <T extends Consumer<? super U>, U>
     T accept(final T consumer, final Function<? super Byte, ? extends U> mapper) {
@@ -1643,6 +1739,8 @@ public interface HelloWorld {
      * the array, and returns the {@code checksum}.
      * @see #set(byte[])
      * @see Checksum#update(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/Checksum.html">java.util.zip.Checksum</a>
      */
     default <T extends Checksum> T update(final T checksum) {
         Objects.requireNonNull(checksum, "checksum is null");
@@ -1665,6 +1763,8 @@ public interface HelloWorld {
      * of the {@code deflater}, and returns the {@code deflater}.
      * @see #set(byte[])
      * @see Deflater#setInput(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/zip/Deflater.html">java.util.zip.Deflater</a>
      */
     default <T extends Deflater> T setInput(final T deflater) {
         Objects.requireNonNull(deflater, "deflater is null");
@@ -1677,33 +1777,99 @@ public interface HelloWorld {
     // -------------------------------------------------------------------------------- javax.crypto
 
     /**
-     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>, and
-     * accepts the result, which may be {@code null}, to the specified consumer.
+     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>,
+     * writing the result into the specified output array starting at the specified offset, and
+     * accepts the number of bytes stored to the specified consumer.
      *
      * @param cipher   the cipher to be updated.
-     * @param consumer the consumer to accept the result of
-     *                 {@link Cipher#update(byte[]) cipher.update(array)}, again, which may be
-     *                 {@code null}.
+     * @param output   the output array into which the result is written.
+     * @param offset   the offset in {@code output} at which the result is stored.
+     * @param consumer the consumer to accept the number of bytes stored in {@code output}.
      * @param <T>      cipher type parameter
      * @return the given {@code cipher}.
      * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
+     * @throws ShortBufferException if {@code output} is too small to hold the result.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
-     * of {@value #BYTES} bytes, {@link Cipher#update(byte[]) updates} the {@code cipher} with the
-     * array, and {@link Consumer#accept(Object) accepts} the result to the {@code consumer}.
+     * of {@value #BYTES} bytes, invokes
+     * {@link Cipher#update(byte[], int, int, byte[], int) cipher.update(array, 0, BYTES, output,
+     * outputOffset)} method on the {@code cipher}, and {@link IntConsumer#accept(int) accepts} the
+     * result to the {@code consumer}.
      * @see #set(byte[])
-     * @see Cipher#update(byte[])
-     * @see Consumer#accept(Object)
+     * @see Cipher#update(byte[], int, int, byte[], int)
+     * @see IntConsumer#accept(int)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
      */
-    default <T extends Cipher>
-    T update(final T cipher, final Consumer<? super byte[]> consumer) {
+    default <T extends Cipher> T update(final T cipher, final byte[] output, final int offset,
+                                        final IntConsumer consumer)
+            throws ShortBufferException {
         Objects.requireNonNull(cipher, "cipher is null");
         Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
         set(array);
-        final var result = cipher.update(array);
+        final var rsult = cipher.update(array, 0, BYTES, output, offset);
+        consumer.accept(rsult);
+        return cipher;
+    }
+
+    /**
+     * Updates the specified cipher with the <a href="#hello-world-bytes">hello-world-bytes</a>,
+     * writing the result into the specified output buffer, and accepts the number of bytes stored
+     * to the specified consumer.
+     *
+     * @param cipher   the cipher to be updated.
+     * @param output   the output buffer into which the result is written.
+     * @param consumer the consumer to accept the number of bytes stored in {@code output}.
+     * @param <T>      cipher type parameter
+     * @return the given {@code cipher}.
+     * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
+     * @throws ShortBufferException if {@code output} does not have enough remaining bytes to hold
+     *                              the result.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
+     * byte buffer of {@value #BYTES} bytes, {@link ByteBuffer#flip() flips} it, invokes
+     * {@link Cipher#update(ByteBuffer, ByteBuffer) cipher.update(buffer, output)} method on the
+     * {@code cipher}, and {@link IntConsumer#accept(int) accepts} the result to the
+     * {@code consumer}.
+     * @see #put(ByteBuffer)
+     * @see Cipher#update(ByteBuffer, ByteBuffer)
+     * @see IntConsumer#accept(int)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+     */
+    default <T extends Cipher> T update(final T cipher, final ByteBuffer output,
+                                        final IntConsumer consumer)
+            throws ShortBufferException {
+        Objects.requireNonNull(cipher, "cipher is null");
+        Objects.requireNonNull(consumer, "consumer is null");
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        final var result = cipher.update(buffer, output);
         consumer.accept(result);
+        return cipher;
+    }
+
+    /**
+     * Updates the AAD (Additional Authenticated Data) of the specified cipher with the
+     * <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param cipher the cipher whose AAD is to be updated.
+     * @param <T>    cipher type parameter
+     * @return the given {@code cipher}.
+     * @throws NullPointerException if {@code cipher} is {@code null}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and invokes {@link Cipher#updateAAD(byte[])} method, on the
+     * {@code cipher}, with the array.
+     * @see #set(byte[])
+     * @see Cipher#updateAAD(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+     */
+    default <T extends Cipher> T updateAAD(final T cipher) {
+        Objects.requireNonNull(cipher, "cipher is null");
+        final var array = new byte[BYTES];
+        set(array);
+        cipher.updateAAD(array);
         return cipher;
     }
 

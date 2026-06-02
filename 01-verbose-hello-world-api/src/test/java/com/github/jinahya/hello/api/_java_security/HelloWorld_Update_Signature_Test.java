@@ -55,12 +55,12 @@ class HelloWorld_Update_Signature_Test
      */
     @DisplayName("should throw a <NullPointerException> when the <signature> argument is <null>")
     @Test
-    void _ThrowNullPointerException_DigestIsNull() {
+    void _ThrowNullPointerException_SignatureIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final MessageDigest digest = null;
+        final Signature signature = null;
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(NullPointerException.class, () -> service.update(digest));
+        assertThrows(NullPointerException.class, () -> service.update(signature));
     }
 
     /**

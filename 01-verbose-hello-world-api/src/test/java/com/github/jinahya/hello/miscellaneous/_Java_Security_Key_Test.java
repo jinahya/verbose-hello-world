@@ -31,7 +31,8 @@ class _Java_Security_Key_Test {
     static void __(final Key key) {
         final var encoded = key.getEncoded();
         System.out.printf(
-                "%16s %10s %10d %s%n",
+                "%20s %16s %10s %10d %s%n",
+                key.getClass().getSimpleName(),
                 key.getAlgorithm(),
                 key.getFormat(),
                 encoded.length,

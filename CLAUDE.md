@@ -6,6 +6,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A verbose "hello, world" project whose sole purpose is to explore and learn about (almost) all Java I/O related APIs, using the simplest possible payload: the 12-byte string `"hello, world"`. The API module's `HelloWorld` interface provides default method implementations covering every major I/O pathway in the JDK (`java.io`, `java.nio`, `java.net`, async channels, reactive streams, etc.). The lib and app modules additionally demonstrate DI/CDI integration patterns (Dagger, Guice, HK2, Spring, OpenWebBeans, Weld).
 
+## Commented-out code is intentional (book source)
+
+This is the source code for a teaching book. `HelloWorld.java` and many test files deliberately ship with parts of method bodies commented out — each chapter progressively un-comments lines as the reader learns the corresponding API.
+
+**Commented-out lines in `HelloWorld.java` method bodies are NOT bugs.** Do NOT:
+
+- propose uncommenting them as "fixes"
+- surface them in audits as "no-op" / "cascading bug" / "missing impl" / "double-feed"
+- write contract tests that assume the commented body executes
+
+Examples that have repeatedly tripped audits:
+- `put(ByteBuffer)` L745–746 (`set(array, index);` and `buffer.position(buffer.position() + BYTES);` commented)
+- `put(ByteBuffer)` L750 (`buffer.put(array);` commented)
+- `write(OutputStream)` L291–292 (`set(array);` / `stream.write(array);` commented)
+- `send(DatagramChannel)` / `send(DatagramChannel, SocketAddress)` non-blocking branches
+
+If a commented-out fragment is itself broken (typo, wrong identifier, syntactic), the **fragment** may still be worth flagging — but the *fact that it is commented out* is never the bug.
+
+When auditing or analyzing `HelloWorld.java`, treat **only the active (executed) code** as the specification. If you need to analyze "what happens when the reader uncomments these", say so explicitly and treat that as a separate, scoped task.
+
 ## Build Commands
 
 ```bash

@@ -336,6 +336,10 @@ public final class HelloWorld__TestUtils {
     }
 
     // ------------------------------------------------------------------------------------- java.io
+    public static InputStream hello_world_inputstream() {
+        return new ByteArrayInputStream(hello_world_byte_array());
+    }
+
     public static void closeSilently(final Closeable closeable) {
         try {
             closeable.close();

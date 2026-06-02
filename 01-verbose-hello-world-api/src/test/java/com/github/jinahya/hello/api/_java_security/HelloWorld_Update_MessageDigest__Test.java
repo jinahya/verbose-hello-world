@@ -23,6 +23,8 @@ package com.github.jinahya.hello.api._java_security;
 import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.apache.commons.io.*;
+import org.bouncycastle.crypto.digests.*;
 import org.bouncycastle.jce.provider.*;
 import org.jspecify.annotations.*;
 import org.junit.jupiter.api.*;
@@ -34,6 +36,9 @@ import java.io.*;
 import java.nio.charset.*;
 import java.security.*;
 import java.util.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드를 실제 JDK
@@ -73,8 +78,9 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      * 스텁한다. 통합 테스트에서는 mock 동작이 아닌 진짜 12바이트가 다이제스트에 흘러 들어가야 의미 있는 해시 값이 나오기 때문이다.
      */
     @BeforeEach
-    void __() {
-        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
+    void __stubService() throws IOException {
+        write_outputstream_writes_hello_world_bytes(service());
+        set_array_sets_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -87,30 +93,24 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      * @param algorithm 알고리즘 이름. ({@code "SHA-256"} 등.)
      * @param provider  공급자 이름. {@code null} 이면 기본 공급자({@code SUN}) 를 쓴다.
      */
-    void __(final String algorithm, final @Nullable String provider) {
-        final var digest = Optional.ofNullable(provider)
-                .map(v -> {
-                    try {
-                        return MessageDigest.getInstance(algorithm, v);
-                    } catch (final NoSuchAlgorithmException nsae) {
-                        throw new RuntimeException(nsae);
-                    } catch (final NoSuchProviderException nspe) {
-                        throw new RuntimeException(nspe);
-                    }
-                })
-                .orElseGet(() -> {
-                    try {
-                        return MessageDigest.getInstance(algorithm);
-                    } catch (final NoSuchAlgorithmException nsae) {
-                        throw new RuntimeException(nsae);
-                    }
-                });
+    void __(final String algorithm, final @Nullable String provider)
+            throws GeneralSecurityException {
+        final var digest = provider != null
+                           ? MessageDigest.getInstance(algorithm, provider)
+                           : MessageDigest.getInstance(algorithm);
         final var digested = service().update(digest).digest();
-        System.out.printf("%10s %10s: %s (%d)%n", digest.getProvider().getName(), algorithm,
-                          HexFormat.of().formatHex(digested), digested.length);
+        final var encoded = Base64.getEncoder().encodeToString(digested);
+        System.out.printf("%12s %10s %d %s%n", algorithm, digest.getProvider().getName(),
+                          digested.length << 3, encoded);
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("should update a <real digest> without specifying provider")
+    @MethodSource({"algorithms"})
+    @ParameterizedTest
+    void __(final String algorithm) throws GeneralSecurityException {
+        __(algorithm, null);
+    }
 
     /**
      * 기본 공급자({@code SUN}) 로 각 알고리즘에 대해 다이제스트 결과를 얻는지 확인한다.
@@ -120,8 +120,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     @DisplayName("should update a <real digest> through the <SUN> provider")
     @MethodSource({"algorithms"})
     @ParameterizedTest
-    void __SUN(final String algorithm) {
-        __(algorithm, null);
+    void __SUN(final String algorithm) throws GeneralSecurityException {
+        __(algorithm, "SUN");
     }
 
     /**
@@ -132,11 +132,69 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     @DisplayName("should update a <real digest> through the <BouncyCastle> provider")
     @MethodSource({"algorithms"})
     @ParameterizedTest
-    void __BC(final String algorithm) {
+    void __BC(final String algorithm) throws GeneralSecurityException {
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
         __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
+    }
+
+    @ValueSource(strings = {
+            "SHA3-224",
+            "SHA3-256",
+            "SHA3-384",
+            "SHA3-512"
+    })
+    @ParameterizedTest
+    void __SHA3(final String algorithm) throws GeneralSecurityException {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+        __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
+    }
+
+    @Nested
+    class SHAKE_Test {
+
+        @ValueSource(strings = {
+                "SHAKE128-256",
+                "SHAKE256-512"
+        })
+        @ParameterizedTest
+        void __SHAKE(final String algorithm) throws GeneralSecurityException {
+            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
+            __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
+        }
+
+        @ValueSource(ints = {128, 256})
+        @ParameterizedTest
+        void __SHAKE_prefix(final int bitStrength) throws GeneralSecurityException {
+            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
+            // --------------------------------------------------- long output via JCA MessageDigest
+            final var fixedName = "SHAKE" + bitStrength + "-" + (bitStrength << 1);
+            final var longBytes = service().update(MessageDigest.getInstance(
+                    fixedName, BouncyCastleProvider.PROVIDER_NAME)).digest();
+            // --------------------------------------------------- short output via BC low-level XOF
+            final var array = new byte[HelloWorld.BYTES];
+            service().set(array);
+            final var xof = new SHAKEDigest(bitStrength);
+            xof.update(array, 0, array.length);
+            final var shortLen = longBytes.length >> 1;
+            final var shortBytes = new byte[shortLen];
+            xof.doOutput(shortBytes, 0, shortLen);
+            // -------------------------------------------------------------------------------- then
+            assertArrayEquals(shortBytes, Arrays.copyOf(longBytes, shortLen));
+            final var shortName = "SHAKE" + bitStrength + "-" + bitStrength;
+            System.out.printf("%12s %10s %d %s%n", shortName, "lw", shortLen << 3,
+                              Base64.getEncoder().encodeToString(shortBytes));
+            System.out.printf("%12s %10s %d %s%n", fixedName,
+                              BouncyCastleProvider.PROVIDER_NAME, longBytes.length << 3,
+                              Base64.getEncoder().encodeToString(longBytes));
+        }
     }
 
     /**
@@ -155,8 +213,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         for (var i = 0; i < ha.length; i++) {
             diff += Integer.bitCount((ha[i] ^ hb[i]) & 0xFF);
         }
-        System.out.printf("hello, world: %s%n", HexFormat.of().formatHex(ha));
-        System.out.printf("hello, worle: %s%n", HexFormat.of().formatHex(hb));
+        System.out.printf("hello, world: %s%n", Base64.getEncoder().encodeToString(ha));
+        System.out.printf("hello, worle: %s%n", Base64.getEncoder().encodeToString(hb));
         System.out.printf("flipped bits: %d / %d (%.1f%%)%n",
                           diff, ha.length * 8, diff * 100.0 / (ha.length * 8));
     }
@@ -178,6 +236,29 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     void rainbow_attack__(final String password) throws NoSuchAlgorithmException {
         final var digested = MessageDigest.getInstance("SHA-1")
                 .digest(password.getBytes(StandardCharsets.US_ASCII));
-        System.out.printf("%10s %s%n", password, HexFormat.of().formatHex(digested));
+        System.out.printf("%10s %s%n", password, Base64.getEncoder().encodeToString(digested));
+    }
+
+    @Nested
+    class DigestOutputStream_Test {
+
+        static List<String> algorithms() {
+            return HelloWorld_Update_MessageDigest__Test.algorithms();
+        }
+
+        @MethodSource({"algorithms"})
+        @ParameterizedTest
+        void __(final String algorithm) throws IOException, NoSuchAlgorithmException {
+            try (var dos = new DigestOutputStream(OutputStream.nullOutputStream(),
+                                                  MessageDigest.getInstance(algorithm))) {
+                service().write(dos).flush();
+                try (var dis = new DigestInputStream(hello_world_inputstream(),
+                                                     MessageDigest.getInstance(algorithm))) {
+                    IOUtils.consume(dis);
+                    assertArrayEquals(dos.getMessageDigest().digest(),
+                                      dis.getMessageDigest().digest());
+                }
+            }
+        }
     }
 }

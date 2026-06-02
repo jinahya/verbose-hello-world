@@ -24,10 +24,12 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.*;
 import org.mockito.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;
+import java.nio.file.*;
 import java.security.spec.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -51,8 +53,10 @@ import java.util.concurrent.*;
 @DisplayName("update(mac)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Update_Mac__Test
-        extends HelloWorld__Test {
+class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
+
+    @TempDir
+    private static Path temDir;
 
     /**
      * Prints a one-line summary of a MAC tag or derived hash &mdash; algorithm, optional parameter,
