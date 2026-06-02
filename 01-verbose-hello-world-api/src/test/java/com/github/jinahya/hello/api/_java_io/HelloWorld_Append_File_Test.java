@@ -95,45 +95,4 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
             assertSame(file, result);
         }
     }
-
-    @DisplayName("should increase the <file>'s length by <12> through a real <file>")
-    @畵蛇添足("testing with an existing file doesn't add any value")
-    @Test
-    void _添足_畵蛇(@TempDir final File dir)
-            throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        // stub: <service.append(file)> will append the <12> bytes, and will return the <file>
-        doAnswer(i -> {
-            var file = i.getArgument(0, File.class);
-            try (var stream = new FileOutputStream(file, true)) {
-                stream.write(new byte[HelloWorld.BYTES]);
-                stream.flush();
-            }
-            return file;
-        })
-                .when(service)
-                .append(ArgumentMatchers.<File>argThat(File::isFile));
-        // prepare: crate a temporary file, and write some bytes
-        final var file = File.createTempFile("tmp", null, dir);
-        try (var f = new RandomAccessFile(file, "rw")) {
-            f.seek(ThreadLocalRandom.current().nextInt(128));
-            f.write(ThreadLocalRandom.current().nextInt(256));
-            f.getFD().sync();
-        }
-        // prepare: mark <file>'s current <length>
-        final var length = file.length();
-        log.debug("length: {}", length);
-        // ------------------------------------------------------------------------------------ when
-        final var result = service.append(file);
-        log.debug("length: {}", file.length());
-        // ------------------------------------------------------------------------------------ then
-        // assert: <file>'s <length> increased by <12>
-        assertEquals(
-                length + HelloWorld.BYTES,
-                file.length()
-        );
-        // assert: <result> is same as <file>
-        assertSame(file, result);
-    }
 }

@@ -44,14 +44,6 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_DatagramPacket_Test extends HelloWorld__Test {
 
-    static {
-        final var pin = new Runnable[] {
-                () -> verify(null),
-                () -> times(0),
-                () -> assertEquals(0, 1),
-                () -> assertSame(0, 1)};
-    }
-
     /**
      * Verifies that the {@link HelloWorld#append(DatagramPacket) append(packet)} method throws a
      * {@link NullPointerException} when the {@code packet} argument is {@code null}.

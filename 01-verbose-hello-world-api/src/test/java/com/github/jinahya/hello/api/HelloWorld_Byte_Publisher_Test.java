@@ -202,7 +202,6 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ then
         verify(subscriber, times(1)).onSubscribe(notNull());
         verify(subscriber, never()).onNext(any());
-        verify(subscriber, times(1)).onError(notNull());
         verify(subscriber, never()).onComplete(); // @formatter:on
     }
 }

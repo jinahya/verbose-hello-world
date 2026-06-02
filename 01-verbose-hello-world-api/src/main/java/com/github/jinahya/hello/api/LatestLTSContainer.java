@@ -22,9 +22,19 @@ package com.github.jinahya.hello.api;
 
 import java.lang.annotation.*;
 
+/**
+ * The {@link Repeatable} container annotation that holds multiple {@link LatestLTS} markers on the
+ * same element.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see LatestLTS
+ */
 @Documented
 @SuppressWarnings({"UnicodeInCode"})
 public @interface LatestLTSContainer {
 
+    /**
+     * @return the contained {@link LatestLTS} markers; never {@code null}.
+     */
     LatestLTS[] value();
 }
