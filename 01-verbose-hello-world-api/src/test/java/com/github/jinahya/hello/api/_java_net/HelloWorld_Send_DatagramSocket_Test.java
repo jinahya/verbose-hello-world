@@ -69,7 +69,7 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var socket = mock(DatagramSocket.class);
-        when(socket.isConnected()).thenReturn(false);
+        doReturn(false).when(socket).isConnected();
         // ------------------------------------------------------------------------------- when/then
         assertThrows(IllegalArgumentException.class, () -> service.send(socket));
     }
@@ -92,9 +92,9 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
         doAnswer(returnsFirstArg()).when(service)
                 .send(ArgumentMatchers.<DatagramSocket>any(), any());
         final var socket = mock(DatagramSocket.class);
-        when(socket.isConnected()).thenReturn(true);
+        doReturn(true).when(socket).isConnected();
         final var target = mock(SocketAddress.class);
-        when(socket.getRemoteSocketAddress()).thenReturn(target);
+        doReturn(target).when(socket).getRemoteSocketAddress();
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then

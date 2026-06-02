@@ -91,9 +91,9 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
         final var service = set_array_sets_hello_world_bytes(service());
         final var map = mock(SequencedMap.class);
         final var keyMapper = mock(Function.class);
-        when(keyMapper.apply(any())).thenAnswer(i -> (byte) ((Byte) i.getArgument(0) + 1));
+        doAnswer(i -> (byte) ((Byte) i.getArgument(0) + 1)).when(keyMapper).apply(any());
         final var valueMapper = mock(Function.class);
-        when(valueMapper.apply(any())).thenAnswer(i -> (byte) ((Byte) i.getArgument(0) + 2));
+        doAnswer(i -> (byte) ((Byte) i.getArgument(0) + 2)).when(valueMapper).apply(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(map, keyMapper, valueMapper);
         // ------------------------------------------------------------------------------------ then

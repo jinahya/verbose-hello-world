@@ -24,7 +24,6 @@ import lombok.extern.slf4j.*;
 
 import java.security.*;
 import java.security.spec.*;
-import java.util.*;
 
 /**
  * .
@@ -40,33 +39,7 @@ import java.util.*;
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_KeyPair_TestUtils {
 
-    public static final Map<String, List<Object>> KEY_PAIR_ALGORITHMS = Map.of(
-            "DiffieHellman", List.<Object>of(1024, 2048, 3072, 4096),
-            "DSA", List.<Object>of(1024, 2048),
-            "EC", List.<Object>of("secp256r1", "secp384r1"),
-            "RSA", List.<Object>of(1024, 2048, 3072, 4096),
-            "RSASSA-PSS", List.<Object>of(2048, 3072, 4096),
-            "X25519", List.of()
-    );
 
-    public static KeyPair generateKeyPair(final String algorithm) throws NoSuchAlgorithmException {
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        return generator.generateKeyPair();
-    }
-
-    public static KeyPair generateKeyPair(final String algorithm, final int keysize)
-            throws NoSuchAlgorithmException {
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        generator.initialize(keysize);
-        return generator.generateKeyPair();
-    }
-
-    public static KeyPair generateKeyPair(final String algorithm, final AlgorithmParameterSpec spec)
-            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        final var generator = KeyPairGenerator.getInstance(algorithm);
-        generator.initialize(spec);
-        return generator.generateKeyPair();
-    }
 
     private _Java_Security_KeyPair_TestUtils() {
         throw new AssertionError("instantiation is not allowed");

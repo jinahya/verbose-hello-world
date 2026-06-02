@@ -72,11 +72,11 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         final var service = service();
         doAnswer(returnsFirstArg()).when(service).<DatagramSocket>send(any());
         final var channel = mock(DatagramChannel.class);
-        when(channel.isConnected()).thenReturn(true);
-        when(channel.isBlocking()).thenReturn(true);
+        doReturn(true).when(channel).isConnected();
+        doReturn(true).when(channel).isBlocking();
         final var socket = mock(DatagramSocket.class);
-        when(channel.socket()).thenReturn(socket);
-        when(socket.getChannel()).thenReturn(channel);
+        doReturn(socket).when(channel).socket();
+        doReturn(channel).when(socket).getChannel();
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(channel);
         // ------------------------------------------------------------------------------------ then
@@ -90,8 +90,8 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         // ----------------------------------------------------------------------------------- given
         final var service = write_writablebytechannel_returns_channel(service());
         final var channel = mock(DatagramChannel.class);
-        when(channel.isConnected()).thenReturn(true);
-        when(channel.isBlocking()).thenReturn(false);
+        doReturn(true).when(channel).isConnected();
+        doReturn(false).when(channel).isBlocking();
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(channel);
         // ------------------------------------------------------------------------------------ then

@@ -61,7 +61,7 @@ class HelloWorld_Append_Path__Test extends HelloWorld__Test {
         try (var channel = FileChannel.open(path, StandardOpenOption.READ)) {
             channel.position(size);
             final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-            while (buffer.hasRemaining() ) {
+            while (buffer.hasRemaining()) {
                 channel.read(buffer);
             }
             assertEquals(HELLO_WORLD_STRING, US_ASCII.decode(buffer.flip()).toString());

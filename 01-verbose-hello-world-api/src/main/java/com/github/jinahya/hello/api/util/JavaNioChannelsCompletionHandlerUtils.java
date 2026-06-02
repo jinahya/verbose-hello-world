@@ -33,18 +33,18 @@ import java.util.function.*;
 public final class JavaNioChannelsCompletionHandlerUtils {
 
     /**
-     * Adapts two {@link BiConsumer}s into a {@link CompletionHandler}: the {@code completionConsumer}
-     * is invoked on {@link CompletionHandler#completed(Object, Object) completed(...)}, the
+     * Adapts two {@link BiConsumer}s into a {@link CompletionHandler}: the
+     * {@code completionConsumer} is invoked on
+     * {@link CompletionHandler#completed(Object, Object) completed(...)}, the
      * {@code failureConsumer} on {@link CompletionHandler#failed(Throwable, Object) failed(...)}.
      *
-     * @param completionConsumer the consumer invoked with the result and attachment on a
-     *                           successful completion; must not be {@code null}.
+     * @param completionConsumer the consumer invoked with the result and attachment on a successful
+     *                           completion; must not be {@code null}.
      * @param failureConsumer    the consumer invoked with the failure and attachment on an
      *                           exceptional completion; must not be {@code null}.
      * @param <V>                the result type.
      * @param <A>                the attachment type.
-     * @return a {@link CompletionHandler} that dispatches to the two consumers; never
-     * {@code null}.
+     * @return a {@link CompletionHandler} that dispatches to the two consumers; never {@code null}.
      * @throws NullPointerException if either consumer is {@code null}.
      */
     // @formatter:off

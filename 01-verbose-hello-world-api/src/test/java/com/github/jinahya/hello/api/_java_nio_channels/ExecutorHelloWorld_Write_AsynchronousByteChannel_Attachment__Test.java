@@ -21,7 +21,9 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
 
+@DisplayName("write(channel, attachment)")
 class ExecutorHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
         extends AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test<
         ExecutorHelloWorld<HelloWorld>

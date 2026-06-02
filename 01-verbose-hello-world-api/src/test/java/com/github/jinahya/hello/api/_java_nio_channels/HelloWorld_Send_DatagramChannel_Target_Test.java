@@ -77,10 +77,10 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
         final var service = service();
         doAnswer(returnsFirstArg()).when(service).<DatagramSocket>send(any(), any());
         final var channel = mock(DatagramChannel.class);
-        when(channel.isBlocking()).thenReturn(true);
+        doReturn(true).when(channel).isBlocking();
         final var socket = mock(DatagramSocket.class);
-        when(channel.socket()).thenReturn(socket);
-        when(socket.getChannel()).thenReturn(channel);
+        doReturn(socket).when(channel).socket();
+        doReturn(channel).when(socket).getChannel();
         final var target = mock(SocketAddress.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(channel, target);
@@ -97,7 +97,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
         // ----------------------------------------------------------------------------------- given
         final var service = put_buffer12_increases_buffer_position_by_12(service());
         final var channel = mock(DatagramChannel.class);
-        when(channel.isBlocking()).thenReturn(false);
+        doReturn(false).when(channel).isBlocking();
         doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
             assert src.capacity() == HelloWorld.BYTES;

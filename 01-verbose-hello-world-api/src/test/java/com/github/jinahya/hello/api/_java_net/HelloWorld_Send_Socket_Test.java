@@ -73,7 +73,7 @@ class HelloWorld_Send_Socket_Test extends HelloWorld__Test {
         doAnswer(returnsFirstArg()).when(service).write(any(OutputStream.class));
         final var socket = mock(Socket.class);
         final var stream = mock(OutputStream.class);
-        when(socket.getOutputStream()).thenReturn(stream);
+        doReturn(stream).when(socket).getOutputStream();
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket);
         // ------------------------------------------------------------------------------------ then

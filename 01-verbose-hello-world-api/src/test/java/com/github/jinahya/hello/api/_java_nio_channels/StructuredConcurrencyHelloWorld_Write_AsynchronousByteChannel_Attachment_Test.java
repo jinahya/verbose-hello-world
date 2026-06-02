@@ -21,9 +21,11 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
 
 import java.util.function.*;
 
+@DisplayName("write(channel, attachment)")
 class StructuredConcurrencyHelloWorld_Write_AsynchronousByteChannel_Attachment_Test
         extends AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

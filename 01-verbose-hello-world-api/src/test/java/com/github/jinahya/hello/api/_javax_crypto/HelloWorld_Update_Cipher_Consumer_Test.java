@@ -24,9 +24,9 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.mockito.*;
 
 import javax.crypto.*;
-import java.util.concurrent.*;
 import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
@@ -34,6 +34,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for testing {@link HelloWorld#update(Cipher, ObjIntConsumer) update(cipher, consumer)}
+ * method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ */
 @DisplayName("update(cipher, consumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -45,42 +53,45 @@ class HelloWorld_Update_Cipher_Consumer_Test extends HelloWorld__Test {
     void _ThrowNullPointerException_CipherIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var cipher = (Cipher) null;
-        final var consumer = mock(Consumer.class);
+        final Cipher cipher = null;
+        final var consumer = mock(ObjIntConsumer.class);
         // ----------------------------------------------------------------------------- when / then
         assertThrows(NullPointerException.class, () -> service.update(cipher, consumer));
     }
 
     @DisplayName("should throw a <NullPointerException> when the <consumer> argument is <null>")
     @Test
-    @SuppressWarnings("unchecked")
     void _ThrowNullPointerException_ConsumerIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var cipher = mock(Cipher.class);
-        final var consumer = (Consumer) null;
+        final ObjIntConsumer<byte[]> consumer = null;
         // ----------------------------------------------------------------------------- when / then
         assertThrows(NullPointerException.class, () -> service.update(cipher, consumer));
     }
 
     @DisplayName("""
-            should invoke <cipher.update(buffer)>, forward the result to the <consumer>,
-            and return the <cipher>""")
+            should invoke <cipher.update(array, 0, BYTES, output, 0)>,
+            forward <(output, length)> to the <consumer>, and return the <cipher>""")
     @Test
     @SuppressWarnings("unchecked")
-    void __() {
+    void __() throws ShortBufferException {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_returns_the_array(service());
         final var cipher = mock(Cipher.class);
-        final var output = ThreadLocalRandom.current().nextBoolean() ? new byte[0] : null;
-        when(cipher.update(any())).thenReturn(output);
-        final var consumer = mock(Consumer.class);
+        final var outputSize = HelloWorld.BYTES + 4;
+        doReturn(outputSize).when(cipher).getOutputSize(HelloWorld.BYTES);
+        final var bytesStored = HelloWorld.BYTES;
+        doReturn(bytesStored).when(cipher)
+                .update(any(byte[].class), anyInt(), anyInt(), any(byte[].class), anyInt());
+        final var consumer = (ObjIntConsumer<byte[]>) mock(ObjIntConsumer.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(cipher, consumer);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
-        verify(cipher).update(array);
-        verify(consumer, times(1)).accept(output);
+        verify(cipher).getOutputSize(HelloWorld.BYTES);
+        final var outputCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(consumer).accept(outputCaptor.capture(), eq(bytesStored));
+        assertEquals(outputSize, outputCaptor.getValue().length);
         assertSame(cipher, result);
     }
 }

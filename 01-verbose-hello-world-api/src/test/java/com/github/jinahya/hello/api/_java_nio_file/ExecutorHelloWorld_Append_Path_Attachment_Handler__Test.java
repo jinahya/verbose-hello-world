@@ -21,8 +21,10 @@ package com.github.jinahya.hello.api._java_nio_file;
  */
 
 import com.github.jinahya.hello.api.*;
+import org.junit.jupiter.api.*;
 
 @SuppressWarnings({"java:S101"})
+@DisplayName("append(path, attachment, handler)")
 class ExecutorHelloWorld_Append_Path_Attachment_Handler__Test
         extends AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
         ExecutorHelloWorld<HelloWorld>

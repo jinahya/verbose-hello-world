@@ -74,7 +74,7 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
         final var service = set_array_sets_random_bytes(service());
         final var consumer = mock(Consumer.class);
         final var mapper = mock(Function.class);
-        when(mapper.apply(any())).thenAnswer(i -> "m:" + i.getArgument(0));
+        doAnswer(i -> "m:" + i.getArgument(0)).when(mapper).apply(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.accept(consumer, mapper);
         // ------------------------------------------------------------------------------------ then

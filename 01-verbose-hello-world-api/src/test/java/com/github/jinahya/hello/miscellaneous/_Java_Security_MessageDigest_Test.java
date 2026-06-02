@@ -21,19 +21,69 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import lombok.extern.slf4j.*;
+import org.bouncycastle.jce.provider.*;
 import org.junit.jupiter.api.*;
 
 import java.security.*;
+
+import static com.github.jinahya.hello.miscellaneous._Java_Security_Provider_TestUtils.*;
 
 @DisplayName("MessageDigest")
 @Slf4j
 class _Java_Security_MessageDigest_Test {
 
+    private static final String SERVICE_TYPE = "MessageDigest";
+
+    private static void __(final String providerName) {
+        final var provider = Security.getProvider(providerName);
+        for (final var service : provider.getServices()) {
+            if (!service.getType().equals(SERVICE_TYPE)) {
+                continue;
+            }
+            System.out.printf("%10s %s%n", provider.getName(), service.getAlgorithm());
+        }
+    }
+
+    @DisplayName("should print every <MessageDigest> algorithm registered with <Security>")
+    @Test
+    void algorithmsByProviders__() {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+        for (final var provider : Security.getProviders()) {
+            for (final var service : provider.getServices()) {
+                if (!service.getType().equals(SERVICE_TYPE)) {
+                    continue;
+                }
+                System.out.printf("%10s %s%n", provider.getName(), service.getAlgorithm());
+            }
+        }
+    }
+
     @DisplayName("should print every <MessageDigest> algorithm registered with <Security>")
     @Test
     void algorithms__() {
-        for (var algorithm : Security.getAlgorithms("MessageDigest")) {
-            System.out.printf("%s%n", algorithm);
+        for (final var provider : Security.getProviders()) {
+            for (final var service : provider.getServices()) {
+                if (!service.getType().equals(SERVICE_TYPE)) {
+                    continue;
+                }
+
+                for (var algorithm : Security.getAlgorithms("MessageDigest")) {
+                    System.out.printf("%s%n", service.getAlgorithm());
+                }
+            }
         }
+    }
+
+    @DisplayName("should print every <MessageDigest> algorithm registered with <Security>")
+    @Test
+    void __() {
+        applyProviderAndAcceptEachService(p -> s -> {
+            if (!s.getType().equals(SERVICE_TYPE)) {
+                return;
+            }
+            System.out.printf("%20s %s%n", p.getName(), s.getAlgorithm());
+        });
     }
 }

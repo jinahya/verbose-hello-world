@@ -38,23 +38,7 @@ class _Java_Security_KeyPairGenerator_Test {
         final var generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(4096);
         final var generated = generator.generateKeyPair();
-        final var privateKey = generated.getPrivate();
-        final var publicKey = generated.getPublic();
-        _Java_Security_Key_Test.__(privateKey);
-        _Java_Security_Key_Test.__(publicKey);
-    }
-
-    @DisplayName("should generate an <EC> key pair over the <secp256r1> curve")
-    @Test
-    void __secp256r1() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        final var generator = KeyPairGenerator.getInstance("EC");
-        final var spec = new ECGenParameterSpec("secp256r1");
-        generator.initialize(spec);
-        final var generated = generator.generateKeyPair();
-        final var privateKey = generated.getPrivate();
-        final var publicKey = generated.getPublic();
-        _Java_Security_Key_Test.__(privateKey);
-        _Java_Security_Key_Test.__(publicKey);
+        _Java_Security_KeyPair_TestUtils.printKeyPair(generated);
     }
 
     @DisplayName("should generate an <EC> key pair over the given <stdName> curve")
@@ -68,9 +52,6 @@ class _Java_Security_KeyPairGenerator_Test {
         final var spec = new ECGenParameterSpec(stdName);
         generator.initialize(spec);
         final var generated = generator.generateKeyPair();
-        final var privateKey = generated.getPrivate();
-        final var publicKey = generated.getPublic();
-        _Java_Security_Key_Test.__(privateKey);
-        _Java_Security_Key_Test.__(publicKey);
+        _Java_Security_KeyPair_TestUtils.printKeyPair(generated);
     }
 }

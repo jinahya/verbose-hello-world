@@ -28,6 +28,10 @@ import java.nio.channels.*;
 import java.nio.file.*;
 import java.security.*;
 import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
+
+import static com.github.jinahya.hello.api._Java_Security_MessageDigest_TestConstants.*;
 
 /**
  * Test utilities for the {@link MessageDigest} class.
@@ -37,6 +41,25 @@ import java.util.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_MessageDigest_TestUtils {
+
+    public static Stream<String> algorithmStream() {
+        return MESSAGE_DIGEST_ALGORITHMS.stream();
+    }
+
+    public static void acceptEachAlgorithm(final Consumer<? super String> consumer) {
+        algorithmStream().forEach(consumer);
+    }
+
+    public static void acceptInstanceForEachAlgorithm(
+            final Consumer<? super MessageDigest> consumer) {
+        acceptEachAlgorithm(a -> {
+            try {
+                consumer.accept(MessageDigest.getInstance(a));
+            } catch (final NoSuchAlgorithmException nsae) {
+                throw new RuntimeException(nsae);
+            }
+        });
+    }
 
     /**
      * Updates all bytes read from the specified input stream, using the specified buffer, to the

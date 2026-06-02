@@ -30,11 +30,11 @@ abstract class DefaultHelloWorldGraphicsTest
         super(DefaultHelloWorldGraphics.class);
     }
 
-    @Override
-    DefaultHelloWorldGraphics newTypeInstance() {
-        return new DefaultHelloWorldGraphics(
-                new HelloWorldRevisited() {
-                }
-        );
-    }
+//    @Override
+//    DefaultHelloWorldGraphics newTypeInstance() {
+//        return new DefaultHelloWorldGraphics(
+//                new HelloWorldRevisited() {
+//                }
+//        );
+//    }
 }

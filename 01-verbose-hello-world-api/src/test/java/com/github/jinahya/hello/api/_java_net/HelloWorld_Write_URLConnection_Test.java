@@ -74,7 +74,7 @@ class HelloWorld_Write_URLConnection_Test extends HelloWorld__Test {
         doAnswer(returnsFirstArg()).when(service).write(any(OutputStream.class));
         final var connection = mock(URLConnection.class);
         final var stream = mock(OutputStream.class);
-        when(connection.getOutputStream()).thenReturn(stream);
+        doReturn(stream).when(connection).getOutputStream();
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(connection);
         // ------------------------------------------------------------------------------------ then
