@@ -24,32 +24,28 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.sql.*;
 
-@DisplayName("setAsciiStream(statement, index)")
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
-        extends HelloWorld__Test {
+class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __() throws IOException, SQLException {
-        Mockito.doAnswer(invocation -> {
-            final var ps = invocation.getArgument(0, PreparedStatement.class);
-            final var pi = invocation.getArgument(1, Integer.class);
-            ps.setAsciiStream(
-                    pi,
-                    new ByteArrayInputStream(HelloWorld__TestUtils.hello_world_byte_array())
-            );
-            return ps;
-        }).when(service()).setAsciiStream(
-                ArgumentMatchers.<PreparedStatement>notNull(),
-                ArgumentMatchers.intThat(v -> v >= 1)
-        );
-        HelloWorld__TestUtils.set_array_returns_the_array(service());
+        set_array_returns_the_array(service());
+        doAnswer(i -> {
+            final var statement = i.getArgument(0, PreparedStatement.class);
+            final var index = i.getArgument(1, Integer.class);
+            statement.setAsciiStream(index, new ByteArrayInputStream(hello_world_byte_array()));
+            return statement;
+        }).when(service()).<PreparedStatement>setAsciiStream(notNull(), intThat(v -> v >= 1));
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -98,15 +94,12 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         try (var stream = resultSet.getAsciiStream(COLUMN)) {
-                            Assertions.assertNotNull(stream);
+                            assertNotNull(stream);
                             final var bytes = stream.readAllBytes();
-                            Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
-                            Assertions.assertArrayEquals(
-                                    HelloWorld__TestUtils.hello_world_byte_array(),
-                                    bytes
-                            );
+                            assertEquals(HelloWorld.BYTES, bytes.length);
+                            assertArrayEquals(hello_world_byte_array(), bytes);
                         }
                     }
                 }
@@ -159,15 +152,12 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         try (var stream = resultSet.getAsciiStream(COLUMN)) {
-                            Assertions.assertNotNull(stream);
+                            assertNotNull(stream);
                             final var bytes = stream.readAllBytes();
-                            Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
-                            Assertions.assertArrayEquals(
-                                    HelloWorld__TestUtils.hello_world_byte_array(),
-                                    bytes
-                            );
+                            assertEquals(HelloWorld.BYTES, bytes.length);
+                            assertArrayEquals(hello_world_byte_array(), bytes);
                         }
                     }
                 }
@@ -219,15 +209,12 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         try (var stream = resultSet.getAsciiStream(COLUMN)) {
-                            Assertions.assertNotNull(stream);
+                            assertNotNull(stream);
                             final var bytes = stream.readAllBytes();
-                            Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
-                            Assertions.assertArrayEquals(
-                                    HelloWorld__TestUtils.hello_world_byte_array(),
-                                    bytes
-                            );
+                            assertEquals(HelloWorld.BYTES, bytes.length);
+                            assertArrayEquals(hello_world_byte_array(), bytes);
                         }
                     }
                 }

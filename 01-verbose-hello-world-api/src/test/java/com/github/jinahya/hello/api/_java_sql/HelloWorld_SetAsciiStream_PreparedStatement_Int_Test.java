@@ -23,11 +23,15 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -40,8 +44,7 @@ import java.util.concurrent.*;
  */
 @DisplayName("setAsciiStream(statement, index)")
 @Slf4j
-class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test
-        extends HelloWorld__Test {
+class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test extends HelloWorld__Test {
 
     @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
     @Test
@@ -49,12 +52,9 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final PreparedStatement statement = null;
-        final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+        final var index = ThreadLocalRandom.current().nextInt() & 0x7FFFFFFF;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setAsciiStream(statement, index)
-        );
+        assertThrows(NullPointerException.class, () -> service.setAsciiStream(statement, index));
     }
 
     @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
@@ -62,10 +62,10 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var statement = Mockito.mock(PreparedStatement.class);
-        final var index = ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, 1);
+        final var statement = mock(PreparedStatement.class);
+        final var index = ThreadLocalRandom.current().nextInt() & 0x80000000;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> service.setAsciiStream(statement, index)
         );
@@ -76,24 +76,21 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes(service());
         final var sink = new ByteArrayOutputStream();
-        final var statement = Mockito.mock(PreparedStatement.class);
-        Mockito.doAnswer(i -> {
-            i.getArgument(1, InputStream.class).transferTo(sink);
+        final var statement = mock(PreparedStatement.class);
+        doAnswer(i -> {
+            final var x = i.getArgument(1, InputStream.class);
+            x.transferTo(sink);
             return null;
-        }).when(statement).setAsciiStream(
-                ArgumentMatchers.intThat(v -> v >= 1),
-                ArgumentMatchers.<InputStream>notNull()
-        );
-        final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+        }).when(statement).setAsciiStream(intThat(v -> v >= 1), notNull());
+        final var index = ThreadLocalRandom.current().nextInt() & 0x7FFFFFFF;
         // ------------------------------------------------------------------------------------ when
         final var result = service.setAsciiStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(statement, Mockito.times(1))
-                .setAsciiStream(Mockito.eq(index), Mockito.<InputStream>notNull());
-        Assertions.assertArrayEquals(array, sink.toByteArray());
-        Assertions.assertSame(statement, result);
+        final var array = set_array12_invoked_once(service);
+        verify(statement, times(1)).setAsciiStream(eq(index), notNull());
+        assertArrayEquals(array, sink.toByteArray());
+        assertSame(statement, result);
     }
 }

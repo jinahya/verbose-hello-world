@@ -1146,18 +1146,18 @@ public interface HelloWorld {
 
     /**
      * Sets the <a href="#hello-world-bytes">hello-world-bytes</a>, as an ASCII stream value, of the
-     * designated parameter on the specified prepared statement.
+     * designated parameter on the specified prepared preparedStatement.
      *
-     * @param <T>               prepared statement type parameter
-     * @param preparedStatement the prepared statement on which the value is set.
+     * @param <T>               prepared preparedStatement type parameter
+     * @param preparedStatement the prepared preparedStatement on which the value is set.
      * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
      * @return the given {@code preparedStatement}.
      * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL statement, if a database access error
-     *                                  occurs, or if this method is called on a closed
+     *                                  marker in the SQL preparedStatement, if a database access
+     *                                  error occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes
@@ -1177,9 +1177,9 @@ public interface HelloWorld {
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var buf = new byte[BYTES];
-        set(buf);
-        try (var x = new ByteArrayInputStream(buf)) {
+        final var array = new byte[BYTES];
+        set(array);
+        try (var x = new ByteArrayInputStream(array)) {
             preparedStatement.setAsciiStream(parameterIndex, x);
         }
         return preparedStatement;
@@ -1218,9 +1218,9 @@ public interface HelloWorld {
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var buf = new byte[BYTES];
-        set(buf);
-        try (var x = new ByteArrayInputStream(buf)) {
+        final var array = new byte[BYTES];
+        set(array);
+        try (var x = new ByteArrayInputStream(array)) {
             preparedStatement.setBinaryStream(parameterIndex, x);
         }
         return preparedStatement;
@@ -1257,9 +1257,9 @@ public interface HelloWorld {
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var x = new byte[BYTES];
-        set(x);
-        preparedStatement.setBytes(parameterIndex, x);
+        final var array = new byte[BYTES];
+        set(array);
+        preparedStatement.setBytes(parameterIndex, array);
         return preparedStatement;
     }
 
@@ -1296,13 +1296,12 @@ public interface HelloWorld {
         if (parameterIndex < 1) {
             throw new IllegalArgumentException("non-positive parameterIndex: " + parameterIndex);
         }
-        final var buf = new byte[BYTES];
-        set(buf);
-        try (var reader = new InputStreamReader(new ByteArrayInputStream(buf),
+        final var array = new byte[BYTES];
+        set(array);
+        try (var reader = new InputStreamReader(new ByteArrayInputStream(array),
                                                 StandardCharsets.US_ASCII)) {
             preparedStatement.setCharacterStream(parameterIndex, reader);
         }
-
         return preparedStatement;
     }
 
@@ -1368,9 +1367,9 @@ public interface HelloWorld {
         if (pos < 1L) {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
-        final var bytes = new byte[BYTES];
-        set(bytes);
-        blob.setBytes(pos, bytes);
+        final var array = new byte[BYTES];
+        set(array);
+        blob.setBytes(pos, array);
         return blob;
     }
 
@@ -1475,8 +1474,8 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        final var str = new String(array, StandardCharsets.UTF_8);
-        clob.setString(pos, str);
+        final var string = new String(array, StandardCharsets.US_ASCII);
+        clob.setString(pos, string);
         return clob;
     }
 
@@ -1503,7 +1502,7 @@ public interface HelloWorld {
         Objects.requireNonNull(iterator, "iterator is null");
         final var array = new byte[BYTES];
         set(array);
-        final var string = new String(array, StandardCharsets.UTF_8);
+        final var string = new String(array, StandardCharsets.US_ASCII);
         iterator.setText(string);
         return iterator;
     }
