@@ -25,14 +25,16 @@ import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
-import org.mockito.*;
 
 import javax.crypto.*;
-import javax.crypto.spec.*;
 import java.nio.file.*;
-import java.security.spec.*;
 import java.util.*;
-import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Mac_TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * An integration test class for
@@ -84,165 +86,150 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() {
-        Mockito.doAnswer(i -> {
+        doAnswer(i -> {
             final var mac = i.getArgument(0, Mac.class);
-            mac.update(HelloWorld__TestUtils.hello_world_byte_array());
+            mac.update(hello_world_byte_array());
             return mac;
-        }).when(service()).update(ArgumentMatchers.<Mac>notNull());
+        }).when(service()).<Mac>update(notNull());
     }
 
-    /**
-     * A nested test class for {@code HmacSHA1}: authenticates the hello-world bytes with one
-     * {@link Mac} and recomputes the tag with another mac initialized with the same key, then
-     * asserts the two tags are byte-identical.
-     *
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc2104">RFC 2104 &mdash; HMAC</a>
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6234">RFC 6234 &mdash; US Secure Hash
-     * Algorithms</a>
-     */
     // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("HmacSHA1")
-    @Nested
-    class HmacSha1_Test {
-
-        // JCE std name (HMAC: RFC 2104; SHA-1: FIPS 180-4)
-        private static final String ALGORITHM = "HmacSHA1";
-
-        /**
-         * Verifies that authenticating the hello-world bytes twice with two
-         * {@link Mac#getInstance(String) HmacSHA1} instances initialized with the same key produces
-         * byte-identical tags.
-         */
-        @DisplayName("should produce byte-identical tags through a <real HmacSHA1> mac")
-        @Test
-        void __() throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var generator = KeyGenerator.getInstance(ALGORITHM);
-            final var key = generator.generateKey();
-            // -------------------------------------------------------------------------------------
-            final byte[] tag1;
-            // ------------------------------------------------------------------------ authenticate
-            {
-                final var mac = Mac.getInstance(ALGORITHM);
-                mac.init(key);
-                tag1 = service().update(mac).doFinal();
-                printf(ALGORITHM, null, tag1);
-            }
-            // ------------------------------------------------------------------------------ verify
-            {
-                final var mac = Mac.getInstance(ALGORITHM);
-                mac.init(key);
-                final var tag2 = service().update(mac).doFinal();
-                Assertions.assertArrayEquals(tag1, tag2);
-            }
+    @Test
+    void __HmacSHA1() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var maccing = HmacSHA1();
+        final var mac = maccing.mac();
+        // ----------------------------------------------------------------------------------- mac1
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
         }
+        final var tag1 = service().update(mac).doFinal();
+        printf("HmacSHA1", null, tag1);
+        // ----------------------------------------------------------------------------------- mac2
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag2 = service().update(mac).doFinal();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(tag1, tag2);
     }
 
-    /**
-     * A nested test class for {@code HmacSHA256}: authenticates the hello-world bytes with one
-     * {@link Mac} and recomputes the tag with another mac initialized with the same key, then
-     * asserts the two tags are byte-identical.
-     *
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc2104">RFC 2104 &mdash; HMAC</a>
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc4231">RFC 4231 &mdash; HMAC-SHA Test
-     * Vectors</a>
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
+    @DisplayName("HmacSHA224")
+    @Test
+    void __HmacSHA224() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var maccing = HmacSHA224();
+        final var mac = maccing.mac();
+        // ----------------------------------------------------------------------------------- mac1
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag1 = service().update(mac).doFinal();
+        printf("HmacSHA224", null, tag1);
+        // ----------------------------------------------------------------------------------- mac2
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag2 = service().update(mac).doFinal();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(tag1, tag2);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("HmacSHA256")
-    @Nested
-    class HmacSHA256_Test {
-
-        // JCE std name (HMAC: RFC 2104; SHA-256: RFC 6234)
-        private static final String ALGORITHM = "HmacSHA256";
-
-        /**
-         * Verifies that authenticating the hello-world bytes twice with two
-         * {@link Mac#getInstance(String) HmacSHA256} instances initialized with the same key
-         * produces byte-identical tags.
-         */
-        @DisplayName("should produce byte-identical tags through a <real HmacSHA256> mac")
-        @Test
-        void __() throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var generator = KeyGenerator.getInstance(ALGORITHM);
-            final var key = generator.generateKey();
-            // -------------------------------------------------------------------------------------
-            final byte[] tag1;
-            // ------------------------------------------------------------------------ authenticate
-            {
-                final var mac = Mac.getInstance(ALGORITHM);
-                mac.init(key);
-                tag1 = service().update(mac).doFinal();
-                printf(ALGORITHM, null, tag1);
-            }
-            // ------------------------------------------------------------------------------ verify
-            {
-                final var mac = Mac.getInstance(ALGORITHM);
-                mac.init(key);
-                final var tag2 = service().update(mac).doFinal();
-                Assertions.assertArrayEquals(tag1, tag2);
-            }
+    @Test
+    void __HmacSHA256() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var maccing = HmacSHA256();
+        final var mac = maccing.mac();
+        // ----------------------------------------------------------------------------------- mac1
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
         }
+        final var tag1 = service().update(mac).doFinal();
+        printf("HmacSHA256", null, tag1);
+        // ----------------------------------------------------------------------------------- mac2
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag2 = service().update(mac).doFinal();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(tag1, tag2);
     }
 
-    /**
-     * A nested test class for {@code PBEWithHmacSHA256}: derives an HMAC key from a passphrase via
-     * {@link SecretKeyFactory} (PKCS#5 PBE), authenticates the hello-world bytes twice with the
-     * derived key, and asserts the tags match.
-     *
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018">RFC 8018 &mdash; PKCS #5
-     * v2.1</a>
-     */
-    @DisplayName("PBEWithHmacSHA256")
-    @Nested
-    class PBEWithHmacSHA256_Test {
-
-        // JCE PBE-MAC name (PKCS#5 v2.1 / RFC 8018)
-        private static final String ALGORITHM = "PBEWithHmacSHA256";
-
-        // JCE SecretKeyFactory name (PKCS#5 PBES2)
-        private static final String KEY_FACTORY_ALGORITHM = ALGORITHM + "AndAES_256";
-
-        /**
-         * Verifies that authenticating the hello-world bytes twice with two
-         * {@code PBEWithHmacSHA256} instances initialized with the same password-derived key and
-         * parameters produces byte-identical tags.
-         */
-        @DisplayName("should produce byte-identical tags through a <real PBEWithHmacSHA256> mac")
-        @Test
-        void __() throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var password = "password".toCharArray();
-            final SecretKey key;
-            {
-                final var keySpec = new PBEKeySpec(password);
-                final var factory = SecretKeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
-                key = factory.generateSecret(keySpec);
-            }
-            final var salt = new byte[16];
-            {
-                ThreadLocalRandom.current().nextBytes(salt);
-            }
-            final var iterationCount = 1000;
-            final AlgorithmParameterSpec params;
-            {
-                params = new PBEParameterSpec(salt, iterationCount);
-            }
-            // -------------------------------------------------------------------------------------
-            final byte[] tag1;
-            // ------------------------------------------------------------------------ authenticate
-            {
-                final var mac = Mac.getInstance(ALGORITHM);
-                mac.init(key, params);
-                tag1 = service().update(mac).doFinal();
-                printf(ALGORITHM, iterationCount, tag1);
-            }
-            // ------------------------------------------------------------------------------ verify
-            {
-                final var mac = Mac.getInstance(ALGORITHM);
-                mac.init(key, params);
-                final var tag2 = service().update(mac).doFinal();
-                Assertions.assertArrayEquals(tag1, tag2);
-            }
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
+    @DisplayName("HmacSHA384")
+    @Test
+    void __HmacSHA384() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var maccing = HmacSHA384();
+        final var mac = maccing.mac();
+        // ----------------------------------------------------------------------------------- mac1
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
         }
+        final var tag1 = service().update(mac).doFinal();
+        printf("HmacSHA384", null, tag1);
+        // ----------------------------------------------------------------------------------- mac2
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag2 = service().update(mac).doFinal();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(tag1, tag2);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
+    @DisplayName("HmacSHA512")
+    @Test
+    void __HmacSHA512() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var maccing = HmacSHA512();
+        final var mac = maccing.mac();
+        // ----------------------------------------------------------------------------------- mac1
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag1 = service().update(mac).doFinal();
+        printf("HmacSHA512", null, tag1);
+        // ----------------------------------------------------------------------------------- mac2
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag2 = service().update(mac).doFinal();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(tag1, tag2);
     }
 }
