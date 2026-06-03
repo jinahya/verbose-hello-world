@@ -38,6 +38,9 @@ import java.security.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestConstants.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -84,6 +87,19 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @Test
+    void __() {
+        _Java_Security_MessageDigest_TestConstants.MESSAGE_DIGEST_ALGORITHMS.forEach(algorithm -> {
+            securityProviders(MESSAGE_DIGEST_SERVICE_TYPE).forEach(provider -> {
+                try {
+                    final var digest = MessageDigest.getInstance(algorithm, provider);
+                    service().update(digest);
+                    printMessageDigest(digest);
+                } catch (final Exception _) {
+                }
+            });
+        });
+    }
 
     /**
      * 지정한 {@code algorithm} (과 선택적으로 {@code provider}) 으로 {@link MessageDigest} 를 받아,
@@ -99,9 +115,10 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
                            ? MessageDigest.getInstance(algorithm, provider)
                            : MessageDigest.getInstance(algorithm);
         final var digested = service().update(digest).digest();
-        final var encoded = Base64.getEncoder().encodeToString(digested);
-        System.out.printf("%12s %10s %d %s%n", algorithm, digest.getProvider().getName(),
-                          digested.length << 3, encoded);
+        printMessageDigest(digest, digested);
+//        final var encoded = Base64.getEncoder().encodeToString(digested);
+//        System.out.printf("%12s %10s %d %s%n", algorithm, digest.getProvider().getName(),
+//                          digested.length << 3, encoded);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -1,0 +1,55 @@
+package com.github.jinahya.hello.miscellaneous;
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.extern.slf4j.*;
+import org.bouncycastle.jce.provider.*;
+
+import java.security.*;
+import java.util.*;
+import java.util.stream.*;
+
+import static org.bouncycastle.jce.provider.BouncyCastleProvider.*;
+
+@Slf4j
+@SuppressWarnings({"java:S101"})
+public final class _Java_Security_Security_TestUtils {
+
+    static {
+        if (Security.getProvider(PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
+
+    public static Stream<Provider> securityProviders() {
+        return Arrays.stream(Security.getProviders());
+    }
+
+    public static Stream<Provider> securityProviders(final String serviceType) {
+        return Arrays.stream(Security.getProviders())
+                .filter(p -> p.getServices().stream()
+                        .anyMatch(s -> s.getType().equals(serviceType)));
+    }
+
+    private _Java_Security_Security_TestUtils() {
+        throw new AssertionError("instantiation is not allowed");
+    }
+}

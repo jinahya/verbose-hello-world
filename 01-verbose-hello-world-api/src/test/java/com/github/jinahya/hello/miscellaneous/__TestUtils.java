@@ -21,10 +21,20 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import lombok.extern.slf4j.*;
-import org.junit.jupiter.api.*;
 
-@DisplayName("Security")
+import java.util.*;
+
 @Slf4j
-class _Java_Security_Security_Test {
+class __TestUtils {
 
+    static String format(final byte[] result) {
+        final var encoded = Base64.getEncoder().encodeToString(result);
+        return encoded.length() <= 8
+               ? encoded
+               : encoded.substring(0, 4) + "..." + encoded.substring(encoded.length() - 4);
+    }
+
+    private __TestUtils() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 }

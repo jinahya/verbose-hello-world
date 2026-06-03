@@ -28,45 +28,49 @@ import java.util.*;
  * .
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+ * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  * (Java 26)
  */
-public final class _Java_Security_MessageDigest_TestConstants {
+public final class _Javax_Crypto_Mac_TestConstants {
 
-    public static final String MESSAGE_DIGEST_SERVICE_TYPE = "MessageDigest";
+    public static final String MAC_SERVICE_TYPE = "Mac";
 
     /**
      * .
      *
      * @see <a
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      * (Java 25)
      */
     @LatestLTS
     public static final List<String> ALGORITHMS_LATEST_LTS = List.of(
-            "SHA-1",
-            "SHA-256",
-            "SHA-384"
+            "HmacSHA1",
+            "HmacSHA224",
+            "HmacSHA256",
+            "HmacSHA384",
+            "HmacSHA512"
     );
 
     /**
      * .
      *
      * @see <a
-     * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+     * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      * (Java 26)
      */
     @LatestJDK
     public static final List<String> ALGORITHMS_LATEST_JDK = List.of(
-            "SHA-1",
-            "SHA-256",
-            "SHA-384"
+            "HmacSHA1",
+            "HmacSHA224",
+            "HmacSHA256",
+            "HmacSHA384",
+            "HmacSHA512"
     );
 
-    private _Java_Security_MessageDigest_TestConstants() {
+    private _Javax_Crypto_Mac_TestConstants() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

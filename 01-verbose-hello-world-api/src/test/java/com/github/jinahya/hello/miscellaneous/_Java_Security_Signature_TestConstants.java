@@ -36,6 +36,8 @@ import java.util.*;
  */
 public final class _Java_Security_Signature_TestConstants {
 
+    public static final String SIGNATURE_SERVICE_TYPE = "Signature";
+
     /**
      * .
      *
