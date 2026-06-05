@@ -57,7 +57,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc7748">RFC 7748 &mdash; Elliptic Curves for
  * Security (X25519, X448)</a>
  */
-@Disabled
 @DisplayName("KeyAgreement")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KeyAgreement__Test {
@@ -128,8 +127,9 @@ class _Javax_Crypto_KeyAgreement__Test {
     @LatestJDK
     @DisplayName("should produce a matching shared secret via <DiffieHellman>")
     @ValueSource(ints = {
-            2048,
-            3072
+            // 2048 is the largest precomputed DH group BC ships; >=3072 falls back to fresh
+            // parameter generation which is impractically slow (~minutes per call)
+            2048
     })
     @ParameterizedTest
     void __DH(final int keySize) throws Exception {

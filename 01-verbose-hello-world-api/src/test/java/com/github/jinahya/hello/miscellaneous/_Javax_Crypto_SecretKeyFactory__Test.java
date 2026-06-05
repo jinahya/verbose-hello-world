@@ -46,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#secretkeyfactory-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; SecretKeyFactory Algorithms</a>
  */
-@Disabled
 @DisplayName("SecretKeyFactory")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_SecretKeyFactory__Test {
@@ -186,6 +185,11 @@ class _Javax_Crypto_SecretKeyFactory__Test {
          * {@code PBEWithMD5AndTripleDES} + {@code PBEWithSHA1AndDESede} +
          * {@code PBEWithSHA1AndRC2_*} + {@code PBEWithSHA1AndRC4_*}) via BouncyCastle.
          */
+        @Disabled("BC registers only PBEWithMD5AndDES under the JCE-standard"
+                + " PBEWith<digest>And<encryption> family; everything else"
+                + " (PBEWithMD5AndTripleDES, PBEWithSHA1AndDESede, PBEWithSHA1AndRC2_*,"
+                + " PBEWithSHA1AndRC4_*) is either SunJCE-only or registered by BC under"
+                + " BC-specific names like PBEWITHSHAAND3-KEYTRIPLEDES-CBC")
         @DisplayName("PBEWith<digest>And<encryption>")
         @Nested
         class Legacy_Test {
@@ -222,6 +226,9 @@ class _Javax_Crypto_SecretKeyFactory__Test {
          * {@code PBEWithHmacSHA{1|224|256|384|512}AndAES_{128|256}} variants &mdash; via
          * BouncyCastle.
          */
+        @Disabled("BC does NOT register the JCE-standard PBEWithHmacSHA*AndAES_{128|256} names."
+                + " These are SunJCE-only; BC has its own variants under different names"
+                + " (e.g., PBEWITHSHAAND128BITAES-CBC-BC).")
         @DisplayName("PBEWith<prf>And<encryption>")
         @Nested
         class HmacAndAes_Test {
