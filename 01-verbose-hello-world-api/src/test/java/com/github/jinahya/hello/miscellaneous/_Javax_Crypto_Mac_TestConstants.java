@@ -33,41 +33,92 @@ import java.util.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  * (Java 26)
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#mac-algorithms">Java
+ * Security Standard Algorithm Names / <code>Mac</code> Algorithms</a>
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#mac-algorithms">Java
+ * Security Standard Algorithm Names / <code>Mac</code> Algorithms</a>
  */
 public final class _Javax_Crypto_Mac_TestConstants {
 
     public static final String MAC_SERVICE_TYPE = "Mac";
 
     /**
-     * .
+     * The {@code Mac} algorithms every Java 25 (latest LTS) implementation is required to support,
+     * per the {@code javax.crypto.Mac} class javadoc.
      *
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      * (Java 25)
      */
     @LatestLTS
-    public static final List<String> ALGORITHMS_LATEST_LTS = List.of(
+    public static final List<String> REQUIRED_ALGORITHMS_LATEST_LTS = List.of(
             "HmacSHA1",
-            "HmacSHA224",
-            "HmacSHA256",
-            "HmacSHA384",
-            "HmacSHA512"
+            "HmacSHA256"
     );
 
     /**
-     * .
+     * The {@code Mac} algorithms every Java 26 (latest JDK) implementation is required to support,
+     * per the {@code javax.crypto.Mac} class javadoc.
      *
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      * (Java 26)
      */
     @LatestJDK
-    public static final List<String> ALGORITHMS_LATEST_JDK = List.of(
+    public static final List<String> REQUIRED_ALGORITHMS_LATEST_JDK = List.of(
+            "HmacSHA1",
+            "HmacSHA256",
+            "PBEWithHmacSHA256"
+    );
+
+    // https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#mac-algorithms
+    public static final List<String> ALGORITHM_NAMES_LATEST_LTS = List.of(
+            "HmacMD5",
             "HmacSHA1",
             "HmacSHA224",
             "HmacSHA256",
             "HmacSHA384",
-            "HmacSHA512"
+            "HmacSHA512",
+            "HmacSHA512/224",
+            "HmacSHA512/256",
+            "HmacSHA3-224",
+            "HmacSHA3-256",
+            "HmacSHA3-384",
+            "HmacSHA3-512",
+            "HmacPBESHA1",
+            "HmacPBESHA224",
+            "HmacPBESHA256",
+            "HmacPBESHA384",
+            "HmacPBESHA512",
+            "HmacPBESHA512/224",
+            "HmacPBESHA512/256",
+            "PBEWithHmacSHA256"
+    );
+
+    // https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#mac-algorithms
+    public static final List<String> ALGORITHM_NAMES_LATEST_JDK = List.of(
+            "HmacMD5",
+            "HmacSHA1",
+            "HmacSHA224",
+            "HmacSHA256",
+            "HmacSHA384",
+            "HmacSHA512",
+            "HmacSHA512/224",
+            "HmacSHA512/256",
+            "HmacSHA3-224",
+            "HmacSHA3-256",
+            "HmacSHA3-384",
+            "HmacSHA3-512",
+            "HmacPBESHA1",
+            "HmacPBESHA224",
+            "HmacPBESHA256",
+            "HmacPBESHA384",
+            "HmacPBESHA512",
+            "HmacPBESHA512/224",
+            "HmacPBESHA512/256",
+            "PBEWithHmacSHA256"
     );
 
     private _Javax_Crypto_Mac_TestConstants() {

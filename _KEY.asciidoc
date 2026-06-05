@@ -1,0 +1,326 @@
+= 키 공유 (Key Establishment)
+
+:toc:
+:toclevels: 3
+
+서로 다른 두 당사자가 같은 비밀 키 (보통 대칭 키) 를 안전하게 가지게 만드는 일을 "키 확립" 또는 "키 공유 (key establishment)" 라 부른다.
+암호학 교과서는 보통 이를 Key Transport 와 Key Agreement 두 갈래로 나누지만, JCA 와 TLS 1.3 같은 실무 관점에서는 Key Wrapping, KEM, Key Derivation 까지 다섯 갈래로 본다.
+
+[%unbreakable]
+[source]
+----
+Key Establishment
+├─ Key Transport       (sender encrypts a data key under receiver's public key)
+├─ Key Agreement       (both sides compute the same secret from their own pairs)
+├─ Key Wrapping        (an existing data key is encrypted under another KEK)
+├─ Key Encapsulation   (algorithm derives the shared secret from a public key)
+└─ Key Derivation      (a fresh key is derived from existing secret material)
+----
+
+이 다섯 가지가 본문의 범위이며, JDK 25 가 어떤 API 와 표준 알고리즘으로 각각을 풀어 두었는지를 차례로 정리한다.
+이 외에도 PSK (미리 공유한 키), 대역 외 (Out-of-Band) 분배, KMS / HSM 같은 경로가 있지만 알고리즘이 아니라 "키가 어디에 있느냐" 의 문제이므로 §7 에서 짧게만 언급한다.
+
+'''
+
+== 1. 분류 한눈에 보기
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 방식 | 키의 출처 | JDK 주 API | 본 모듈 시험 클래스
+
+| Key Transport
+| 송신자가 만들어 보냄
+| `javax.crypto.Cipher` (RSA, `WRAP_MODE`)
+| `_Java_Security_Key__Test.KeyTransport_Test`
+
+| Key Agreement
+| 양쪽이 함께 계산
+| `javax.crypto.KeyAgreement`
+| `_Java_Security_Key__Test.KeyAgreement_Test`
+
+| Key Wrapping
+| 이미 있는 키를 다른 키로 포장
+| `javax.crypto.Cipher` (AES, `WRAP_MODE` / `UNWRAP_MODE`)
+| `_Java_Security_Key__Test.KeyWrapper_Test`
+
+| Key Encapsulation
+| 알고리즘이 도출
+| `javax.crypto.KEM`
+| `_Java_Security_Key__Test.KeyEncapsulation_Test` (얇은 happy-path), `_Javax_Crypto_KEM__Test` (전체 변형)
+
+| Key Derivation
+| 기존 비밀에서 파생
+| `javax.crypto.KDF`, `javax.crypto.SecretKeyFactory`
+| `_Java_Security_Key__Test.KeyDerivation_Test` (얇은 happy-path), `_Javax_Crypto_KDF_Test`, `_Javax_Crypto_PBE_Test` (전체 변형)
+|===
+
+다섯 가지가 푸는 문제가 서로 다르기 때문에 가정 (assumption) 도 다르다.
+Key Transport 와 Key Wrapping 은 수신자의 공개키 (또는 KEK) 가 진짜라는 가정에 기댄다.
+Key Agreement 와 Key Encapsulation 은 양쪽 키 쌍의 진위에 기댄다.
+Key Derivation 은 입력 비밀 (IKM, 패스워드) 의 비밀성에 기댄다.
+"키를 어떻게 옮기느냐" 와 "키를 어떻게 만드느냐" 가 한 문서에 들어 있는 이유다.
+
+'''
+
+== 2. Key Transport (키 전달)
+
+송신자가 데이터 키 (가령 AES 키) 를 직접 만든 뒤 수신자의 공개키로 암호화해 보내고, 수신자는 자신의 개인키로 복호화해 같은 키를 얻는다.
+
+JDK 25 의 표준 비대칭 `Cipher` 변환 중 키 전달에 쓸 수 있는 것은 RSA 계열 여덟 가지뿐이다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 표준 변환 (transformation) | 제공자 | 비고
+
+| `RSA/ECB/PKCS1Padding`
+| SunJCE
+| RFC 8017 PKCS#1 v1.5. 신규 용도로는 권장하지 않음 (Bleichenbacher 공격)
+
+| `RSA/ECB/OAEPWithSHA-1AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-1
+
+| `RSA/ECB/OAEPWithSHA-224AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-224
+
+| `RSA/ECB/OAEPWithSHA-256AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-256
+
+| `RSA/ECB/OAEPWithSHA-384AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-384
+
+| `RSA/ECB/OAEPWithSHA-512AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-512
+
+| `RSA/ECB/OAEPWithSHA-512/224AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-512/224
+
+| `RSA/ECB/OAEPWithSHA-512/256AndMGF1Padding`
+| SunJCE
+| RFC 8017 OAEP, SHA-512/256
+|===
+
+본 모듈의 `_Java_Security_Key__Test.KeyTransport_Test` 가 이 여덟 변환 전부에 대해 송신측 `wrap(...)` 과 수신측 `unwrap(...)` 의 왕복을 확인한다.
+
+'''
+
+== 3. Key Agreement (키 합의)
+
+양쪽이 각자 자신의 개인 비밀과 상대의 공개 비밀을 결합해 동일한 공유 비밀을 계산한다.
+어느 한쪽이 다른 쪽에 "키를 보내지" 않는다는 점이 Key Transport 와 다르다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 표준 알고리즘 | 제공자 | 키 쌍 알고리즘 | 비고
+
+| `DiffieHellman`
+| SunJCE
+| `DH`
+| 고전적 유한체 DH (RFC 2631)
+
+| `ECDH`
+| SunEC
+| `EC` (P-256 / P-384 / P-521)
+| 타원곡선 DH (SEC 1)
+
+| `XDH`
+| SunEC
+| `XDH` (일반 형식)
+| `NamedParameterSpec` 으로 곡선 지정
+
+| `X25519`
+| SunEC
+| `X25519`
+| RFC 7748 Curve25519
+
+| `X448`
+| SunEC
+| `X448`
+| RFC 7748 Curve448
+|===
+
+본 모듈의 `_Java_Security_Key__Test.KeyAgreement_Test` 가 위 다섯 가지 중 네 가지 (DH × 2048 / 3072, ECDH × P-256 / P-384 / P-521, X25519, X448) 에 대해 양쪽 `KeyAgreement.generateSecret()` 결과가 바이트 단위로 일치함을 확인한다.
+`XDH` 일반 형식은 `X25519` / `X448` 직접 이름이 동일한 동작을 더 짧게 표현하므로 따로 시험하지 않는다.
+
+§5 의 DHKEM 도 내부적으로 EC 또는 XDH 키 쌍을 사용하므로, 키 합의의 또 다른 실용적 응용을 그 자리에서 볼 수 있다.
+
+'''
+
+== 4. Key Wrapping (키 포장)
+
+이미 존재하는 키 (보통 데이터 키) 를 별도의 KEK (Key Encryption Key) 로 암호화해 옮길 수 있는 바이트로 만든다.
+JCA 에서는 `Cipher` 를 `WRAP_MODE` / `UNWRAP_MODE` 로 초기화해 `wrap(Key)` / `unwrap(byte[], String, int)` 를 부른다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 표준 변환 | 제공자 | KEK 종류 | 비고
+
+| `AESWrap`
+| SunJCE
+| AES (128 / 192 / 256 비트)
+| RFC 3394, 8 바이트 배수 입력만 허용
+
+| `AESWrapPad`
+| SunJCE
+| AES (128 / 192 / 256 비트)
+| RFC 5649, 임의 길이 입력
+
+| `AES/KW/NoPadding`
+| SunJCE
+| AES
+| `AESWrap` 의 변환 표기 형식 (JDK 17 이후)
+
+| `AES/KW/PKCS5Padding`
+| SunJCE
+| AES
+| PKCS#5 패딩을 거친 KW
+
+| `AES/KWP/NoPadding`
+| SunJCE
+| AES
+| `AESWrapPad` 의 변환 표기 형식 (JDK 17 이후)
+
+| `AES_128/KW/NoPadding` 등
+| SunJCE
+| AES, 키 크기 고정
+| 변환 이름 자체에 128 / 192 / 256 을 박은 형태
+
+| RSA 계열 OAEP 변환들
+| SunJCE
+| RSA 공개키
+| §2 의 표와 동일. 비대칭 KEK 로 동작
+|===
+
+대칭 KW / KWP 계열은 양쪽이 이미 공통의 KEK 를 들고 있다는 전제로 동작한다.
+즉 Key Wrapping 단독으로는 "두 사람이 처음으로 키를 공유하는" 문제가 풀리지 않는다.
+KEK 자체를 어떻게 마련하느냐가 §2, §3, §5 의 몫이다.
+
+본 모듈의 `_Java_Security_Key__Test.KeyWrapper_Test` 가 대칭 다섯 변환 (`AESWrap`, `AESWrapPad`, `AES/KW/NoPadding`, `AES/KW/PKCS5Padding`, `AES/KWP/NoPadding`) 에 대해 미리 공유한 AES KEK 로 AES 데이터 키를 감싸고 풀어내는 왕복을 확인한다.
+RSA OAEP 변환들로 비대칭 KEK 를 쓰는 경우는 §2 의 `KeyTransport_Test` 가 그대로 다룬다 (Cipher API 측면에서 보면 같은 `WRAP_MODE` / `UNWRAP_MODE` 흐름이다).
+
+'''
+
+== 5. Key Encapsulation Mechanism (KEM)
+
+수신자의 공개키만 있으면 송신자가 "공유 비밀과 그것을 전달할 ciphertext" 한 쌍을 한 번의 연산으로 얻는다.
+Key Transport 와 결과는 비슷하지만, 송신자가 키를 고르지 않고 알고리즘이 도출한다는 점이 다르다.
+포스트 양자 (post-quantum) 영역에서는 사실상 기본 형식이며, TLS 1.3 도 단계적으로 KEM 으로 옮겨가는 중이다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 표준 알고리즘 | 제공자 | 키 쌍 | 비고
+
+| `DHKEM`
+| SunJCE
+| `EC` / `XDH` / `X25519` / `X448`
+| RFC 9180, 고전적 디피-헬먼 기반
+
+| `ML-KEM`
+| SunJCE
+| `ML-KEM` (`NamedParameterSpec` 으로 파라미터 셋 지정)
+| NIST FIPS 203, 포스트 양자
+
+| `ML-KEM-512`
+| SunJCE
+| `ML-KEM-512`
+| FIPS 203 파라미터 셋 1 (security category 1)
+
+| `ML-KEM-768`
+| SunJCE
+| `ML-KEM-768`
+| FIPS 203 파라미터 셋 3 (security category 3)
+
+| `ML-KEM-1024`
+| SunJCE
+| `ML-KEM-1024`
+| FIPS 203 파라미터 셋 5 (security category 5)
+|===
+
+본 모듈에는 두 결의 시험이 있다.
+`_Java_Security_Key__Test.KeyEncapsulation_Test` 가 §1 의 umbrella 클래스 안에서 DHKEM/X25519 와 ML-KEM-768 두 가지를 얇게 짚고, `_Javax_Crypto_KEM__Test` 가 DHKEM 다섯 변형 (EC × 3, XDH × 2) 과 ML-KEM 세 파라미터 셋 모두에 대해 encapsulate 와 decapsulate 의 왕복을 전부 확인한다.
+한편 사용자가 예로 든 `RSA-KEM` (RFC 5990) 과 `Kyber512` / `Kyber768` / `Kyber1024` 의 옛 이름은 JDK 25 표준 알고리즘 목록에 없다.
+Kyber 가 NIST 표준이 되면서 이름이 ML-KEM 으로 바뀌었기 때문이다.
+
+'''
+
+== 6. Key Derivation (키 파생)
+
+이미 있는 비밀 (가령 §3 의 합의 결과, §5 의 공유 비밀, 또는 사용자 패스워드) 로부터 실제로 쓰일 대칭 키를 뽑아낸다.
+JDK 가 제공하는 결은 두 가지이다.
+한쪽은 균일하게 무작위한 IKM 을 빠르게 펴는 HKDF 계열이고, 다른 한쪽은 사람이 입력한 패스워드를 의도적으로 느리게 늘리는 PBKDF2 계열이다.
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| 표준 알고리즘 | API | 제공자 | 입력 비밀의 성격
+
+| `HKDF-SHA256`
+| `javax.crypto.KDF` (JEP 478)
+| SunJCE
+| 균일하게 무작위한 IKM (가령 ECDH 결과)
+
+| `HKDF-SHA384`
+| `javax.crypto.KDF`
+| SunJCE
+| 균일하게 무작위한 IKM
+
+| `HKDF-SHA512`
+| `javax.crypto.KDF`
+| SunJCE
+| 균일하게 무작위한 IKM
+
+| `PBKDF2WithHmacSHA1`
+| `javax.crypto.SecretKeyFactory`
+| SunJCE
+| 사람이 입력한 패스워드
+
+| `PBKDF2WithHmacSHA224`
+| `javax.crypto.SecretKeyFactory`
+| SunJCE
+| 사람이 입력한 패스워드
+
+| `PBKDF2WithHmacSHA256`
+| `javax.crypto.SecretKeyFactory`
+| SunJCE
+| 사람이 입력한 패스워드
+
+| `PBKDF2WithHmacSHA384`
+| `javax.crypto.SecretKeyFactory`
+| SunJCE
+| 사람이 입력한 패스워드
+
+| `PBKDF2WithHmacSHA512`
+| `javax.crypto.SecretKeyFactory`
+| SunJCE
+| 사람이 입력한 패스워드
+|===
+
+본 모듈에는 두 결의 시험이 있다.
+`_Java_Security_Key__Test.KeyDerivation_Test` 가 §1 의 umbrella 클래스 안에서 HKDF-SHA256 과 PBKDF2WithHmacSHA256 두 가지를 얇게 짚고, `_Javax_Crypto_KDF_Test` 가 HKDF 세 변형의 `deriveData(...)` / `deriveKey(...)` 결정성을 전부 확인하며, `_Javax_Crypto_PBE_Test` 가 PBKDF2 와 scrypt, Argon2id 의 sign-up / login 왕복을 확인한다.
+다만 scrypt 와 Argon2id 는 JDK 자체가 제공하지 않으므로 BouncyCastle 또는 Password4j 외부 라이브러리를 거친다.
+
+'''
+
+== 7. 암호 외 경로 (PSK / Out-of-Band / KMS)
+
+여기까지의 다섯 갈래는 모두 "공개키 한 번 (또는 패스워드 한 번) 으로 대칭 키를 마련하는" 암호학적 방법이다.
+실무에서는 그 외에도 다음 세 가지 경로가 함께 쓰이는데, JDK 와 닿는 부분만 짧게 정리한다.
+
+PSK (Pre-Shared Key)::
+양쪽에 같은 비밀을 미리 심어 둔 뒤 TLS 1.3 / IPsec / SSH 등에서 그것을 신원과 키 양쪽의 근거로 쓴다.
+JDK 는 TLS 1.3 의 PSK 모드를 `javax.net.ssl.SSLContext` / `SSLEngine` 수준에서 지원하지만, "PSK 자체를 어디서 얻느냐" 는 외부 (대역 외 분배, KMS 등) 의 몫이다.
+
+Out-of-Band 분배::
+대면 전달, QR 코드, USB, 종이, 전화 등 네트워크 밖 채널로 키를 나르는 방법이다.
+JDK 와 직접 닿는 부분은 없다.
+수신한 키를 `SecretKeySpec` 으로 다시 객체화하는 시점부터 JCA 영역으로 들어온다.
+
+KMS / HSM::
+키를 외부 저장소 (PKCS#11 HSM, 클라우드 KMS) 에 두고 자바 측은 핸들만 들고 쓴다.
+JDK 의 `java.security.KeyStore` 와 `SunPKCS11` 제공자로 HSM 의 키를 일반 JCA `PrivateKey` 객체처럼 다룰 수 있다.
+이 경우 §2 부터 §6 까지의 알고리즘이 그대로 쓰이되, `PrivateKey` 인스턴스 뒤에 실제 비밀이 자바 힙에 없을 뿐이다.
+
