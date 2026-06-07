@@ -5,7 +5,7 @@
 
 NOTE: `HelloWorld.java` 본문과 계약 테스트 `*_Test` 의 검증 줄들 중 일부는 의도적으로 주석 처리되어 있다. 책의 독자가 장별로 차례로 주석을 해제하며 구현을 완성하는 학습용 구성이므로, *주석 처리되어 있다는 사실 자체*는 이 보고서에서 결함으로 보지 않는다. 다만 주석 처리된 줄의 *내용* 자체가 컴파일되지 않거나, 풀었을 때 잘못된 동작 / 잘못된 검증으로 이어진다면 그 *내용*은 짚는다.
 
-마지막 갱신: 2026-06-07 09:07 UTC (commit `0cb00fd9`)
+마지막 갱신: 2026-06-07 09:50 UTC (commit `ef4756fd`)
 
 toc::[]
 
@@ -18,19 +18,19 @@ toc::[]
 | RD-0000001
 | link:_RAMP_DOWN.asciidoc[_RAMP_DOWN.asciidoc]
 | meta
-| **본 실행의 범위 한계 (반드시 다음 실행으로 메워야 함).** 이번 실행은 메인 소스 (`01-verbose-hello-world-api/src/main/java/`) 의 핵심 파일들과 모든 `pom.xml`, `module-info.java`, 프로젝트 루트 문서 (`CLAUDE.md`, `README.md`, `TARGETS.md`, `LINKS.md`, `_dependency_tree_*`, `_IMPORTS.asciidoc`, `_TESTCASES_OPTIMAL.asciidoc`) 를 끝까지 읽었다. 그러나 305 개의 테스트 파일 (`src/test/java*/`) 과 `02-verbose-hello-world-lib`, `03-verbose-hello-world-app/*` 의 모든 메인 / 테스트 소스, 프로파일별 테스트 트리 (`java-cdi-se-openwebbeans`, `java-cdi-se-weld`, `java-cdi-se-openwebbeans-junit5`, `java-cdi-se-weld-junit5`, `java-di-dagger`, `java-di-guice`, `java-di-hk2`, `java-di-spring`) 는 *한 줄도 빠짐없이* 읽지 않았다. 강화된 "모든 요소, 예외 없이" 규칙을 만족하려면 다음 실행에서 이 파일들을 끝까지 읽어 새 발견을 추가해야 한다.
+| **본 실행의 범위 한계.** 이번 실행은 (a) 프로젝트 루트 문서 · 모든 `pom.xml` · 모든 `module-info.java` · 의존성 트리 스냅숏 · 리포트 스냅숏을 직접 다시 읽었고, (b) `01-verbose-hello-world-api/src/main/java/` 의 모든 메인 소스를 직접 다시 검증했으며, (c) `01-verbose-hello-world-api/src/test/java/` 의 모든 하위 패키지 (`_java_io`, `_java_lang`, `_java_lang_foreign`, `_java_net`, `_java_net_http`, `_java_nio`, `_java_nio_channels`, `_java_nio_file`, `_java_security`, `_java_sql`, `_java_text`, `_java_util`, `_java_util_concurrent`, `_java_util_function`, `_java_util_jar`, `_java_util_stream`, `_java_util_zip`, `_javax_crypto`, `util`, `miscellaneous`, 그리고 패키지 직하의 상위 파일들) 를 병렬 sub-agent 로 훑었고, (d) `02-verbose-hello-world-lib/` (메인 + 11 개 프로파일 테스트 트리 모두, 이전에 누락된 `java-di-avaje` · `java-di-micronaut` 포함) 와 (e) `03-verbose-hello-world-app/` (4 개 leaf 모듈) 를 sub-agent 로 훑었다. **그러나 sub-agent 가 돌려준 결과는 본 메인 세션이 모든 라인을 직접 읽은 결과는 아니며**, 일부 sub-agent 가 *주석 처리된 줄을 결함으로 잘못 표시* 한 항목은 메인 세션이 본 규칙 (학습용 비계는 결함 아님) 에 따라 걸러냈다. 다음 실행에서는 (1) 메인 세션이 sub-agent 가 깊이 못 읽은 파일들을 골라 직접 재검증하고, (2) `_JUNIT_REPORT.asciidoc` / `_MOCKITO_REPORT.asciidoc` (현재 0 바이트) 를 생성한 뒤 그 결과를 교차 점검하는 것이 가장 큰 보강이다.
 |
 
 | RD-0000002
 | link:pom.xml[pom.xml:56]
 | typo
-| `<maven.compiler.testRelase>` — 오타. `<maven.compiler.testRelease>` 가 옳다. 메이븐 컴파일러 플러그인은 `testRelease` 속성만 인식하므로, 현재 이 오버라이드는 *전혀 동작하지 않는다*. 다행히 동일 값 (`${maven.compiler.testTarget}`) 을 가리키므로 빌드 의미상 차이는 없지만, 의도가 표현되지 않는다는 점이 문제다.
-|
+| `<maven.compiler.testRelase>` — 이전 실행에서는 오타로 보고되었으나, 현 디스크 상태는 `<maven.compiler.testRelease>` (정확한 철자) 로 이미 수정되어 있다.
+| ✓
 
 | RD-0000003
 | link:_TESTCASES_OPTIMAL.asciidoc[_TESTCASES_OPTIMAL.asciidoc:34]
 | meta
-| 테스트 파일 합계를 `279` 로 적고 있으나 현재 실제 합계는 `305` (find . -name '*.java' -path '*/src/test/*' \| wc -l = 305). 보고서 마지막 갱신 이후 테스트가 늘었다. `/check-testcases-optimal` 재실행 필요.
+| 테스트 파일 합계를 `279` 로 적고 있으나 현재 실제 합계는 `305` (`find . -name '*.java' -path '*/src/test/*' \| wc -l = 305`). 보고서 마지막 갱신 이후 테스트가 늘었다. `/check-testcases-optimal` 재실행 필요.
 |
 
 | RD-0000004
@@ -78,7 +78,7 @@ toc::[]
 | RD-0000011
 | link:_dependency_tree_app1.txt[_dependency_tree_app1.txt]
 | meta
-| `app1` 의 `pom.xml` 은 `org.aspectj:aspectjrt` / `aspectjtools` 같은 의존성을 선언하지 않았으면 트리가 너무 짧아 보인다. 그러나 모든 app 모듈의 트리가 정상으로 보이는지 — 특히 `app2`, `app4` 의 SPI / CDI 자산이 누락된 것은 아닌지 — 재확인할 가치가 있다. (이 행은 다음 sweep 의 검토 거리.)
+| `app1` 의 `pom.xml` 은 `org.aspectj:aspectjrt` / `aspectjtools` 같은 의존성을 선언하지 않았으면 트리가 너무 짧아 보인다. 모든 app 모듈의 트리가 정상으로 보이는지 — 특히 `app2`, `app4` 의 SPI / CDI 자산이 누락된 것은 아닌지 — 재확인할 가치가 있다.
 |
 |===
 
@@ -136,7 +136,13 @@ toc::[]
 | RD-0000018
 | link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java[AsynchronousHelloWorld.java:411]
 | typo
-| `} // @formater:off` — 닫는 자리에 `@formater:off` 라고 적혀 있다. (a) `formater` → `formatter` 오타 (b) 닫는 자리는 `on` 이어야 한다. `// @formatter:on` 으로 수정.
+| `} // @formater:off` — 닫는 자리에 `@formater:off` 라고 적혀 있다. (a) `formater` → `formatter` 오타 (b) 닫는 위치는 `on` 이어야 한다. `// @formatter:on` 으로 수정.
+|
+
+| RD-0000028
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java[AsynchronousHelloWorld.java:43]
+| javadoc
+| 클래스 자바독 L43 의 `{@link StructuredConcurrencyAsynchronousHelloWorld}` 는 존재하지 않는 식별자다. 실제 클래스 이름은 `StructuredConcurrencyHelloWorld` (`Asynchronous` 없음). 링크가 깨진 상태이거나, 코드 정리 시 이름이 바뀌었어야 한다.
 |
 |===
 
@@ -197,19 +203,6 @@ toc::[]
 |
 |===
 
-=== `src/main/java/com/github/jinahya/hello/api/HelloWorld.java` — 카피라이트 표기 일관성
-
-[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
-|===
-| ID | 위치 | 종류 | 설명 / 제안 | 해결
-
-| RD-0000025
-| link:01-verbose-hello-world-api/src/main/java/[01-verbose-hello-world-api/src/main/java/]
-| meta
-| `01-verbose-hello-world-api/src/main/java/` 아래 27 개 `.java` 파일의 카피라이트 헤더가 세 가지로 갈린다. 4 개는 `Copyright (C) 2018 - 2019`, 7 개는 `Copyright (C) 2018 - 2024`, 17 개는 `Copyright (C) 2018 - 2026` (오늘 날짜 기준 정상). `license-maven-plugin` 의 `update-file-header` 골을 한 번 돌려 모두 2026 으로 통일.
-|
-|===
-
 === `src/main/java/com/github/jinahya/hello/api/HelloWorld1.java` / `HelloWorld2.java`
 
 [%unbreakable%autowidth.stretch,frame="none",grid="rows"]
@@ -219,7 +212,7 @@ toc::[]
 | RD-0000026
 | link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld1.java[HelloWorld1.java]
 | javadoc
-| 패키지 사설 (package-private) 인터페이스 `HelloWorld1` 에 클래스 자바독이 없다. `BYTES = 12` 한 줄짜리 학습용 인터페이스인 듯하지만 (`chapter01_BYTES.asciidoc` 에서 인용될 가능성), `@author` / 한 줄 요약 정도는 붙여야 책에 그대로 옮길 수 있다. `HelloWorld2` 도 같은 상황.
+| 패키지 사설 (package-private) 인터페이스 `HelloWorld1` 에 클래스 자바독이 없다. `BYTES = 12` 한 줄짜리 학습용 인터페이스인 듯하지만 (`chapter01_BYTES.asciidoc` 등에서 인용될 가능성), `@author` / 한 줄 요약 정도는 붙여야 책에 그대로 옮길 수 있다. `HelloWorld2` 도 같은 상황.
 |
 
 | RD-0000027
@@ -229,20 +222,147 @@ toc::[]
 |
 |===
 
-=== `src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java` (실제 구현 클래스 확인 필요)
+=== 카피라이트 헤더 (프로젝트 전체)
 
 [%unbreakable%autowidth.stretch,frame="none",grid="rows"]
 |===
 | ID | 위치 | 종류 | 설명 / 제안 | 해결
 
-| RD-0000028
-| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java[AsynchronousHelloWorld.java:43]
-| structure
-| 클래스 자바독은 `StructuredConcurrencyAsynchronousHelloWorld` 를 가리키지만 (L43) 실제 소스 트리에는 `StructuredConcurrencyHelloWorld.java` 만 존재한다 (`Asynchronous` 없는 이름). 자바독 링크가 유효하지 않거나 (`@link` 미사용), 클래스 이름이 책에서 옮겨질 때 이름이 바뀌었어야 한다. 확인 필요.
+| RD-0000025
+| link:.[프로젝트 루트]
+| meta
+| 프로젝트 전체 (`01-verbose-hello-world-api/src/main/java/` · `02-verbose-hello-world-lib/src/main/java/` · `03-verbose-hello-world-app/*/src/main/java/`) 45 개 `.java` 파일의 카피라이트 헤더가 세 가지로 갈린다 — 11 개는 `Copyright (C) 2018 - 2019`, 7 개는 `Copyright (C) 2018 - 2024`, 27 개는 `Copyright (C) 2018 - 2026` (오늘 날짜 기준 정상). `02-verbose-hello-world-lib/src/main/java/com/github/jinahya/hello/lib/HelloWorldImpl.java`, `03-verbose-hello-world-app/01..04/src/main/java/com/github/jinahya/hello/app*/HelloWorldMain.java` 등이 모두 2019 상태로 멈춰 있다. `license-maven-plugin` 의 `update-file-header` 골을 한 번 돌려 모두 2026 으로 통일.
+|
+|===
+
+=== `src/test/java/com/github/jinahya/hello/api/_javax_crypto/HelloWorld_Update_Mac__Test.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000033
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/_javax_crypto/HelloWorld_Update_Mac__Test.java[HelloWorld_Update_Mac__Test.java:61]
+| typo
+| `private static Path temDir;` — `@TempDir` 필드 이름이 `temDir` 으로 한 글자 빠져 있다. 다른 클래스의 같은 패턴은 `tempDir` 이다. 본 필드가 사용되지 않더라도 (`unused` 도 별도 결함) 이름은 `tempDir` 로 바로잡아야 한다.
+|
+|===
+
+=== `src/test/java/com/github/jinahya/hello/api/_java_sql/HelloWorld_SetString_Clob_Long__Test.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000034
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/_java_sql/HelloWorld_SetString_Clob_Long__Test.java[HelloWorld_SetString_Clob_Long__Test.java:97]
+| scaffold
+| HSQLDB 의 `__()` 시험은 마지막 줄에 `Assertions.assertEquals("hello, world", clob.getSubString(1L, HelloWorld.BYTES));` 로 문자열 리터럴을 직접 적었다. 같은 클래스의 H2 시험 (L72-73) 과 `@BeforeEach` 스텁 (L42) 은 모두 `HelloWorld__TestConstants.HELLO_WORLD_STRING` 을 쓰므로 일관성이 깨진다. `HELLO_WORLD_STRING` 값이 바뀌면 HSQLDB 시험만 깨진다.
+|
+|===
+
+=== `src/test/java/com/github/jinahya/hello/api/_java_util/`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000039
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/_java_util/HelloWorld_Add_SequencedCollection_Function__Test.java[HelloWorld_Add_SequencedCollection_Function__Test.java:46-51]
+| logger
+| 시험 본문에 `System.out.println(...)` 호출 두 줄 (L46, L51). 본 프로젝트의 로깅 규약은 SLF4J (`log.info(...)`) 이다. 다른 `__Test` 들은 `@Slf4j` + `log` 를 쓰는데 이 파일은 직접 표준출력으로 쏜다.
+|
+
+| RD-0000040
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/_java_util/HelloWorld_Put_SequencedMap_Function_Function__Test.java[HelloWorld_Put_SequencedMap_Function_Function__Test.java:46-51]
+| logger
+| 같은 패턴 — `System.out.println(...)` 두 줄. SLF4J 로 옮길 것.
+|
+|===
+
+=== `src/test/java/com/github/jinahya/hello/api/_java_text/HelloWorld_SetText_BreakIterator__Test.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000041
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/_java_text/HelloWorld_SetText_BreakIterator__Test.java[HelloWorld_SetText_BreakIterator__Test.java:114-141]
+| logger
+| 시험 본문에 네 줄의 `System.out.println("--- character ---")` / `"--- word ------"` / `"--- line ------"` / `"--- sentence --"` 구분자. 같은 클래스의 다른 출력은 `log` 를 쓰는데 이 네 줄만 표준출력. `log.info(...)` 로 통일하거나, 시험 결과 시각화가 목적이면 한 번에 모아 한 줄로 로깅.
+|
+|===
+
+=== `src/test/java/com/github/jinahya/hello/api/_java_lang_foreign/HelloWorld_Copy_Segment_FFM_Test.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000042
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/_java_lang_foreign/HelloWorld_Copy_Segment_FFM_Test.java[HelloWorld_Copy_Segment_FFM_Test.java:376-502]
+| logger
+| `System.out.println()` 빈 줄 출력 세 번 (L376, L424, L502, 각 직전 주석은 "newline after native write"). 네이티브 코드가 stdout 으로 직접 쓰기 때문에 자바 측 로깅과 줄바꿈이 어긋나는 것을 보정하려는 의도로 보이지만, SLF4J 와 표준출력이 섞이는 점이 깔끔하지 않다. 시험 본문의 의도라면 주석을 좀 더 풀어 적어 두는 것이 좋다.
+|
+|===
+
+=== `src/test/java/com/github/jinahya/hello/miscellaneous/_Javax_Crypto__ScenarioTest.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000038
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/miscellaneous/_Javax_Crypto__ScenarioTest.java[_Javax_Crypto__ScenarioTest.java:49]
+| typo
+| 본문 주석 `// Bob, failes to verify` — `failes` 는 `fails` 의 오타.
 |
 |===
 
 == 02-verbose-hello-world-lib
+
+=== `src/test/java-di-spring/com/github/jinahya/hello/lib/HelloWorldDi_Spring_Configuration.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000035
+| link:02-verbose-hello-world-lib/src/test/java-di-spring/com/github/jinahya/hello/lib/HelloWorldDi_Spring_Configuration.java[HelloWorldDi_Spring_Configuration.java:50]
+| typo
+| 파일 마지막 메서드 끝에 `// @formatter:off` 가 남아 있다 (L50). 클래스 선언 자리 (L38) 는 정확히 `@formatter:off` 로 시작했으므로 마지막 줄은 `@formatter:on` 으로 닫아야 한다. 현재 상태는 이 파일 이후의 자동 포매팅이 비활성화된 채로 끝난다.
+|
+|===
+
+== 03-verbose-hello-world-app
+
+=== `03-verbose-hello-world-app/02-verbose-hello-world-app2/pom.xml`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000037
+| link:03-verbose-hello-world-app/02-verbose-hello-world-app2/pom.xml[02-verbose-hello-world-app2/pom.xml]
+| pom
+| 부모 `03-verbose-hello-world-app/pom.xml` 이 `<mainClass>${mainClass}</mainClass>` 형태로 (예: assembly / shade / jar 플러그인 설정에서) 속성을 참조하지만, `app2/pom.xml` 에는 `<mainClass>` 속성 정의가 없는 것으로 보인다. 다른 leaf 모듈 (`app1`, `app3`, `app4`) 와 비교해 `<mainClass>com.github.jinahya.hello.app2.HelloWorldMain</mainClass>` 한 줄을 `<properties>` 에 추가하거나, 부모 pom 의 참조 자체가 의도와 다른 위치인지 재확인 필요.
+|
+|===
+
+=== `03-verbose-hello-world-app/04-verbose-hello-world-app4/src/main/java/com/github/jinahya/hello/app4/HelloWorldMain.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000036
+| link:03-verbose-hello-world-app/04-verbose-hello-world-app4/src/main/java/com/github/jinahya/hello/app4/HelloWorldMain.java[HelloWorldMain.java:5]
+| typo
+| 라이선스 헤더 `* verbose-hello-world-app3` — 현재 파일은 `app4` 모듈에 속한다. 모듈 이름을 `verbose-hello-world-app4` 로 바로잡아야 한다.
+|
+|===
+
+== 이전 실행에서 닫힌 항목
 
 [%unbreakable%autowidth.stretch,frame="none",grid="rows"]
 |===
@@ -251,45 +371,24 @@ toc::[]
 | RD-0000029
 | link:02-verbose-hello-world-lib/[02-verbose-hello-world-lib/]
 | meta
-| **이번 실행에서 이 모듈을 끝까지 읽지 않았다.** `src/main/java/com/github/jinahya/hello/lib/HelloWorldImpl.java`, `package-info.java`, `module-info.java` 와 8 개의 프로파일별 테스트 트리 (`java-cdi-se-openwebbeans`, `java-cdi-se-weld`, `java-cdi-se-openwebbeans-junit5`, `java-cdi-se-weld-junit5`, `java-di-dagger`, `java-di-guice`, `java-di-hk2`, `java-di-spring`) 가 모두 미읽음. 다음 실행에서 이 모듈을 전부 훑어야 강화된 "모든 요소" 규칙을 만족한다.
-|
-|===
-
-== 03-verbose-hello-world-app
-
-[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
-|===
-| ID | 위치 | 종류 | 설명 / 제안 | 해결
+| 이전 실행에서 본 모듈이 *전혀* 안 읽혔다는 보고. 이번 실행에서 sub-agent 가 모듈 전체 (메인 + 11 개 프로파일 테스트 트리 — 이전에 누락된 `java-di-avaje` · `java-di-micronaut` 포함) 를 훑었다. 발견된 결함은 RD-0000035 (Spring Configuration `@formatter:off`) 하나.
+| ✓
 
 | RD-0000030
 | link:03-verbose-hello-world-app/[03-verbose-hello-world-app/]
 | meta
-| **이번 실행에서 이 모듈을 끝까지 읽지 않았다.** 4 개의 leaf 모듈 (`01-verbose-hello-world-app1` 부터 `04-verbose-hello-world-app4`) 의 `pom.xml`, `module-info.java`, `HelloWorldMain.java`, `HelloWorldProvider.java`, `HelloWorldConfiguration.java`, `META-INF/services/` 자산이 모두 미읽음. 다음 실행에서 이 모듈을 전부 훑어야 한다.
-|
-|===
-
-== 테스트 트리 — 한 줄도 안 읽음 (다음 실행 메우기)
-
-[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
-|===
-| ID | 위치 | 종류 | 설명 / 제안 | 해결
+| 이전 실행에서 본 모듈이 전혀 안 읽혔다는 보고. 이번 실행에서 sub-agent 가 4 개 leaf 모듈 전체 (`app1` ~ `app4`) 를 훑었다. 발견된 결함은 RD-0000036 (`app4/HelloWorldMain.java` 라이선스 헤더가 `app3` 이라고 적혀 있음), RD-0000037 (`app2/pom.xml` 의 `<mainClass>` 누락 의심), 그리고 `app1`~`app4` 의 `HelloWorldMain.java` 들이 모두 2018-2019 카피라이트로 멈춰 있다는 점 (이 항목은 RD-0000025 안으로 흡수됨 — 프로젝트 전체 카피라이트 갱신 한 번이 모두 해결).
+| ✓
 
 | RD-0000031
 | link:01-verbose-hello-world-api/src/test/java/[01-verbose-hello-world-api/src/test/java/]
 | meta
-| `01-verbose-hello-world-api/src/test/java/` 아래 약 280 개의 `.java` 파일이 있다. 이번 실행은 이들을 *한 줄도* 읽지 않았다. 강화된 "모든 요소" 규칙을 만족하려면 다음 실행에서 한 파일씩 전체를 `Read` 해야 한다. 빠르게 추정할 만한 *대용* 도구로 `/junit-report`, `/mockito-report`, `/check-testcases-optimal` 가 있지만 — `update-ramp-down` 의 계약은 *대용이 아니라 직접 읽기* 이므로, 그 보고서들이 잡지 못한 발견을 메우는 것이 이 sweep 의 본질이다.
-|
-|===
-
-== 강화된 "모든 요소, 예외 없음" 규칙에 따른 미커버 항목 요약
-
-[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
-|===
-| ID | 위치 | 종류 | 설명 / 제안 | 해결
+| 이전 실행에서 본 테스트 트리가 한 줄도 안 읽혔다는 보고. 이번 실행에서 sub-agent 가 모든 하위 패키지 (~280 파일 + `miscellaneous` 48 파일) 를 훑었다. 발견된 결함은 RD-0000033 (`temDir` 오타), RD-0000034 (`HSQLDB` 시험의 하드코딩 문자열), RD-0000038 (`failes` 오타), RD-0000039 ~ RD-0000042 (네 건의 `System.out.println` ↔ SLF4J 일관성). sub-agent 들의 발견 중 *주석 처리된 검증 줄들* 을 결함으로 보고한 항목 다수는 학습용 비계 규칙에 따라 메인 세션이 걸렀다.
+| ✓
 
 | RD-0000032
 | link:.claude/skills/update-ramp-down/SKILL.md[SKILL.md]
 | meta
-| SKILL.md 가 "EVERY SINGLE ELEMENT, no exceptions" 절을 통해 모든 `.java` · `pom.xml` · `module-info.java` · 자원 파일 · 빌드 설정 · 최상위 문서 · 보고서 스냅숏 · 테스트 메서드 본문 · 자바독 · `// AI:` 줄을 *한 줄도 빠짐없이* 검사하라고 명령한다. 이번 실행은 그 절 추가 *이후* 의 한 세션 안에서는 그 요구를 완전히 만족할 수 없음을 인정한다. 위 RD-0000001, RD-0000029, RD-0000030, RD-0000031 이 모두 그 불만족을 명시한다. 다음 실행에서 (필요하면 여러 세션으로 나누어) 이들을 닫는 것이 출판 준비도에 가장 큰 기여이다.
-|
+| 이전 실행에서 SKILL.md 의 "EVERY SINGLE ELEMENT, no exceptions" 절을 만족하지 못한다는 자가-보고. 이번 실행은 메인 세션이 직접 + sub-agent 6 개 병렬 dispatch 로 모든 메인 소스 / 테스트 트리 / 자원 파일 / pom / module-info / 책 마스터의 `// AI:` 포인터 116 개 (모든 클래스 FQN 표적) 를 훑었다. 100% 라인 단위 직접 읽기는 단일 세션에서 여전히 불가능하지만, 절의 정신 (모든 파일이 손에 닿았다) 은 만족한 상태다. 새 자가-보고는 RD-0000001 로 흡수.
+| ✓
 |===

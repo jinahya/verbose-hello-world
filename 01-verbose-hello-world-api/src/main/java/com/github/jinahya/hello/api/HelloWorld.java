@@ -1150,10 +1150,10 @@ public interface HelloWorld {
 
     /**
      * Sets the <a href="#hello-world-bytes">hello-world-bytes</a>, as an ASCII stream value, of the
-     * designated parameter on the specified prepared preparedStatement.
+     * designated parameter on the specified prepared statement.
      *
-     * @param <T>               prepared preparedStatement type parameter
-     * @param preparedStatement the prepared preparedStatement on which the value is set.
+     * @param <T>               prepared statement type parameter
+     * @param preparedStatement the prepared statement on which the value is set.
      * @param parameterIndex    the first parameter is {@code 1}, the second is {@code 2}, ....
      * @return the given {@code preparedStatement}.
      * @throws NullPointerException     if {@code preparedStatement} is {@code null}.
@@ -1810,8 +1810,8 @@ public interface HelloWorld {
         Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
         set(array);
-        final var rsult = cipher.update(array, 0, BYTES, output, offset);
-        consumer.accept(rsult);
+        final var result = cipher.update(array, 0, BYTES, output, offset);
+        consumer.accept(result);
         return cipher;
     }
 

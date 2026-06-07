@@ -46,7 +46,7 @@ class _Javax_Crypto__ScenarioTest {
             // Alice and Bob both have their keypairs
             // Alice send a message(hello, world) and a signature to Bob
             // Mallory, intercept the message, modifies it to 'hello, world!' and send to Bob, with Alice's signature
-            // Bob, failes to verify
+            // Bob, fails to verify
         }
     }
 }

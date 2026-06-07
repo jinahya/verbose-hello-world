@@ -2,7 +2,7 @@ package com.github.jinahya.hello.app4;
 
 /*-
  * #%L
- * verbose-hello-world-app3
+ * verbose-hello-world-app4
  * %%
  * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%

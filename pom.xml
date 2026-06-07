@@ -53,7 +53,7 @@
     <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
-    <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
+    <maven.compiler.testRelease>${maven.compiler.testTarget}</maven.compiler.testRelease>
     <sonar.organization>jinahya-github</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!--    <version.com.formdev>3.3</version.com.formdev>-->
