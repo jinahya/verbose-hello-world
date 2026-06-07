@@ -43,7 +43,8 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
     void __stubService() throws IOException {
         doAnswer(i -> {
             final var socket = i.getArgument(0, DatagramSocket.class);
-            socket.send(new DatagramPacket(hello_world_byte_array(), HelloWorld.BYTES));
+            final var packet = new DatagramPacket(hello_world_byte_array(), HelloWorld.BYTES);
+            socket.send(packet);
             return socket;
         }).when(service()).send(argThat(DatagramSocket::isConnected));
     }
@@ -74,6 +75,48 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
             try (var client = new DatagramSocket()) {
                 client.connect(server.getLocalSocketAddress());
                 service().send(client);
+            }
+        }
+    }
+
+    @DisplayName("echo server")
+    @Nested
+    class EchoServer_Test {
+
+        @DisplayName("""
+                client should <send(socket)> to a connected server;
+                server should echo the bytes back to the sender""")
+        @Test
+        void __() throws IOException {
+            try (var server = new DatagramSocket(null)) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        final var packet = new DatagramPacket(
+                                new byte[HelloWorld.BYTES], HelloWorld.BYTES
+                        );
+                        server.receive(packet);
+                        assert packet.getOffset() == 0;
+                        assert packet.getLength() == HelloWorld.BYTES;
+                        assert packet.getSocketAddress() != null;
+                        server.send(packet);
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                });
+                try (var client = new DatagramSocket()) {
+                    client.connect(server.getLocalSocketAddress());
+                    service().send(client);
+                    final var packet = new DatagramPacket(
+                            new byte[HelloWorld.BYTES], HelloWorld.BYTES
+                    );
+                    client.receive(packet);
+                    assert packet.getOffset() == 0;
+                    assert packet.getLength() == HelloWorld.BYTES;
+                    assert packet.getSocketAddress() != null;
+                    final var decoded = new String(packet.getData(), StandardCharsets.US_ASCII);
+                    log.debug("'{}' echoed from {}", decoded, packet.getSocketAddress());
+                }
             }
         }
     }
