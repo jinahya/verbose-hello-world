@@ -97,7 +97,9 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        doAnswer(returnsFirstArg()).when(service).set(any(byte[].class), anyInt());
+        doAnswer(returnsFirstArg())
+                .when(service)
+                .set(any(byte[].class), anyInt());
         final var array = new byte[HelloWorld.BYTES];
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(array);

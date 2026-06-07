@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api._java_io;
+package com.github.jinahya.hello.miscellaneous;
 
 /*-
  * #%L
@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api._java_io;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -29,29 +28,21 @@ import org.junit.jupiter.api.io.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("append(file)")
+@DisplayName("java.io.File")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Append_File__Test extends HelloWorld__Test {
+class _Java_Io_File__Test {
 
     @TempDir
     private static File tempDir;
 
     // ---------------------------------------------------------------------------------------------
-    @BeforeEach
-    void __stubService() throws IOException {
-        append_file_appends_hello_world(service());
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    @DisplayName("should throw a <FileNotFoundException> when the <file> is a <directory>")
+    @DisplayName("opening a <FileOutputStream> on a <directory> throws <FileNotFoundException>")
     @Test
     void __Directory() {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
         final var directory = new File(tempDir, Long.toString(System.nanoTime()));
         assert directory.mkdir();
         assert directory.exists();
@@ -59,60 +50,52 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         assert directory.isDirectory();
         final var length = directory.length(); // unspecified
         // ----------------------------------------------------------------------------- when / then
-        assertThrows(FileNotFoundException.class, () -> service.append(directory));
+        assertThrows(
+                FileNotFoundException.class,
+                () -> {
+                    try (var _ = new FileOutputStream(directory, true)) {
+                    }
+                }
+        );
     }
 
-    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
+    @DisplayName("appending <N> bytes to an existing <file> increases its length by <N>")
     @Test
     void __Existing() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
         final var file = File.createTempFile("tmp", null, tempDir);
         assert file.exists();
         assert file.isFile();
         assert !file.isDirectory();
-        HelloWorld__TestUtils.writeSome(file);
+        try (var stream = new FileOutputStream(file)) {
+            stream.write(new byte[ThreadLocalRandom.current().nextInt(128)]);
+        }
         final var length = file.length();
+        final var bytes = new byte[ThreadLocalRandom.current().nextInt(1, 128)];
         // ------------------------------------------------------------------------------------ when
-        service.append(file);
+        try (var stream = new FileOutputStream(file, true)) {
+            stream.write(bytes);
+        }
         // ------------------------------------------------------------------------------------ then
-        assertEquals(length + HelloWorld.BYTES, file.length());
+        assertEquals(length + bytes.length, file.length());
     }
 
-    @DisplayName("should create the <file> with <12> bytes when the <file> does not exist")
+    @DisplayName("writing <N> bytes to a non-existing <file> creates it with length <N>")
     @Test
     void __NotExisting() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = service();
         final var file = new File(tempDir, Long.toString(System.nanoTime()));
         assert !file.exists();
         assert !file.isFile();
         assert !file.isDirectory();
-        final var length = file.length();
-        assert length == 0;
+        assert file.length() == 0;
+        final var bytes = new byte[ThreadLocalRandom.current().nextInt(1, 128)];
         // ------------------------------------------------------------------------------------ when
-        service.append(file);
+        try (var stream = new FileOutputStream(file)) {
+            stream.write(bytes);
+        }
         // ------------------------------------------------------------------------------------ then
         assertTrue(file.isFile());
-        assertEquals(HelloWorld.BYTES, file.length());
-    }
-
-    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
-    @Test
-    void __() throws IOException {
-        // ----------------------------------------------------------------------------------- given
-        final var service = service();
-        final var file = File.createTempFile("tmp", null, tempDir);
-        assert file.exists();
-        assert file.isFile();
-        assert !file.isDirectory();
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            final var deleted = file.delete();
-            assert deleted;
-        }
-        // ------------------------------------------------------------------------------------ when
-        service.append(file);
-        // ------------------------------------------------------------------------------------ then
-        assertEquals(HelloWorld.BYTES, file.length());
+        assertEquals(bytes.length, file.length());
     }
 }

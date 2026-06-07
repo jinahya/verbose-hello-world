@@ -38,6 +38,8 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.zip.*;
 
+import static java.nio.charset.StandardCharsets.*;
+
 /**
  * An interface for writing <a href="#hello-world-bytes">hello-world-bytes</a> to various targets.
  * <p>
@@ -126,7 +128,7 @@ public interface HelloWorld {
      *     throw new NullPointerException("array is null");
      * }
      * if (array.length < BYTES) {
-     *     throw new IndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
      * }
      * set(array, 0); // @highlight
      * return array;
@@ -148,7 +150,9 @@ public interface HelloWorld {
 //            throw new NullPointerException("array is null");
 //        }
 //        if (array.length < BYTES) {
-//            throw new IndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
+//            throw new ArrayIndexOutOfBoundsException(
+//                    "array.length(" + array.length + ") < " + BYTES
+//            );
 //        }
 //        set(array, 0);
 //        return array;
@@ -516,7 +520,7 @@ public interface HelloWorld {
         final var offset = packet.getOffset();
         final var length = packet.getLength();
         if (offset + length + BYTES > data.length) {
-            throw new IllegalArgumentException("packet.data is not enough");
+            throw new IllegalArgumentException("not enough remaining space in the packet");
         }
 //        set(data, offset + length);
 //        packet.setLength(packet.getLength() + BYTES);
@@ -1299,7 +1303,7 @@ public interface HelloWorld {
         final var array = new byte[BYTES];
         set(array);
         try (var reader = new InputStreamReader(new ByteArrayInputStream(array),
-                                                StandardCharsets.US_ASCII)) {
+                                                US_ASCII)) {
             preparedStatement.setCharacterStream(parameterIndex, reader);
         }
         return preparedStatement;
@@ -1474,7 +1478,7 @@ public interface HelloWorld {
         }
         final var array = new byte[BYTES];
         set(array);
-        final var string = new String(array, StandardCharsets.US_ASCII);
+        final var string = new String(array, US_ASCII);
         clob.setString(pos, string);
         return clob;
     }
@@ -1502,7 +1506,7 @@ public interface HelloWorld {
         Objects.requireNonNull(iterator, "iterator is null");
         final var array = new byte[BYTES];
         set(array);
-        final var string = new String(array, StandardCharsets.US_ASCII);
+        final var string = new String(array, US_ASCII);
         iterator.setText(string);
         return iterator;
     }
