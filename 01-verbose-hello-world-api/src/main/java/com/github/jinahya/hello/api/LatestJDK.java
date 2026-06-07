@@ -22,11 +22,26 @@ package com.github.jinahya.hello.api;
 
 import java.lang.annotation.*;
 
+/**
+ * A source-only marker for declarations whose value, list, or shape reflects the latest (current)
+ * release of the Java platform, including non-LTS feature releases. Used on constants such as
+ * algorithm/transformation tables to flag which entries are mandated by the current JDK's API
+ * documentation.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see LatestLTS
+ * @see LatestJDKContainer
+ */
 @Documented
 @Repeatable(LatestJDKContainer.class)
 @Retention(RetentionPolicy.SOURCE)
 @SuppressWarnings({"UnicodeInCode"})
 public @interface LatestJDK {
 
+    /**
+     * An optional note (e.g., the JDK version number or a free-text qualifier).
+     *
+     * @return the note; defaults to an empty string.
+     */
     String value() default "";
 }

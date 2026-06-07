@@ -27,6 +27,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
 
 import java.io.*;
+import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,11 +40,13 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
     @TempDir
     private static File tempDir;
 
+    // ---------------------------------------------------------------------------------------------
     @BeforeEach
-    void __() throws IOException {
+    void __stubService() throws IOException {
         append_file_appends_hello_world(service());
     }
 
+    // ---------------------------------------------------------------------------------------------
     @DisplayName("should throw a <FileNotFoundException> when the <file> is a <directory>")
     @Test
     void __Directory() {
@@ -91,6 +94,25 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         service.append(file);
         // ------------------------------------------------------------------------------------ then
         assertTrue(file.isFile());
+        assertEquals(HelloWorld.BYTES, file.length());
+    }
+
+    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
+    @Test
+    void __() throws IOException {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var file = File.createTempFile("tmp", null, tempDir);
+        assert file.exists();
+        assert file.isFile();
+        assert !file.isDirectory();
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            final var deleted = file.delete();
+            assert deleted;
+        }
+        // ------------------------------------------------------------------------------------ when
+        service.append(file);
+        // ------------------------------------------------------------------------------------ then
         assertEquals(HelloWorld.BYTES, file.length());
     }
 }

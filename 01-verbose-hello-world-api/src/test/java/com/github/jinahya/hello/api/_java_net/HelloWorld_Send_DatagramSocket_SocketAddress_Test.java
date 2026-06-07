@@ -45,16 +45,6 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test {
 
-    static {
-        final var pin = new Runnable[] {
-                () -> ArgumentCaptor.forClass(Object.class),
-                () -> verify(null),
-                () -> times(0),
-                () -> assertNotNull(null),
-                () -> assertEquals(0, 1),
-                () -> assertSame(0, 1)};
-    }
-
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)}
      * method throws a {@link NullPointerException} when the {@code socket} argument is

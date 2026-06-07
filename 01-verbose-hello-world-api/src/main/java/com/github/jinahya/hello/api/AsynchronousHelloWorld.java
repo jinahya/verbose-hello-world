@@ -394,7 +394,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                 handler.failed(t, attachment);
                 return;
             }
-            channel.write(b, position, position, new CompletionHandler<>() { // @formater:off
+            channel.write(b, position, position, new CompletionHandler<>() { // @formatter:off
                 @Override
                 public void completed(final Integer result, Long attachment_) {
                     if (b.hasRemaining()) {
@@ -408,7 +408,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                 @Override
                 public void failed(final Throwable exc, final Long attachment_) {
                     handler.failed(exc, attachment);
-                } // @formater:off
+                } // @formatter:on
             });
         });
     }

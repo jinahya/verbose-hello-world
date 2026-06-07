@@ -31,10 +31,13 @@ import org.junit.jupiter.params.provider.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
+import java.util.*;
 import java.util.stream.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.io.File.*;
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("write(writer)")
@@ -48,6 +51,12 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
 
     private static Stream<Charset> charsetStream() {
         return _Java_Nio_Charset_TestUtils.charsetStream();
+    }
+
+    private static void print(final Charset charset, final byte[] bytes) {
+        final var n = Math.min(4, bytes.length);
+        final var hex = HexFormat.of().withDelimiter(" ").formatHex(bytes, 0, n);
+        log.debug("charset: {} ({}) [{}]", String.format("%14s", charset), bytes.length, hex);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -75,11 +84,11 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
                  var writer = new OutputStreamWriter(in, charset)) {
                 service().write(writer).flush();
                 final var buf = in.toByteArray();
-                log.debug("charset: {} ({})", String.format("%14s", charset), buf.length);
+                print(charset, buf);
                 try (var out = new ByteArrayInputStream(buf);
                      var reader = new InputStreamReader(out, charset)) {
                     final var string = reader.readAllAsString();
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -88,13 +97,13 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
-                 var writer = new OutputStreamWriter(baos, StandardCharsets.US_ASCII)) {
-                writer.write(HelloWorld__TestConstants.HELLO_WORLD_STRING);
+                 var writer = new OutputStreamWriter(baos, US_ASCII)) {
+                writer.write(HELLO_WORLD_STRING);
                 writer.flush();
                 try (var bais = new ByteArrayInputStream(baos.toByteArray());
-                     final var reader = new InputStreamReader(bais, StandardCharsets.US_ASCII)) {
+                     final var reader = new InputStreamReader(bais, US_ASCII)) {
                     final var string = reader.readAllAsString();
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -117,10 +126,10 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             try (var writer = new FileWriter(file, charset)) {
                 service().write(writer).flush();
             }
-            log.debug("charset: {} ({})", String.format("%14s", charset), file.length());
+            print(charset, Files.readAllBytes(file.toPath()));
             try (var reader = new FileReader(file, charset)) {
                 final var string = reader.readAllAsString();
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HELLO_WORLD_STRING, string);
             }
         }
 
@@ -128,13 +137,24 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
         @Test
         void __() throws IOException {
             final var file = createTempFile("tmp", null, tempDir);
-            try (var writer = new FileWriter(file, StandardCharsets.US_ASCII, true)) {
-                writer.write(HelloWorld__TestConstants.HELLO_WORLD_STRING);
+            try (var writer = new FileWriter(file, US_ASCII, true)) {
+                writer.write(HELLO_WORLD_STRING);
                 writer.flush();
             }
             assertEquals(HelloWorld.BYTES, file.length());
-            assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING,
-                         Files.readString(file.toPath()));
+            assertEquals(HELLO_WORLD_STRING, Files.readString(file.toPath()));
+        }
+
+        @Nested
+        class Append_Test {
+
+            void __() throws IOException {
+                final var tempFile = File.createTempFile("tmp", null, tempDir);
+                try (var writer = new FileWriter(tempFile)) {
+                    service().write(writer).flush();
+                }
+                assertEquals(HelloWorld.BYTES, tempFile.length());
+            }
         }
     }
 }

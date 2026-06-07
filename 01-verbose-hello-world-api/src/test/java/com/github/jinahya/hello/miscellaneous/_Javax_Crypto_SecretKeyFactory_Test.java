@@ -20,14 +20,79 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.extern.slf4j.*;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
 import org.junit.jupiter.api.*;
 
-@Slf4j
+import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_SecretKeyFactory_TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * .
+ *
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
+ * (Java 25)
+ * @see <a
+ * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
+ * (Java 26)
+ */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_SecretKeyFactory_Test {
 
-    @Nested
-    class PBKDF2_Test {
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @DisplayName("DESede")
+    @Test
+    void __DESede() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var bundle = DESede();
+        // ------------------------------------------------------------------------------------ when
+        final var key1 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        final var key2 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(key1, key2);
+    }
 
+    // ---------------------------------------------------------------------------------------------
+    @LatestJDK
+    @DisplayName("PBEWithHmacSHA256AndAES_128")
+    @Test
+    void __PBEWithHmacSHA256AndAES_128() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var bundle = PBEWithHmacSHA256AndAES_128();
+        // ------------------------------------------------------------------------------------ when
+        final var key1 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        final var key2 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(key1, key2);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @LatestJDK
+    @DisplayName("PBEWithHmacSHA256AndAES_256")
+    @Test
+    void __PBEWithHmacSHA256AndAES_256() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var bundle = PBEWithHmacSHA256AndAES_256();
+        // ------------------------------------------------------------------------------------ when
+        final var key1 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        final var key2 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(key1, key2);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @LatestJDK
+    @DisplayName("PBKDF2WithHmacSHA256")
+    @Test
+    void __PBKDF2WithHmacSHA256() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var bundle = PBKDF2WithHmacSHA256(256);
+        // ------------------------------------------------------------------------------------ when
+        final var key1 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        final var key2 = bundle.factory().generateSecret(bundle.spec()).getEncoded();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(key1, key2);
     }
 }

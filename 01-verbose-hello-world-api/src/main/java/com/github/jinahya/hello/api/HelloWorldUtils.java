@@ -115,6 +115,7 @@ public final class HelloWorldUtils {
      * @see #array(HelloWorld)
      */
     public static String string(final HelloWorld service) {
+        Objects.requireNonNull(service, "service is null");
         return new String(array(service), StandardCharsets.US_ASCII);
     }
 
@@ -161,7 +162,7 @@ public final class HelloWorldUtils {
      */
     public static DatagramPacket packet(final HelloWorld service) {
         return service.append(
-                new DatagramPacket(new byte[HelloWorld.BYTES], HelloWorld.BYTES)
+                new DatagramPacket(new byte[HelloWorld.BYTES], 0)
         );
     }
 
@@ -183,7 +184,7 @@ public final class HelloWorldUtils {
      */
     public static DatagramPacket packet(final HelloWorld service, final SocketAddress address) {
         return service.append(
-                new DatagramPacket(new byte[HelloWorld.BYTES], HelloWorld.BYTES, address)
+                new DatagramPacket(new byte[HelloWorld.BYTES], 0, address)
         );
     }
 

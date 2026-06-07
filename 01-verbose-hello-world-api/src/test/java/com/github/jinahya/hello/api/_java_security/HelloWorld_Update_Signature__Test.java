@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Security_Signature_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
@@ -102,536 +103,252 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    /**
-     * {@code RSASSA-PSS} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는 {@link Nested} 테스트. RSA 키 길이와 MGF1
-     * 다이제스트(SHA-256 / SHA-384)를 조합해서 여러 파라미터로 같은 흐름을 반복한다.
-     */
-    @DisplayName("RSASSA-PSS")
-    @Nested
-    class RSASSA_PSS_Test {
-
-        private static final String KEY_PAIR_ALGORITHM = "RSASSA-PSS";
-
-        private static final String MGF1_ALGORITHM = "MGF1";
-
-        private static final String SIGNATURE_ALGORITHM = "RSASSA-PSS";
-
-        /**
-         * {@link #__(int, MGF1ParameterSpec, int)} 에 넘길 RSA 키 길이와 MGF1 파라미터의 조합을 만들어 준다.
-         *
-         * @return 키 길이({@code 2048 / 3072 / 4096}) × MGF1({@code SHA-256 / SHA-384}) 의 모든 조합을 담은
-         * {@link Arguments} 스트림.
-         */
-        private static Stream<Arguments> pssTestProvider() {
-            return Stream.of(2048, 3072, 4096)
-                    .flatMap(k -> Stream.of(
-                            Arguments.of(k, MGF1ParameterSpec.SHA256, 256 >> 3),
-                            Arguments.of(k, MGF1ParameterSpec.SHA384, 384 >> 3)
-                    ));
-        }
-
-        /**
-         * 주어진 RSA 키 길이와 MGF1 파라미터로 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
-         *
-         * @param keysize 키 길이(비트). ({@code 2048 / 3072 / 4096}.)
-         * @param mgfSpec MGF1 의 다이제스트 파라미터.
-         * @param saltLen 솔트 길이(바이트).
-         */
-        @DisplayName(
-                "should sign and verify the hello-world bytes with a <real RSASSA-PSS> signature")
-        @ParameterizedTest(name = "{0}-bit RSA with {1}")
-        @MethodSource({"pssTestProvider"})
-        void __(int keysize, final MGF1ParameterSpec mgfSpec, final int saltLen) throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keysize
-            );
-            final var pssSpec = new PSSParameterSpec(
-                    mgfSpec.getDigestAlgorithm(),     // <mdName>
-                    MGF1_ALGORITHM,                   // <mgfName>
-                    mgfSpec,                          // <mgfSpec>
-                    saltLen,                          // <saltLen>
-                    PSSParameterSpec.TRAILER_FIELD_BC // <trailerField>
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                try {
-                    instance.initSign(keyPair.getPrivate());
-                } catch (final InvalidKeyException ike) {
-                    throw new TestAbortedException(ike.getMessage(), ike);
-                }
-                instance.setParameter(pssSpec);
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(keysize, pssSpec, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                instance.setParameter(pssSpec);
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
-        }
-
-        /**
-         * 12바이트짜리 데모가 아닌 임시 파일을 대상으로 {@code RSASSA-PSS} 서명·검증 한 묶음을 끝까지 돌려 본다. 서명할 때는
-         * {@link FileInputStream} 으로 파일을 읽어 {@link Signature#update(byte[], int, int)} 에 흘려 넣고, 검증할
-         * 때는 같은 파일을 {@link FileChannel} 로 읽어 {@link Signature#update(ByteBuffer)} 에 흘려 넣어 두 경로 모두
-         * 같은 서명을 만들고 검증함을 확인한다.
-         */
-        @DisplayName("should sign a <file> with <FileInputStream> and verify it with <FileChannel>")
-        @Test
-        void __file() throws Exception {
-            final var file = writeSome(File.createTempFile("tmp", null, tempDir));
-            // -------------------------------------------------------------------------------------
-            final var mgfSpec = MGF1ParameterSpec.SHA384;
-            final var pssSpec = new PSSParameterSpec(
-                    mgfSpec.getDigestAlgorithm(),
-                    MGF1_ALGORITHM,
-                    mgfSpec,
-                    384 >> 3,
-                    PSSParameterSpec.TRAILER_FIELD_BC
-            );
-            final PublicKey publicKey;
-            final byte[] signature;
-            {
-                final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                        KEY_PAIR_ALGORITHM,
-                        4096
-                );
-                publicKey = keyPair.getPublic();
-                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-                instance.initSign(keyPair.getPrivate());
-                instance.setParameter(pssSpec);
-                try (var stream = new FileInputStream(file)) {
-                    final var b = new byte[128];
-                    for (int r; (r = stream.read(b)) != -1; ) {
-                        instance.update(b, 0, r);
-                    }
-                }
-                signature = instance.sign();
-            }
-            {
-                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-                instance.initVerify(publicKey);
-                instance.setParameter(pssSpec);
-                try (var channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-                    for (final var b = ByteBuffer.allocate(128); channel.read(b.clear()) != -1; ) {
-                        instance.update(b.flip());
-                    }
-                }
-                final var verified = instance.verify(signature);
-                assertTrue(verified);
-            }
-        }
-    }
-
-    // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
-
-    /**
-     * {@code DSA} 키쌍과 {@code SHA1withDSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는 {@link Nested} 테스트.
-     */
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA1withDSA")
-    @Nested
-    class SHA1WithDSATest {
-
-        private static final String KEY_PAIR_ALGORITHM = "DSA";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA1withDSA";
-
-        /**
-         * 주어진 키 길이로 DSA 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
-         *
-         * @param keysize DSA 키 길이(비트). ({@code 1024 / 2048}.)
-         */
-        @DisplayName(
-                "should sign and verify the hello-world bytes with a <real SHA1withDSA> signature")
-        @ValueSource(ints = {
-                1024, 2048
-        })
-        @ParameterizedTest
-        void __(final int keysize) throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keysize
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                try {
-                    instance.initSign(keyPair.getPrivate());
-                } catch (final InvalidKeyException ike) {
-                    throw new TestAbortedException(ike.getMessage(), ike);
-                }
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(keysize, null, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @ValueSource(ints = {1024})
+    @ParameterizedTest
+    void __SHA1withDSA(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA1withDSA(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 
-    /**
-     * {@code DSA} 키쌍과 {@code SHA256withDSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는 {@link Nested} 테스트.
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA256withDSA")
-    @Nested
-    class SHA256WithDSATest {
-
-        private static final String KEY_PAIR_ALGORITHM = "DSA";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA256withDSA";
-
-        /**
-         * 주어진 키 길이로 DSA 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
-         *
-         * @param keysize DSA 키 길이(비트). ({@code 1024 / 2048}.)
-         */
-        @DisplayName("""
-                should sign and verify the hello-world bytes
-                with a <real SHA256withDSA> signature""")
-        @ValueSource(ints = {
-                1024, 2048
-        })
-        @ParameterizedTest
-        void __(final int keysize) throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keysize
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                try {
-                    instance.initSign(keyPair.getPrivate());
-                } catch (final InvalidKeyException ike) {
-                    throw new TestAbortedException(ike.getMessage(), ike);
-                }
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(keysize, null, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @ValueSource(ints = {2048})
+    @ParameterizedTest
+    void __SHA256withDSA(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA256withDSA(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 
-    /**
-     * {@code EC} 키쌍({@code secp256r1} 곡선)과 {@code SHA256withECDSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는
-     * {@link Nested} 테스트.
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA256withECDSA")
-    @Nested
-    class SHA256WithECDSA_Test {
-
-        private static final String KEY_PAIR_ALGORITHM = "EC";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA256withECDSA";
-
-        private static final String CURVE_NAME = "secp256r1"; // Standard for P-256
-
-        /**
-         * {@link ECGenParameterSpec} 로 {@code secp256r1} EC 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
-         */
-        @DisplayName("""
-                should sign and verify the hello-world bytes
-                with a <real SHA256withECDSA> signature on <secp256r1>""")
-        @Test
-        void __() throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keyPairSpec
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                instance.initSign(keyPair.getPrivate());
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(CURVE_NAME, null, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @Test
+    void __SHA256withECDSA() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA256withECDSA();
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 
-    /**
-     * {@code EC} 키쌍({@code secp384r1} 곡선)과 {@code SHA384withECDSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는
-     * {@link Nested} 테스트.
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA384withECDSA")
-    @Nested
-    class SHA384withECDSA_Test {
-
-        private static final String KEY_PAIR_ALGORITHM = "EC";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA384withECDSA";
-
-        private static final String CURVE_NAME = "secp384r1";
-
-        /**
-         * {@link ECGenParameterSpec} 로 {@code secp384r1} EC 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 서명한 뒤, 공개 키로 다시 검증해서 같은 결과가 나오는지 두 번 확인한다.
-         */
-        @DisplayName("""
-                should sign and verify the hello-world bytes
-                with a <real SHA384withECDSA> signature on <secp384r1>""")
-        @Test
-        void __() throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keyPairSpec
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // --------------------------------------------------------------- sign with private key
-                instance.initSign(keyPair.getPrivate());
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(CURVE_NAME, null, i, signature);
-                // -------------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // -------------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @Test
+    void __SHA384withECDSA() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA384withECDSA();
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
-
-        /**
-         * 12바이트짜리 데모가 아닌 임시 파일을 대상으로 {@code SHA384withECDSA} 서명·검증 한 묶음을 끝까지 돌려 본다. 서명할 때는
-         * {@link FileChannel} 로 파일을 읽어 {@link Signature#update(ByteBuffer)} 에 흘려 넣고, 검증할 때는 같은 파일을
-         * {@link FileInputStream} 으로 읽어 {@link Signature#update(byte[], int, int)} 에 흘려 넣어 두 경로 모두
-         * 같은 서명을 만들고 검증함을 확인한다.
-         */
-        @DisplayName("should sign a <file> with <FileChannel> and verify it with <FileInputStream>")
-        @Test
-        void __file() throws Exception {
-            final var file = writeSome(
-                    File.createTempFile("tmp", null, tempDir)
-            );
-            // -------------------------------------------------------------------------------------
-            final var keyPairSpec = new ECGenParameterSpec(CURVE_NAME);
-            final PublicKey publicKey;
-            final byte[] signature;
-            {
-                final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                        KEY_PAIR_ALGORITHM,
-                        keyPairSpec
-                );
-                publicKey = keyPair.getPublic();
-                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-                instance.initSign(keyPair.getPrivate());
-                try (var channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-                    for (final var b = ByteBuffer.allocate(128); channel.read(b.clear()) != -1; ) {
-                        instance.update(b.flip());
-                    }
-                }
-                signature = instance.sign();
-            }
-            {
-                final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-                instance.initVerify(publicKey);
-                try (var stream = new FileInputStream(file)) {
-                    final var b = new byte[128];
-                    for (int r; (r = stream.read(b)) != -1; ) {
-                        instance.update(b, 0, r);
-                    }
-                }
-                final var verified = instance.verify(signature);
-                assertTrue(verified);
-            }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 
-    /**
-     * {@code RSA} 키쌍과 {@code SHA1withRSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는 {@link Nested} 테스트.
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA1withRSA")
-    @Nested
-    class SHA1withRSA_Test {
-
-        private static final String KEY_PAIR_ALGORITHM = "RSA";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
-
-        /**
-         * 주어진 키 길이로 RSA 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 {@code SHA1withRSA} 서명을 만든 뒤, 공개 키로 다시 검증해서 같은
-         * 결과가 나오는지 두 번 확인한다.
-         *
-         * @param keysize RSA 키 길이(비트). ({@code 1024 / 2048 / 3072 / 4096}.)
-         */
-        @DisplayName(
-                "should sign and verify the hello-world bytes with a <real SHA1withRSA> signature")
-        @ValueSource(ints = {
-                1024, 2048, 3072, 4096
-        })
-        @ParameterizedTest
-        void __(final int keysize) throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keysize
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                try {
-                    instance.initSign(keyPair.getPrivate());
-                } catch (final InvalidKeyException ike) {
-                    throw new TestAbortedException(ike.getMessage(), ike);
-                }
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(keysize, null, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @ValueSource(ints = {2048})
+    @ParameterizedTest
+    void __SHA1withRSA(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA1withRSA(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 
-    /**
-     * {@code RSA} 키쌍과 {@code SHA256withRSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는 {@link Nested} 테스트.
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA256withRSA")
-    @Nested
-    class SHA256withRSA_Test {
-
-        private static final String KEY_PAIR_ALGORITHM = "RSA";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
-
-        /**
-         * 주어진 키 길이로 RSA 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 {@code SHA256withRSA} 서명을 만든 뒤, 공개 키로 다시 검증해서
-         * 같은 결과가 나오는지 두 번 확인한다.
-         *
-         * @param keysize RSA 키 길이(비트). ({@code 1024 / 2048 / 3072 / 4096}.)
-         */
-        @DisplayName("""
-                should sign and verify the hello-world bytes
-                with a <real SHA256withRSA> signature""")
-        @ValueSource(ints = {
-                1024, 2048, 3072, 4096
-        })
-        @ParameterizedTest
-        void __(final int keysize) throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keysize
-            );
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                try {
-                    instance.initSign(keyPair.getPrivate());
-                } catch (final InvalidKeyException ike) {
-                    throw new TestAbortedException(ike.getMessage(), ike);
-                }
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(keysize, null, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @ValueSource(ints = {2048})
+    @ParameterizedTest
+    void __SHA256withRSA(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA256withRSA(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 
-    /**
-     * {@code RSA} 키쌍과 {@code SHA384withRSA} 알고리즘으로 서명·검증의 한 묶음을 끝까지 돌려 보는 {@link Nested} 테스트.
-     */
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
     @DisplayName("SHA384withRSA")
-    @Nested
-    class SHA384withRSA_Test {
-
-        private static final String KEY_PAIR_ALGORITHM = "RSA";
-
-        private static final String SIGNATURE_ALGORITHM = "SHA384withRSA";
-
-        /**
-         * 주어진 키 길이로 RSA 키쌍을 생성하고,
-         * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature)
-         * service().update(instance)} 로 12바이트를 흘려 넣어 {@code SHA384withRSA} 서명을 만든 뒤, 공개 키로 다시 검증해서
-         * 같은 결과가 나오는지 두 번 확인한다.
-         *
-         * @param keysize RSA 키 길이(비트). ({@code 1024 / 2048 / 3072 / 4096}.)
-         */
-        @DisplayName("""
-                should sign and verify the hello-world bytes
-                with a <real SHA384withRSA> signature""")
-        @ValueSource(ints = {
-                1024, 2048, 3072, 4096
-        })
-        @ParameterizedTest
-        void __(final int keysize) throws Exception {
-            // ------------------------------------------------------------------------------- given
-            final var keyPair = _Java_Security_TestUtils.generateKeyPair(
-                    KEY_PAIR_ALGORITHM,
-                    keysize
-            );
-            // -------------------------------------------------------------------------------- when
-            final var instance = Signature.getInstance(SIGNATURE_ALGORITHM);
-            for (int i = 0; i < 2; i++) {
-                // ----------------------------------------------------------- sign with private key
-                try {
-                    instance.initSign(keyPair.getPrivate());
-                } catch (final InvalidKeyException ike) {
-                    throw new TestAbortedException(ike.getMessage(), ike);
-                }
-                service().update(instance);
-                final var signature = instance.sign();
-                printf(keysize, null, i, signature);
-                // ---------------------------------------------------------- verify with public key
-                instance.initVerify(keyPair.getPublic());
-                service().update(instance);
-                final var verified = instance.verify(signature);
-                // ---------------------------------------------------------------------------- then
-                assertTrue(verified);
-            }
+    @ValueSource(ints = {2048})
+    @ParameterizedTest
+    void __SHA384withRSA(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = SHA384withRSA(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
         }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
+    @DisplayName("RSASSA-PSS with SHA-256")
+    @ValueSource(ints = {2048})
+    @ParameterizedTest
+    void __RSASSA_PSS_SHA_256(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = RSASSA_PSS_SHA_256(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @LatestLTS
+    @LatestJDK
+    @DisplayName("RSASSA-PSS with SHA-384")
+    @ValueSource(ints = {2048})
+    @ParameterizedTest
+    void __RSASSA_PSS_SHA_384(final int keysize) throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var signing = RSASSA_PSS_SHA_384(keysize);
+        final var signature = signing.signature();
+        // ------------------------------------------------------------------------------------ sign
+        signature.initSign(signing.keyPair().getPrivate());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var signed = signature.sign();
+        // ---------------------------------------------------------------------------------- verify
+        signature.initVerify(signing.keyPair().getPublic());
+        if (signing.params() != null) {
+            signature.setParameter(signing.params());
+        }
+        service().update(signature);
+        final var verified = signature.verify(signed);
+        // ------------------------------------------------------------------------------------ then
+        assertTrue(verified);
     }
 }

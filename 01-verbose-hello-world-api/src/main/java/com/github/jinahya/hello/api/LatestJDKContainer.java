@@ -22,9 +22,19 @@ package com.github.jinahya.hello.api;
 
 import java.lang.annotation.*;
 
+/**
+ * The {@link Repeatable} container annotation that holds multiple {@link LatestJDK} markers on the
+ * same element.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see LatestJDK
+ */
 @Documented
 @SuppressWarnings({"UnicodeInCode"})
 public @interface LatestJDKContainer {
 
+    /**
+     * @return the contained {@link LatestJDK} markers; never {@code null}.
+     */
     LatestJDK[] value();
 }

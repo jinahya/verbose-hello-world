@@ -35,11 +35,11 @@ import java.net.http.*;
 @Disabled
 @DisplayName("sendBinary(socket, last)")
 @Slf4j
-class AsynchornousHelloWorld_SendBinary_WebSocket_Test
+class AsynchronousHelloWorld_SendBinary_WebSocket_Test
         extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
-    AsynchornousHelloWorld_SendBinary_WebSocket_Test() {
+    AsynchronousHelloWorld_SendBinary_WebSocket_Test() {
         super(HelloWorld.class, s -> new ExecutorHelloWorld<>(s, Runnable::run));
     }
 

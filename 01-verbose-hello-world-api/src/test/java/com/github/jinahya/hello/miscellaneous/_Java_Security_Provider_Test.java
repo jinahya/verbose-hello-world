@@ -23,7 +23,11 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
-import static com.github.jinahya.hello.miscellaneous._Java_Security_Provider_TestUtils.*;
+import java.security.*;
+import java.util.*;
+
+import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
+import static java.util.stream.Collectors.*;
 
 @DisplayName("Security")
 @Slf4j
@@ -31,15 +35,32 @@ class _Java_Security_Provider_Test {
 
     @Test
     void providers__() {
-        acceptEachProvider(p -> {
-            System.out.printf("provider: %s%n", p.getName());
+        securityProviders().forEach(p -> {
+            System.out.printf("%s%n%s%n%n",
+                              String.format("%s (%s)", p.getName(), p.getVersionStr()),
+                              p.getInfo());
         });
     }
 
     @Test
-    void providersAndServices_() {
-        applyProviderAndAcceptEachService(p -> s -> {
-            System.out.printf("%20s / %s%n", p.getName(), s.getType());
+    void providersServicesAndAlgorithms__() {
+        securityProviders().limit(4L).forEach(p -> {
+            System.out.printf("%-20s%n", p.getName());
+            p.getServices().stream()
+                    .collect(groupingBy(
+                            Provider.Service::getType,
+                            LinkedHashMap::new,
+                            mapping(Provider.Service::getAlgorithm, toList())))
+                    .sequencedEntrySet().stream()
+                    .limit(4)
+                    .forEach(e -> {
+                        System.out.printf("%30s: %s%n", e.getKey(),
+                                          e.getValue().stream()
+                                                  .limit(4L)
+                                                  .collect(joining(", ")));
+                    });
+//            System.out.printf("%40s: %s%n", "...", "...");
+            System.out.println();
         });
     }
 }

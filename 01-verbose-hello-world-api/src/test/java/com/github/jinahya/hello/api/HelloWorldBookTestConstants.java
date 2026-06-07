@@ -23,10 +23,6 @@ package com.github.jinahya.hello.api;
 import lombok.extern.slf4j.*;
 import org.mockito.*;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 /**
  * Test-scoped helpers that compose {@link HelloWorldBookUtils}' logging proxies with
  * {@link Mockito} so a single value is *both* logged (every call printed at {@code DEBUG} via the
@@ -43,16 +39,6 @@ import static org.mockito.Mockito.*;
  */
 @Slf4j
 final class HelloWorldBookTestConstants {
-
-    static {
-        final var pin = new Runnable[] {
-                () -> ArgumentCaptor.forClass(Object.class),
-                () -> verify(null),
-                () -> times(0),
-                () -> assertNotNull(null),
-                () -> assertEquals(0, 1),
-                () -> assertSame(0, 1)};
-    }
 
     private HelloWorldBookTestConstants() {
         throw new AssertionError("instantiation is not allowed");

@@ -53,7 +53,7 @@
     <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
-    <maven.compiler.testRelase>${maven.compiler.testTarget}</maven.compiler.testRelase>
+    <maven.compiler.testRelease>${maven.compiler.testTarget}</maven.compiler.testRelease>
     <sonar.organization>jinahya-github</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!--    <version.com.formdev>3.3</version.com.formdev>-->
@@ -78,7 +78,7 @@
     <version.io.quarkus.platform>3.35.3</version.io.quarkus.platform>
     <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
     <!--    <version.io.smallrye.reactive>3.1.1</version.io.smallrye.reactive>-->
-    <version.io.smallrye.reactive>3.2.0</version.io.smallrye.reactive>
+    <version.io.smallrye.reactive>3.2.1</version.io.smallrye.reactive>
     <!-- https://central.sonatype.com/artifact/org.apache.openwebbeans/openwebbeans-junit5/versions -->
     <!--    <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>-->
     <version.org.apache.openwebbeans>4.1.0</version.org.apache.openwebbeans>
@@ -120,7 +120,7 @@
         <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.5.32</version>
+        <version>1.5.34</version>
       </dependency>
       <dependency>
         <groupId>com.dynatrace.hash4j</groupId>
@@ -235,6 +235,7 @@
       <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-bom</artifactId>
+        <!-- https://central.sonatype.com/artifact/io.projectreactor/reactor-bom/versions -->
         <version>2025.0.5</version>
         <type>pom</type>
         <scope>import</scope>
@@ -254,6 +255,7 @@
       <dependency>
         <groupId>io.smallrye.reactive</groupId>
         <artifactId>mutiny-bom</artifactId>
+        <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
         <version>${version.io.smallrye.reactive}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -338,7 +340,7 @@
       <dependency>
         <groupId>org.duckdb</groupId>
         <artifactId>duckdb_jdbc</artifactId>
-        <version>1.5.2.1</version>
+        <version>1.5.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.hk2</groupId>

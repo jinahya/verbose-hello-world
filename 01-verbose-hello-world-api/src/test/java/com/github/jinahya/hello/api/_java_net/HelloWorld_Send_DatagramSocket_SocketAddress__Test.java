@@ -82,4 +82,45 @@ class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorld__Tes
             }
         }
     }
+
+    @DisplayName("echo server")
+    @Nested
+    class EchoServer_Test {
+
+        @DisplayName("""
+                client should <send(socket, target)> to the server;
+                server should echo the bytes back to the sender""")
+        @Test
+        void __() throws IOException {
+            try (var server = new DatagramSocket(null)) {
+                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                Thread.ofPlatform().start(() -> {
+                    try {
+                        final var packet = new DatagramPacket(
+                                new byte[HelloWorld.BYTES], HelloWorld.BYTES
+                        );
+                        server.receive(packet);
+                        assert packet.getOffset() == 0;
+                        assert packet.getLength() == HelloWorld.BYTES;
+                        assert packet.getSocketAddress() != null;
+                        server.send(packet);
+                    } catch (final IOException ioe) {
+                        throw new UncheckedIOException(ioe);
+                    }
+                });
+                try (var client = new DatagramSocket()) {
+                    service().send(client, server.getLocalSocketAddress());
+                    final var packet = new DatagramPacket(
+                            new byte[HelloWorld.BYTES], HelloWorld.BYTES
+                    );
+                    client.receive(packet);
+                    assert packet.getOffset() == 0;
+                    assert packet.getLength() == HelloWorld.BYTES;
+                    assert packet.getSocketAddress() != null;
+                    final var decoded = new String(packet.getData(), StandardCharsets.US_ASCII);
+                    log.debug("'{}' echoed from {}", decoded, packet.getSocketAddress());
+                }
+            }
+        }
+    }
 }

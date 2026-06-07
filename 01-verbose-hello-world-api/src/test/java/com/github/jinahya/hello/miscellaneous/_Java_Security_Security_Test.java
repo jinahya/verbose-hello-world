@@ -23,22 +23,8 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
-import java.security.*;
-
 @DisplayName("Security")
 @Slf4j
 class _Java_Security_Security_Test {
 
-    @DisplayName("should print every <Provider> and its <Service> entries")
-    @Test
-    void getProviders__() {
-        for (final var provider : Security.getProviders()) {
-            System.out.printf("%s%n", provider);
-            for (final var service : provider.getServices()) {
-                final String type = service.getType();
-                final String algorithm = service.getAlgorithm();
-                System.out.printf("\t%s / %s%n", type, algorithm);
-            }
-        }
-    }
 }

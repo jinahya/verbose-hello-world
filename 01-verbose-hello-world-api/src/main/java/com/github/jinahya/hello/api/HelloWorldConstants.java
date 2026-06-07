@@ -31,16 +31,16 @@ import java.util.*;
 @Deprecated(forRemoval = true)
 final class HelloWorldConstants {
 
-    static final String HELL_WORLD_STRING = "hello, world";
+    static final String HELLO_WORLD_STRING = "hello, world";
 
     static final List<Charset> HELLO_WORLD_CHARSETS;
 
     static {
-        final byte[] ascii = HELL_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
+        final byte[] ascii = HELLO_WORLD_STRING.getBytes(StandardCharsets.US_ASCII);
         HELLO_WORLD_CHARSETS = Charset.availableCharsets().values().stream()
                 .filter(Charset::canEncode)
-                .filter(c -> Arrays.equals(HELL_WORLD_STRING.getBytes(c), ascii)
-                             && HELL_WORLD_STRING.equals(new String(ascii, c)))
+                .filter(c -> Arrays.equals(HELLO_WORLD_STRING.getBytes(c), ascii)
+                             && HELLO_WORLD_STRING.equals(new String(ascii, c)))
                 .toList();
     }
 

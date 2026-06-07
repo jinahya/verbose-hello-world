@@ -24,7 +24,6 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.net.*;
@@ -89,8 +88,7 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        doAnswer(returnsFirstArg()).when(service)
-                .send(ArgumentMatchers.<DatagramSocket>any(), any());
+        doAnswer(returnsFirstArg()).when(service).<DatagramSocket>send(any(), any());
         final var socket = mock(DatagramSocket.class);
         doReturn(true).when(socket).isConnected();
         final var target = mock(SocketAddress.class);
