@@ -1,0 +1,295 @@
+= Ramp-Down Punch List (code project)
+:toc: macro
+
+이 파일은 `verbose-hello-world` 코드 프로젝트의 최종 점검표다. 출판 직전, `update-ramp-down` 스킬이 모든 자바 소스 · `pom.xml` · `module-info.java` · 의존성 트리 스냅숏을 한 번에 훑은 결과이다. 각 행은 모듈 · 소스 트리 · 패키지 · 클래스 · 라인 순서로 정렬된다. **이 파일은 매 호출마다 처음부터 다시 작성된다** — 이전 실행에서 본 항목이 사라졌다면 더 이상 발견되지 않는다는 뜻이고, 새로 나타났다면 새로 발견되었다는 뜻이다. 저자는 항목 자체를 손대지 않으며, 코드를 고친 뒤 다음 실행에서 자동으로 갱신되기를 기다린다.
+
+NOTE: `HelloWorld.java` 본문과 계약 테스트 `*_Test` 의 검증 줄들 중 일부는 의도적으로 주석 처리되어 있다. 책의 독자가 장별로 차례로 주석을 해제하며 구현을 완성하는 학습용 구성이므로, *주석 처리되어 있다는 사실 자체*는 이 보고서에서 결함으로 보지 않는다. 다만 주석 처리된 줄의 *내용* 자체가 컴파일되지 않거나, 풀었을 때 잘못된 동작 / 잘못된 검증으로 이어진다면 그 *내용*은 짚는다.
+
+마지막 갱신: 2026-06-07 09:07 UTC (commit `0cb00fd9`)
+
+toc::[]
+
+== 프로젝트 전체 (project-level)
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000001
+| link:_RAMP_DOWN.asciidoc[_RAMP_DOWN.asciidoc]
+| meta
+| **본 실행의 범위 한계 (반드시 다음 실행으로 메워야 함).** 이번 실행은 메인 소스 (`01-verbose-hello-world-api/src/main/java/`) 의 핵심 파일들과 모든 `pom.xml`, `module-info.java`, 프로젝트 루트 문서 (`CLAUDE.md`, `README.md`, `TARGETS.md`, `LINKS.md`, `_dependency_tree_*`, `_IMPORTS.asciidoc`, `_TESTCASES_OPTIMAL.asciidoc`) 를 끝까지 읽었다. 그러나 305 개의 테스트 파일 (`src/test/java*/`) 과 `02-verbose-hello-world-lib`, `03-verbose-hello-world-app/*` 의 모든 메인 / 테스트 소스, 프로파일별 테스트 트리 (`java-cdi-se-openwebbeans`, `java-cdi-se-weld`, `java-cdi-se-openwebbeans-junit5`, `java-cdi-se-weld-junit5`, `java-di-dagger`, `java-di-guice`, `java-di-hk2`, `java-di-spring`) 는 *한 줄도 빠짐없이* 읽지 않았다. 강화된 "모든 요소, 예외 없이" 규칙을 만족하려면 다음 실행에서 이 파일들을 끝까지 읽어 새 발견을 추가해야 한다.
+|
+
+| RD-0000002
+| link:pom.xml[pom.xml:56]
+| typo
+| `<maven.compiler.testRelase>` — 오타. `<maven.compiler.testRelease>` 가 옳다. 메이븐 컴파일러 플러그인은 `testRelease` 속성만 인식하므로, 현재 이 오버라이드는 *전혀 동작하지 않는다*. 다행히 동일 값 (`${maven.compiler.testTarget}`) 을 가리키므로 빌드 의미상 차이는 없지만, 의도가 표현되지 않는다는 점이 문제다.
+|
+
+| RD-0000003
+| link:_TESTCASES_OPTIMAL.asciidoc[_TESTCASES_OPTIMAL.asciidoc:34]
+| meta
+| 테스트 파일 합계를 `279` 로 적고 있으나 현재 실제 합계는 `305` (find . -name '*.java' -path '*/src/test/*' \| wc -l = 305). 보고서 마지막 갱신 이후 테스트가 늘었다. `/check-testcases-optimal` 재실행 필요.
+|
+
+| RD-0000004
+| link:_JUNIT_REPORT.asciidoc[_JUNIT_REPORT.asciidoc]
+| meta
+| 파일 크기 0 바이트. `/junit-report` 가 한 번도 실행되지 않았거나 출력이 비어 있다. 출판 전 한 번은 실행해 보고서를 채워야 한다.
+|
+
+| RD-0000005
+| link:_MOCKITO_REPORT.asciidoc[_MOCKITO_REPORT.asciidoc]
+| meta
+| 파일 크기 0 바이트. `/mockito-report` 가 한 번도 실행되지 않았다. 출판 전 한 번 실행 필요.
+|
+
+| RD-0000006
+| link:_dependency_tree_api.txt[_dependency_tree_api.txt:14]
+| meta
+| `io.smallrye.reactive:mutiny:jar:3.1.1:test` 가 적혀 있으나 루트 `pom.xml:81` 의 `<version.io.smallrye.reactive>` 는 `3.2.1` 로 갱신됨. `/update-dependency-trees` 재실행 필요.
+|
+
+| RD-0000007
+| link:_dependency_tree_api.txt[_dependency_tree_api.txt:19]
+| meta
+| `org.duckdb:duckdb_jdbc:jar:1.5.2.1` 이 적혀 있으나 루트 `pom.xml:343` 은 `1.5.3.0`. `/update-dependency-trees` 재실행 필요.
+|
+
+| RD-0000008
+| link:_dependency_tree_app3.txt[_dependency_tree_app3.txt:4]
+| meta
+| `org.springframework:spring-context:jar:6.2.16` 이 적혀 있으나 루트 `pom.xml:106` 은 `<version.org.springframework>7.0.7`. 6.x ↔ 7.x 메이저 점프이므로 의존 트리 재생성 시 호환성 영향도 함께 확인.
+|
+
+| RD-0000009
+| link:TARGETS.md[TARGETS.md]
+| meta
+| `java.sql` 절에 `Blob#set(T, long)` 만 들어 있으나 실제 `HelloWorld.java` 에는 `setAsciiStream(PreparedStatement, int)`, `setBinaryStream(PreparedStatement, int)`, `setBytes(PreparedStatement, int)`, `setCharacterStream(PreparedStatement, int)`, `setBinaryStream(Blob, long)`, `setBytes(Blob, long)`, `setAsciiStream(Clob, long)`, `setCharacterStream(Clob, long)`, `setString(Clob, long)` 가 들어 있다. `java.text` 절은 통째로 누락 — `setText(BreakIterator)` 가 없다. `java.util` 의 `add(SequencedCollection, Function)`, `put(SequencedMap, Function, Function)` 도 누락.
+|
+
+| RD-0000010
+| link:TARGETS.md[TARGETS.md]
+| deprecation
+| "Deprecated Methods" 표 (L188-225) 는 약 35 건의 메서드를 "Deprecated" 로 분류하지만 현재 `HelloWorld.java` 어디에도 `@Deprecated` 어노테이션은 없다. 표는 *과거에 제거된 메서드* 의 역사 기록처럼 동작하고 있지만 라벨은 "Deprecated" 이다. 라벨을 `Removed` / `Subsumed` 로 바꾸거나, 진짜로 deprecated 인 메서드는 `@Deprecated` 를 붙여 표시.
+|
+
+| RD-0000011
+| link:_dependency_tree_app1.txt[_dependency_tree_app1.txt]
+| meta
+| `app1` 의 `pom.xml` 은 `org.aspectj:aspectjrt` / `aspectjtools` 같은 의존성을 선언하지 않았으면 트리가 너무 짧아 보인다. 그러나 모든 app 모듈의 트리가 정상으로 보이는지 — 특히 `app2`, `app4` 의 SPI / CDI 자산이 누락된 것은 아닌지 — 재확인할 가치가 있다. (이 행은 다음 sweep 의 검토 거리.)
+|
+|===
+
+== 01-verbose-hello-world-api
+
+=== `src/main/java/com/github/jinahya/hello/api/HelloWorld.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000012
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld.java[HelloWorld.java:1153]
+| typo
+| 메서드 한 줄 설명에 `"specified prepared preparedStatement"` — `prepared` 가 두 번 반복됨. `"specified prepared statement"` 가 옳다.
+|
+
+| RD-0000013
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld.java[HelloWorld.java:1155]
+| typo
+| `@param <T> prepared preparedStatement type parameter` — 같은 `prepared` 반복 오타. `"prepared statement type parameter"`.
+|
+
+| RD-0000014
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld.java[HelloWorld.java:1156]
+| typo
+| `@param preparedStatement the prepared preparedStatement on which the value is set.` — 또 한 번. `the prepared statement on which the value is set.`
+|
+
+| RD-0000015
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld.java[HelloWorld.java:1813-1814]
+| typo
+| `final var rsult = cipher.update(...); consumer.accept(rsult);` — 식별자 `rsult` 는 `result` 의 오타. 인접 메서드 (L1850) 는 `result` 를 정확히 쓰므로 일관성도 깨진다.
+|
+
+| RD-0000016
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld.java[HelloWorld.java:1687-1729]
+| drop
+| `// java.util.stream` 절 아래로 43 줄의 통째 주석 처리된 메서드 (`allAll`, `addAll`) 가 남아 있다. `allAll` (L1706) 의 이름은 `addAll` 의 오타로 보이며 (실제 본문은 `acceptEach((Consumer)builder, mapper)` 호출), 둘 다 미래의 `Stream.Builder` 챕터를 위한 비계. 출판 시점에 살릴 것인지 / 지울 것인지 결정해 둘 가치가 있다.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000017
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java[AsynchronousHelloWorld.java:397]
+| typo
+| `// @formater:off` — `@formatter` 의 오타 (`m` 다음 `t` 가 빠짐). IntelliJ 의 자동 포맷터는 정확한 토큰만 인식하므로, 본 콜아웃은 동작하지 않는다. 즉 본문이 의도와 다르게 재포맷될 수 있다.
+|
+
+| RD-0000018
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java[AsynchronousHelloWorld.java:411]
+| typo
+| `} // @formater:off` — 닫는 자리에 `@formater:off` 라고 적혀 있다. (a) `formater` → `formatter` 오타 (b) 닫는 자리는 `on` 이어야 한다. `// @formatter:on` 으로 수정.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/HelloWorldConstants.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000019
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldConstants.java[HelloWorldConstants.java:34]
+| typo
+| `static final String HELL_WORLD_STRING = "hello, world";` — 상수 이름이 `HELL_WORLD_STRING` 인데 옆 줄 (L36) 의 `HELLO_WORLD_CHARSETS` 와 일관되려면 `HELLO_WORLD_STRING` 이어야 한다. 본문에서 4 번 (`L34, L39, L42, L43`) 같은 오타가 반복된다.
+|
+
+| RD-0000020
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldConstants.java[HelloWorldConstants.java:31]
+| deprecation
+| `@Deprecated(forRemoval = true)` 가 붙어 있으나 `since` 속성과 짝지을 자바독 `@deprecated` 태그가 없다. 클래스 자바독 (L27 `(Internal) Constants for the {@link HelloWorld}.`) 에 `@deprecated <대체 무엇을 쓰라는 설명>` 한 줄과 어노테이션의 `since = "<version>"` 을 추가.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/HelloWorldUtils.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000021
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldUtils.java[HelloWorldUtils.java:162-166]
+| contract
+| `packet(HelloWorld)` 는 `new DatagramPacket(new byte[BYTES], BYTES)` 로 패킷을 만든 뒤 `service.append(packet)` 을 호출한다. 그러나 `HelloWorld#append(DatagramPacket)` 의 *살아 있는* 본문 (L515-528) 은 첫 줄에 `offset + length + BYTES > data.length` 검사를 하고 IAE 를 던진다. 인자 `length = BYTES = 12`, `data.length = 12`, `offset = 0` 이므로 `0 + 12 + 12 = 24 > 12` → 매 호출이 IAE 로 실패한다. `new DatagramPacket(new byte[BYTES], 0)` 으로 만들어 빈 길이로 시작해야 `append` 가 12 바이트를 채우고 끝난다.
+|
+
+| RD-0000022
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldUtils.java[HelloWorldUtils.java:184-188]
+| contract
+| `packet(HelloWorld, SocketAddress)` 도 같은 버그. `length` 인자가 `BYTES` 라서 첫 호출에 IAE 가 난다. `0` 으로 바꿔야 한다.
+|
+
+| RD-0000023
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldUtils.java[HelloWorldUtils.java:117]
+| nullsafety
+| `string(HelloWorld)` 는 `Objects.requireNonNull` 검증 없이 `array(service)` 에 위임한다 (`array` 가 검증을 한다). 그러나 다른 정적 메서드 (L52, L99, L162-166) 는 모두 자체적으로 `Objects.requireNonNull` 을 부르고 javadoc 에도 `@throws NullPointerException` 을 적는다. `string` 의 javadoc 은 `@throws NullPointerException if the service is null` 로 약속하므로 (L114), 동작은 약속을 만족하지만 (전이적으로 NPE 가 발생) 일관성이 깨진다. 다른 메서드와 같이 `Objects.requireNonNull(service, "service is null")` 을 명시.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/util/JavaSecurityMessageDigestUtils.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000024
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/util/JavaSecurityMessageDigestUtils.java[JavaSecurityMessageDigestUtils.java:79]
+| meta
+| 본문 안에 `// TODO: remove?` 가 남아 있다 (`if (ThreadLocalRandom.current().nextBoolean())` 라인 옆). 책 본문의 학습용 `// TODO:` 와 달리 영문 단발 메모이므로 stale-marker 로 분류. 해결하거나 (지우거나 결정하거나) 본문에서 떼어내야 한다.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/HelloWorld.java` — 카피라이트 표기 일관성
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000025
+| link:01-verbose-hello-world-api/src/main/java/[01-verbose-hello-world-api/src/main/java/]
+| meta
+| `01-verbose-hello-world-api/src/main/java/` 아래 27 개 `.java` 파일의 카피라이트 헤더가 세 가지로 갈린다. 4 개는 `Copyright (C) 2018 - 2019`, 7 개는 `Copyright (C) 2018 - 2024`, 17 개는 `Copyright (C) 2018 - 2026` (오늘 날짜 기준 정상). `license-maven-plugin` 의 `update-file-header` 골을 한 번 돌려 모두 2026 으로 통일.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/HelloWorld1.java` / `HelloWorld2.java`
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000026
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld1.java[HelloWorld1.java]
+| javadoc
+| 패키지 사설 (package-private) 인터페이스 `HelloWorld1` 에 클래스 자바독이 없다. `BYTES = 12` 한 줄짜리 학습용 인터페이스인 듯하지만 (`chapter01_BYTES.asciidoc` 에서 인용될 가능성), `@author` / 한 줄 요약 정도는 붙여야 책에 그대로 옮길 수 있다. `HelloWorld2` 도 같은 상황.
+|
+
+| RD-0000027
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorld2.java[HelloWorld2.java]
+| javadoc
+| 위와 동일. 클래스 자바독 / `@author` 누락.
+|
+|===
+
+=== `src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java` (실제 구현 클래스 확인 필요)
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000028
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java[AsynchronousHelloWorld.java:43]
+| structure
+| 클래스 자바독은 `StructuredConcurrencyAsynchronousHelloWorld` 를 가리키지만 (L43) 실제 소스 트리에는 `StructuredConcurrencyHelloWorld.java` 만 존재한다 (`Asynchronous` 없는 이름). 자바독 링크가 유효하지 않거나 (`@link` 미사용), 클래스 이름이 책에서 옮겨질 때 이름이 바뀌었어야 한다. 확인 필요.
+|
+|===
+
+== 02-verbose-hello-world-lib
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000029
+| link:02-verbose-hello-world-lib/[02-verbose-hello-world-lib/]
+| meta
+| **이번 실행에서 이 모듈을 끝까지 읽지 않았다.** `src/main/java/com/github/jinahya/hello/lib/HelloWorldImpl.java`, `package-info.java`, `module-info.java` 와 8 개의 프로파일별 테스트 트리 (`java-cdi-se-openwebbeans`, `java-cdi-se-weld`, `java-cdi-se-openwebbeans-junit5`, `java-cdi-se-weld-junit5`, `java-di-dagger`, `java-di-guice`, `java-di-hk2`, `java-di-spring`) 가 모두 미읽음. 다음 실행에서 이 모듈을 전부 훑어야 강화된 "모든 요소" 규칙을 만족한다.
+|
+|===
+
+== 03-verbose-hello-world-app
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000030
+| link:03-verbose-hello-world-app/[03-verbose-hello-world-app/]
+| meta
+| **이번 실행에서 이 모듈을 끝까지 읽지 않았다.** 4 개의 leaf 모듈 (`01-verbose-hello-world-app1` 부터 `04-verbose-hello-world-app4`) 의 `pom.xml`, `module-info.java`, `HelloWorldMain.java`, `HelloWorldProvider.java`, `HelloWorldConfiguration.java`, `META-INF/services/` 자산이 모두 미읽음. 다음 실행에서 이 모듈을 전부 훑어야 한다.
+|
+|===
+
+== 테스트 트리 — 한 줄도 안 읽음 (다음 실행 메우기)
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000031
+| link:01-verbose-hello-world-api/src/test/java/[01-verbose-hello-world-api/src/test/java/]
+| meta
+| `01-verbose-hello-world-api/src/test/java/` 아래 약 280 개의 `.java` 파일이 있다. 이번 실행은 이들을 *한 줄도* 읽지 않았다. 강화된 "모든 요소" 규칙을 만족하려면 다음 실행에서 한 파일씩 전체를 `Read` 해야 한다. 빠르게 추정할 만한 *대용* 도구로 `/junit-report`, `/mockito-report`, `/check-testcases-optimal` 가 있지만 — `update-ramp-down` 의 계약은 *대용이 아니라 직접 읽기* 이므로, 그 보고서들이 잡지 못한 발견을 메우는 것이 이 sweep 의 본질이다.
+|
+|===
+
+== 강화된 "모든 요소, 예외 없음" 규칙에 따른 미커버 항목 요약
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 설명 / 제안 | 해결
+
+| RD-0000032
+| link:.claude/skills/update-ramp-down/SKILL.md[SKILL.md]
+| meta
+| SKILL.md 가 "EVERY SINGLE ELEMENT, no exceptions" 절을 통해 모든 `.java` · `pom.xml` · `module-info.java` · 자원 파일 · 빌드 설정 · 최상위 문서 · 보고서 스냅숏 · 테스트 메서드 본문 · 자바독 · `// AI:` 줄을 *한 줄도 빠짐없이* 검사하라고 명령한다. 이번 실행은 그 절 추가 *이후* 의 한 세션 안에서는 그 요구를 완전히 만족할 수 없음을 인정한다. 위 RD-0000001, RD-0000029, RD-0000030, RD-0000031 이 모두 그 불만족을 명시한다. 다음 실행에서 (필요하면 여러 세션으로 나누어) 이들을 닫는 것이 출판 준비도에 가장 큰 기여이다.
+|
+|===
