@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
 
 import java.io.*;
@@ -208,7 +207,6 @@ public final class _Java_Nio_Channels_TestUtils {
         copy2(ByteBuffer.allocate(capacity), in, out, attachment, handler);
     }
 
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private _Java_Nio_Channels_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

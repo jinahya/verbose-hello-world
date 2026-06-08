@@ -124,7 +124,6 @@ public final class JavaNioByteBufferUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private JavaNioByteBufferUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

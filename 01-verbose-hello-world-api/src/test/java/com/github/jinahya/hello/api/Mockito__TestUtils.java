@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
 import org.mockito.*;
 import org.mockito.invocation.*;
@@ -300,7 +299,6 @@ public final class Mockito__TestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Mockito__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

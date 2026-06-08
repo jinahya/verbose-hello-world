@@ -102,7 +102,6 @@ public final class JavaUtilBitSetUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private JavaUtilBitSetUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

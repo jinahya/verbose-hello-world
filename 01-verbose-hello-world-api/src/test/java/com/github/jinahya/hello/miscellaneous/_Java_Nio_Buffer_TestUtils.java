@@ -1,10 +1,10 @@
-package com.github.jinahya.hello.api.util;
+package com.github.jinahya.hello.miscellaneous;
 
 /*-
  * #%L
  * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2023 Jinahya, Inc.
+ * Copyright (C) 2018 - 2026 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,19 @@ import java.nio.*;
 import java.util.*;
 
 /**
- * Helpers for {@link Buffer java.nio.Buffer} — currently a textual visualizer that prints a
- * buffer's {@code position} / {@code limit} / {@code capacity} state as a labeled ASCII strip.
+ * A class providing test utilities for {@link Buffer java.nio.Buffer} &mdash; currently a textual
+ * visualizer that prints a buffer's {@code position} / {@code limit} / {@code capacity} state as a
+ * labeled ASCII strip.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class JavaNioBufferUtils {
+public final class _Java_Nio_Buffer_TestUtils {
 
     /**
-     * Prints a multi-line, human-readable snapshot of {@code buffer}'s current state to
-     * {@code printer}: identity hash, {@code remaining}, {@code direct}, {@code hasArray},
-     * {@code arrayOffset} (when present), and an ASCII strip marking {@code position},
-     * {@code limit}, and {@code capacity}.
+     * Prints a multi-line, human-readable snapshot of the given {@code buffer}'s current state to
+     * the given {@code printer}: identity hash, {@code remaining}, {@code direct},
+     * {@code hasArray}, {@code arrayOffset} (when present), and an ASCII strip marking
+     * {@code position}, {@code limit}, and {@code capacity}.
      *
      * @param buffer  the buffer to render; must not be {@code null}.
      * @param printer the destination of the rendering; must not be {@code null}.
@@ -103,8 +104,7 @@ public final class JavaNioBufferUtils {
         return print(buffer, System.out);
     }
 
-    // ---------------------------------------------------------------------------------------------
-    private JavaNioBufferUtils() {
+    private _Java_Nio_Buffer_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

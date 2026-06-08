@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import com.github.tomakehurst.wiremock.*;
 import com.github.tomakehurst.wiremock.client.*;
 import com.github.tomakehurst.wiremock.core.*;
@@ -1116,7 +1115,6 @@ public final class HelloWorld__TestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorld__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

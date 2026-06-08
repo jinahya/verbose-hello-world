@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
 
 /**
@@ -40,7 +39,6 @@ public final class HelloWorld__TestConstants {
     public static final String HELLO_WORLD_STRING = "hello, world";
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorld__TestConstants() {
         throw new AssertionError("instantiation is not allowed");
     }

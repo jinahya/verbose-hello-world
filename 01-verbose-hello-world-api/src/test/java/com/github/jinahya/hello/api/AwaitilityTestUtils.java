@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
 import org.awaitility.*;
 import org.junit.jupiter.api.*;
@@ -72,7 +71,6 @@ public final class AwaitilityTestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private AwaitilityTestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

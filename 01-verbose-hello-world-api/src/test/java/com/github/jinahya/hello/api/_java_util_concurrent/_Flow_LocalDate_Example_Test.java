@@ -21,7 +21,7 @@ package com.github.jinahya.hello.api._java_util_concurrent;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.api.util.*;
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -92,7 +92,7 @@ class _Flow_LocalDate_Example_Test {
 
         @Override
         public String toString() {
-            return JavaLangObjectUtils.toSimpleString(this);
+            return _Java_Lang_Object_TestUtils.toSimpleString(this);
         }
 
         @Override
@@ -163,7 +163,7 @@ class _Flow_LocalDate_Example_Test {
 
         @Override
         public String toString() {
-            return JavaLangObjectUtils.toSimpleString(this);
+            return _Java_Lang_Object_TestUtils.toSimpleString(this);
         }
 
         @Override
@@ -185,7 +185,7 @@ class _Flow_LocalDate_Example_Test {
 
         @Override
         public String toString() {
-            return JavaLangObjectUtils.toSimpleString(this);
+            return _Java_Lang_Object_TestUtils.toSimpleString(this);
         }
 
         @Override
