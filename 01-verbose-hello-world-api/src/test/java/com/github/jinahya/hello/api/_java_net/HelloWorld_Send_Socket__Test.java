@@ -103,7 +103,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
         }
     }
 
-    @DisplayName("echo server")
+    @DisplayName("should round-trip <hello-world-bytes> through a real <Socket> echo server")
     @Nested
     class EchoServer_Test {
 
@@ -111,26 +111,31 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
                 should round-trip <hello-world-bytes> through a real <Socket> echo server
                 over <InetSocketAddress>""")
         @Test
-        void ___InetSocketAddress() throws IOException {
+        void __INET() throws IOException {
             try (var server = new ServerSocket()) {
-                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+                server.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0));
                 log.debug("[server] bound: {}", server.getLocalSocketAddress());
                 Thread.ofPlatform().start(() -> {
                     try (var accepted = server.accept()) {
+                        log.debug("[server] accepted from {}", accepted.getRemoteSocketAddress());
                         final var bytes = accepted.getInputStream().readNBytes(HelloWorld.BYTES);
+                        log.debug("[server] {} bytes read", bytes.length);
                         assert bytes.length == HelloWorld.BYTES;
                         accepted.getOutputStream().write(bytes);
                         accepted.getOutputStream().flush();
+                        log.debug("[server] {} bytes written", bytes.length);
                     } catch (final IOException ioe) {
                         throw new UncheckedIOException(ioe);
                     }
                 });
                 try (var client = new Socket()) {
                     client.connect(server.getLocalSocketAddress());
-                    log.debug("[client] connected to : {}", client.getRemoteSocketAddress());
+                    log.debug("[client] connected to {}", client.getRemoteSocketAddress());
                     service().send(client);
                     client.getOutputStream().flush();
+                    log.debug("[client] {} bytes written", HelloWorld.BYTES);
                     final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    log.debug("[client] {} bytes read", bytes.length);
                     assertArrayEquals(hello_world_byte_array(), bytes);
                 }
             }
@@ -138,34 +143,64 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
 
         @DisplayName("""
                 should round-trip <hello-world-bytes> through a real <Socket> echo server
-                over <UnixDomainSocketAddress>""")
-        @Disabled("unsupported")
+                over <Inet6Address>""")
         @Test
-        void ___UnixDomainSocketAddress() throws IOException {
-            final var tempFile = File.createTempFile("tmp", null, tempDir);
-            final var deleted = tempFile.delete();
-            assert deleted;
-            try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
-                server.bind(UnixDomainSocketAddress.of(tempFile.getPath()));
+        void __INET6() throws IOException {
+            try (var server = new ServerSocket()) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("::1"), 0));
                 log.debug("[server] bound: {}", server.getLocalSocketAddress());
                 Thread.ofPlatform().start(() -> {
                     try (var accepted = server.accept()) {
+                        log.debug("[server] accepted from {}", accepted.getRemoteSocketAddress());
                         final var bytes = accepted.getInputStream().readNBytes(HelloWorld.BYTES);
+                        log.debug("[server] {} bytes read", bytes.length);
                         assert bytes.length == HelloWorld.BYTES;
                         accepted.getOutputStream().write(bytes);
                         accepted.getOutputStream().flush();
+                        log.debug("[server] {} bytes written", bytes.length);
                     } catch (final IOException ioe) {
                         throw new UncheckedIOException(ioe);
                     }
                 });
-                try (var client = SocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
+                try (var client = new Socket()) {
                     client.connect(server.getLocalSocketAddress());
-                    log.debug("[client] connected to : {}", client.getRemoteSocketAddress());
+                    log.debug("[client] connected to {}", client.getRemoteSocketAddress());
                     service().send(client);
                     client.getOutputStream().flush();
+                    log.debug("[client] {} bytes written", HelloWorld.BYTES);
                     final var bytes = client.getInputStream().readNBytes(HelloWorld.BYTES);
+                    log.debug("[client] {} bytes read", bytes.length);
                     assertArrayEquals(hello_world_byte_array(), bytes);
                 }
+            }
+        }
+
+        @DisplayName("""
+                should throw <UnsupportedOperationException> when invoking <socket()>
+                on a <ServerSocketChannel> opened with <StandardProtocolFamily.UNIX>""")
+        @Test
+        void __UNIX1() throws IOException {
+            final var tempFile = File.createTempFile("tmp", null, tempDir);
+            final var deleted = tempFile.delete();
+            assert deleted;
+            assertThrows(UnsupportedOperationException.class, () -> {
+                try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX).socket()) {
+                }
+            });
+        }
+
+        @DisplayName("""
+                should throw <IllegalArgumentException> when binding
+                a real <ServerSocket> to a <UnixDomainSocketAddress>""")
+        @Test
+        void __UNIX2() throws IOException {
+            final var tempFile = File.createTempFile("tmp", null, tempDir);
+            final var deleted = tempFile.delete();
+            assert deleted;
+            try (var server = new ServerSocket()) {
+                assertThrows(IllegalArgumentException.class, () -> {
+                    server.bind(UnixDomainSocketAddress.of(tempFile.getPath()));
+                });
             }
         }
     }
