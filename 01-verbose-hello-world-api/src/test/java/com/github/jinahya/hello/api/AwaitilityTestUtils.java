@@ -29,6 +29,8 @@ import java.time.*;
 import java.time.temporal.*;
 
 /**
+ * A class providing test utilities for {@link Awaitility} usages.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
@@ -38,6 +40,12 @@ import java.time.temporal.*;
 public final class AwaitilityTestUtils {
 
     // ---------------------------------------------------------------------------------- Awaitility
+
+    /**
+     * Awaits for the specified duration.
+     *
+     * @param duration the duration to await.
+     */
     public static void awaitFor(final Duration duration) {
         log.debug("awaiting for {}...", duration);
         Awaitility.await()
@@ -46,10 +54,19 @@ public final class AwaitilityTestUtils {
                 .untilAsserted(() -> Assertions.assertTrue(true));
     }
 
+    /**
+     * Awaits for the specified amount of the specified temporal unit.
+     *
+     * @param amount the amount to await.
+     * @param unit   the temporal unit of the given amount.
+     */
     public static void awaitFor(final long amount, final TemporalUnit unit) {
         awaitFor(Duration.of(amount, unit));
     }
 
+    /**
+     * Awaits for one second.
+     */
     public static void awaitForOneSecond() {
         awaitFor(1L, ChronoUnit.SECONDS);
     }

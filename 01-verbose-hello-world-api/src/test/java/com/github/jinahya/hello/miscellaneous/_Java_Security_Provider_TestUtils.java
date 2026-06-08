@@ -33,6 +33,9 @@ import java.util.stream.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
 import static java.util.stream.Collectors.*;
 
+/**
+ * A class providing test utilities for {@link java.security.Provider}.
+ */
 @DisplayName("Security")
 @Slf4j
 class _Java_Security_Provider_TestUtils {

@@ -41,6 +41,12 @@ import java.util.concurrent.*;
 class HelloWorld_SetAsciiStream_Clob_Long_Test
         extends HelloWorld__Test {
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
+     * setAsciiStream(clob, pos)} method throws a {@link NullPointerException} when the
+     * {@code clob} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
@@ -55,6 +61,12 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
         );
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
+     * setAsciiStream(clob, pos)} method throws an {@link IllegalArgumentException} when the
+     * {@code pos} argument is not positive.
+     */
     @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
@@ -69,6 +81,14 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
         );
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
+     * setAsciiStream(clob, pos)} method invokes
+     * {@link com.github.jinahya.hello.api.HelloWorld#write(OutputStream) write(stream)} with the
+     * stream obtained from {@link Clob#setAsciiStream(long) clob.setAsciiStream(pos)}, and returns
+     * the {@code clob}.
+     */
     @DisplayName("should invoke <write(clob.setAsciiStream(pos))>, and return the <clob>")
     @Test
     void __() throws IOException, SQLException {

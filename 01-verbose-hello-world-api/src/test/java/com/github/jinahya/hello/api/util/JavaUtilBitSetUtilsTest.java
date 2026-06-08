@@ -26,6 +26,11 @@ import org.junit.jupiter.api.*;
 import java.nio.charset.*;
 import java.util.*;
 
+/**
+ * A class for testing {@link JavaUtilBitSetUtils}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("JavaUtilBitSetUtils")
 @Slf4j
 class JavaUtilBitSetUtilsTest {

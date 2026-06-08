@@ -30,6 +30,8 @@ import java.util.concurrent.*;
 import java.util.stream.*;
 
 /**
+ * A class for testing {@link JavaNioByteBufferUtils}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("JavaNioByteBufferUtils")

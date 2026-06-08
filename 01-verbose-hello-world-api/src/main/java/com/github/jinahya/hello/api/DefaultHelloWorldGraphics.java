@@ -25,6 +25,10 @@ import java.lang.invoke.*;
 import java.util.*;
 
 /**
+ * A default implementation of {@link HelloWorldGraphics} that derives colors from the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> supplied by a wrapped
+ * {@link HelloWorld} service.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class DefaultHelloWorldGraphics

@@ -27,6 +27,11 @@ import org.junit.jupiter.api.*;
 // Sign	Sign	Sign
 // Exponent	Biased Exponent	Characteristic
 // Fraction	Trailing Significand	Mantissa
+/**
+ * A class for exploring the IEEE 754 bit patterns of {@code float} and {@code double} values.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("floating point")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class FloatingPointTest {

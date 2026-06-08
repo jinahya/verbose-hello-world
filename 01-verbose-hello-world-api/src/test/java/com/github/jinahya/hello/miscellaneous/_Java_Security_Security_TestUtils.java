@@ -29,6 +29,9 @@ import java.util.stream.*;
 
 import static org.bouncycastle.jce.provider.BouncyCastleProvider.*;
 
+/**
+ * A class providing test utilities for {@link java.security.Security}.
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_Security_TestUtils {

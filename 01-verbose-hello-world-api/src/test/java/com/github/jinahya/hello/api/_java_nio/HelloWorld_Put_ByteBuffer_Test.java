@@ -151,6 +151,12 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             return getArrayLengthStream();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#wrap(byte[]) ByteBuffer.wrap(array)} produces a backed
+         * buffer.
+         *
+         * @param array the array to wrap.
+         */
         @DisplayName("should produce a backed <buffer> from <ByteBuffer.wrap(array)>")
         @MethodSource({"getArrayArgumentsStream"})
         @ParameterizedTest
@@ -177,6 +183,12 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert sliced.array() == buffer.array();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#wrap(byte[], int, int) ByteBuffer.wrap(array, offset,
+         * length)} produces a backed buffer.
+         *
+         * @param accessor the arguments accessor.
+         */
         @DisplayName(
                 "should produce a backed <buffer> from <ByteBuffer.wrap(array, offset, length)>")
         @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
@@ -206,6 +218,12 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert sliced.array() == buffer.array();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#allocate(int) ByteBuffer.allocate(capacity)} allocates a
+         * backed buffer.
+         *
+         * @param capacity the capacity to allocate.
+         */
         @DisplayName("should allocate a backed <buffer> via <ByteBuffer.allocate(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
@@ -228,6 +246,12 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert sliced.hasArray();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#allocateDirect(int) ByteBuffer.allocateDirect(capacity)}
+         * allocates a direct buffer.
+         *
+         * @param capacity the capacity to allocate.
+         */
         @DisplayName("should allocate a direct <buffer> via <ByteBuffer.allocateDirect(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest

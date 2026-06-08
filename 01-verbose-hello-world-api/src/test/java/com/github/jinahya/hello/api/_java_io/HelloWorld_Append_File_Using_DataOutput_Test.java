@@ -32,6 +32,9 @@ import java.nio.charset.*;
 import java.util.concurrent.*;
 
 /**
+ * A class for exploring {@link HelloWorld#write(java.io.DataOutput) write(output)} method against a
+ * real {@link File} through a {@link DataOutputStream}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("append(file) using DataOutput")

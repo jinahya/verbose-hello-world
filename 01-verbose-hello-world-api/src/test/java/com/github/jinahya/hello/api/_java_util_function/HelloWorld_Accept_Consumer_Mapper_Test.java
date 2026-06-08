@@ -42,6 +42,11 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the {@link HelloWorld#accept(Consumer, Function) accept(consumer, mapper)}
+     * method throws a {@link NullPointerException} when the {@code consumer} argument is
+     * {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <consumer> argument is <null>")
     @Test
     void _ThrowNullPointerException_ConsumerIsNull() {
@@ -53,6 +58,11 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.accept(consumer, mapper));
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#accept(Consumer, Function) accept(consumer, mapper)}
+     * method throws a {@link NullPointerException} when the {@code mapper} argument is
+     * {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     @SuppressWarnings("unchecked")
@@ -65,6 +75,13 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.accept(consumer, mapper));
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#accept(Consumer, Function) accept(consumer, mapper)}
+     * method invokes {@link HelloWorld#set(byte[]) set(array)} once, then for each byte invokes
+     * {@link Function#apply(Object) mapper.apply(b)} and
+     * {@link Consumer#accept(Object) consumer.accept(...)} in order, and returns the
+     * {@code consumer}.
+     */
     @DisplayName(
             "should invoke <set(byte[])>, and <consumer.accept(mapper.apply(b))> for each byte")
     @Test

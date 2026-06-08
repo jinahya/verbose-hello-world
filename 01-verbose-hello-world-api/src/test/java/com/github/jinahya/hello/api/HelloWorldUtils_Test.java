@@ -35,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 /**
+ * A class for testing {@link HelloWorldUtils} utility methods.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("HelloWorldUtils")

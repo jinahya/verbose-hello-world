@@ -33,6 +33,13 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
+/**
+ * A class for exploring
+ * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method with
+ * real implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel, position)")
 @Slf4j
 class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
@@ -47,6 +54,13 @@ class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method writes {@code hello-world-bytes} to a real
+     * {@link AsynchronousFileChannel} at a {@code position}.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName(
             "should write <hello-world-bytes> to a real <AsynchronousFileChannel> at a <position>")
     @Test

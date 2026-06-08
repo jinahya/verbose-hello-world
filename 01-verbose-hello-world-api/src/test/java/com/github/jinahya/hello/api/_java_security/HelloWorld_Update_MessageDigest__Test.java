@@ -44,11 +44,9 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_Tes
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드를 실제 JDK
- * / BouncyCastle 의 {@link MessageDigest} 구현과 함께 돌려 보는 통합 테스트 클래스. 같은 패키지의 단위
- * 테스트({@link HelloWorld_Update_MessageDigest_Test})와 달리, 여기서는 mock 이 아니라
- * {@link MessageDigest#getInstance(String) MessageDigest.getInstance(...)} 로 받아온 진짜 구현을 사용한다. 추가로
- * SHA 의 쇄도 효과(avalanche effect)와 약한 알고리즘에 대한 무지개 공격(rainbow attack)을 보여 주는 데모 테스트도 함께 둔다.
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method with
+ * real {@link MessageDigest} implementations from JDK and BouncyCastle providers.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
@@ -130,9 +128,12 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     /**
-     * 기본 공급자({@code SUN}) 로 각 알고리즘에 대해 다이제스트 결과를 얻는지 확인한다.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method
+     * updates a real {@link MessageDigest} obtained from the {@code SUN} provider for the given
+     * algorithm.
      *
-     * @param algorithm {@link #algorithms()} 가 제공하는 알고리즘 이름.
+     * @param algorithm an algorithm name supplied by {@link #algorithms()}.
      */
     @DisplayName("should update a <real digest> through the <SUN> provider")
     @MethodSource({"algorithms"})
@@ -142,9 +143,12 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     /**
-     * BouncyCastle 공급자가 등록되어 있지 않으면 등록한 뒤, 각 알고리즘에 대해 다이제스트 결과를 얻는지 확인한다.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method
+     * updates a real {@link MessageDigest} obtained from the {@code BouncyCastle} provider for the
+     * given algorithm.
      *
-     * @param algorithm {@link #algorithms()} 가 제공하는 알고리즘 이름.
+     * @param algorithm an algorithm name supplied by {@link #algorithms()}.
      */
     @DisplayName("should update a <real digest> through the <BouncyCastle> provider")
     @MethodSource({"algorithms"})
@@ -215,9 +219,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     /**
-     * SHA-256 의 쇄도 효과(avalanche effect) 를 시각적으로 보여 준다. 입력 한 글자만 다른 두 문자열 ({@code "hello, world"} 와
-     * {@code "hello, worle"}) 의 해시 차이를 비트 단위로 세서, 전체 256 비트 가운데 약 절반이 뒤집힘을 표준 출력에 찍는다. 입력의 작은 변화가
-     * 출력 전체를 골고루 흔드는 좋은 해시의 성질을 확인하기 위한 데모이며, 어서션은 두지 않는다.
+     * Verifies that {@code SHA-256} exhibits the avalanche effect by hashing two inputs that
+     * differ in a single character and printing the number of flipped bits.
      */
     @DisplayName("should demonstrate the <avalanche effect> of <SHA-256>")
     @Test
@@ -237,10 +240,10 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     /**
-     * 자주 쓰이는 약한 비밀번호 몇 개에 대해 SHA-1 해시를 찍어, 무지개 표(rainbow table) 로 충분히 역추적할 수 있음을 보여 주는 데모. 같은 비밀번호는
-     * 항상 같은 해시를 만들기 때문에, 솔트 (salt) 없이 해시만 저장해 두면 사전 공격에 그대로 노출된다. 어서션 없이 표준 출력으로만 결과를 보여 준다.
+     * Verifies that hashing common weak passwords with {@code SHA-1} produces deterministic
+     * digests that can be reversed by a rainbow-table lookup.
      *
-     * @param password {@link ValueSource} 가 공급하는 약한 비밀번호.
+     * @param password a weak password supplied by {@link ValueSource}.
      */
     @DisplayName("should demonstrate a <rainbow attack> on <SHA-1>")
     @ValueSource(strings = {

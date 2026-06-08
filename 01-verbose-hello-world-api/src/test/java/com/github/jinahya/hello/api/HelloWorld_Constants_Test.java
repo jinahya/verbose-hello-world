@@ -28,6 +28,11 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for testing constants defined in {@link HelloWorld} interface.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("HelloWorld constants")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

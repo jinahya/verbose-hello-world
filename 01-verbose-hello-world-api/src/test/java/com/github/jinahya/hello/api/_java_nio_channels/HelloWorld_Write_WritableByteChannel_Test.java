@@ -62,78 +62,13 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
     }
 
     /**
-     * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method invokes
-     * {@link HelloWorld#put(ByteBuffer) put(buffer)} method with a byte buffer of
-     * {@value HelloWorld#BYTES} bytes, and writes the {@code buffer} to specified {@code channel}.
+     * Verifies that the method invokes {@link HelloWorld#put(ByteBuffer) put(buffer)} with a
+     * {@value HelloWorld#BYTES}-byte buffer and writes the buffer to the specified
+     * {@code channel}.
      *
      * @throws IOException if an I/O error occurs.
-     * @implNote This test deliberately limits its assertions to the externally observable contract
-     * — that {@code put(buffer)} is invoked once with a {@value HelloWorld#BYTES}-capacity buffer,
-     * and that the returned channel is the same as the argument. Several stronger checks were
-     * considered and rejected; their omissions are documented below for readers who may wonder
-     * why.
-     * <p>
-     * <b>Why no {@code Mockito.verify(buffer).flip()}.</b> Mockito records method invocations only
-     * on mocks or spies; a plain {@link ByteBuffer} cannot be inspected. The buffer is allocated
-     * inside the SUT (via {@link ByteBuffer#allocate(int)}), so the test cannot inject a spy from
-     * outside. Recovering a spy after the fact is impractical, for several reasons:
-     * <ul>
-     *   <li>An {@link org.mockito.ArgumentCaptor ArgumentCaptor} on {@code put(buffer)} captures
-     *       the buffer <em>argument</em>; it does not observe the value returned by
-     *       {@code put(buffer)}, which is the reference the SUT actually operates on after the
-     *       line {@code final var buffer = put(...)} in the default implementation of
-     *       {@link HelloWorld#write(WritableByteChannel)}.</li>
-     *   <li>Returning {@link org.mockito.Mockito#spy(Object) Mockito.spy(buffer)} from the
-     *       {@code put(...)} stub's answer (so the spy becomes the SUT's working reference) is
-     *       fragile: spying a concrete {@link ByteBuffer} subclass such as
-     *       {@code java.nio.HeapByteBuffer} requires the inline {@code MockMaker} to retransform
-     *       {@link Buffer}, {@link Object}, and {@link Comparable}, which the JVM may disallow
-     *       for core system classes.</li>
-     *   <li>{@link org.mockito.Mockito#mockStatic Mockito.mockStatic} on {@link ByteBuffer} (to
-     *       wrap any static factory's return value in a spy uniformly) reenters through JDK
-     *       reflection internals — annotation parsing itself calls
-     *       {@link ByteBuffer#wrap(byte[])} — and the resulting cyclic spy creation throws.</li>
-     *   <li>A side-channel — an {@link java.util.concurrent.atomic.AtomicReference} written from
-     *       inside the {@code put(...)} answer and read from the test — works mechanically, but
-     *       introduces concurrency primitives into an otherwise synchronous flow, which is
-     *       pedagogical noise in an educational codebase.</li>
-     * </ul>
-     * <p>
-     * <b>Why no {@link org.mockito.Mockito#inOrder Mockito.inOrder} for "{@code flip()} before
-     * {@code channel.write(buffer)}".</b> The same prerequisite applies — the buffer must be a
-     * spy. Beyond the mechanics, asserting a specific call order over-specifies the contract: an
-     * equivalent implementation could replace {@code buffer.flip()} with
-     * {@code buffer.position(0).limit(BYTES)}, or any other state-equivalent sequence, and remain
-     * correct. The contract says only that the bytes get written; it does not prescribe which
-     * {@link Buffer} method achieves the state reset.
-     * <p>
-     * <b>Why no {@code Mockito.verify(channel, atLeastOnce()).write(buffer)}.</b> The captor in
-     * {@link HelloWorld__TestUtils#put_buffer12_invoked_once(HelloWorld) put_buffer12_invoked_once}
-     * returns the {@code buffer} argument that was passed into {@code service.put(buffer)}. The
-     * default implementation of {@link HelloWorld#write(WritableByteChannel)} happens to use the
-     * same reference for {@code channel.write(buffer)} — but only because the helper's
-     * {@code put(...)} stub returns its argument unchanged. A different stub (or a different
-     * default implementation that wraps, slices, or otherwise re-references the buffer) would
-     * make this verification fail despite the SUT being correct. The check is therefore tightly
-     * coupled to a stubbing detail, not to the SUT's contract.
-     * <p>
-     * <b>Why no {@code Assertions.assertFalse(buffer.hasRemaining())}.</b> After
-     * {@code put(buffer)} alone, the buffer already satisfies {@code !hasRemaining()} (position
-     * equals limit equals {@value HelloWorld#BYTES}). The assertion is therefore ambiguous: it
-     * passes both for the correct flow ({@code put} → {@code flip} → drain via {@code write}) and
-     * for the buggy flow ({@code put} only, without {@code flip} or {@code write}). It does not
-     * discriminate between the two.
-     * <p>
-     * <b>What is enforced indirectly.</b> The {@code channel.write(...)} stub asserts
-     * {@code src.hasRemaining()} on every invocation (see {@code assert src.hasRemaining()}
-     * below). After {@code put(buffer)} the buffer has zero remaining; for the SUT to invoke
-     * {@code channel.write(buffer)} without tripping the stub's assertion, the SUT must have
-     * first reset the buffer to a remaining state. This is implicit evidence that
-     * {@code flip()} (or an equivalent) was called — but the check is implicit, not direct.
      */
-    @DisplayName("""
-            should invoke <put(buffer[12])> and write the <buffer> to the <channel>
-            while the <buffer> has <remaining>""")
+    @DisplayName("should invoke <put(buffer[12])> and write the <buffer> to the <channel>")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * A class extends {@link HelloWorldCdiSe__Test} for Weld SE with the JUnit 5 extension.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @org.jboss.weld.junit5.auto.AddBeanClasses({HelloWorldCdi_Producer.class})

@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드를 테스트하는
- * 클래스.
+ * A class for testing
+ * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
@@ -46,9 +46,9 @@ class HelloWorld_Update_MessageDigest_Test
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * {@code digest} 인수가 {@code null} 일 때
-     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드가
-     * {@link NullPointerException} 을 던지는지 검증한다.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method
+     * throws a {@link NullPointerException} when the {@code digest} argument is {@code null}.
      */
     @DisplayName("should throw a <NullPointerException> when the <digest> argument is <null>")
     @Test
@@ -61,10 +61,11 @@ class HelloWorld_Update_MessageDigest_Test
     }
 
     /**
-     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} 메서드가
-     * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)} 가 채워 준 배열로
-     * {@link MessageDigest#update(byte[]) digest.update(array)} 를 호출하고, 전달된 digest 를 그대로 반환하는지
-     * 검증한다.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method
+     * invokes {@link MessageDigest#update(byte[]) digest.update(array)} with the array filled by
+     * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and returns the
+     * {@code digest}.
      */
     @DisplayName("should invoke <digest.update(buffer)>, and return the <digest>")
     @Test

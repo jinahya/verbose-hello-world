@@ -23,6 +23,8 @@ package com.github.jinahya.hello.api.util;
 import lombok.extern.slf4j.*;
 
 /**
+ * A class for testing {@link JavaBeansUtils}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j

@@ -36,5 +36,10 @@ import java.lang.annotation.*;
 @SuppressWarnings({"UnicodeInCode"})
 public @interface 屋上架屋 {
 
+    /**
+     * An optional short note describing the redundancy the marker calls out.
+     *
+     * @return the note; defaults to the empty string.
+     */
     String value() default "";
 }

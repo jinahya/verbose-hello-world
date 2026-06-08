@@ -22,8 +22,20 @@ package com.github.jinahya.hello.api;
 
 import java.util.function.*;
 
+/**
+ * A class providing test utilities for {@link ExecutorHelloWorld} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 public final class ExecutorHelloWorld__TestUtil {
 
+    /**
+     * Returns a function that wraps the given {@link HelloWorld} instance in an
+     * {@link ExecutorHelloWorld} backed by a {@link Runnable#run direct} executor.
+     *
+     * @param <T> the {@link HelloWorld} subtype.
+     * @return an initializer function; never {@code null}.
+     */
     public static <T extends HelloWorld>
     Function<? super T, ? extends ExecutorHelloWorld<T>> initializer() {
         return s -> new ExecutorHelloWorld<>(s, Runnable::run);

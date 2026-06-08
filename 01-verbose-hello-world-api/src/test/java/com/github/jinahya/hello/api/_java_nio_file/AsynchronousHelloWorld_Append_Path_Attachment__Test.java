@@ -29,6 +29,14 @@ import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+/**
+ * A class for exploring
+ * {@link AsynchronousHelloWorld#append(Path, Object) append(path, attachment)} method with real
+ * implementations.
+ *
+ * @param <T> the subtype of {@link AsynchronousHelloWorld}.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("append(path, attachment)")
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -42,6 +50,13 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Verifies that the method appends {@code hello-world-bytes} to a real {@link Path}, and
+     * completes the returned stage with the {@code attachment}.
+     *
+     * @param tempDir the temporary directory.
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should append <hello-world-bytes> to a real <Path>,
             and complete the returned stage with the <attachment>""")

@@ -29,6 +29,11 @@ import java.nio.*;
 import java.time.*;
 import java.util.concurrent.*;
 
+/**
+ * A class for exploring the state of {@link ByteBuffer} instances under various operations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("ByteBuffer")
 @Slf4j
 class ByteBufferTest {

@@ -33,6 +33,9 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDiges
 import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
 
+/**
+ * A class for testing {@link MessageDigest}.
+ */
 @DisplayName("MessageDigest")
 @Slf4j
 class _Java_Security_MessageDigest_Test {
@@ -47,6 +50,10 @@ class _Java_Security_MessageDigest_Test {
         }
     }
 
+    /**
+     * Verifies that every {@link MessageDigest} algorithm registered with {@link Security} can be
+     * printed to {@link System#out}.
+     */
     @DisplayName("should print every <MessageDigest> algorithm registered with <Security>")
     @Test
     void algorithmsByProviders__() {
@@ -63,6 +70,10 @@ class _Java_Security_MessageDigest_Test {
         }
     }
 
+    /**
+     * Verifies that every {@link MessageDigest} algorithm registered with each provider can be
+     * printed to {@link System#out}.
+     */
     @Test
     void algorithms__() {
         securityProviders().forEach(p -> {
@@ -77,6 +88,10 @@ class _Java_Security_MessageDigest_Test {
         });
     }
 
+    /**
+     * Verifies that each {@link MessageDigest} algorithm in the latest-LTS set can be obtained from
+     * every available provider.
+     */
     @Test
     void __() {
         final var input = new byte[ThreadLocalRandom.current().nextInt(1024)];
@@ -92,6 +107,10 @@ class _Java_Security_MessageDigest_Test {
         });
     }
 
+    /**
+     * Verifies that every {@code (provider, algorithm)} pair registered for the
+     * {@link MessageDigest} service can be enumerated.
+     */
     @Test
     void __providersAndAlgorithms() {
         final var plain = new byte[ThreadLocalRandom.current().nextInt(1024)];
@@ -101,6 +120,9 @@ class _Java_Security_MessageDigest_Test {
         });
     }
 
+    /**
+     * Verifies that every {@code (provider, algorithm)} pair can digest a random input plaintext.
+     */
     @Test
     void __random() {
         final var plain = new byte[ThreadLocalRandom.current().nextInt(1024)];

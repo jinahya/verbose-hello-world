@@ -41,11 +41,9 @@ import static org.junit.jupiter.api.Assertions.*;
 // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
 
 /**
- * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} 메서드를 실제 JDK 가
- * 제공하는 {@link Signature} 알고리즘들과 함께 돌려 보는 통합 테스트 클래스. 같은 패키지의 단위
- * 테스트({@link HelloWorld_Update_Signature_Test})와 달리, 여기서는 mock 대신
- * {@link Signature#getInstance(String) Signature.getInstance(...)} 로 받아온 진짜 구현으로 키쌍 생성·서명·검증의 한 묶음을
- * 끝까지 돌린다. 알고리즘별 동작은 각 {@link Nested} 클래스에서 따로 다룬다.
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} method with
+ * real {@link Signature} algorithms provided by JDK.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html">Oracle

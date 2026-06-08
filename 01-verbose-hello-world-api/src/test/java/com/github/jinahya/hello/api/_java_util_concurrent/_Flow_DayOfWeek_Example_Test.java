@@ -34,6 +34,9 @@ import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
 /**
+ * A class for exploring {@link Flow} with a {@link DayOfWeek} {@link Flow.Publisher} /
+ * {@link Flow.Subscriber} example.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("Flow / DayOfWeek example")
@@ -208,6 +211,10 @@ class _Flow_DayOfWeek_Example_Test {
         });
     }
 
+    /**
+     * Verifies that the {@link Flow.Publisher} delivers {@link DayOfWeek} items to a single
+     * {@link Flow.Subscriber} as requested.
+     */
     @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
     @Test
     void __() {
@@ -243,6 +250,10 @@ class _Flow_DayOfWeek_Example_Test {
         subscription.request(1L);
     }
 
+    /**
+     * Verifies that the {@link Flow.Publisher} delivers {@link DayOfWeek} items to multiple
+     * {@link Flow.Subscriber}s in parallel as each requests.
+     */
     @DisplayName("should deliver items to multiple <subscribers> from the <publisher>")
     @Test
     void __multipleSubscribers() {

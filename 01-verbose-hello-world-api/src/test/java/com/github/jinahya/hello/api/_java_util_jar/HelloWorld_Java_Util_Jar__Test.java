@@ -32,6 +32,12 @@ import java.util.jar.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link HelloWorld#write(OutputStream) write(stream)} method with real
+ * {@link JarOutputStream} / {@link JarFile} from {@code java.util.jar}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("java.util.jar")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -50,6 +56,11 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
     @Nested
     class JarOutputStream_Test {
 
+        /**
+         * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method writes a
+         * {@code "hello, world"} entry into an in-memory {@link JarOutputStream}, and that the
+         * bytes can be read back through {@link JarInputStream}.
+         */
         @DisplayName("should write a <hello, world> entry into an in-memory <JarOutputStream>")
         @Test
         void __() throws IOException {
@@ -70,6 +81,11 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method writes a
+         * {@code "hello, world"} entry into a file-backed {@link JarOutputStream}, and that the
+         * bytes can be read back through {@link JarFile}.
+         */
         @DisplayName("should write a <hello, world> entry into a file-backed <JarOutputStream>")
         @Test
         void __File() throws IOException {
@@ -99,6 +115,11 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
     @Nested
     class JarFile_Test {
 
+        /**
+         * Verifies that a {@code "hello, world"} entry written via
+         * {@link HelloWorld#write(OutputStream) write(stream)} can be read back through a
+         * {@link JarFile}.
+         */
         @DisplayName("should read back a <hello, world> entry through <JarFile>")
         @Test
         void __() throws IOException {

@@ -23,6 +23,15 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import org.junit.jupiter.api.*;
 
+import java.nio.channels.*;
+
+/**
+ * A class for exploring
+ * {@link ExecutorHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
+ * attachment, handler)} method against {@link ExecutorHelloWorld} with real implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel, attachment, handler)")
 class ExecutorHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test
         extends AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test<

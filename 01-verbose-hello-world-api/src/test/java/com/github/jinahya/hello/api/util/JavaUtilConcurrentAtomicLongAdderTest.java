@@ -26,6 +26,8 @@ import org.junit.jupiter.api.*;
 import java.util.concurrent.atomic.*;
 
 /**
+ * A class for testing {@link java.util.concurrent.atomic.LongAdder}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("LongAdder")

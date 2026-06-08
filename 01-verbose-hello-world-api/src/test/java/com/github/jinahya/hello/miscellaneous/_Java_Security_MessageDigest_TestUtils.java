@@ -29,6 +29,9 @@ import java.util.stream.*;
 
 import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestConstants.*;
 
+/**
+ * A class providing test utilities for {@link java.security.MessageDigest}.
+ */
 @DisplayName("MessageDigest")
 @Slf4j
 public class _Java_Security_MessageDigest_TestUtils {

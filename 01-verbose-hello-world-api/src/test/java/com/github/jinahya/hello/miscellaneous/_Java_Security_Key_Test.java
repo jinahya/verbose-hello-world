@@ -25,6 +25,9 @@ import lombok.extern.slf4j.*;
 import java.security.*;
 import java.util.*;
 
+/**
+ * A utility class for printing {@link Key} summaries to {@link System#out}.
+ */
 @Slf4j
 class _Java_Security_Key_Test {
 

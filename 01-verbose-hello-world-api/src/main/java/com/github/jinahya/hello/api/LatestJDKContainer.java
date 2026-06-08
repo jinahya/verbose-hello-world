@@ -34,6 +34,8 @@ import java.lang.annotation.*;
 public @interface LatestJDKContainer {
 
     /**
+     * Returns the contained {@link LatestJDK} markers.
+     *
      * @return the contained {@link LatestJDK} markers; never {@code null}.
      */
     LatestJDK[] value();

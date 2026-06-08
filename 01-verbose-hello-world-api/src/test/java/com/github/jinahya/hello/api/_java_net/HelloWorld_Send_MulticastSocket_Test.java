@@ -32,6 +32,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
+/**
+ * A class for testing {@link HelloWorld#send(DatagramSocket) send(socket)} method against a real
+ * {@link MulticastSocket}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("send(socket)")
 @Disabled
 @Slf4j
@@ -56,6 +62,13 @@ class HelloWorld_Send_MulticastSocket_Test
             ThreadLocalRandom.current().nextInt(49152, 65536);
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method sends {@code hello-world-bytes} through a real
+     * {@link MulticastSocket} over {@code IPv4}.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv4>")
     @Test
     void __IPv4() throws Exception {
@@ -137,6 +150,13 @@ class HelloWorld_Send_MulticastSocket_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method sends {@code hello-world-bytes} through a real
+     * {@link MulticastSocket} over {@code IPv6}.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv6>")
     @Test
     void __IPv6() throws Exception {

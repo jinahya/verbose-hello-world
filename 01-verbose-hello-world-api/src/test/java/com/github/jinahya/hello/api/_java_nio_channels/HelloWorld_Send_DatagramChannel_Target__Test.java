@@ -33,6 +33,12 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
+/**
+ * A class for exploring {@link HelloWorld#send(DatagramChannel, SocketAddress) send(channel,
+ * target)} method with real implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("send(channel, target)")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
@@ -51,6 +57,12 @@ class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     class EchoServer_Test {
 
+        /**
+         * Verifies that the method sends {@code hello-world-bytes} to an echo server over an
+         * {@code IPv4} address.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv4> address")
         @Test
         void __INET() throws IOException {
@@ -93,6 +105,12 @@ class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method sends {@code hello-world-bytes} to an echo server over an
+         * {@code IPv6} address.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv6> address")
         @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
                                   disabledReason = "IPv6 disabled by preferIPv4Stack=true")
@@ -137,6 +155,12 @@ class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method sends {@code hello-world-bytes} to an echo server over a UNIX
+         * domain address.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName(
                 "should send <hello-world-bytes> to an <echo server> over a <UNIX domain> address")
         @Disabled("not supported")

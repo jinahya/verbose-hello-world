@@ -23,6 +23,9 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.*;
 import org.junit.jupiter.api.*;
 
+/**
+ * A class for exploring {@code javax.crypto} integration scenarios.
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto__ScenarioTest {
 

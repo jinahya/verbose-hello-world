@@ -27,7 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
+ * A class extends {@link HelloWorldDi__Test} for Dagger.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @see <a href="https://dagger.dev/">Dagger</a>
  */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

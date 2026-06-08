@@ -39,6 +39,12 @@ import static com.github.jinahya.hello.api._Java_Nio_Channels_TestUtils.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link HelloWorld#write(WritableByteChannel) write(channel)} method with
+ * real implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -59,6 +65,11 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     @Nested
     class Pipe_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} through a {@link Pipe}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a <pipe>")
         @Test
         void __() throws IOException {
@@ -85,6 +96,12 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     @Nested
     class SocketChannel_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} through a {@link SocketChannel}
+         * over a loopback address.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> through a <SocketChannel>
                 over a <loopback> address""")
@@ -117,6 +134,12 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     @Nested
     class EchoServer_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server over an
+         * {@link InetSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName(
                 "should write <hello-world-bytes> to an <echo server> over an <InetSocketAddress>")
         @Test
@@ -145,6 +168,12 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server over an
+         * {@link Inet6Address}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName(
                 "should write <hello-world-bytes> to an <echo server> over an <Inet6Address>")
         @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
@@ -175,6 +204,12 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server over a
+         * {@link UnixDomainSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> to an <echo server>
                 over a <UnixDomainSocketAddress>""")

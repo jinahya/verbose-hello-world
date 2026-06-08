@@ -25,6 +25,9 @@ import lombok.extern.slf4j.*;
 import java.security.*;
 import java.util.*;
 
+/**
+ * A class providing test utilities for {@link java.security.Key}.
+ */
 @Slf4j
 class _Java_Security_Key_TestUtils {
 

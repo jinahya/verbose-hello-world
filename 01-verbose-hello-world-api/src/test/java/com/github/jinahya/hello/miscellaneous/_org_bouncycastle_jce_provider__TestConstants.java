@@ -22,6 +22,9 @@ package com.github.jinahya.hello.miscellaneous;
 
 import org.bouncycastle.jce.provider.*;
 
+/**
+ * Constants for testing with the Bouncy Castle JCE provider.
+ */
 public class _org_bouncycastle_jce_provider__TestConstants {
 
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;

@@ -33,6 +33,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(PreparedStatement, int)
+ * setAsciiStream(statement, index)} method with real {@link PreparedStatement} implementations
+ * from JDBC drivers.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test extends HelloWorld__Test {
@@ -64,6 +72,12 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test extends HelloWorld__
 
         private static final String COLUMN = "chars";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(PreparedStatement, int)
+         * setAsciiStream(statement, index)} method inserts and reads back the
+         * {@code "hello, world"} bytes through a real H2 {@link PreparedStatement}.
+         */
         @DisplayName("""
                 should insert and read back the hello-world bytes
                 through a <real H2 PreparedStatement>""")
@@ -122,6 +136,12 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test extends HelloWorld__
 
         private static final String COLUMN = "chars";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(PreparedStatement, int)
+         * setAsciiStream(statement, index)} method inserts and reads back the
+         * {@code "hello, world"} bytes through a real HSQLDB {@link PreparedStatement}.
+         */
         @DisplayName("""
                 should insert and read back the hello-world bytes
                 through a <real HSQLDB PreparedStatement>""")
@@ -179,6 +199,12 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test extends HelloWorld__
 
         private static final String COLUMN = "chars";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(PreparedStatement, int)
+         * setAsciiStream(statement, index)} method inserts and reads back the
+         * {@code "hello, world"} bytes through a real SQLite {@link PreparedStatement}.
+         */
         @DisplayName("""
                 should insert and read back the hello-world bytes
                 through a <real SQLite PreparedStatement>""")

@@ -47,6 +47,11 @@ import static org.mockito.Mockito.*;
 class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code builder}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <builder> argument is <null>")
     @Test
     void _ThrowNullPointerException_BuilderIsNull() {
@@ -58,6 +63,10 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
         assertThrows(NullPointerException.class, () -> service.method(builder, method));
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code method}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <method> argument is <null>")
     @Test
     void _ThrowNullPointerException_MethodIsNull() {
@@ -70,6 +79,11 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method invokes {@code builder.method(method, publisher)}, and returns the
+     * {@code builder}.
+     */
     @DisplayName("should invoke <builder.method(method, publisher)>, and return the <builder>")
     @Test
     void __() {
@@ -91,6 +105,12 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
         }
     }
 
+    /**
+     * Verifies that the method sends {@code hello-world-bytes} through a real {@link HttpClient}
+     * request.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("should send <hello-world-bytes> through a real <HttpClient> request")
     @畵蛇添足
     @Test

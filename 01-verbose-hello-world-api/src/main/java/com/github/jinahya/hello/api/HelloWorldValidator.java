@@ -23,6 +23,10 @@ package com.github.jinahya.hello.api;
 import java.util.*;
 
 /**
+ * Internal validation helpers for byte arrays passed to {@link HelloWorld} methods — verifies that
+ * the given array has room for the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+ * starting at the given index.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 final class HelloWorldValidator {

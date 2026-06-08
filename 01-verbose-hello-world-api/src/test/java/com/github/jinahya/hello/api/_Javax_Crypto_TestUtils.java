@@ -28,8 +28,9 @@ import java.security.*;
 import java.util.*;
 
 /**
- * .
+ * A class providing test utilities for {@link javax.crypto} usages.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see com.github.jinahya.hello._Javax_Crypto_KeyGenerator_Test
  */
 @Slf4j
@@ -37,7 +38,8 @@ import java.util.*;
 public final class _Javax_Crypto_TestUtils {
 
     /**
-     * .
+     * A map of {@link KeyGenerator} algorithm names to their representative key sizes (empty list
+     * indicates the algorithm uses a fixed default size).
      *
      * @see com.github.jinahya.hello._Javax_Crypto_KeyGenerator_Test
      */
@@ -49,6 +51,14 @@ public final class _Javax_Crypto_TestUtils {
             "HmacSHA256", List.of() // 256
     );
 
+    /**
+     * Generates a secret key using the specified algorithm and (optionally) key size.
+     *
+     * @param algorithm the standard algorithm name.
+     * @param keysize   the key size in bits, or {@code null} to use the provider's default.
+     * @return a new secret key.
+     * @throws NoSuchAlgorithmException if no provider supports the given {@code algorithm}.
+     */
     public static SecretKey generateSecretKey(final String algorithm,
                                               final @Nullable Integer keysize)
             throws NoSuchAlgorithmException {

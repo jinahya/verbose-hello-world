@@ -23,6 +23,11 @@ package com.github.jinahya.hello;
 import lombok.*;
 import org.junit.jupiter.api.*;
 
+/**
+ * A class for exploring the bit patterns of integral primitive values.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("integral")
 class IntegralTest {
 

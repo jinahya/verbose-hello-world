@@ -35,6 +35,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring {@link HelloWorld#add(SequencedCollection, Function) add(collection,
+ * mapper)} method with real {@link SequencedCollection} subtypes from {@code java.util} and
+ * {@code java.util.concurrent}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("add(collection, mapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

@@ -21,6 +21,8 @@ package com.github.jinahya.hello.api.util;
  */
 
 /**
+ * A class for testing {@link HelloWorldSystemUtils}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldSystemUtilsTest {

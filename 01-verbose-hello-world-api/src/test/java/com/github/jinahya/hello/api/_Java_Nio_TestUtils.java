@@ -29,10 +29,24 @@ import java.nio.*;
 import java.util.*;
 import java.util.stream.*;
 
+/**
+ * A class providing test utilities for {@link java.nio} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Nio_TestUtils {
 
+    /**
+     * Checks that the specified buffer has a non-zero capacity and returns it.
+     *
+     * @param buffer the buffer to check; must not be {@code null}.
+     * @param <T>    the buffer type.
+     * @return the given {@code buffer}.
+     * @throws NullPointerException     if the {@code buffer} is {@code null}.
+     * @throws IllegalArgumentException if the {@code buffer}'s capacity is zero.
+     */
     public static <T extends ByteBuffer> T requireNonZeroCapacity(final T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         if (buffer.capacity() == 0) {
@@ -41,6 +55,14 @@ public final class _Java_Nio_TestUtils {
         return buffer;
     }
 
+    /**
+     * Fills the specified buffer with zero bytes and returns it.
+     *
+     * @param buffer the buffer to fill; must not be {@code null}.
+     * @param <T>    the buffer type.
+     * @return the given {@code buffer}.
+     * @throws NullPointerException if the {@code buffer} is {@code null}.
+     */
     public static <T extends ByteBuffer> T fillZeros(final T buffer) {
         Objects.requireNonNull(buffer, "buffer is null");
         MemorySegment.ofBuffer(buffer).fill((byte) 0);

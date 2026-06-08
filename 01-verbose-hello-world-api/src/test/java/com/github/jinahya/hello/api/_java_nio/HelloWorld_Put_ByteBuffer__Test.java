@@ -24,6 +24,14 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 
+import java.nio.*;
+
+/**
+ * A class for exploring {@link HelloWorld#put(ByteBuffer) put(buffer)} method with real
+ * implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})

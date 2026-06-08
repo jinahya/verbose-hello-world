@@ -34,6 +34,8 @@ import java.lang.annotation.*;
 public @interface LatestLTSContainer {
 
     /**
+     * Returns the contained {@link LatestLTS} markers.
+     *
      * @return the contained {@link LatestLTS} markers; never {@code null}.
      */
     LatestLTS[] value();

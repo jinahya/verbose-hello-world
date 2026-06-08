@@ -36,6 +36,12 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link HelloWorld#append(Path) append(path)} method with a real
+ * {@link Path}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("append(path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -51,6 +57,10 @@ class HelloWorld_Append_Path__Test extends HelloWorld__Test {
         append_path_appends_hello_world(service());
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#append(Path) append(path)} method appends
+     * {@value HelloWorld#BYTES} bytes to the end of a real {@link Path}.
+     */
     @DisplayName("should append <hello-world-bytes> to a real <Path>")
     @Test
     void __() throws Exception {

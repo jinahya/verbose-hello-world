@@ -48,6 +48,10 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code path}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
@@ -59,6 +63,12 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         );
     }
 
+    /**
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
+     * the supplied {@code attachment} once the synchronous append succeeds.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should complete the returned stage with the <attachment>
             once the synchronous append succeeds""")
@@ -72,6 +82,12 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
+    /**
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes
+     * exceptionally when the synchronous append fails.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName(
             "should complete the returned stage exceptionally when the synchronous append fails")
     @Test

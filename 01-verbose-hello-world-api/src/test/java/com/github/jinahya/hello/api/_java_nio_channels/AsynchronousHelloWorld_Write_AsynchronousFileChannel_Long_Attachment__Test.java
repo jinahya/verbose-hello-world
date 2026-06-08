@@ -34,6 +34,14 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring
+ * {@link AsynchronousHelloWorld#write(AsynchronousFileChannel, long, Object) write(channel,
+ * position, attachment)} method with real implementations.
+ *
+ * @param <T> the subtype of {@link AsynchronousHelloWorld}.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel, position, attachment)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test<
@@ -71,6 +79,13 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         }).when(asynchronousService()).write(any(), anyLong(), any());
     }
 
+    /**
+     * Verifies that the method writes {@code hello-world-bytes} to a real
+     * {@link AsynchronousFileChannel} at a {@code position}.
+     *
+     * @param dir the temporary directory.
+     * @throws Exception if an error occurs.
+     */
     @DisplayName(
             "should write <hello-world-bytes> to a real <AsynchronousFileChannel> at a <position>")
     @Test

@@ -42,6 +42,12 @@ import java.util.concurrent.*;
 class HelloWorld_SetBytes_PreparedStatement_Int_Test
         extends HelloWorld__Test {
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(PreparedStatement, int)
+     * setBytes(statement, index)} method throws a {@link NullPointerException} when the
+     * {@code statement} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
     @Test
     void _ThrowNullPointerException_PreparedStatementIsNull() {
@@ -56,6 +62,12 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
         );
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(PreparedStatement, int)
+     * setBytes(statement, index)} method throws an {@link IllegalArgumentException} when the
+     * {@code index} argument is not positive.
+     */
     @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
     @Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
@@ -70,6 +82,14 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
         );
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(PreparedStatement, int)
+     * setBytes(statement, index)} method invokes
+     * {@link PreparedStatement#setBytes(int, byte[]) statement.setBytes(index, array)} with the
+     * array filled by {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and
+     * returns the {@code statement}.
+     */
     @DisplayName("should invoke <statement.setBytes(index, buffer)>, and return the <statement>")
     @Test
     void __() throws SQLException {

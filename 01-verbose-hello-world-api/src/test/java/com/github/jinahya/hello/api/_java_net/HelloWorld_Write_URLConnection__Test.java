@@ -34,6 +34,12 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring {@link HelloWorld#write(URLConnection) write(connection)} method with real
+ * implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(connection)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -49,6 +55,10 @@ class HelloWorld_Write_URLConnection__Test extends HelloWorld__Test {
         }).when(service()).write(ArgumentMatchers.<URLConnection>notNull());
     }
 
+    /**
+     * Verifies that the method sends {@code hello-world-bytes} through a real
+     * {@link HttpURLConnection}.
+     */
     @DisplayName("should send <hello-world-bytes> through a real <HttpURLConnection>")
     @Test
     void __() {

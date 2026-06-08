@@ -23,6 +23,9 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
+/**
+ * A class for testing {@link java.security.KeyPair}.
+ */
 @DisplayName("KeyPair")
 @Slf4j
 class _Java_Security_KeyPair_Test {

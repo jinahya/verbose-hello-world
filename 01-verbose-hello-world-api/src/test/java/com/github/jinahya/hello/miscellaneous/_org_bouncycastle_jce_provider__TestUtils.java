@@ -24,6 +24,9 @@ import org.bouncycastle.jce.provider.*;
 
 import java.security.*;
 
+/**
+ * A class providing test utilities for the Bouncy Castle JCE provider.
+ */
 public class _org_bouncycastle_jce_provider__TestUtils {
 
     public static void addBouncyCastleProvider() {

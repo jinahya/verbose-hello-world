@@ -41,6 +41,10 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method throws a
+     * {@link NullPointerException} when the {@code checksum} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <checksum> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChecksumIsNull() {
@@ -51,6 +55,11 @@ class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.update(checksum));
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} once and passes the array to
+     * {@link Checksum#update(byte[]) checksum.update(array)}, and returns the {@code checksum}.
+     */
     @DisplayName("should invoke <set(byte[12])> and pass the array to <checksum.update>")
     @Test
     void __() {

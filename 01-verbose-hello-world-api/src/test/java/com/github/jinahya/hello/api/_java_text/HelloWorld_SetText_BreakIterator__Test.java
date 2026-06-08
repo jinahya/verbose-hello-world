@@ -36,6 +36,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)} method
+ * with real {@link BreakIterator} instances.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("setText(iterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -50,6 +57,12 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }).when(service()).setText(notNull());
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
+     * method iterates the {@code "hello, world"} string with a real character
+     * {@link BreakIterator}.
+     */
     @DisplayName("should iterate the hello-world string with a <real character> <BreakIterator>")
     @Test
     void __CharacterInstance() {
@@ -61,6 +74,11 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
+     * method iterates the {@code "hello, world"} string with a real word {@link BreakIterator}.
+     */
     @DisplayName("should iterate the hello-world string with a <real word> <BreakIterator>")
     @Test
     void __WordInstance() {
@@ -72,6 +90,11 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
+     * method iterates the {@code "hello, world"} string with a real line {@link BreakIterator}.
+     */
     @DisplayName("should iterate the hello-world string with a <real line> <BreakIterator>")
     @Test
     void __LineInstance() {
@@ -83,6 +106,12 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
+     * method iterates the {@code "hello, world"} string with a real sentence
+     * {@link BreakIterator}.
+     */
     @DisplayName("should iterate the hello-world string with a <real sentence> <BreakIterator>")
     @Test
     void __SentenceInstance() {
@@ -105,6 +134,12 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         );
     }
 
+    /**
+     * Verifies that every kind of {@link BreakIterator} iterates the given multilingual string
+     * end-to-end without throwing.
+     *
+     * @param string a multilingual string supplied by {@link #strings()}.
+     */
     @DisplayName("should iterate a <multilingual string> with every kind of <BreakIterator>")
     @MethodSource("strings")
     @ParameterizedTest
@@ -178,6 +213,12 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
         return string;
     }
 
+    /**
+     * Verifies that the given multilingual string is truncated to at most {@code 20} UTF-8 bytes
+     * via a character {@link BreakIterator} without splitting a grapheme cluster.
+     *
+     * @param string a multilingual string supplied by {@link #strings()}.
+     */
     @DisplayName("""
             should truncate a <multilingual string>
             to at most <20> UTF-8 bytes via <BreakIterator>""")

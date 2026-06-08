@@ -94,6 +94,12 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code HmacSHA1} algorithm.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA1")
@@ -122,6 +128,12 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code HmacSHA224} algorithm.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA224")
@@ -150,6 +162,12 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code HmacSHA256} algorithm.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA256")
@@ -178,6 +196,12 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code HmacSHA384} algorithm.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA384")
@@ -206,6 +230,12 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code HmacSHA512} algorithm.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA512")

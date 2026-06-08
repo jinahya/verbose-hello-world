@@ -22,6 +22,11 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 
+/**
+ * A class providing test utilities for {@link java.security.Key} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_Key_TestUtils {

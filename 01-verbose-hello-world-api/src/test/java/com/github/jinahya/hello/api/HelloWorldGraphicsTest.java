@@ -25,6 +25,9 @@ import org.junit.platform.commons.util.*;
 import java.util.*;
 
 /**
+ * An abstract base class for testing {@link HelloWorldGraphics} subtypes.
+ *
+ * @param <T> the {@link HelloWorldGraphics} subtype.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 abstract class HelloWorldGraphicsTest<T extends HelloWorldGraphics> {

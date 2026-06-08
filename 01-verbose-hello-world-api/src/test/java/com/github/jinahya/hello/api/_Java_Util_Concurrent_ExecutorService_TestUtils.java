@@ -26,10 +26,21 @@ import org.junit.jupiter.api.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
+/**
+ * A class providing test utilities for {@link ExecutorService} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Util_Concurrent_ExecutorService_TestUtils {
 
+    /**
+     * Returns a stream of {@link Named}-tagged {@link ExecutorService}s suitable for backing an
+     * {@link java.nio.channels.AsynchronousChannelGroup}.
+     *
+     * @return a stream of named executor services.
+     */
     public static Stream<Named<ExecutorService>> executorStreamAsynchronousChannelGroup() {
         return Stream.of(
                 Named.of(

@@ -24,10 +24,18 @@ import lombok.extern.slf4j.*;
 
 import java.util.*;
 
+/**
+ * Constants for testing {@link java.security.MessageDigest} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_MessageDigest_TestConstants {
 
+    /**
+     * The {@link java.security.MessageDigest} algorithm names tested by this module.
+     */
     public static final List<String> MESSAGE_DIGEST_ALGORITHMS = List.of(
             "SHA-1",
             "SHA-256",

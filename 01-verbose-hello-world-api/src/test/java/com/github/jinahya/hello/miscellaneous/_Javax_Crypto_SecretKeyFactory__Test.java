@@ -84,6 +84,11 @@ class _Javax_Crypto_SecretKeyFactory__Test {
     @Nested
     class Symmetric_Test {
 
+        /**
+         * Verifies that {@code AES} generates byte-identical keys from the same {@link SecretKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("AES")
         @Test
         void __AES() throws Exception {
@@ -100,6 +105,11 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code ARCFOUR} generates byte-identical keys from the same {@link SecretKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @Disabled
         @DisplayName("ARCFOUR")
         @Test
@@ -118,6 +128,11 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code ChaCha20} generates byte-identical keys from the same {@link SecretKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @Disabled
         @DisplayName("ChaCha20")
         @Test
@@ -136,6 +151,11 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code DES} generates byte-identical keys from the same {@link DESKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("DES")
         @Test
         void __DES() throws Exception {
@@ -152,6 +172,11 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code DESede} generates byte-identical keys from the same {@link DESedeKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("DESede")
         @Test
         void __DESede() throws Exception {
@@ -196,6 +221,13 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         @Nested
         class Legacy_Test {
 
+            /**
+             * Verifies that the given legacy PBE {@code algorithm} generates byte-identical keys
+             * from the same {@link PBEKeySpec}.
+             *
+             * @param algorithm the JCE algorithm name.
+             * @throws Exception if any error occurs.
+             */
             @DisplayName("should generate a deterministic key via the given <legacy PBE>")
             @ValueSource(strings = {
                     "PBEWithMD5AndDES",
@@ -235,6 +267,13 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         @Nested
         class HmacAndAes_Test {
 
+            /**
+             * Verifies that the given PBE+HMAC+AES {@code algorithm} generates byte-identical keys
+             * from the same {@link PBEKeySpec}.
+             *
+             * @param algorithm the JCE algorithm name.
+             * @throws Exception if any error occurs.
+             */
             @DisplayName("should generate a deterministic key via the given <PBE+Hmac+AES>")
             @ValueSource(strings = {
                     "PBEWithHmacSHA1AndAES_128",
@@ -286,6 +325,13 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         // storage
         private static final int ITERATION_COUNT = 100_000;
 
+        /**
+         * Verifies that the given {@code PBKDF2WithHmac*} {@code algorithm} derives a deterministic
+         * hash from the same {@link PBEKeySpec}.
+         *
+         * @param algorithm the JCE algorithm name.
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("should derive a deterministic hash via the given <PBKDF2WithHmac*>")
         @ValueSource(strings = {
                 "PBKDF2WithHmacSHA1",

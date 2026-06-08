@@ -24,6 +24,13 @@ import lombok.*;
 import org.mockito.invocation.*;
 import org.mockito.stubbing.*;
 
+/**
+ * A Mockito {@link Answer} that invokes the real method and captures its result for later
+ * retrieval.
+ *
+ * @param <T> the result type.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class ResultCaptor<T>
         implements Answer<T> {

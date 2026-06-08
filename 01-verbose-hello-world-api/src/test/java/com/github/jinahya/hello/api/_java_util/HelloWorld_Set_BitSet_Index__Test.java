@@ -28,6 +28,13 @@ import org.mockito.*;
 
 import java.util.*;
 
+/**
+ * A class for exploring {@link HelloWorld#set(BitSet, int) set(bitset, index)} method with a real
+ * {@link BitSet} and BitSet-based algorithms (Jaccard similarity, Hamming distance, Sieve of
+ * Eratosthenes).
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("set(bitset, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -52,6 +59,10 @@ class HelloWorld_Set_BitSet_Index__Test
         );
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method sets the
+     * {@code "hello, world"} bits into a fresh {@link BitSet} starting at index {@code 0}.
+     */
     @DisplayName("should set <hello, world> bits into a fresh <BitSet>")
     @Test
     void __() {
@@ -74,6 +85,10 @@ class HelloWorld_Set_BitSet_Index__Test
     @Nested
     class Jaccard_Test {
 
+        /**
+         * Verifies that the Jaccard similarity equals {@code 1.0} when two {@link BitSet}s set by
+         * {@link HelloWorld#set(BitSet, int) set(bitset, index)} have identical placements.
+         */
         @DisplayName("should compute <Jaccard = 1.0> when placements are identical")
         @Test
         void __identical() {
@@ -90,6 +105,11 @@ class HelloWorld_Set_BitSet_Index__Test
             Assertions.assertEquals(1.0, jaccard);
         }
 
+        /**
+         * Verifies that the Jaccard similarity equals {@code 0.0} when two {@link BitSet}s set by
+         * {@link HelloWorld#set(BitSet, int) set(bitset, index)} at non-overlapping offsets are
+         * compared.
+         */
         @DisplayName("should compute <Jaccard = 0.0> when placements are non-overlapping")
         @Test
         void __disjoint() {
@@ -116,6 +136,10 @@ class HelloWorld_Set_BitSet_Index__Test
     @Nested
     class Hamming_Test {
 
+        /**
+         * Verifies that the Hamming distance equals {@code 0} when two {@link BitSet}s set by
+         * {@link HelloWorld#set(BitSet, int) set(bitset, index)} have identical placements.
+         */
         @DisplayName("should compute <distance = 0> when placements are identical")
         @Test
         void __identical() {
@@ -128,6 +152,11 @@ class HelloWorld_Set_BitSet_Index__Test
             Assertions.assertEquals(0, diff.cardinality());
         }
 
+        /**
+         * Verifies that the Hamming distance equals {@code |A| + |B|} when two {@link BitSet}s
+         * set by {@link HelloWorld#set(BitSet, int) set(bitset, index)} at disjoint offsets are
+         * compared.
+         */
         @DisplayName("should compute <distance = |A| + |B|> when placements are disjoint")
         @Test
         void __disjoint() {
@@ -149,6 +178,10 @@ class HelloWorld_Set_BitSet_Index__Test
     @Nested
     class SieveOfEratosthenes_Test {
 
+        /**
+         * Verifies that the Sieve of Eratosthenes implemented over a {@link BitSet} counts
+         * {@code 10} primes when sieving up to {@code 30}.
+         */
         @DisplayName("should count <10> primes when sieving up to <30>")
         @Test
         void __primesUpTo30() {

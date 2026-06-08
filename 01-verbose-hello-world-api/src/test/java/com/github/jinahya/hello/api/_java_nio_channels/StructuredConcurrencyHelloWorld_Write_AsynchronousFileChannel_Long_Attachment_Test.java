@@ -23,8 +23,16 @@ package com.github.jinahya.hello.api._java_nio_channels;
 import com.github.jinahya.hello.api.*;
 import org.junit.jupiter.api.*;
 
+import java.nio.channels.*;
 import java.util.function.*;
 
+/**
+ * A class for testing
+ * {@link StructuredConcurrencyHelloWorld#write(AsynchronousFileChannel, long, Object) write(channel,
+ * position, attachment)} method against {@link StructuredConcurrencyHelloWorld}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel, position, attachment)")
 class StructuredConcurrencyHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test
         extends AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test<

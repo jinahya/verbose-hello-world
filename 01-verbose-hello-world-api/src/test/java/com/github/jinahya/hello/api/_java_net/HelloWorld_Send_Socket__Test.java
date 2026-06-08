@@ -33,6 +33,12 @@ import java.nio.channels.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link HelloWorld#send(Socket) send(socket)} method with real
+ * implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("send(socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -53,6 +59,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
     @Nested
     class SocketTest {
 
+        /**
+         * Verifies that the method sends {@code hello-world-bytes} through a real {@link Socket}
+         * over {@link InetSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName(
                 "should send <hello-world-bytes> through a real <Socket> over <InetSocketAddress>")
         @Test
@@ -75,6 +87,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method sends {@code hello-world-bytes} through a real {@link Socket}
+         * over {@link UnixDomainSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should send <hello-world-bytes> through a real <Socket>
                 over <UnixDomainSocketAddress>""")
@@ -107,6 +125,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
     @Nested
     class EchoServer_Test {
 
+        /**
+         * Verifies that the method round-trips {@code hello-world-bytes} through a real
+         * {@link Socket} echo server over {@link InetSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should round-trip <hello-world-bytes> through a real <Socket> echo server
                 over <InetSocketAddress>""")
@@ -141,6 +165,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method round-trips {@code hello-world-bytes} through a real
+         * {@link Socket} echo server over {@link Inet6Address}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should round-trip <hello-world-bytes> through a real <Socket> echo server
                 over <Inet6Address>""")
@@ -175,6 +205,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that invoking {@code socket()} on a {@link ServerSocketChannel} opened with
+         * {@link StandardProtocolFamily#UNIX} throws an {@link UnsupportedOperationException}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should throw <UnsupportedOperationException> when invoking <socket()>
                 on a <ServerSocketChannel> opened with <StandardProtocolFamily.UNIX>""")
@@ -189,6 +225,12 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
             });
         }
 
+        /**
+         * Verifies that binding a real {@link ServerSocket} to a {@link UnixDomainSocketAddress}
+         * throws an {@link IllegalArgumentException}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should throw <IllegalArgumentException> when binding
                 a real <ServerSocket> to a <UnixDomainSocketAddress>""")

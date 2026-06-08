@@ -60,6 +60,11 @@ class HelloWorld_Append_Path_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.append(path));
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#append(Path) append(path)} method invokes
+     * {@link HelloWorld#write(WritableByteChannel) write(channel)} with the channel opened on the
+     * given path, and returns the {@code path}.
+     */
     @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
     @Test
     void __() throws IOException {

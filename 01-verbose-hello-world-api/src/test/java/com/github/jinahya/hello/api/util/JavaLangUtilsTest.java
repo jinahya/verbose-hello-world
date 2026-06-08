@@ -29,6 +29,8 @@ import java.nio.charset.*;
 import java.util.*;
 
 /**
+ * A class for testing {@link JavaLangUtils}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("JavaLangUtils")

@@ -34,6 +34,9 @@ import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
 /**
+ * A class for exploring {@link Flow} with a {@link LocalDate} {@link Flow.Publisher} /
+ * {@link Flow.Subscriber} example.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("Flow / LocalDate example")
@@ -210,6 +213,10 @@ class _Flow_LocalDate_Example_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the {@link Flow.Publisher} delivers {@link LocalDate} items to a single
+     * {@link Flow.Subscriber} as requested.
+     */
     @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
     @Test
     void __() {

@@ -30,7 +30,7 @@ import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Mac_TestUtils
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * .
+ * A class for testing {@link javax.crypto.Mac} with the JCA-mandatory HMAC algorithms.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
@@ -43,6 +43,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class _Javax_Crypto_Mac_Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HmacSHA1} produces the same tag when re-initialized and re-fed the same
+     * data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA1")
@@ -74,6 +81,13 @@ class _Javax_Crypto_Mac_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HmacSHA224} produces the same tag when re-initialized and re-fed the same
+     * data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA224")
@@ -105,6 +119,13 @@ class _Javax_Crypto_Mac_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HmacSHA256} produces the same tag when re-initialized and re-fed the same
+     * data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA256")
@@ -136,6 +157,13 @@ class _Javax_Crypto_Mac_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HmacSHA384} produces the same tag when re-initialized and re-fed the same
+     * data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA384")
@@ -167,6 +195,13 @@ class _Javax_Crypto_Mac_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HmacSHA512} produces the same tag when re-initialized and re-fed the same
+     * data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("HmacSHA512")

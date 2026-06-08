@@ -26,16 +26,20 @@ import jakarta.enterprise.inject.*;
 import java.util.*;
 
 /**
- * A class for producing (and disposing) instances of {@link HelloWorld} interface.
+ * A CDI producer that produces (and disposes) instances of the {@link HelloWorld} interface — the
+ * {@link #produce()} method loads the first {@link HelloWorld} provider registered through
+ * {@link ServiceLoader} and returns it as a CDI bean, while {@link #dispose(HelloWorld)} is the
+ * matching disposer (currently a no-op since the produced instance holds no resources).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class HelloWorldProvider {
 
     /**
-     * Produces an instance of {@link HelloWorld} interface.
+     * Produces an instance of the {@link HelloWorld} interface by loading the first provider
+     * registered through {@link ServiceLoader}.
      *
-     * @return an instance of {@link HelloWorld} interface.
+     * @return an instance of the {@link HelloWorld} interface; never {@code null}.
      * @see #dispose(HelloWorld)
      */
     @Produces
@@ -44,9 +48,10 @@ class HelloWorldProvider {
     }
 
     /**
-     * Disposes specified instance of {@link HelloWorld} interface.
+     * Disposes the given instance of the {@link HelloWorld} interface. The implementation is a
+     * no-op since the produced instance holds no resources that need releasing.
      *
-     * @param bean the instance of {@link HelloWorld} interface to dispose.
+     * @param bean the instance of the {@link HelloWorld} interface to dispose.
      * @see #produce()
      */
     void dispose(@Disposes final HelloWorld bean) {

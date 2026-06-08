@@ -33,6 +33,12 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring {@link HelloWorld#send(DatagramSocket) send(socket)} method with real
+ * implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("send(socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -49,6 +55,12 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
         }).when(service()).send(argThat(DatagramSocket::isConnected));
     }
 
+    /**
+     * Verifies that the method sends {@code hello-world-bytes} through a real connected
+     * {@link DatagramSocket}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should send <hello-world-bytes> through a real connected <DatagramSocket>")
     @Test
     void __() throws IOException {
@@ -83,6 +95,12 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
     @Nested
     class EchoServer_Test {
 
+        /**
+         * Verifies that the client invokes {@code send(socket)} to a connected server, and the
+         * server echoes the bytes back to the sender.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 client should <send(socket)> to a connected server;
                 server should echo the bytes back to the sender""")

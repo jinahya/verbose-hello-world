@@ -59,6 +59,10 @@ import lombok.extern.slf4j.*;
 //import java.util.concurrent.ThreadLocalRandom;
 //import java.util.function.Consumer;
 //
+/**
+ * A class for exploring {@link com.github.jinahya.hello.api.HelloWorld HelloWorld}'s
+ * {@code update(cipher, consumer)} method with real {@link Cipher} transformations.
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher__Test extends HelloWorld__Test {

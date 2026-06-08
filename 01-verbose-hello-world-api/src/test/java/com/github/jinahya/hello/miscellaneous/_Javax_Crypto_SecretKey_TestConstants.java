@@ -22,6 +22,9 @@ package com.github.jinahya.hello.miscellaneous;
 
 import lombok.extern.slf4j.*;
 
+/**
+ * Constants for testing {@link javax.crypto.SecretKey}.
+ */
 @Slf4j
 public final class _Javax_Crypto_SecretKey_TestConstants {
 

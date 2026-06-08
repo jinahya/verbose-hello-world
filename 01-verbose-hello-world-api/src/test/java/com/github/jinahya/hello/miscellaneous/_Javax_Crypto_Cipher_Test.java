@@ -35,7 +35,8 @@ import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Cipher_TestUt
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * .
+ * A class for testing {@link Cipher} round-trip encryption / decryption with the JCA-mandatory
+ * transformations.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
@@ -51,6 +52,13 @@ class _Javax_Crypto_Cipher_Test {
     private static Path tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code AES/CBC/NoPadding} round-trips random plain text.
+     *
+     * @param keysize the AES key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("AES/CBC/NoPadding")
@@ -73,6 +81,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code AES/CBC/PKCS5Padding} round-trips random plain text.
+     *
+     * @param keysize the AES key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("AES/CBC/PKCS5Padding")
@@ -95,6 +110,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code AES/ECB/NoPadding} round-trips random plain text.
+     *
+     * @param keysize the AES key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("AES/ECB/NoPadding")
@@ -117,6 +139,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code AES/ECB/PKCS5Padding} round-trips random plain text.
+     *
+     * @param keysize the AES key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("AES/ECB/PKCS5Padding")
@@ -139,6 +168,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code AES/GCM/NoPadding} round-trips random plain text.
+     *
+     * @param keysize the AES key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("AES/GCM/NoPadding")
@@ -167,6 +203,12 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code ChaCha20-Poly1305} round-trips random plain text.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("ChaCha20-Poly1305")
@@ -194,6 +236,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code DESede/CBC/NoPadding} round-trips random plain text.
+     *
+     * @param keysize the DESede key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/CBC/NoPadding")
     @ValueSource(ints = {168})
     @LatestLTS
@@ -215,6 +264,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code DESede/CBC/PKCS5Padding} round-trips random plain text.
+     *
+     * @param keysize the DESede key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/CBC/PKCS5Padding")
     @ValueSource(ints = {168})
     @LatestLTS
@@ -236,6 +292,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code DESede/ECB/NoPadding} round-trips random plain text.
+     *
+     * @param keysize the DESede key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/ECB/NoPadding")
     @ValueSource(ints = {168})
     @LatestLTS
@@ -257,6 +320,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code DESede/ECB/PKCS5Padding} round-trips random plain text.
+     *
+     * @param keysize the DESede key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/ECB/PKCS5Padding")
     @ValueSource(ints = {168})
     @LatestLTS
@@ -278,6 +348,12 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code PBEWithHmacSHA256AndAES_128} round-trips random plain text.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("PBEWithHmacSHA256AndAES_128")
     @LatestJDK
     @Test
@@ -298,6 +374,12 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code PBEWithHmacSHA256AndAES_256} round-trips random plain text.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("PBEWithHmacSHA256AndAES_256")
     @LatestJDK
     @Test
@@ -318,6 +400,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code RSA/ECB/PKCS1Padding} round-trips random plain text.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("RSA/ECB/PKCS1Padding")
     @ValueSource(ints = {1024, 2048})
     @LatestLTS
@@ -339,6 +428,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code RSA/ECB/OAEPWithSHA-1AndMGF1Padding} round-trips random plain text.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("RSA/ECB/OAEPWithSHA-1AndMGF1Padding")
     @ValueSource(ints = {1024, 2048})
     @LatestLTS
@@ -361,6 +457,13 @@ class _Javax_Crypto_Cipher_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code RSA/ECB/OAEPWithSHA-256AndMGF1Padding} round-trips random plain text.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
     @ValueSource(ints = {1024, 2048})
     @LatestLTS

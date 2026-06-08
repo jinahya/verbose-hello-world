@@ -37,5 +37,10 @@ import java.lang.annotation.*;
 @SuppressWarnings({"UnicodeInCode"})
 public @interface 畵蛇添足 {
 
+    /**
+     * An optional short note describing the superfluous code the marker calls out.
+     *
+     * @return the note; defaults to the empty string.
+     */
     String value() default "";
 }

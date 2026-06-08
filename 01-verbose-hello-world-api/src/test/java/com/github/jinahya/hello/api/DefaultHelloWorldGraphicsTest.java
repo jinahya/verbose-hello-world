@@ -21,6 +21,8 @@ package com.github.jinahya.hello.api;
  */
 
 /**
+ * An abstract base class for testing {@link DefaultHelloWorldGraphics}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 abstract class DefaultHelloWorldGraphicsTest
