@@ -23,9 +23,9 @@ package com.github.jinahya.hello.api;
 import java.lang.annotation.*;
 
 /**
- * A marker annotation for superfluous/unnecessary codes.
+ * A marker annotation for superfluous/unnecessary code.
  *
- * @author Jin Kwon &lt;onacit_at_wemakeprice.com&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://en.wiktionary.org/wiki/%E7%95%AB%E8%9B%87%E6%B7%BB%E8%B6%B3">畫蛇添足</a>
  * @see <a href="https://en.wiktionary.org/wiki/%EC%82%AC%EC%A1%B1">사족</a>
  * @see 屋上架屋

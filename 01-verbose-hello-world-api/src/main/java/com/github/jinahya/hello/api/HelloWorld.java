@@ -128,7 +128,7 @@ public interface HelloWorld {
      *     throw new NullPointerException("array is null");
      * }
      * if (array.length < BYTES) {
-     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
      * }
      * set(array, 0); // @highlight
      * return array;
@@ -562,7 +562,7 @@ public interface HelloWorld {
 
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified
-     * {@link DatagramSocket#isConnected() connected } datagram socket.
+     * {@link DatagramSocket#isConnected() connected} datagram socket.
      *
      * @param <T>    socket type parameter
      * @param socket the socket through which bytes are sent.
@@ -1160,7 +1160,7 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL preparedStatement, if a database access
+     *                                  marker in the SQL statement, if a database access
      *                                  error occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array

@@ -54,7 +54,7 @@ final class HelloWorldBookUtils {
     );
 
     // ---------------------------------------------------------------------------------------------
-    static String toHascodeString(final Object object) {
+    static String toHashcodeString(final Object object) {
         return String.format("@%08x", System.identityHashCode(object));
     }
 
@@ -75,7 +75,7 @@ final class HelloWorldBookUtils {
      *   <li>{@code byte[]} → {@link #formatArray(byte[])} (e.g. {@code [68'h' 65'e' …]})</li>
      *   <li>{@link Number} (int, long, …) → its {@code toString}, as is</li>
      *   <li>{@link CharSequence} → the string content, unquoted (identifier-like)</li>
-     *   <li>anything else → {@link #toHascodeString(Object)} (identity hash)</li>
+     *   <li>anything else → {@link #toHashcodeString(Object)} (identity hash)</li>
      * </ul>
      */
     static String format(final @Nullable Object value) {
@@ -85,7 +85,7 @@ final class HelloWorldBookUtils {
             case byte[] a -> formatArray(a);
             case Number n -> n.toString();
             case CharSequence s -> s.toString();
-            default -> toHascodeString(value);
+            default -> toHashcodeString(value);
         };
     }
 
@@ -127,7 +127,7 @@ final class HelloWorldBookUtils {
                 (p, m, args) -> {
                     if (m.getDeclaringClass() == clazz) {
                         logger.log(System.Logger.Level.DEBUG, "{0}.{1}({2})",
-                                   toHascodeString(delegate),
+                                   toHashcodeString(delegate),
                                    m.getName(),
                                    argsString(args));
                     }

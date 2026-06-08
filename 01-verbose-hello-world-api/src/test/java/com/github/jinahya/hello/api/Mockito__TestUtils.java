@@ -199,7 +199,7 @@ public final class Mockito__TestUtils {
                 withSettings().defaultAnswer(invocation -> {
                     if (invocation.getMethod().getDeclaringClass() == clazz) {
                         log.debug("{}.{}({})",
-                                  toHascodeString(invocation.getMock()),
+                                  toHashcodeString(invocation.getMock()),
                                   invocation.getMethod().getName(),
                                   argsString(invocation.getArguments()));
                     }
@@ -292,7 +292,7 @@ public final class Mockito__TestUtils {
                     final var inv = (Invocation) report.getInvocation();
                     if (inv.getMethod().getDeclaringClass() != Object.class) {
                         log.debug("{}.{}({})",
-                                  toHascodeString(inv.getMock()),
+                                  toHashcodeString(inv.getMock()),
                                   inv.getMethod().getName(),
                                   argsString(inv.getArguments()));
                     }

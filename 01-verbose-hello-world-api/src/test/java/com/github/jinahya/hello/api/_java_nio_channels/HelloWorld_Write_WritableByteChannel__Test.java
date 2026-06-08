@@ -153,7 +153,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
                 should write <hello-world-bytes> to an <echo server>
                 over a <UnixDomainSocketAddress>""")
         @Test
-        void ___UnixDomainSocketAddress() throws IOException {
+        void __UnixDomainSocketAddress() throws IOException {
             try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX)) {
                 server.bind(null);
                 log.debug("[server] bound: {}", server.getLocalAddress());

@@ -41,7 +41,7 @@ public final class _Java_Security_TestUtils {
             "SHA1withDSA",
             "SHA256withDSA",
             "SHA256withECDSA",
-            "SHA384withECDS",
+            "SHA384withECDSA",
             "SHA1withRSA",
             "SHA256withRSA",
             "SHA384withRSA"
