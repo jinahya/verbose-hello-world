@@ -38,8 +38,7 @@ import static org.mockito.Mockito.*;
 /**
  * A class for exploring
  * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)} method
- * with real {@link SequencedMap} subtypes from {@code java.util} and
- * {@code java.util.concurrent}.
+ * with real {@link SequencedMap} subtypes from {@code java.util} and {@code java.util.concurrent}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

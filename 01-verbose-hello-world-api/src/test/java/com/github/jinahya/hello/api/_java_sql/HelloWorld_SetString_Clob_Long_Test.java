@@ -43,9 +43,9 @@ class HelloWorld_SetString_Clob_Long_Test
         extends HelloWorld__Test {
 
     /**
-     * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
-     * setString(clob, pos)} method throws a {@link NullPointerException} when the {@code clob}
-     * argument is {@code null}.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob, pos)}
+     * method throws a {@link NullPointerException} when the {@code clob} argument is {@code null}.
      */
     @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test
@@ -62,9 +62,10 @@ class HelloWorld_SetString_Clob_Long_Test
     }
 
     /**
-     * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
-     * setString(clob, pos)} method throws an {@link IllegalArgumentException} when the {@code pos}
-     * argument is not positive.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob, pos)}
+     * method throws an {@link IllegalArgumentException} when the {@code pos} argument is not
+     * positive.
      */
     @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
@@ -81,9 +82,10 @@ class HelloWorld_SetString_Clob_Long_Test
     }
 
     /**
-     * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
-     * setString(clob, pos)} method invokes {@link Clob#setString(long, String) clob.setString(pos,
-     * string)} with the {@code "hello, world"} string, and returns the {@code clob}.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob, pos)}
+     * method invokes {@link Clob#setString(long, String) clob.setString(pos, string)} with the
+     * {@code "hello, world"} string, and returns the {@code clob}.
      */
     @DisplayName("should invoke <clob.setString(pos, string)>, and return the <clob>")
     @Test

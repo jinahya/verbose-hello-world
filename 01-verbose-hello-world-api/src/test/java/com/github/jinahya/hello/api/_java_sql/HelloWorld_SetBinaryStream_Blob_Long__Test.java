@@ -30,8 +30,9 @@ import java.io.*;
 import java.sql.*;
 
 /**
- * A class for exploring {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(Blob, long)
- * setBinaryStream(blob, pos)} method with real {@link Blob} implementations from JDBC drivers.
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(Blob, long) setBinaryStream(blob,
+ * pos)} method with real {@link Blob} implementations from JDBC drivers.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

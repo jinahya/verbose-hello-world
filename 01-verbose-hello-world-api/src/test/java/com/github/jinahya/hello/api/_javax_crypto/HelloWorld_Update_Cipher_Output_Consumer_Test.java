@@ -36,8 +36,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * A class for testing {@link HelloWorld#update(Cipher, ByteBuffer, IntConsumer)
- * update(cipher, output, outputLengthConsumer)} method.
+ * A class for testing
+ * {@link HelloWorld#update(Cipher, ByteBuffer, IntConsumer) update(cipher, output,
+ * outputLengthConsumer)} method.
  */
 @DisplayName("update(cipher, output, outputLengthConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)

@@ -40,9 +40,9 @@ class HelloWorld_SetBytes_Blob_Long_Test
         extends HelloWorld__Test {
 
     /**
-     * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long)
-     * setBytes(blob, pos)} method throws a {@link NullPointerException} when the {@code blob}
-     * argument is {@code null}.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
+     * method throws a {@link NullPointerException} when the {@code blob} argument is {@code null}.
      */
     @DisplayName("should throw a <NullPointerException> when the <blob> argument is <null>")
     @Test
@@ -59,9 +59,10 @@ class HelloWorld_SetBytes_Blob_Long_Test
     }
 
     /**
-     * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long)
-     * setBytes(blob, pos)} method throws an {@link IllegalArgumentException} when the {@code pos}
-     * argument is not positive.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
+     * method throws an {@link IllegalArgumentException} when the {@code pos} argument is not
+     * positive.
      */
     @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
     @Test
@@ -78,11 +79,11 @@ class HelloWorld_SetBytes_Blob_Long_Test
     }
 
     /**
-     * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long)
-     * setBytes(blob, pos)} method invokes {@link Blob#setBytes(long, byte[]) blob.setBytes(pos,
-     * array)} with the array filled by
-     * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and returns the
-     * {@code blob}.
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
+     * method invokes {@link Blob#setBytes(long, byte[]) blob.setBytes(pos, array)} with the array
+     * filled by {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and returns
+     * the {@code blob}.
      */
     @DisplayName("should invoke <blob.setBytes(pos, buffer)>, and return the <blob>")
     @Test

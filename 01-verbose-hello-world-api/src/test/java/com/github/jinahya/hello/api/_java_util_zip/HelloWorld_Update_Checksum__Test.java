@@ -41,8 +41,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * A class for exploring {@link HelloWorld#update(Checksum) update(checksum)} method with real
- * {@link Checksum} implementations from {@code java.util.zip} and third-party
- * libraries (Apache Commons Codec, lz4-java).
+ * {@link Checksum} implementations from {@code java.util.zip} and third-party libraries (Apache
+ * Commons Codec, lz4-java).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -74,6 +74,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates the
      * {@code "hello, world"} bytes through every real {@link Checksum} subtype supplied by
@@ -103,9 +104,8 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
         class XXH32_Test {
 
             /**
-             * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method
-             * updates the {@code "hello, world"} bytes through Apache Commons Codec's
-             * {@link XXHash32}.
+             * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates
+             * the {@code "hello, world"} bytes through Apache Commons Codec's {@link XXHash32}.
              */
             @DisplayName("xxHash32 / Commons-Codec")
             @Test
@@ -117,9 +117,8 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
             }
 
             /**
-             * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method
-             * updates the {@code "hello, world"} bytes through lz4-java's streaming
-             * {@code xxHash32}.
+             * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates
+             * the {@code "hello, world"} bytes through lz4-java's streaming {@code xxHash32}.
              */
             @DisplayName("xxHash32 / Lz4")
             @Test
@@ -138,9 +137,8 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
         class XXH64_Test {
 
             /**
-             * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method
-             * updates the {@code "hello, world"} bytes through lz4-java's streaming
-             * {@code xxHash64}.
+             * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates
+             * the {@code "hello, world"} bytes through lz4-java's streaming {@code xxHash64}.
              */
             @DisplayName("xxHash64 / Lz4")
             @Test
@@ -169,9 +167,9 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
         }
 
         /**
-         * Verifies that {@link CheckedOutputStream} and {@link CheckedInputStream} produce the
-         * same {@link Checksum} value when {@link HelloWorld#write(OutputStream) write(stream)}
-         * writes the {@code "hello, world"} bytes through them.
+         * Verifies that {@link CheckedOutputStream} and {@link CheckedInputStream} produce the same
+         * {@link Checksum} value when {@link HelloWorld#write(OutputStream) write(stream)} writes
+         * the {@code "hello, world"} bytes through them.
          *
          * @param checksum a real {@link Checksum} instance.
          */

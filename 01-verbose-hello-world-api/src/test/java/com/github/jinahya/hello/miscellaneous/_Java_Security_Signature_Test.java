@@ -50,7 +50,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class _Java_Security_Signature_Test {
 
     /**
-     * Verifies that every {@link Signature} algorithm registered with each provider can be printed.
+     * Verifies that every {@link Signature} algorithm registered with each provider can be
+     * printed.
      */
     @Test
     void algorithms__() {

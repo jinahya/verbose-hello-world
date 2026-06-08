@@ -66,8 +66,8 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test extends HelloWorld__T
     /**
      * Verifies that the
      * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(PreparedStatement, int)
-     * setAsciiStream(statement, index)} method throws an {@link IllegalArgumentException} when
-     * the {@code index} argument is not positive.
+     * setAsciiStream(statement, index)} method throws an {@link IllegalArgumentException} when the
+     * {@code index} argument is not positive.
      */
     @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
     @Test

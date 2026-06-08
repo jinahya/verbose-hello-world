@@ -27,8 +27,9 @@ import java.nio.channels.*;
 
 /**
  * A class for exploring
- * {@link ExecutorHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler) write(channel,
- * attachment, handler)} method against {@link ExecutorHelloWorld} with real implementations.
+ * {@link ExecutorHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)
+ * write(channel, attachment, handler)} method against {@link ExecutorHelloWorld} with real
+ * implementations.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

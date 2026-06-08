@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -62,6 +63,6 @@ class JavaNioByteBufferUtilsTest {
     @MethodSource({"randomByteBufferStream"})
     @ParameterizedTest
     void print__(final ByteBuffer buffer) {
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
     }
 }

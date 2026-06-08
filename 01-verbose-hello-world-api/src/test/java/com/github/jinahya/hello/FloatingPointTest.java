@@ -27,6 +27,7 @@ import org.junit.jupiter.api.*;
 // Sign	Sign	Sign
 // Exponent	Biased Exponent	Characteristic
 // Fraction	Trailing Significand	Mantissa
+
 /**
  * A class for exploring the IEEE 754 bit patterns of {@code float} and {@code double} values.
  *

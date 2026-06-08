@@ -213,6 +213,7 @@ class _Flow_LocalDate_Example_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the {@link Flow.Publisher} delivers {@link LocalDate} items to a single
      * {@link Flow.Subscriber} as requested.

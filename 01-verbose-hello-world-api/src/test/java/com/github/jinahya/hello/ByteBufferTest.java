@@ -20,7 +20,7 @@ package com.github.jinahya.hello;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
@@ -43,40 +43,40 @@ class ByteBufferTest {
     @Test
     void __() {
         final var buffer = ByteBuffer.allocate(32);
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         buffer.limit(25);
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         buffer.position(4);
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
     }
 
     @DisplayName("should print state of a <ByteBuffer> with <capacity> of <0>")
     @Test
     void __ZeroCapacity() {
         final var buffer = ByteBuffer.allocate(0);
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
     }
 
     @DisplayName("should print state changes across absolute and relative <get>/<put> operations")
     @Test
     void __AbsRel() {
         final var buffer = ByteBuffer.allocate(10);
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         {
             final var b = buffer.get();
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         }
         {
             final var b = buffer.get(buffer.position());
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         }
         {
             buffer.put(new byte[2]);
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         }
         {
             buffer.get(1, new byte[5]);
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         }
     }
 
@@ -111,9 +111,9 @@ class ByteBufferTest {
     void __29() {
         final var buffer = ByteBuffer.allocate(10).position(1).limit(9);
 //        JavaNioByteBufferUtils.print(buffer);
-        JavaNioBufferUtils.print(buffer);
+        _Java_Nio_Buffer_TestUtils.print(buffer);
         buffer.position(buffer.position() + 3);
-        JavaNioBufferUtils.print(buffer);
+        _Java_Nio_Buffer_TestUtils.print(buffer);
     }
 
     @DisplayName("int buffer view")
@@ -124,17 +124,17 @@ class ByteBufferTest {
         @Test
         void __() {
             final var bbuf = ByteBuffer.allocate(Integer.BYTES);
-            JavaNioByteBufferUtils.print(bbuf);
+            _Java_Nio_ByteBuffer_TestUtils.print(bbuf);
             bbuf.put(0, new byte[] {(byte) 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
-            JavaNioByteBufferUtils.print(bbuf);
+            _Java_Nio_ByteBuffer_TestUtils.print(bbuf);
             final var ibuf = bbuf.asIntBuffer();
             assert ibuf.position() == 0;
             assert ibuf.capacity() == bbuf.remaining() / Integer.BYTES;
             assert ibuf.limit() == bbuf.remaining() / Integer.BYTES;
-            JavaNioBufferUtils.print(ibuf);
+            _Java_Nio_Buffer_TestUtils.print(ibuf);
             final var i = ibuf.get();
             assert i == Integer.MAX_VALUE;
-            JavaNioBufferUtils.print(ibuf);
+            _Java_Nio_Buffer_TestUtils.print(ibuf);
         }
     }
 
@@ -146,31 +146,31 @@ class ByteBufferTest {
         @Test
         void __clear() {
             final var b = ByteBuffer.allocate(10);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.limit(7).position(4).mark().position(6);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.clear();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
         }
 
         @DisplayName("should swap position and limit when <flip()> is invoked")
         @Test
         void __flip() {
             final var b = ByteBuffer.allocate(10);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.put(new byte[5]);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.flip();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
         }
 
         @DisplayName("should reset position to <0> when <rewind()> is invoked")
         @Test
         void __rewind() {
             final var b = ByteBuffer.allocate(10).limit(7).position(4);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.rewind();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
         }
 
         @DisplayName("""
@@ -180,13 +180,13 @@ class ByteBufferTest {
         void __compact1() {
             final var b = ByteBuffer.allocate(10);
             b.put(new byte[8]);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.flip();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.position(3);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.compact();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
         }
 
         @DisplayName("""
@@ -197,11 +197,11 @@ class ByteBufferTest {
             final var b = ByteBuffer.allocate(10);
             b.put(new byte[8]);                        // position=8, limit=10
             b.flip();                                  // position=0, limit=8
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.position(8);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.compact();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
         }
     }
 
@@ -213,11 +213,11 @@ class ByteBufferTest {
         @Test
         void __markReset() {
             final var b = ByteBuffer.allocate(10);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.position(3).mark().position(7);
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
             b.reset();
-            JavaNioBufferUtils.print(b);
+            _Java_Nio_Buffer_TestUtils.print(b);
         }
     }
 
@@ -225,9 +225,9 @@ class ByteBufferTest {
     @Test
     void __positionLimit() {
         final var b = ByteBuffer.allocate(10);
-        JavaNioBufferUtils.print(b);
+        _Java_Nio_Buffer_TestUtils.print(b);
         b.limit(7).position(3);
-        JavaNioBufferUtils.print(b);
+        _Java_Nio_Buffer_TestUtils.print(b);
     }
 
     @DisplayName(
@@ -235,8 +235,8 @@ class ByteBufferTest {
     @Test
     void __remainingHasRemaining() {
         final var b = ByteBuffer.allocate(10).limit(8).position(3);
-        JavaNioBufferUtils.print(b);
+        _Java_Nio_Buffer_TestUtils.print(b);
         b.position(8);
-        JavaNioBufferUtils.print(b);
+        _Java_Nio_Buffer_TestUtils.print(b);
     }
 }

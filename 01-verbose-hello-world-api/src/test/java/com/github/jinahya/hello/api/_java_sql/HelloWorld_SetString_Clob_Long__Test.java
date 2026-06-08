@@ -29,8 +29,9 @@ import org.mockito.*;
 import java.sql.*;
 
 /**
- * A class for exploring {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
- * setString(clob, pos)} method with real {@link Clob} implementations from JDBC drivers.
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob, pos)} method
+ * with real {@link Clob} implementations from JDBC drivers.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -66,9 +67,9 @@ class HelloWorld_SetString_Clob_Long__Test
         private static final String PASSWORD = "";
 
         /**
-         * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
-         * setString(clob, pos)} method populates a real H2 {@link Clob} with the
-         * {@code "hello, world"} string.
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob,
+         * pos)} method populates a real H2 {@link Clob} with the {@code "hello, world"} string.
          */
         @DisplayName("should populate a <real H2 Clob> through <setString(clob, 1L)>")
         @Test
@@ -97,9 +98,10 @@ class HelloWorld_SetString_Clob_Long__Test
         private static final String PASSWORD = "";
 
         /**
-         * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
-         * setString(clob, pos)} method populates a real HSQLDB {@link Clob} with the
-         * {@code "hello, world"} string.
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob,
+         * pos)} method populates a real HSQLDB {@link Clob} with the {@code "hello, world"}
+         * string.
          */
         @DisplayName("should populate a <real HSQLDB Clob> through <setString(clob, 1L)>")
         @Test
@@ -127,9 +129,10 @@ class HelloWorld_SetString_Clob_Long__Test
         private static final String PASSWORD = "";
 
         /**
-         * Verifies that the {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)
-         * setString(clob, pos)} method populates a real SQLite {@link Clob} with the
-         * {@code "hello, world"} string.
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob,
+         * pos)} method populates a real SQLite {@link Clob} with the {@code "hello, world"}
+         * string.
          */
         @DisplayName("should populate a <real SQLite Clob> through <setString(clob, 1L)>")
         @Test

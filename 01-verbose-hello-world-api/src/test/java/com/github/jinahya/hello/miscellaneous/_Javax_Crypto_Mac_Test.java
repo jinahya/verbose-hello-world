@@ -83,8 +83,8 @@ class _Javax_Crypto_Mac_Test {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Verifies that {@code HmacSHA224} produces the same tag when re-initialized and re-fed the same
-     * data.
+     * Verifies that {@code HmacSHA224} produces the same tag when re-initialized and re-fed the
+     * same data.
      *
      * @throws Exception if any error occurs.
      */
@@ -121,8 +121,8 @@ class _Javax_Crypto_Mac_Test {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Verifies that {@code HmacSHA256} produces the same tag when re-initialized and re-fed the same
-     * data.
+     * Verifies that {@code HmacSHA256} produces the same tag when re-initialized and re-fed the
+     * same data.
      *
      * @throws Exception if any error occurs.
      */
@@ -159,8 +159,8 @@ class _Javax_Crypto_Mac_Test {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Verifies that {@code HmacSHA384} produces the same tag when re-initialized and re-fed the same
-     * data.
+     * Verifies that {@code HmacSHA384} produces the same tag when re-initialized and re-fed the
+     * same data.
      *
      * @throws Exception if any error occurs.
      */
@@ -197,8 +197,8 @@ class _Javax_Crypto_Mac_Test {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Verifies that {@code HmacSHA512} produces the same tag when re-initialized and re-fed the same
-     * data.
+     * Verifies that {@code HmacSHA512} produces the same tag when re-initialized and re-fed the
+     * same data.
      *
      * @throws Exception if any error occurs.
      */

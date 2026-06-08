@@ -49,8 +49,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
     }
 
     /**
-     * Verifies that the method throws a {@link NullPointerException} when the {@code path}
-     * argument is {@code null}.
+     * Verifies that the method throws a {@link NullPointerException} when the {@code path} argument
+     * is {@code null}.
      */
     @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test

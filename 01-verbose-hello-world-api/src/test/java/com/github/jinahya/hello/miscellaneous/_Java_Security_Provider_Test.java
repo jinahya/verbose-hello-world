@@ -49,7 +49,8 @@ class _Java_Security_Provider_Test {
     }
 
     /**
-     * Verifies that providers, services, and algorithms can be enumerated together in grouped form.
+     * Verifies that providers, services, and algorithms can be enumerated together in grouped
+     * form.
      */
     @Test
     void providersServicesAndAlgorithms__() {

@@ -375,8 +375,10 @@ class _Effective_Java_PECS_Test {
         }
 
         // roundUpMammal1 is invariant: the caller MUST pass exactly Collection<Mammal>.
+
         /**
-         * Verifies that {@code roundUpMammal1} accepts only an invariant {@code Collection<Mammal>}.
+         * Verifies that {@code roundUpMammal1} accepts only an invariant
+         * {@code Collection<Mammal>}.
          */
         @DisplayName("should accept only an invariant <Collection<Mammal>> in <roundUpMammal1>")
         @Test
@@ -403,6 +405,7 @@ class _Effective_Java_PECS_Test {
 
         // roundUpMammal2 follows PECS "Consumer Super":
         // the caller can pass any Collection whose element type is Mammal or a supertype.
+
         /**
          * Verifies that {@code roundUpMammal2} accepts any {@code Collection<? super Mammal>} via
          * PECS.
@@ -431,6 +434,7 @@ class _Effective_Java_PECS_Test {
         }
 
         // roundUp1<T> is invariant: the caller MUST pass exactly Collection<T>.
+
         /**
          * Verifies that {@code roundUp1} accepts only an invariant {@code Collection<T>}.
          */
@@ -465,6 +469,7 @@ class _Effective_Java_PECS_Test {
 
         // roundUp2<T> follows PECS "Consumer Super":
         // the caller can pass any Collection whose element type is <T> or a supertype of <T>.
+
         /**
          * Verifies that {@code roundUp2} accepts any {@code Collection<? super T>} via PECS.
          */
@@ -506,6 +511,7 @@ class _Effective_Java_PECS_Test {
         }
 
         // inspect1<T> is invariant: the caller MUST pass exactly Consumer<T>.
+
         /**
          * Verifies that {@code inspect1} accepts only an invariant {@code Consumer<T>}.
          */
@@ -535,6 +541,7 @@ class _Effective_Java_PECS_Test {
 
         // inspect2<T> follows PECS "Consumer Super":
         // the caller can pass any Consumer whose element type is <T> or a supertype of <T>.
+
         /**
          * Verifies that {@code inspect2} accepts any {@code Consumer<? super T>} via PECS.
          */
@@ -583,6 +590,7 @@ class _Effective_Java_PECS_Test {
         // ========================================================== capture (wild → zoo) tests
 
         // capture1 is invariant: the caller MUST pass exactly Collection<Animal>.
+
         /**
          * Verifies that {@code capture1} accepts only an invariant {@code Collection<Animal>}.
          */
@@ -617,8 +625,10 @@ class _Effective_Java_PECS_Test {
 
         // capture2 follows PECS "Producer Extends":
         // the caller can pass Collection<Animal> or any Collection<SubtypeOfAnimal>.
+
         /**
-         * Verifies that {@code capture2} accepts any {@code Collection<? extends Animal>} via PECS.
+         * Verifies that {@code capture2} accepts any {@code Collection<? extends Animal>} via
+         * PECS.
          */
         @DisplayName("should accept any <Collection<? extends Animal>> via PECS in <capture2>")
         @Test
@@ -656,6 +666,7 @@ class _Effective_Java_PECS_Test {
         // ============================================================== breed (none → zoo) tests
 
         // breed1<T> is invariant: the caller MUST pass exactly Supplier<T> for the inferred T.
+
         /**
          * Verifies that {@code breed1} accepts only an invariant {@code Supplier<T>}.
          */
@@ -691,6 +702,7 @@ class _Effective_Java_PECS_Test {
 
         // breed2<T> follows PECS "Producer Extends":
         // the caller can pass Supplier<T> or any Supplier<SubtypeOfT>.
+
         /**
          * Verifies that {@code breed2} accepts any {@code Supplier<? extends T>} via PECS.
          */
@@ -729,6 +741,7 @@ class _Effective_Java_PECS_Test {
         // =========================================================== release (zoo → wild) tests
 
         // release1 is invariant: the caller MUST pass exactly Collection<Animal>.
+
         /**
          * Verifies that {@code release1} accepts only an invariant {@code Collection<Animal>}.
          */
@@ -752,6 +765,7 @@ class _Effective_Java_PECS_Test {
 
         // release2 follows PECS "Consumer Super":
         // the caller can pass Collection<Animal>, Collection<Object>, or anything in between.
+
         /**
          * Verifies that {@code release2} accepts any {@code Collection<? super Animal>} via PECS.
          */
@@ -776,6 +790,7 @@ class _Effective_Java_PECS_Test {
         // ========================================================== map (Function: BOTH PECS sides)
 
         // tag1: both sides invariant — caller MUST pass exactly Function<T, R>.
+
         /**
          * Verifies that {@code tag1} accepts only an invariant {@code Function<T, R>}.
          */
@@ -807,6 +822,7 @@ class _Effective_Java_PECS_Test {
 
         // tag2: full PECS — input "? super T", output "? extends R".
         // Caller can pass Function<SuperOfT, SubtypeOfR>.
+
         /**
          * Verifies that {@code tag2} accepts any {@code Function<? super T, ? extends R>} via full
          * PECS.
@@ -849,6 +865,7 @@ class _Effective_Java_PECS_Test {
 
         // Caller must pass <List<T>> for the SAME T as the Cats / Mammals / Animals they're
         // swapping. Neither <? extends T> nor <? super T> would compile inside <swap>.
+
         /**
          * Verifies that {@code swap} requires an invariant {@code List<T>} when both reading and
          * writing.
@@ -888,6 +905,7 @@ class _Effective_Java_PECS_Test {
 
         // roster1 returns invariant Collection<Animal> — easy to use.
         // roster2 returns Collection<? extends Animal> — caller is stuck with wildcards.
+
         /**
          * Verifies that an invariant return type is preferable over a wildcard return type.
          */
@@ -922,6 +940,7 @@ class _Effective_Java_PECS_Test {
         // Cats are NOT Comparable<Cat>; they ARE Comparable<Animal> (via Animal's
         // implements Comparable<Animal>). The <? super T> in the bound is what lets <Cat> bind:
         // <Cat extends Comparable<? super Cat>> ✅ because Comparable<Animal> satisfies it.
+
         /**
          * Verifies that {@code heaviest} binds any {@code T} via the recursive
          * {@code <T extends Comparable<? super T>>} bound.

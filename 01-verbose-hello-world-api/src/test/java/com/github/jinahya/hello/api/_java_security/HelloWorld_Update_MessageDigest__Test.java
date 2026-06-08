@@ -219,8 +219,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     /**
-     * Verifies that {@code SHA-256} exhibits the avalanche effect by hashing two inputs that
-     * differ in a single character and printing the number of flipped bits.
+     * Verifies that {@code SHA-256} exhibits the avalanche effect by hashing two inputs that differ
+     * in a single character and printing the number of flipped bits.
      */
     @DisplayName("should demonstrate the <avalanche effect> of <SHA-256>")
     @Test
@@ -240,8 +240,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     /**
-     * Verifies that hashing common weak passwords with {@code SHA-1} produces deterministic
-     * digests that can be reversed by a rainbow-table lookup.
+     * Verifies that hashing common weak passwords with {@code SHA-1} produces deterministic digests
+     * that can be reversed by a rainbow-table lookup.
      *
      * @param password a weak password supplied by {@link ValueSource}.
      */

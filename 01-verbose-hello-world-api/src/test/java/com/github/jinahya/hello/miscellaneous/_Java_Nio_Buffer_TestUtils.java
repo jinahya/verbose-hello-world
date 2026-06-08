@@ -33,11 +33,15 @@ import java.util.*;
  */
 public final class _Java_Nio_Buffer_TestUtils {
 
+    private _Java_Nio_Buffer_TestUtils() {
+        throw new AssertionError("instantiation is not allowed");
+    }
+
     /**
-     * Prints a multi-line, human-readable snapshot of the given {@code buffer}'s current state to
-     * the given {@code printer}: identity hash, {@code remaining}, {@code direct},
-     * {@code hasArray}, {@code arrayOffset} (when present), and an ASCII strip marking
-     * {@code position}, {@code limit}, and {@code capacity}.
+     * Prints a multi-line, human-readable snapshot of {@code buffer}'s current state to
+     * {@code printer}: identity hash, {@code remaining}, {@code direct}, {@code hasArray},
+     * {@code arrayOffset} (when present), and an ASCII strip marking {@code position},
+     * {@code limit}, and {@code capacity}.
      *
      * @param buffer  the buffer to render; must not be {@code null}.
      * @param printer the destination of the rendering; must not be {@code null}.
@@ -90,7 +94,7 @@ public final class _Java_Nio_Buffer_TestUtils {
 
     /**
      * The single-argument convenience of
-     * {@link #print(Buffer, PrintStream) print(buffer, System.out)}.
+     * {@link _Java_Nio_Buffer_TestUtils#print(Buffer, PrintStream) print(buffer, System.out)}.
      *
      * @param buffer the buffer to render; must not be {@code null}.
      * @param <T>    the concrete {@link Buffer} subtype of {@code buffer}.
@@ -101,10 +105,6 @@ public final class _Java_Nio_Buffer_TestUtils {
             "java:S106"
     })
     public static <T extends Buffer> T print(final T buffer) {
-        return print(buffer, System.out);
-    }
-
-    private _Java_Nio_Buffer_TestUtils() {
-        throw new AssertionError("instantiation is not allowed");
+        return _Java_Nio_Buffer_TestUtils.print(buffer, System.out);
     }
 }

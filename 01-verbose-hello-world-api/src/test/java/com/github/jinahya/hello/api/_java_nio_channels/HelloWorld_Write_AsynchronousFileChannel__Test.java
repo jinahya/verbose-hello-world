@@ -35,8 +35,8 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
 /**
  * A class for exploring
- * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method with
- * real implementations.
+ * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method with real
+ * implementations.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

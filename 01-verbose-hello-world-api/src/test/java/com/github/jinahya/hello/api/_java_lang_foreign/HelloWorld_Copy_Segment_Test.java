@@ -32,7 +32,8 @@ import java.nio.channels.*;
 import java.nio.file.*;
 
 /**
- * A class for testing {@link HelloWorld#copy(java.lang.foreign.MemorySegment) copy(segment)} method.
+ * A class for testing {@link HelloWorld#copy(java.lang.foreign.MemorySegment) copy(segment)}
+ * method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

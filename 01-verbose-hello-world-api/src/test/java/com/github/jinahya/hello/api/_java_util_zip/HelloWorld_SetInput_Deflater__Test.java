@@ -155,9 +155,10 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
-     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the
-     * given compression {@code level} and back through an {@link Inflater}.
+     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the given
+     * compression {@code level} and back through an {@link Inflater}.
      *
      * @param level a deflater compression level.
      */
@@ -197,9 +198,9 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     /**
-     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the
-     * given compression {@code level} and {@code nowrap} flag combination, asserting the zlib
-     * wrapper when {@code nowrap} is {@code false}.
+     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the given
+     * compression {@code level} and {@code nowrap} flag combination, asserting the zlib wrapper
+     * when {@code nowrap} is {@code false}.
      *
      * @param level  a deflater compression level.
      * @param nowrap the {@code nowrap} flag passed to {@link Deflater#Deflater(int, boolean)}.
@@ -286,8 +287,8 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
 
     /**
      * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream} at
-     * the given compression {@code level} and {@code nowrap} flag combination, asserting the
-     * zlib wrapper when {@code nowrap} is {@code false}.
+     * the given compression {@code level} and {@code nowrap} flag combination, asserting the zlib
+     * wrapper when {@code nowrap} is {@code false}.
      *
      * @param level  a deflater compression level.
      * @param nowrap the {@code nowrap} flag passed to {@link Deflater#Deflater(int, boolean)}.
@@ -319,8 +320,8 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     /**
-     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and
-     * that the resulting bytes carry a valid gzip wrapper (RFC 1952).
+     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and that
+     * the resulting bytes carry a valid gzip wrapper (RFC 1952).
      */
     @DisplayName("""
             should round-trip <hello, world> through <GZIPOutputStream>
@@ -348,8 +349,8 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     /**
-     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} with
-     * the {@code syncFlush} branch toggled, exercising both flush paths.
+     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} with the
+     * {@code syncFlush} branch toggled, exercising both flush paths.
      */
     @DisplayName("""
             should round-trip <hello, world> through <GZIPOutputStream>

@@ -54,8 +54,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
 
     /**
      * Verifies that the method appends {@code hello-world-bytes} to a real {@link Path}, and
-     * invokes {@link CompletionHandler#completed(Object, Object) handler.completed(path,
-     * attachment)}.
+     * invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(path, attachment)}.
      *
      * @param tempDir the temporary directory.
      * @throws Exception if an error occurs.

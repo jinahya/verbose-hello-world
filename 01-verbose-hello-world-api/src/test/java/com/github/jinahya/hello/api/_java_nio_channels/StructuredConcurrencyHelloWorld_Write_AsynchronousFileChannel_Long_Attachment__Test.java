@@ -28,9 +28,9 @@ import java.util.function.*;
 
 /**
  * A class for exploring
- * {@link StructuredConcurrencyHelloWorld#write(AsynchronousFileChannel, long, Object) write(channel,
- * position, attachment)} method against {@link StructuredConcurrencyHelloWorld} with real
- * implementations.
+ * {@link StructuredConcurrencyHelloWorld#write(AsynchronousFileChannel, long, Object)
+ * write(channel, position, attachment)} method against {@link StructuredConcurrencyHelloWorld} with
+ * real implementations.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

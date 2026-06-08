@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api.util;
  * #L%
  */
 
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
@@ -39,21 +40,21 @@ class JavaUtilBitSetUtilsTest {
     @Test
     void print_EmptyBitSet() {
         final var bitset = new BitSet();
-        JavaUtilBitSetUtils.print(bitset);
+        _Java_Util_BitSet_TestUtils.print(bitset);
     }
 
     @DisplayName("should print a single-<long> <BitSet> without error")
     @Test
     void print_SingleLong() {
         final var bitset = BitSet.valueOf(new long[] {0xDEADBEEFL});
-        JavaUtilBitSetUtils.print(bitset);
+        _Java_Util_BitSet_TestUtils.print(bitset);
     }
 
     @DisplayName("should print a multi-<long> <BitSet> without error")
     @Test
     void print_MultipleLongs() {
         final var bitset = BitSet.valueOf(new long[] {0xCAFEBABEL, 0x0123456789ABCDEFL});
-        JavaUtilBitSetUtils.print(bitset);
+        _Java_Util_BitSet_TestUtils.print(bitset);
     }
 
     @DisplayName("should print a <BitSet> built from <hello, world> bytes without error")
@@ -61,6 +62,6 @@ class JavaUtilBitSetUtilsTest {
     void print_HelloWorldBytes() {
         final var bytes = "hello, world".getBytes(StandardCharsets.US_ASCII);
         final var bitset = BitSet.valueOf(bytes);
-        JavaUtilBitSetUtils.print(bitset);
+        _Java_Util_BitSet_TestUtils.print(bitset);
     }
 }

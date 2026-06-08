@@ -78,8 +78,8 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
     }
 
     /**
-     * Verifies that the method throws an {@link IllegalArgumentException} when the
-     * {@code position} argument is negative.
+     * Verifies that the method throws an {@link IllegalArgumentException} when the {@code position}
+     * argument is negative.
      */
     @DisplayName(
             "should throw an <IllegalArgumentException> when the <position> argument is <negative>")

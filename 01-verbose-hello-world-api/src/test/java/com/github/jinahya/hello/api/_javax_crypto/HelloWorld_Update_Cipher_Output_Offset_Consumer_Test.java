@@ -35,8 +35,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * A class for testing {@link HelloWorld#update(Cipher, byte[], int, IntConsumer)
- * update(cipher, output, outputOffset, outputLengthConsumer)} method.
+ * A class for testing
+ * {@link HelloWorld#update(Cipher, byte[], int, IntConsumer) update(cipher, output, outputOffset,
+ * outputLengthConsumer)} method.
  */
 @DisplayName("update(Cipher, byte[], int, IntConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -82,8 +83,9 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
     }
 
     /**
-     * Verifies that the method invokes {@code cipher.update(array, 0, BYTES, output, outputOffset)},
-     * forwards the result to the {@code outputLengthConsumer}, and returns the {@code cipher}.
+     * Verifies that the method invokes
+     * {@code cipher.update(array, 0, BYTES, output, outputOffset)}, forwards the result to the
+     * {@code outputLengthConsumer}, and returns the {@code cipher}.
      */
     @DisplayName("""
             should invoke <cipher.update(array, 0, BYTES, output, outputOffset)>,

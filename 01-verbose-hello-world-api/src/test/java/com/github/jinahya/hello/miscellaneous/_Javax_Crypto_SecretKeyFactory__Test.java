@@ -36,8 +36,7 @@ import static com.github.jinahya.hello.miscellaneous._org_bouncycastle_jce_provi
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A test class iterating over the {@link SecretKeyFactory} algorithms listed on the
- * <a
+ * A test class iterating over the {@link SecretKeyFactory} algorithms listed on the <a
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#secretkeyfactory-algorithms">Java
  * 26 JCA Standard Algorithm Names</a> page. Each test asserts that two
  * {@link SecretKeyFactory#generateSecret(KeySpec)} calls with the same {@link KeySpec} yield
@@ -85,7 +84,8 @@ class _Javax_Crypto_SecretKeyFactory__Test {
     class Symmetric_Test {
 
         /**
-         * Verifies that {@code AES} generates byte-identical keys from the same {@link SecretKeySpec}.
+         * Verifies that {@code AES} generates byte-identical keys from the same
+         * {@link SecretKeySpec}.
          *
          * @throws Exception if any error occurs.
          */
@@ -106,7 +106,8 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         }
 
         /**
-         * Verifies that {@code ARCFOUR} generates byte-identical keys from the same {@link SecretKeySpec}.
+         * Verifies that {@code ARCFOUR} generates byte-identical keys from the same
+         * {@link SecretKeySpec}.
          *
          * @throws Exception if any error occurs.
          */
@@ -129,7 +130,8 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         }
 
         /**
-         * Verifies that {@code ChaCha20} generates byte-identical keys from the same {@link SecretKeySpec}.
+         * Verifies that {@code ChaCha20} generates byte-identical keys from the same
+         * {@link SecretKeySpec}.
          *
          * @throws Exception if any error occurs.
          */
@@ -152,7 +154,8 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         }
 
         /**
-         * Verifies that {@code DES} generates byte-identical keys from the same {@link DESKeySpec}.
+         * Verifies that {@code DES} generates byte-identical keys from the same
+         * {@link DESKeySpec}.
          *
          * @throws Exception if any error occurs.
          */
@@ -173,7 +176,8 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         }
 
         /**
-         * Verifies that {@code DESede} generates byte-identical keys from the same {@link DESedeKeySpec}.
+         * Verifies that {@code DESede} generates byte-identical keys from the same
+         * {@link DESedeKeySpec}.
          *
          * @throws Exception if any error occurs.
          */

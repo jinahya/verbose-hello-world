@@ -36,8 +36,8 @@ import static org.mockito.Mockito.*;
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(PreparedStatement, int)
- * setAsciiStream(statement, index)} method with real {@link PreparedStatement} implementations
- * from JDBC drivers.
+ * setAsciiStream(statement, index)} method with real {@link PreparedStatement} implementations from
+ * JDBC drivers.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

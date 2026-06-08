@@ -28,8 +28,8 @@ import java.util.function.*;
 
 /**
  * A class for testing
- * {@link StructuredConcurrencyHelloWorld#write(AsynchronousFileChannel, long, Object) write(channel,
- * position, attachment)} method against {@link StructuredConcurrencyHelloWorld}.
+ * {@link StructuredConcurrencyHelloWorld#write(AsynchronousFileChannel, long, Object)
+ * write(channel, position, attachment)} method against {@link StructuredConcurrencyHelloWorld}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

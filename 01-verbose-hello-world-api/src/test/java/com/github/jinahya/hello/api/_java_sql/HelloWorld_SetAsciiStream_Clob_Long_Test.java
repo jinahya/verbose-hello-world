@@ -44,8 +44,8 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
     /**
      * Verifies that the
      * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
-     * setAsciiStream(clob, pos)} method throws a {@link NullPointerException} when the
-     * {@code clob} argument is {@code null}.
+     * setAsciiStream(clob, pos)} method throws a {@link NullPointerException} when the {@code clob}
+     * argument is {@code null}.
      */
     @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
     @Test

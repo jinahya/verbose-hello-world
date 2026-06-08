@@ -153,8 +153,8 @@ class HelloWorld_Set_BitSet_Index__Test
         }
 
         /**
-         * Verifies that the Hamming distance equals {@code |A| + |B|} when two {@link BitSet}s
-         * set by {@link HelloWorld#set(BitSet, int) set(bitset, index)} at disjoint offsets are
+         * Verifies that the Hamming distance equals {@code |A| + |B|} when two {@link BitSet}s set
+         * by {@link HelloWorld#set(BitSet, int) set(bitset, index)} at disjoint offsets are
          * compared.
          */
         @DisplayName("should compute <distance = |A| + |B|> when placements are disjoint")

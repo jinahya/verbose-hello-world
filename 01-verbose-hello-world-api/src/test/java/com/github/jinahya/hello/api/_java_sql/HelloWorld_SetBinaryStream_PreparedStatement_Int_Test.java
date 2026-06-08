@@ -66,8 +66,8 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
     /**
      * Verifies that the
      * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(PreparedStatement, int)
-     * setBinaryStream(statement, index)} method throws an {@link IllegalArgumentException} when
-     * the {@code index} argument is not positive.
+     * setBinaryStream(statement, index)} method throws an {@link IllegalArgumentException} when the
+     * {@code index} argument is not positive.
      */
     @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
     @Test

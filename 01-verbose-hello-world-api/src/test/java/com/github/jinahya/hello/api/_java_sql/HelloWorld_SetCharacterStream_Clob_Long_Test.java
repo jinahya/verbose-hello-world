@@ -86,8 +86,8 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#setCharacterStream(Clob, long)
      * setCharacterStream(clob, pos)} method invokes
      * {@link com.github.jinahya.hello.api.HelloWorld#write(Writer) write(writer)} with the writer
-     * obtained from {@link Clob#setCharacterStream(long) clob.setCharacterStream(pos)}, and
-     * returns the {@code clob}.
+     * obtained from {@link Clob#setCharacterStream(long) clob.setCharacterStream(pos)}, and returns
+     * the {@code clob}.
      */
     @DisplayName("should invoke <write(clob.setCharacterStream(pos))>, and return the <clob>")
     @Test
