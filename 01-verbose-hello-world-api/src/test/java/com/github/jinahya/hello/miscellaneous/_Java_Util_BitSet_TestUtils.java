@@ -1,35 +1,13 @@
-package com.github.jinahya.hello.api.util;
-
-/*-
- * #%L
- * verbose-hello-world-api
- * %%
- * Copyright (C) 2018 - 2023 Jinahya, Inc.
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+package com.github.jinahya.hello.miscellaneous;
 
 import java.io.*;
 import java.util.*;
 
-/**
- * Helpers for {@link BitSet java.util.BitSet} — currently a textual visualizer that prints a
- * bit-set's bits grouped by 64-bit words with a hex byte-side decoration.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-public final class JavaUtilBitSetUtils {
+public final class _Java_Util_BitSet_TestUtils {
+
+    private _Java_Util_BitSet_TestUtils() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 
     /**
      * Prints the specified bit set's bits to the specified print stream, grouped by 64-bit long
@@ -89,7 +67,7 @@ public final class JavaUtilBitSetUtils {
 
     /**
      * The single-argument convenience of
-     * {@link #print(BitSet, PrintStream) print(bitset, System.out)}.
+     * {@link _Java_Util_BitSet_TestUtils#print(BitSet, PrintStream) print(bitset, System.out)}.
      *
      * @param bitset the bit set to print; must not be {@code null}.
      * @param <T>    the concrete {@link BitSet} subtype.
@@ -99,11 +77,5 @@ public final class JavaUtilBitSetUtils {
     @SuppressWarnings({"java:S106"})
     public static <T extends BitSet> T print(final T bitset) {
         return print(bitset, System.out);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private JavaUtilBitSetUtils() {
-        throw new AssertionError("instantiation is not allowed");
     }
 }

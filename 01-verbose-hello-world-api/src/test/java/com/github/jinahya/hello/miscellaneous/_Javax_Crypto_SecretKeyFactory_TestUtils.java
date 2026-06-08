@@ -29,7 +29,7 @@ import java.security.spec.*;
 import java.util.concurrent.*;
 
 /**
- * .
+ * A class providing test utilities for {@link javax.crypto.SecretKeyFactory}.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>

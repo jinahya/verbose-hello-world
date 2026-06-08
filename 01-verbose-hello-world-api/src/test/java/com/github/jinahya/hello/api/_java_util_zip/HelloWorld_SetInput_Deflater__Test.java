@@ -40,6 +40,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring {@link HelloWorld#setInput(Deflater) setInput(deflater)} method with real
+ * {@link Deflater} / {@link DeflaterOutputStream} / {@link GZIPOutputStream} round-trips at every
+ * compression level.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("setInput(deflater)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -148,6 +155,13 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the given
+     * compression {@code level} and back through an {@link Inflater}.
+     *
+     * @param level a deflater compression level.
+     */
     @DisplayName("should round-trip <hello, world> through a raw <Deflater> at the given <level>")
     @MethodSource({"levelStream"})
     @ParameterizedTest
@@ -183,6 +197,14 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the given
+     * compression {@code level} and {@code nowrap} flag combination, asserting the zlib wrapper
+     * when {@code nowrap} is {@code false}.
+     *
+     * @param level  a deflater compression level.
+     * @param nowrap the {@code nowrap} flag passed to {@link Deflater#Deflater(int, boolean)}.
+     */
     @DisplayName("""
             should round-trip <hello, world> through a raw <Deflater>
             at the given <level> and <nowrap> flag""")
@@ -234,6 +256,12 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream} at
+     * the given compression {@code level} and back through an {@link InflaterInputStream}.
+     *
+     * @param level a deflater compression level.
+     */
     @DisplayName(
             "should round-trip <hello, world> through <DeflaterOutputStream> at the given <level>")
     @MethodSource({"levelStream"})
@@ -257,6 +285,14 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream} at
+     * the given compression {@code level} and {@code nowrap} flag combination, asserting the zlib
+     * wrapper when {@code nowrap} is {@code false}.
+     *
+     * @param level  a deflater compression level.
+     * @param nowrap the {@code nowrap} flag passed to {@link Deflater#Deflater(int, boolean)}.
+     */
     @DisplayName("""
             should round-trip <hello, world> through <DeflaterOutputStream>
             at the given <level> and <nowrap> flag""")
@@ -283,6 +319,10 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and that
+     * the resulting bytes carry a valid gzip wrapper (RFC 1952).
+     */
     @DisplayName("""
             should round-trip <hello, world> through <GZIPOutputStream>
             with a valid <gzip> wrapper""")
@@ -308,6 +348,10 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    /**
+     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} with the
+     * {@code syncFlush} branch toggled, exercising both flush paths.
+     */
     @DisplayName("""
             should round-trip <hello, world> through <GZIPOutputStream>
             with the <syncFlush> branch toggled""")

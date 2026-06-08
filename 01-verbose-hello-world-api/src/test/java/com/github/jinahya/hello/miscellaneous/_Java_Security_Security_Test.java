@@ -23,6 +23,9 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
+/**
+ * A class for testing {@link java.security.Security}.
+ */
 @DisplayName("Security")
 @Slf4j
 class _Java_Security_Security_Test {

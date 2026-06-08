@@ -29,10 +29,16 @@ import java.util.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
 import static java.util.stream.Collectors.*;
 
+/**
+ * A class for testing {@link java.security.Provider}.
+ */
 @DisplayName("Security")
 @Slf4j
 class _Java_Security_Provider_Test {
 
+    /**
+     * Verifies that every registered {@link Provider} can be enumerated and its info printed.
+     */
     @Test
     void providers__() {
         securityProviders().forEach(p -> {
@@ -42,6 +48,10 @@ class _Java_Security_Provider_Test {
         });
     }
 
+    /**
+     * Verifies that providers, services, and algorithms can be enumerated together in grouped
+     * form.
+     */
     @Test
     void providersServicesAndAlgorithms__() {
         securityProviders().limit(4L).forEach(p -> {

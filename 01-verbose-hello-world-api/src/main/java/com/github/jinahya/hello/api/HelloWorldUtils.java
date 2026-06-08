@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
-
 import java.net.*;
 import java.nio.*;
 import java.nio.charset.*;
@@ -189,7 +187,6 @@ public final class HelloWorldUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private HelloWorldUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

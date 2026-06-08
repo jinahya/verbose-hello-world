@@ -24,6 +24,9 @@ import lombok.extern.slf4j.*;
 
 import java.util.*;
 
+/**
+ * A class providing common test utilities for the {@code miscellaneous} package.
+ */
 @Slf4j
 class __TestUtils {
 

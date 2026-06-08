@@ -23,7 +23,7 @@ package com.github.jinahya.hello.miscellaneous;
 import java.util.*;
 
 /**
- * .
+ * Constants for testing {@link javax.crypto.KDF}.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>

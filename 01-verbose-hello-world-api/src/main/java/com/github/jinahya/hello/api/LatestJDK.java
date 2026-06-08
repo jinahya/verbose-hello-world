@@ -35,7 +35,6 @@ import java.lang.annotation.*;
 @Documented
 @Repeatable(LatestJDKContainer.class)
 @Retention(RetentionPolicy.SOURCE)
-@SuppressWarnings({"UnicodeInCode"})
 public @interface LatestJDK {
 
     /**

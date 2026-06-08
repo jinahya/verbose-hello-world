@@ -34,11 +34,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for testing
+ * {@link HelloWorld#update(Cipher, byte[], int, IntConsumer) update(cipher, output, outputOffset,
+ * outputLengthConsumer)} method.
+ */
 @DisplayName("update(Cipher, byte[], int, IntConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code cipher}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <cipher> argument is <null>")
     @Test
     void _ThrowNullPointerException_CipherIsNull() {
@@ -53,6 +62,10 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
                      () -> service.update(cipher, output, offset, consumer));
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code consumer}
+     * argument is {@code null}.
+     */
     @DisplayName("""
             should throw a <NullPointerException>
             when the <consumer> argument is <null>""")
@@ -69,6 +82,11 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
                      () -> service.update(cipher, output, offset, consumer));
     }
 
+    /**
+     * Verifies that the method invokes
+     * {@code cipher.update(array, 0, BYTES, output, outputOffset)}, forwards the result to the
+     * {@code outputLengthConsumer}, and returns the {@code cipher}.
+     */
     @DisplayName("""
             should invoke <cipher.update(array, 0, BYTES, output, outputOffset)>,
             forward the result to the <outputLengthConsumer>, and return the <cipher>""")

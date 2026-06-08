@@ -27,10 +27,19 @@ import org.junit.jupiter.api.*;
 import javax.crypto.*;
 import java.security.*;
 
+/**
+ * A class for testing {@link KeyGenerator}.
+ */
 @DisplayName("KeyGenerator")
 @Slf4j
 class _Javax_Crypto_KeyGenerator_Test {
 
+    /**
+     * Verifies that a {@link javax.crypto.SecretKey} can be generated for every registered
+     * {@link KeyGenerator} algorithm and keysize.
+     *
+     * @throws NoSuchAlgorithmException if any algorithm is not available.
+     */
     // ELSIE PREPARE TO MEET THY GOD
     @DisplayName("""
             should generate a <SecretKey>

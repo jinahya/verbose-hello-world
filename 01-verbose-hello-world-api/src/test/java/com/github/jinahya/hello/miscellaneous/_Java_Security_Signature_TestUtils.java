@@ -26,7 +26,7 @@ import java.security.*;
 import java.security.spec.*;
 
 /**
- * .
+ * A class providing test utilities for {@link java.security.Signature}.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>

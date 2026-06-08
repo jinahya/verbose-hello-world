@@ -34,7 +34,6 @@ import java.lang.annotation.*;
 @Documented
 @Repeatable(LatestLTSContainer.class)
 @Retention(RetentionPolicy.SOURCE)
-@SuppressWarnings({"UnicodeInCode"})
 public @interface LatestLTS {
 
     /**

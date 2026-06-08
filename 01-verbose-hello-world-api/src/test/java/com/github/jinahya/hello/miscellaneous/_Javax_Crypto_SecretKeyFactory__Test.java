@@ -36,8 +36,8 @@ import static com.github.jinahya.hello.miscellaneous._org_bouncycastle_jce_provi
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A test class iterating over the {@link SecretKeyFactory} algorithms listed on the
- * <a href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#secretkeyfactory-algorithms">Java
+ * A test class iterating over the {@link SecretKeyFactory} algorithms listed on the <a
+ * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#secretkeyfactory-algorithms">Java
  * 26 JCA Standard Algorithm Names</a> page. Each test asserts that two
  * {@link SecretKeyFactory#generateSecret(KeySpec)} calls with the same {@link KeySpec} yield
  * byte-identical encoded keys via the BouncyCastle provider.
@@ -83,6 +83,12 @@ class _Javax_Crypto_SecretKeyFactory__Test {
     @Nested
     class Symmetric_Test {
 
+        /**
+         * Verifies that {@code AES} generates byte-identical keys from the same
+         * {@link SecretKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("AES")
         @Test
         void __AES() throws Exception {
@@ -99,6 +105,12 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code ARCFOUR} generates byte-identical keys from the same
+         * {@link SecretKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @Disabled
         @DisplayName("ARCFOUR")
         @Test
@@ -117,6 +129,12 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code ChaCha20} generates byte-identical keys from the same
+         * {@link SecretKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @Disabled
         @DisplayName("ChaCha20")
         @Test
@@ -135,6 +153,12 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code DES} generates byte-identical keys from the same
+         * {@link DESKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("DES")
         @Test
         void __DES() throws Exception {
@@ -151,6 +175,12 @@ class _Javax_Crypto_SecretKeyFactory__Test {
             assertArrayEquals(key1, key2);
         }
 
+        /**
+         * Verifies that {@code DESede} generates byte-identical keys from the same
+         * {@link DESedeKeySpec}.
+         *
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("DESede")
         @Test
         void __DESede() throws Exception {
@@ -172,8 +202,9 @@ class _Javax_Crypto_SecretKeyFactory__Test {
 
     /**
      * A nested test class for the password-based encryption (PBE) template families listed on the
-     * JDK 26 standard names page &mdash; {@link Legacy_Test PBEWith&lt;digest&gt;And&lt;encryption&gt;}
-     * and {@link HmacAndAes_Test PBEWith&lt;prf&gt;And&lt;encryption&gt;}.
+     * JDK 26 standard names page &mdash;
+     * {@link Legacy_Test PBEWith&lt;digest&gt;And&lt;encryption&gt;} and
+     * {@link HmacAndAes_Test PBEWith&lt;prf&gt;And&lt;encryption&gt;}.
      */
     @DisplayName("PBE")
     @Nested
@@ -186,14 +217,21 @@ class _Javax_Crypto_SecretKeyFactory__Test {
          * {@code PBEWithSHA1AndRC2_*} + {@code PBEWithSHA1AndRC4_*}) via BouncyCastle.
          */
         @Disabled("BC registers only PBEWithMD5AndDES under the JCE-standard"
-                + " PBEWith<digest>And<encryption> family; everything else"
-                + " (PBEWithMD5AndTripleDES, PBEWithSHA1AndDESede, PBEWithSHA1AndRC2_*,"
-                + " PBEWithSHA1AndRC4_*) is either SunJCE-only or registered by BC under"
-                + " BC-specific names like PBEWITHSHAAND3-KEYTRIPLEDES-CBC")
+                  + " PBEWith<digest>And<encryption> family; everything else"
+                  + " (PBEWithMD5AndTripleDES, PBEWithSHA1AndDESede, PBEWithSHA1AndRC2_*,"
+                  + " PBEWithSHA1AndRC4_*) is either SunJCE-only or registered by BC under"
+                  + " BC-specific names like PBEWITHSHAAND3-KEYTRIPLEDES-CBC")
         @DisplayName("PBEWith<digest>And<encryption>")
         @Nested
         class Legacy_Test {
 
+            /**
+             * Verifies that the given legacy PBE {@code algorithm} generates byte-identical keys
+             * from the same {@link PBEKeySpec}.
+             *
+             * @param algorithm the JCE algorithm name.
+             * @throws Exception if any error occurs.
+             */
             @DisplayName("should generate a deterministic key via the given <legacy PBE>")
             @ValueSource(strings = {
                     "PBEWithMD5AndDES",
@@ -227,12 +265,19 @@ class _Javax_Crypto_SecretKeyFactory__Test {
          * BouncyCastle.
          */
         @Disabled("BC does NOT register the JCE-standard PBEWithHmacSHA*AndAES_{128|256} names."
-                + " These are SunJCE-only; BC has its own variants under different names"
-                + " (e.g., PBEWITHSHAAND128BITAES-CBC-BC).")
+                  + " These are SunJCE-only; BC has its own variants under different names"
+                  + " (e.g., PBEWITHSHAAND128BITAES-CBC-BC).")
         @DisplayName("PBEWith<prf>And<encryption>")
         @Nested
         class HmacAndAes_Test {
 
+            /**
+             * Verifies that the given PBE+HMAC+AES {@code algorithm} generates byte-identical keys
+             * from the same {@link PBEKeySpec}.
+             *
+             * @param algorithm the JCE algorithm name.
+             * @throws Exception if any error occurs.
+             */
             @DisplayName("should generate a deterministic key via the given <PBE+Hmac+AES>")
             @ValueSource(strings = {
                     "PBEWithHmacSHA1AndAES_128",
@@ -284,6 +329,13 @@ class _Javax_Crypto_SecretKeyFactory__Test {
         // storage
         private static final int ITERATION_COUNT = 100_000;
 
+        /**
+         * Verifies that the given {@code PBKDF2WithHmac*} {@code algorithm} derives a deterministic
+         * hash from the same {@link PBEKeySpec}.
+         *
+         * @param algorithm the JCE algorithm name.
+         * @throws Exception if any error occurs.
+         */
         @DisplayName("should derive a deterministic hash via the given <PBKDF2WithHmac*>")
         @ValueSource(strings = {
                 "PBKDF2WithHmacSHA1",

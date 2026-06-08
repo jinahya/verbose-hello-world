@@ -25,7 +25,7 @@ import com.github.jinahya.hello.api.*;
 import java.util.*;
 
 /**
- * .
+ * Constants for testing {@link java.security.MessageDigest}.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>

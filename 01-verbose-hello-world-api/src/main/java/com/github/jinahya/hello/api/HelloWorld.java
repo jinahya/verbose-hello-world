@@ -61,8 +61,7 @@ import static java.nio.charset.StandardCharsets.*;
         "java:S1481", // Unused local variables should be removed
         "java:S1854", // Unused assignments should be removed
         "java:S1865", // useless assignments
-        "java:S4274", // assert ...
-        "UnicodeInCode" // https://errorprone.info/bugpattern/UnicodeInCode
+        "java:S4274" // assert ...
 })
 public interface HelloWorld {
 
@@ -101,9 +100,9 @@ public interface HelloWorld {
      * @throws IndexOutOfBoundsException if {@code index} is negative, or ({@code index} plus
      *                                   {@value #BYTES}) is greater than {@code array.length}.
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html#jls-9.4">9.4.
-     * Method Declarations </a> (The Java® Language Specification)
+     * Method Declarations</a> (The Java® Language Specification)
      * @see <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-10.html#jls-10.4">10.4.
-     * Array Access</a> (Java Language Specification)
+     * Array Access</a> (The Java® Language Specification)
      */
     public   // redundant
     abstract // discouraged
@@ -128,7 +127,7 @@ public interface HelloWorld {
      *     throw new NullPointerException("array is null");
      * }
      * if (array.length < BYTES) {
-     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length +") < " + BYTES);
+     *     throw new ArrayIndexOutOfBoundsException("array.length(" + array.length + ") < " + BYTES);
      * }
      * set(array, 0); // @highlight
      * return array;
@@ -562,13 +561,13 @@ public interface HelloWorld {
 
     /**
      * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified
-     * {@link DatagramSocket#isConnected() connected } datagram socket.
+     * {@link DatagramSocket#isConnected() connected} datagram socket.
      *
      * @param <T>    socket type parameter
      * @param socket the socket through which bytes are sent.
      * @return the given {@code socket}.
      * @throws NullPointerException     if {@code socket} is {@code null}.
-     * @throws IllegalArgumentException if the {@code socket} is not
+     * @throws IllegalArgumentException if {@code socket} is not
      *                                  {@link DatagramSocket#isConnected() connected}.
      * @throws IOException              if an I/O error occurs.
      * @implSpec Default implementation invokes {@link #append(DatagramPacket) append(packet)} with
@@ -899,14 +898,14 @@ public interface HelloWorld {
     }
 
     /**
-     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified connected
+     * Sends the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified connected
      * datagram channel.
      *
      * @param <T>     channel type parameter
-     * @param channel the connected datagram channel to which bytes are sent.
+     * @param channel the connected datagram channel through which bytes are sent.
      * @return the given {@code channel}.
      * @throws NullPointerException     if {@code channel} is {@code null}.
-     * @throws IllegalArgumentException if the {@code channel} is not
+     * @throws IllegalArgumentException if {@code channel} is not
      *                                  {@link DatagramChannel#isConnected() connected}.
      * @throws IOException              if an I/O error occurs.
      * @implSpec Default implementation, after verifying that the {@code channel} is
@@ -1102,8 +1101,8 @@ public interface HelloWorld {
      * Updates the specified message digest with the <a
      * href="#hello-world-bytes">hello-world-bytes</a>.
      *
-     * @param digest the message digest to be updated.
      * @param <T>    message digest type parameter
+     * @param digest the message digest to be updated.
      * @return the given {@code digest}.
      * @throws NullPointerException if {@code digest} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
@@ -1125,8 +1124,8 @@ public interface HelloWorld {
     /**
      * Updates the specified signature with the <a href="#hello-world-bytes">hello-world-bytes</a>.
      *
-     * @param signature the signature to be updated.
      * @param <T>       signature type parameter
+     * @param signature the signature to be updated.
      * @return the given {@code signature}.
      * @throws NullPointerException if {@code signature} is {@code null}.
      * @throws SignatureException   if the signature is not initialized properly.
@@ -1160,8 +1159,8 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL preparedStatement, if a database access
-     *                                  error occurs, or if this method is called on a closed
+     *                                  marker in the SQL statement, if a database access error
+     *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes
@@ -1489,13 +1488,13 @@ public interface HelloWorld {
      * Sets a string, decoded from the <a href="#hello-world-bytes">hello-world-bytes</a>, as the
      * text to be scanned by the specified break iterator.
      *
-     * @param iterator the break iterator whose text is set.
      * @param <T>      break iterator type parameter
+     * @param iterator the break iterator whose text is set.
      * @return the given {@code iterator}.
      * @throws NullPointerException if {@code iterator} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, decodes the array as a
-     * {@link java.nio.charset.StandardCharsets#UTF_8 UTF-8} string, and invokes
+     * {@link java.nio.charset.StandardCharsets#US_ASCII US-ASCII} string, and invokes
      * {@link BreakIterator#setText(String)} method, on the {@code iterator}, with the string.
      * @see #set(byte[])
      * @see BreakIterator#setText(String)
@@ -1527,12 +1526,12 @@ public interface HelloWorld {
      *      LSB           MSB
      * </pre>
      *
+     * @param <T>    bit set type parameter
      * @param bitset the bit set into which the bits are set.
      * @param index  the starting index in the bit set.
-     * @param <T>    bit set type parameter
      * @return the given {@code bitset}.
-     * @throws NullPointerException     if the {@code bitset} is {@code null}.
-     * @throws IllegalArgumentException if the {@code index} is negative.
+     * @throws NullPointerException     if {@code bitset} is {@code null}.
+     * @throws IllegalArgumentException if {@code index} is negative.
      * @implSpec The default implementation invokes the {@link #set(byte[]) set(array)} method, and
      * sets each bit of the result into the given {@code bitset} in little-endian bit order.
      * @see <a
@@ -1784,11 +1783,11 @@ public interface HelloWorld {
      * writing the result into the specified output array starting at the specified offset, and
      * accepts the number of bytes stored to the specified consumer.
      *
+     * @param <T>      cipher type parameter
      * @param cipher   the cipher to be updated.
      * @param output   the output array into which the result is written.
      * @param offset   the offset in {@code output} at which the result is stored.
      * @param consumer the consumer to accept the number of bytes stored in {@code output}.
-     * @param <T>      cipher type parameter
      * @return the given {@code cipher}.
      * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
      * @throws ShortBufferException if {@code output} is too small to hold the result.
@@ -1820,10 +1819,10 @@ public interface HelloWorld {
      * writing the result into the specified output buffer, and accepts the number of bytes stored
      * to the specified consumer.
      *
+     * @param <T>      cipher type parameter
      * @param cipher   the cipher to be updated.
      * @param output   the output buffer into which the result is written.
      * @param consumer the consumer to accept the number of bytes stored in {@code output}.
-     * @param <T>      cipher type parameter
      * @return the given {@code cipher}.
      * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
      * @throws ShortBufferException if {@code output} does not have enough remaining bytes to hold
@@ -1856,8 +1855,8 @@ public interface HelloWorld {
      * Updates the AAD (Additional Authenticated Data) of the specified cipher with the
      * <a href="#hello-world-bytes">hello-world-bytes</a>.
      *
-     * @param cipher the cipher whose AAD is to be updated.
      * @param <T>    cipher type parameter
+     * @param cipher the cipher whose AAD is to be updated.
      * @return the given {@code cipher}.
      * @throws NullPointerException if {@code cipher} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
@@ -1879,8 +1878,8 @@ public interface HelloWorld {
     /**
      * Updates the specified MAC with the <a href="#hello-world-bytes">hello-world-bytes</a>.
      *
-     * @param mac the MAC to be updated.
      * @param <T> MAC type parameter
+     * @param mac the MAC to be updated.
      * @return the given {@code mac}.
      * @throws NullPointerException if {@code mac} is {@code null}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
@@ -1888,6 +1887,8 @@ public interface HelloWorld {
      * with the array.
      * @see #set(byte[])
      * @see Mac#update(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      */
     default <T extends Mac> T update(final T mac) {
         Objects.requireNonNull(mac, "mac is null");

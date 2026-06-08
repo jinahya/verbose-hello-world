@@ -27,10 +27,25 @@ import java.util.*;
 
 import static com.github.jinahya.hello.api._Java__TestUtils.*;
 
+/**
+ * A class providing test utilities for {@link java.io} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Io_TestUtils {
 
+    /**
+     * Copies all bytes from the given input stream to the given output stream, using the specified
+     * buffer.
+     *
+     * @param b   the buffer to use; must not be {@code null} or empty.
+     * @param in  the input stream to read from.
+     * @param out the output stream to write to.
+     * @return the total number of bytes copied.
+     * @throws IOException if an I/O error occurs.
+     */
     public static long copy(final byte[] b, final InputStream in, final OutputStream out)
             throws IOException {
         if (Objects.requireNonNull(b, "b is null").length == 0) {

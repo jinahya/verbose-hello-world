@@ -32,6 +32,13 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 
+/**
+ * A class for exploring {@link HelloWorld#write(OutputStream) write(stream)} method with real
+ * {@code java.util.zip} streams ({@link ZipOutputStream}, {@link DeflaterOutputStream},
+ * {@link GZIPOutputStream}).
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("java.util.zip")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -52,6 +59,11 @@ class HelloWorld_Java_Util_Zip__Test
     @Nested
     class ZipOutputStream_Test {
 
+        /**
+         * Verifies that a {@code "hello, world"} entry written through
+         * {@link HelloWorld#write(OutputStream) write(stream)} into a {@link ZipOutputStream}
+         * round-trips through {@link ZipInputStream}.
+         */
         @DisplayName("""
                 should round-trip a <hello, world> entry
                 through <ZipOutputStream> and <ZipInputStream>""")
@@ -78,6 +90,11 @@ class HelloWorld_Java_Util_Zip__Test
             }
         }
 
+        /**
+         * Verifies that a {@code "hello, world"} entry written through
+         * {@link HelloWorld#write(OutputStream) write(stream)} into a file-backed
+         * {@link ZipOutputStream} round-trips through {@link ZipFile}.
+         */
         @DisplayName(
                 "should round-trip a <hello, world> entry through <ZipOutputStream> and <ZipFile>")
         @Test
@@ -112,6 +129,12 @@ class HelloWorld_Java_Util_Zip__Test
     @Nested
     class DeflaterOutputStream_Test {
 
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
+         * at the given compression {@code level} and back through an {@link InflaterInputStream}.
+         *
+         * @param level a deflater compression level.
+         */
         @DisplayName("""
                 should round-trip <hello, world>
                 through <DeflaterOutputStream> at the given <level>""")
@@ -141,6 +164,11 @@ class HelloWorld_Java_Util_Zip__Test
             }
         }
 
+        /**
+         * Verifies that the {@link HelloWorld} class bytecode round-trips through a
+         * {@link DeflaterOutputStream} across all compression levels and prints the resulting
+         * ratios.
+         */
         @DisplayName("""
                 should round-trip the <HelloWorld.class> bytecode
                 through <DeflaterOutputStream> across all levels""")
@@ -176,6 +204,10 @@ class HelloWorld_Java_Util_Zip__Test
     @Nested
     class GZIPOutputStream_Test {
 
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and
+         * back through a {@link GZIPInputStream}.
+         */
         @DisplayName(
                 "should round-trip <hello, world> through <GZIPOutputStream> and <GZIPInputStream>")
         @Test

@@ -29,6 +29,14 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+/**
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(PreparedStatement, int)
+ * setBinaryStream(statement, index)} method with real {@link PreparedStatement} implementations
+ * from JDBC drivers.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("setBinaryStream(statement, index)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -68,6 +76,12 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(PreparedStatement, int)
+         * setBinaryStream(statement, index)} method inserts and reads back the
+         * {@code "hello, world"} bytes through a real H2 {@link PreparedStatement}.
+         */
         @DisplayName("""
                 should insert and read back the hello-world bytes
                 through a <real H2 PreparedStatement>""")
@@ -129,6 +143,12 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(PreparedStatement, int)
+         * setBinaryStream(statement, index)} method inserts and reads back the
+         * {@code "hello, world"} bytes through a real HSQLDB {@link PreparedStatement}.
+         */
         @DisplayName("""
                 should insert and read back the hello-world bytes
                 through a <real HSQLDB PreparedStatement>""")
@@ -189,6 +209,12 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
 
         private static final String COLUMN = "bytes";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(PreparedStatement, int)
+         * setBinaryStream(statement, index)} method inserts and reads back the
+         * {@code "hello, world"} bytes through a real SQLite {@link PreparedStatement}.
+         */
         @DisplayName("""
                 should insert and read back the hello-world bytes
                 through a <real SQLite PreparedStatement>""")

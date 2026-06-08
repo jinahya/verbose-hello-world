@@ -30,6 +30,9 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link java.io.File} behavior with {@link FileOutputStream}.
+ */
 @DisplayName("java.io.File")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -39,6 +42,11 @@ class _Java_Io_File__Test {
     private static File tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that opening a {@link FileOutputStream} on a {@code directory} throws a
+     * {@link FileNotFoundException}.
+     */
     @DisplayName("opening a <FileOutputStream> on a <directory> throws <FileNotFoundException>")
     @Test
     void __Directory() {
@@ -59,6 +67,12 @@ class _Java_Io_File__Test {
         );
     }
 
+    /**
+     * Verifies that appending {@code N} bytes to an existing {@code file} increases its length by
+     * {@code N}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("appending <N> bytes to an existing <file> increases its length by <N>")
     @Test
     void __Existing() throws IOException {
@@ -80,6 +94,12 @@ class _Java_Io_File__Test {
         assertEquals(length + bytes.length, file.length());
     }
 
+    /**
+     * Verifies that writing {@code N} bytes to a non-existing {@code file} creates it with length
+     * {@code N}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("writing <N> bytes to a non-existing <file> creates it with length <N>")
     @Test
     void __NotExisting() throws IOException {

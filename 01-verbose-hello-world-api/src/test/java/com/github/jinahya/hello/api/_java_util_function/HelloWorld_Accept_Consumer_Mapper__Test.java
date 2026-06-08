@@ -33,6 +33,12 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring {@link HelloWorld#accept(Consumer, Function) accept(consumer, mapper)}
+ * method with a real {@link Consumer}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("accept(consumer, mapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -48,6 +54,11 @@ class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorld__Test {
         }).when(service()).accept(any(), any());
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#accept(Consumer, Function) accept(consumer, mapper)}
+     * method writes the {@code "hello, world"} bytes through a
+     * {@link ByteArrayOutputStream#write(int) ByteArrayOutputStream::write} consumer.
+     */
     @DisplayName(
             "should write <hello, world> bytes through a <ByteArrayOutputStream::write> consumer")
     @Test

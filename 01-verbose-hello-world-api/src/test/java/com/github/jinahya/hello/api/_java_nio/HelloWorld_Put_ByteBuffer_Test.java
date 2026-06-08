@@ -21,7 +21,7 @@ package com.github.jinahya.hello.api._java_nio;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.api.util.*;
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -151,6 +151,12 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             return getArrayLengthStream();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#wrap(byte[]) ByteBuffer.wrap(array)} produces a backed
+         * buffer.
+         *
+         * @param array the array to wrap.
+         */
         @DisplayName("should produce a backed <buffer> from <ByteBuffer.wrap(array)>")
         @MethodSource({"getArrayArgumentsStream"})
         @ParameterizedTest
@@ -159,7 +165,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             // empty
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.wrap(array);
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
             // -------------------------------------------------------------------------------- then
             assert buffer.hasArray();
             assert buffer.capacity() == array.length;
@@ -170,13 +176,20 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert buffer.arrayOffset() == 0;
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
-            JavaNioByteBufferUtils.print(sliced);
+            _Java_Nio_ByteBuffer_TestUtils.print(sliced);
             // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
             assert sliced.hasArray();
             assert sliced.array() == buffer.array();
         }
 
+        /**
+         * Verifies that
+         * {@link ByteBuffer#wrap(byte[], int, int) ByteBuffer.wrap(array, offset, length)} produces
+         * a backed buffer.
+         *
+         * @param accessor the arguments accessor.
+         */
         @DisplayName(
                 "should produce a backed <buffer> from <ByteBuffer.wrap(array, offset, length)>")
         @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
@@ -188,7 +201,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             final var length = accessor.getInteger(2);
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.wrap(array, offset, length);
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
             // -------------------------------------------------------------------------------- then
             assert buffer.hasArray();
             assert buffer.capacity() == array.length;
@@ -199,13 +212,19 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert buffer.arrayOffset() == 0;
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
-            JavaNioByteBufferUtils.print(sliced);
+            _Java_Nio_ByteBuffer_TestUtils.print(sliced);
             // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
             assert sliced.hasArray();
             assert sliced.array() == buffer.array();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#allocate(int) ByteBuffer.allocate(capacity)} allocates a
+         * backed buffer.
+         *
+         * @param capacity the capacity to allocate.
+         */
         @DisplayName("should allocate a backed <buffer> via <ByteBuffer.allocate(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
@@ -214,7 +233,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             // empty
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.allocate(capacity);
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
             // -------------------------------------------------------------------------------- then
             assert buffer.position() == 0;
             assert buffer.order() == ByteOrder.BIG_ENDIAN;
@@ -222,19 +241,25 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             assert buffer.arrayOffset() == 0;
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
-            JavaNioByteBufferUtils.print(sliced);
+            _Java_Nio_ByteBuffer_TestUtils.print(sliced);
             // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
             assert sliced.hasArray();
         }
 
+        /**
+         * Verifies that {@link ByteBuffer#allocateDirect(int) ByteBuffer.allocateDirect(capacity)}
+         * allocates a direct buffer.
+         *
+         * @param capacity the capacity to allocate.
+         */
         @DisplayName("should allocate a direct <buffer> via <ByteBuffer.allocateDirect(capacity)>")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocateDirect(final int capacity) {
             // -------------------------------------------------------------------------------- when
             final var buffer = ByteBuffer.allocateDirect(capacity);
-            JavaNioByteBufferUtils.print(buffer);
+            _Java_Nio_ByteBuffer_TestUtils.print(buffer);
             // -------------------------------------------------------------------------------- then
             assert buffer.isDirect();
             assert buffer.position() == 0;
@@ -244,7 +269,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
             final var hasArray = buffer.hasArray();
             // -------------------------------------------------------------------------------- when
             final var sliced = slice(buffer, 0);
-            JavaNioByteBufferUtils.print(sliced);
+            _Java_Nio_ByteBuffer_TestUtils.print(sliced);
             // -------------------------------------------------------------------------------- then
             assert sliced != buffer;
             assert sliced.isDirect();
@@ -309,7 +334,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
         final var service = service();
         doAnswer(returnsFirstArg()).when(service).set(any(byte[].class), anyInt());
         final var buffer = spy(slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES));
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         assert buffer.hasArray();
         assert buffer.remaining() >= HelloWorld.BYTES;
         final var position = buffer.position(); // NOSONAR
@@ -337,7 +362,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
         final var buffer = spy(
                 slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
         );
-        JavaNioByteBufferUtils.print(buffer);
+        _Java_Nio_ByteBuffer_TestUtils.print(buffer);
         assert buffer.remaining() >= HelloWorld.BYTES;
         assert !buffer.hasArray();
         // ------------------------------------------------------------------------------------ when

@@ -40,6 +40,11 @@ class HelloWorld_Update_Mac_Test
         extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code mac} argument
+     * is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <mac> argument is <null>")
     @Test
     void _ThrowNullPointerException_MacIsNull() {
@@ -50,6 +55,9 @@ class HelloWorld_Update_Mac_Test
         Assertions.assertThrows(NullPointerException.class, () -> service.update(mac));
     }
 
+    /**
+     * Verifies that the method invokes {@code mac.update(buffer)}, and returns the {@code mac}.
+     */
     @DisplayName("should invoke <mac.update(buffer)>, and return the <mac>")
     @Test
     void __() {

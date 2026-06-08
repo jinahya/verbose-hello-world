@@ -51,6 +51,10 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
@@ -62,6 +66,10 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         assertThrows(NullPointerException.class, () -> service.write(channel, position, null));
     }
 
+    /**
+     * Verifies that the method throws an {@link IllegalArgumentException} when the {@code position}
+     * argument is negative.
+     */
     @DisplayName(
             "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
     @Test
@@ -74,6 +82,12 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         assertThrows(IllegalArgumentException.class, () -> service.write(channel, position, null));
     }
 
+    /**
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
+     * the supplied {@code attachment} once all {@value HelloWorld#BYTES} bytes have been written.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should complete the returned stage with the <attachment>
             once all <hello-world-bytes> have been written""")
@@ -97,6 +111,11 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         verify(service, times(1)).write(same(channel), eq(position), same(attachment), notNull());
     }
 
+    /**
+     * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes
+     * exceptionally when the {@code channel} fails — possibly synchronously on the first
+     * invocation, or asynchronously after one or more partial writes.
+     */
     @DisplayName("""
             should complete the returned stage exceptionally
             when the <channel> fails on or after partial writes""")

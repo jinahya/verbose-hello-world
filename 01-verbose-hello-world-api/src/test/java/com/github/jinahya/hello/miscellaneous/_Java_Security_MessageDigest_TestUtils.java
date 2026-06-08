@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import lombok.extern.slf4j.*;
-import org.junit.jupiter.api.*;
 
 import java.security.*;
 import java.util.function.*;
@@ -29,7 +28,9 @@ import java.util.stream.*;
 
 import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestConstants.*;
 
-@DisplayName("MessageDigest")
+/**
+ * A class providing test utilities for {@link java.security.MessageDigest}.
+ */
 @Slf4j
 public class _Java_Security_MessageDigest_TestUtils {
 

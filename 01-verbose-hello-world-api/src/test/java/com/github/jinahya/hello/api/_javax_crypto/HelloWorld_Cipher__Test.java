@@ -35,6 +35,12 @@ import static com.github.jinahya.hello.api._Javax_Crypto_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Security_KeyPair_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link HelloWorld#write(OutputStream) write(stream)} method with real
+ * {@link CipherOutputStream} / {@link CipherInputStream} round-trips.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Cipher__Test extends HelloWorld__Test {
@@ -60,6 +66,11 @@ class HelloWorld_Cipher__Test extends HelloWorld__Test {
     @Nested
     class CipherOutputStream_Test {
 
+        /**
+         * Verifies that the {@code "hello, world"} bytes round-trip through
+         * {@link CipherOutputStream} / {@link CipherInputStream} under
+         * {@code AES/ECB/PKCS5Padding}.
+         */
         @Test
         void __AES_ECB_PKCS5Padding() throws Exception {
             final var key = generateSecretKey("AES", 128);
@@ -83,6 +94,11 @@ class HelloWorld_Cipher__Test extends HelloWorld__Test {
             assertArrayEquals(hello_world_byte_array(), decrypted);
         }
 
+        /**
+         * Verifies that the {@code "hello, world"} bytes round-trip through
+         * {@link CipherOutputStream} / {@link CipherInputStream} under
+         * {@code RSA/ECB/PKCS1Padding}.
+         */
         @Test
         void __RSA_ECB_PKCS1Padding() throws Exception {
             final var keyPair = generateKeyPair("RSA", 1024);

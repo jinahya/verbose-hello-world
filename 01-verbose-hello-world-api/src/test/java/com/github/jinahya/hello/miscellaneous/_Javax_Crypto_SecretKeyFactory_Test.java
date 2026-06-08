@@ -28,7 +28,7 @@ import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_SecretKeyFact
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * .
+ * A class for testing {@link javax.crypto.SecretKeyFactory} with the JCA-mandatory algorithms.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
@@ -41,6 +41,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class _Javax_Crypto_SecretKeyFactory_Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code DESede} generates byte-identical keys from the same {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @DisplayName("DESede")
     @Test
@@ -55,6 +61,13 @@ class _Javax_Crypto_SecretKeyFactory_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code PBEWithHmacSHA256AndAES_128} generates byte-identical keys from the same
+     * {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestJDK
     @DisplayName("PBEWithHmacSHA256AndAES_128")
     @Test
@@ -69,6 +82,13 @@ class _Javax_Crypto_SecretKeyFactory_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code PBEWithHmacSHA256AndAES_256} generates byte-identical keys from the same
+     * {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestJDK
     @DisplayName("PBEWithHmacSHA256AndAES_256")
     @Test
@@ -83,6 +103,13 @@ class _Javax_Crypto_SecretKeyFactory_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code PBKDF2WithHmacSHA256} generates byte-identical keys from the same
+     * {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestJDK
     @DisplayName("PBKDF2WithHmacSHA256")
     @Test

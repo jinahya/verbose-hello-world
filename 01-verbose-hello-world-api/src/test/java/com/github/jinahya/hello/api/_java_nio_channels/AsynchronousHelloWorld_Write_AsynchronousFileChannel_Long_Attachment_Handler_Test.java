@@ -58,6 +58,11 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     @SuppressWarnings({"unchecked"})
@@ -72,6 +77,10 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
                      () -> service.write(channel, position, null, handler));
     }
 
+    /**
+     * Verifies that the method throws an {@link IllegalArgumentException} when the {@code position}
+     * argument is negative.
+     */
     @DisplayName(
             "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
     @Test
@@ -87,6 +96,10 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
                      () -> service.write(channel, position, null, handler));
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code handler}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
@@ -100,6 +113,11 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
                      () -> service.write(channel, position, null, handler));
     }
 
+    /**
+     * Verifies that the method writes all {@value HelloWorld#BYTES} bytes to the {@code channel}
+     * across one or more partial writes, and finally invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
+     */
     @DisplayName("""
             should write all <hello-world-bytes> across partial writes,
             and invoke <handler.completed(channel, attachment)>""")
@@ -154,6 +172,12 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         }
     }
 
+    /**
+     * Verifies that the method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} when the
+     * {@code channel} fails — possibly synchronously on the first invocation, or asynchronously
+     * after one or more partial writes have already been acknowledged.
+     */
     @DisplayName("""
             should invoke <handler.failed(exc, attachment)>
             when the <channel> fails on or after partial writes""")

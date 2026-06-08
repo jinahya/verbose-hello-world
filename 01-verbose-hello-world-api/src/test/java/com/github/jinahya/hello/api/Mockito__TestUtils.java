@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
 import org.mockito.*;
 import org.mockito.invocation.*;
@@ -199,7 +198,7 @@ public final class Mockito__TestUtils {
                 withSettings().defaultAnswer(invocation -> {
                     if (invocation.getMethod().getDeclaringClass() == clazz) {
                         log.debug("{}.{}({})",
-                                  toHascodeString(invocation.getMock()),
+                                  toHashcodeString(invocation.getMock()),
                                   invocation.getMethod().getName(),
                                   argsString(invocation.getArguments()));
                     }
@@ -292,7 +291,7 @@ public final class Mockito__TestUtils {
                     final var inv = (Invocation) report.getInvocation();
                     if (inv.getMethod().getDeclaringClass() != Object.class) {
                         log.debug("{}.{}({})",
-                                  toHascodeString(inv.getMock()),
+                                  toHashcodeString(inv.getMock()),
                                   inv.getMethod().getName(),
                                   argsString(inv.getArguments()));
                     }
@@ -300,7 +299,6 @@ public final class Mockito__TestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private Mockito__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

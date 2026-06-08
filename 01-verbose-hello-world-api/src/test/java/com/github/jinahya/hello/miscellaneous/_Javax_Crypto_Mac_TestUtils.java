@@ -27,7 +27,7 @@ import java.security.*;
 import java.security.spec.*;
 
 /**
- * .
+ * A class providing test utilities for {@link javax.crypto.Mac}.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>

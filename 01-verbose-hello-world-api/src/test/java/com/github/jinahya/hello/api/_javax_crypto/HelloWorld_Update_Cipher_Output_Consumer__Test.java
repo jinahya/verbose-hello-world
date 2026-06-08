@@ -39,6 +39,11 @@ import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Cipher_TestUt
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring
+ * {@link HelloWorld#update(Cipher, ByteBuffer, IntConsumer) update(cipher, output,
+ * outputLengthConsumer)} method with real {@link Cipher} transformations.
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
@@ -79,6 +84,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code AES/CBC/NoPadding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("AES/CBC/NoPadding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -104,6 +116,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code AES/CBC/PKCS5Padding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("AES/CBC/PKCS5Padding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -125,6 +144,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code AES/ECB/NoPadding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("AES/ECB/NoPadding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -150,6 +176,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code AES/ECB/PKCS5Padding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("AES/ECB/PKCS5Padding")
     @ValueSource(ints = {128})
     @ParameterizedTest
@@ -171,6 +204,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code AES/GCM/NoPadding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("AES/GCM/NoPadding")
     @ValueSource(ints = {128, 256})
     @ParameterizedTest
@@ -195,6 +235,12 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code ChaCha20-Poly1305} transformation.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("ChaCha20-Poly1305")
     @Test
     void __ChaCha20_Poly1305() throws Exception {
@@ -218,6 +264,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code DESede/CBC/NoPadding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/CBC/NoPadding")
     @ValueSource(ints = {168})
     @ParameterizedTest
@@ -243,6 +296,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code DESede/CBC/PKCS5Padding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/CBC/PKCS5Padding")
     @ValueSource(ints = {168})
     @ParameterizedTest
@@ -264,6 +324,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code DESede/ECB/NoPadding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/ECB/NoPadding")
     @ValueSource(ints = {168})
     @ParameterizedTest
@@ -289,6 +356,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code DESede/ECB/PKCS5Padding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("DESede/ECB/PKCS5Padding")
     @ValueSource(ints = {168})
     @ParameterizedTest
@@ -310,6 +384,12 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code PBEWithHmacSHA256AndAES_128} transformation.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("PBEWithHmacSHA256AndAES_128")
     @LatestJDK
     @Test
@@ -331,6 +411,12 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code PBEWithHmacSHA256AndAES_256} transformation.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("PBEWithHmacSHA256AndAES_256")
     @LatestJDK
     @Test
@@ -352,6 +438,13 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code RSA/ECB/PKCS1Padding} transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("RSA/ECB/PKCS1Padding")
     @ValueSource(ints = {1024, 2048})
     @ParameterizedTest
@@ -373,6 +466,14 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code RSA/ECB/OAEPWithSHA-1AndMGF1Padding}
+     * transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("RSA/ECB/OAEPWithSHA-1AndMGF1Padding")
     @ValueSource(ints = {1024, 2048})
     @ParameterizedTest
@@ -394,6 +495,14 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code RSA/ECB/OAEPWithSHA-256AndMGF1Padding}
+     * transformation.
+     *
+     * @param keysize the key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("RSA/ECB/OAEPWithSHA-256AndMGF1Padding")
     @ValueSource(ints = {1024, 2048})
     @ParameterizedTest

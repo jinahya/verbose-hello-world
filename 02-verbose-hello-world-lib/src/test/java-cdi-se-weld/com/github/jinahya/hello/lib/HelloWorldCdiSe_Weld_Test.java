@@ -26,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
+ * A class extends {@link HelloWorldCdiSe__Test} for Weld SE.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})

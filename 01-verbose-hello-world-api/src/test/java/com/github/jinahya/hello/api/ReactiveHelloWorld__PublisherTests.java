@@ -23,6 +23,12 @@ package com.github.jinahya.hello.api;
 import lombok.extern.slf4j.*;
 import org.reactivestreams.*;
 
+/**
+ * Skeleton {@link Publisher} implementations used as didactic scaffolds for the
+ * {@code ReactiveHelloWorld*Publisher} test suite.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 final class ReactiveHelloWorld__PublisherTests {
 

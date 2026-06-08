@@ -43,8 +43,8 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://openjdk.org/jeps/452">JEP 452 &mdash; Key Encapsulation Mechanism API</a>
- * @see <a href="https://openjdk.org/jeps/496">JEP 496 &mdash; Quantum-Resistant Module-Lattice-Based
- * Key Encapsulation Mechanism</a>
+ * @see <a href="https://openjdk.org/jeps/496">JEP 496 &mdash; Quantum-Resistant
+ * Module-Lattice-Based Key Encapsulation Mechanism</a>
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc9180">RFC 9180 &mdash; Hybrid Public Key
  * Encryption (DHKEM)</a>
  * @see <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf">NIST FIPS 203 &mdash;
@@ -82,8 +82,8 @@ class _Javax_Crypto_KEM__Test {
      *
      * @param kemAlgorithm the KEM standard algorithm name (e.g., {@code "DHKEM"},
      *                     {@code "ML-KEM-512"}).
-     * @param label        a human-readable label used in the printed summary (typically
-     *                     algorithm + curve / parameter set).
+     * @param label        a human-readable label used in the printed summary (typically algorithm +
+     *                     curve / parameter set).
      * @param keyPair      the receiver's asymmetric key pair.
      */
     private static void roundTrip(final String kemAlgorithm, final String label,

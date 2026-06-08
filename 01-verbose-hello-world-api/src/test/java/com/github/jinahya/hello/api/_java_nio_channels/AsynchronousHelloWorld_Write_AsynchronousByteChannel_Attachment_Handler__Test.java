@@ -38,6 +38,14 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.api._Java_Util_Concurrent_ExecutorService_TestUtils.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object, CompletionHandler)
+ * write(channel, attachment, handler)} method with real implementations.
+ *
+ * @param <T> the subtype of {@link AsynchronousHelloWorld}.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel, attachment, handler)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test<
@@ -87,6 +95,13 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
             return executorStreamAsynchronousChannelGroup();
         }
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server with a real
+         * {@link AsynchronousChannelGroup}.
+         *
+         * @param executor the executor to back the channel group.
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> to an <echo server>
                 with a real <AsynchronousChannelGroup>""")

@@ -30,6 +30,8 @@ import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
 import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
 
 /**
+ * A Dagger module providing {@link HelloWorld} bindings.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @dagger.Module

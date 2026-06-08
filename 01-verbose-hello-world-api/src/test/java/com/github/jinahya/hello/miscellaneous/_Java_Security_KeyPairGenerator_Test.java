@@ -28,10 +28,18 @@ import org.junit.jupiter.params.provider.*;
 import java.security.*;
 import java.security.spec.*;
 
+/**
+ * A class for testing {@link KeyPairGenerator}.
+ */
 @DisplayName("KeyPairGenerator")
 @Slf4j
 class _Java_Security_KeyPairGenerator_Test {
 
+    /**
+     * Verifies that an {@code RSA} key pair can be generated at {@code 4096} bits.
+     *
+     * @throws NoSuchAlgorithmException if {@code RSA} is not available.
+     */
     @DisplayName("should generate an <RSA> key pair at <4096> bits")
     @Test
     void __RSA() throws NoSuchAlgorithmException {
@@ -41,6 +49,13 @@ class _Java_Security_KeyPairGenerator_Test {
         _Java_Security_KeyPair_TestUtils.printKeyPair(generated);
     }
 
+    /**
+     * Verifies that an {@code EC} key pair can be generated over the given {@code stdName} curve.
+     *
+     * @param stdName the standard curve name (e.g., {@code "secp256r1"}).
+     * @throws NoSuchAlgorithmException           if {@code EC} is not available.
+     * @throws InvalidAlgorithmParameterException if the curve is not supported.
+     */
     @DisplayName("should generate an <EC> key pair over the given <stdName> curve")
     @ValueSource(strings = {
             "secp256r1", "secp384r1"

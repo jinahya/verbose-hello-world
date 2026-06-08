@@ -30,10 +30,11 @@ import java.lang.annotation.*;
  * @see LatestLTS
  */
 @Documented
-@SuppressWarnings({"UnicodeInCode"})
 public @interface LatestLTSContainer {
 
     /**
+     * Returns the contained {@link LatestLTS} markers.
+     *
      * @return the contained {@link LatestLTS} markers; never {@code null}.
      */
     LatestLTS[] value();

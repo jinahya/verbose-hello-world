@@ -20,7 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.api.util.*;
 import lombok.extern.slf4j.*;
 
 import java.io.*;
@@ -33,7 +32,7 @@ import static com.github.jinahya.hello.api._Java_Nio_TestUtils.*;
 import static com.github.jinahya.hello.api._Java__TestUtils.*;
 
 /**
- * Utilities for testing {@link HelloWorld} service classes.
+ * A class providing test utilities for {@link java.nio.channels} usages.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -46,16 +45,12 @@ public final class _Java_Nio_Channels_TestUtils {
             throws IOException {
         requireNonZeroCapacity(b);
         long count = 0L;
-        try {
-            while (in.read(b.clear()) != -1) {
-                for (b.flip(); b.hasRemaining(); ) {
-                    count += out.write(b);
-                }
+        while (in.read(b.clear()) != -1) {
+            for (b.flip(); b.hasRemaining(); ) {
+                count += out.write(b);
             }
-            return count;
-        } finally {
-            fillZeros(b);
         }
+        return count;
     }
 
     public static long copy2(final ByteBuffer b, final ReadableByteChannel in,
@@ -64,18 +59,14 @@ public final class _Java_Nio_Channels_TestUtils {
         requireNonZeroCapacity(b);
         b.clear();
         long count = 0L;
-        try {
-            while (in.read(b) != -1) {
-                count += out.write(b.flip());
-                b.compact();
-            }
-            for (b.flip(); b.hasRemaining(); ) {
-                count += out.write(b);
-            }
-            return count;
-        } finally {
-            fillZeros(b);
+        while (in.read(b) != -1) {
+            count += out.write(b.flip());
+            b.compact();
         }
+        for (b.flip(); b.hasRemaining(); ) {
+            count += out.write(b);
+        }
+        return count;
     }
 
     public static long copy1(final int capacity, final ReadableByteChannel in,
@@ -115,7 +106,6 @@ public final class _Java_Nio_Channels_TestUtils {
                     if (r != null) {
                         in.read(b.clear(), null, r);
                     } else {
-                        fillZeros(b);
                         handler.completed(count.longValue(), attachment);
                     }
                     return;
@@ -125,7 +115,6 @@ public final class _Java_Nio_Channels_TestUtils {
 
             @Override
             public void failed(final Throwable exc, final Object y) {
-                fillZeros(b);
                 handler.failed(exc, attachment);
             }
         };
@@ -143,7 +132,6 @@ public final class _Java_Nio_Channels_TestUtils {
 
             @Override
             public void failed(final Throwable exc, final Object x) {
-                fillZeros(b);
                 handler.failed(exc, attachment);
             }
         });
@@ -169,14 +157,12 @@ public final class _Java_Nio_Channels_TestUtils {
                 } else if (b.hasRemaining()) {
                     out.write(b, null, this);
                 } else {
-                    fillZeros(b);
                     handler.completed(count.longValue(), attachment);
                 }
             }
 
             @Override
             public void failed(final Throwable exc, final Object y) {
-                fillZeros(b);
                 handler.failed(exc, attachment);
             }
         };
@@ -186,7 +172,6 @@ public final class _Java_Nio_Channels_TestUtils {
                 if (result == -1) {
                     readerReference.set(null);
                     if (b.position() == 0) {
-                        fillZeros(b);
                         handler.completed(count.longValue(), attachment);
                         return;
                     }
@@ -199,7 +184,6 @@ public final class _Java_Nio_Channels_TestUtils {
 
             @Override
             public void failed(final Throwable exc, final Object x) {
-                fillZeros(b);
                 handler.failed(exc, attachment);
             }
         });
@@ -223,7 +207,6 @@ public final class _Java_Nio_Channels_TestUtils {
         copy2(ByteBuffer.allocate(capacity), in, out, attachment, handler);
     }
 
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
     private _Java_Nio_Channels_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

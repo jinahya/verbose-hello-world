@@ -23,6 +23,9 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.*;
 import org.junit.jupiter.api.*;
 
+/**
+ * A class for exploring {@code javax.crypto} integration scenarios.
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto__ScenarioTest {
 
@@ -45,7 +48,7 @@ class _Javax_Crypto__ScenarioTest {
         void __() {
             // Alice and Bob both have their keypairs
             // Alice send a message(hello, world) and a signature to Bob
-            // Mallory, intercept the message, modifies it to 'hello, world!' and send to Bob, with Alice's signature
+            // Mallory, intercepts the message, modifies it to 'hello, world!' and send to Bob, with Alice's signature
             // Bob, fails to verify
         }
     }

@@ -45,6 +45,12 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
+     * method throws a {@link NullPointerException} when the {@code iterator} argument is
+     * {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <iterator> argument is <null>")
     @Test
     void _ThrowNullPointerException_IteratorIsNull() {
@@ -55,6 +61,12 @@ class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.setText(iterator));
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
+     * method invokes {@link BreakIterator#setText(String) iterator.setText(string)} with the
+     * {@code "hello, world"} string, and returns the {@code iterator}.
+     */
     @DisplayName("should invoke <iterator.setText(string)>, and return the <iterator>")
     @Test
     void __() {

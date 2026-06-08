@@ -42,6 +42,12 @@ import java.util.concurrent.*;
 class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         extends HelloWorld__Test {
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setCharacterStream(PreparedStatement, int)
+     * setCharacterStream(statement, index)} method throws a {@link NullPointerException} when the
+     * {@code statement} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
     @Test
     void _ThrowNullPointerException_PreparedStatementIsNull() {
@@ -56,6 +62,12 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         );
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setCharacterStream(PreparedStatement, int)
+     * setCharacterStream(statement, index)} method throws an {@link IllegalArgumentException} when
+     * the {@code index} argument is not positive.
+     */
     @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
     @Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
@@ -70,6 +82,14 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         );
     }
 
+    /**
+     * Verifies that the
+     * {@link com.github.jinahya.hello.api.HelloWorld#setCharacterStream(PreparedStatement, int)
+     * setCharacterStream(statement, index)} method invokes
+     * {@link PreparedStatement#setCharacterStream(int, Reader) statement.setCharacterStream(index,
+     * reader)} with a reader that yields the {@code "hello, world"} characters, and returns the
+     * {@code statement}.
+     */
     @DisplayName("""
             should invoke <statement.setCharacterStream(index, reader)>,
             and return the <statement>""")

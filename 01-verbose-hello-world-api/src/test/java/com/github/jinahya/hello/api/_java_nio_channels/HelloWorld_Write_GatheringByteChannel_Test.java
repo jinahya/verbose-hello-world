@@ -88,7 +88,6 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * @throws IOException if an I/O error occurs.
      */
     @DisplayName("should write <hello-world-bytes> as <split buffers> through a real <Pipe>")
-    @畵蛇添足
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given
@@ -264,7 +263,6 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * @throws InterruptedException if the current thread is interrupted while waiting.
      */
     @DisplayName("should write a <calculator instruction binary> through a real <Pipe>")
-    @畵蛇添足
     @Test
     void __Calc() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given

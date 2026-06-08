@@ -23,7 +23,6 @@ package com.github.jinahya.hello.miscellaneous;
 import lombok.extern.slf4j.*;
 import org.bouncycastle.jce.provider.*;
 import org.jspecify.annotations.*;
-import org.junit.jupiter.api.*;
 
 import java.security.*;
 import java.util.*;
@@ -33,7 +32,9 @@ import java.util.stream.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
 import static java.util.stream.Collectors.*;
 
-@DisplayName("Security")
+/**
+ * A class providing test utilities for {@link java.security.Provider}.
+ */
 @Slf4j
 class _Java_Security_Provider_TestUtils {
 

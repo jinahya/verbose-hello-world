@@ -28,6 +28,13 @@ import org.mockito.*;
 
 import java.sql.*;
 
+/**
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)} method
+ * with real {@link Blob} implementations from JDBC drivers.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("setBytes(blob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -58,6 +65,11 @@ class HelloWorld_SetBytes_Blob_Long__Test
 
         private static final String PASSWORD = "";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
+         * method populates a real H2 {@link Blob} with the {@code "hello, world"} bytes.
+         */
         @DisplayName("should populate a <real H2 Blob> through <setBytes(blob, 1L)>")
         @Test
         void __() throws SQLException {
@@ -84,6 +96,11 @@ class HelloWorld_SetBytes_Blob_Long__Test
 
         private static final String PASSWORD = "";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
+         * method populates a real HSQLDB {@link Blob} with the {@code "hello, world"} bytes.
+         */
         @DisplayName("should populate a <real HSQLDB Blob> through <setBytes(blob, 1L)>")
         @Test
         void __() throws SQLException {
@@ -111,6 +128,11 @@ class HelloWorld_SetBytes_Blob_Long__Test
 
         private static final String PASSWORD = "";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
+         * method populates a real SQLite {@link Blob} with the {@code "hello, world"} bytes.
+         */
         @DisplayName("should populate a <real SQLite Blob> through <setBytes(blob, 1L)>")
         @Test
         void __() throws SQLException {

@@ -44,6 +44,11 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)} method throws a
+     * {@link NullPointerException} when the {@code collection} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <collection> argument is <null>")
     @Test
     void _ThrowNullPointerException_CollectionIsNull() {
@@ -55,6 +60,11 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
         assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)} method throws a
+     * {@link NullPointerException} when the {@code mapper} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     void _ThrowNullPointerException_MapperIsNull() {
@@ -66,6 +76,14 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
         assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} once, then for each byte invokes
+     * {@link Function#apply(Object) mapper.apply(b)} and
+     * {@link SequencedCollection#addLast(Object) collection.addLast(...)} in order, and returns the
+     * {@code collection}.
+     */
     @DisplayName("should invoke <set(byte[])>, and <collection.add(mapper.apply(b))> for each byte")
     @Test
     void __() {

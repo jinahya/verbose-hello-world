@@ -28,6 +28,9 @@ import java.io.*;
 import java.util.*;
 
 /**
+ * A class for testing {@link HelloWorld#write(java.io.Writer) write(writer)} delegation through a
+ * {@link Console}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("write(console)")

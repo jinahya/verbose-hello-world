@@ -25,8 +25,9 @@ import lombok.extern.slf4j.*;
 import java.util.*;
 
 /**
- * .
+ * Constants for testing {@link java.security.KeyPair} usages.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
  * (Java® Platform, Standard Edition & Java Development Kit Version 25 API Specification)
@@ -38,6 +39,10 @@ import java.util.*;
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_KeyPair_TestConstants {
 
+    /**
+     * A map of {@link java.security.KeyPairGenerator} algorithm names to their representative
+     * parameters (key sizes or curve names).
+     */
     public static final Map<String, List<Object>> KEY_PAIR_ALGORITHMS = Map.of(
             "DiffieHellman", List.<Object>of(1024, 2048, 3072, 4096),
             "DSA", List.<Object>of(1024, 2048),

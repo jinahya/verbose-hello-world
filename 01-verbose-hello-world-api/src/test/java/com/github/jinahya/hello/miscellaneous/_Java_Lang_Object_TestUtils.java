@@ -1,10 +1,10 @@
-package com.github.jinahya.hello.api.util;
+package com.github.jinahya.hello.miscellaneous;
 
 /*-
  * #%L
  * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2023 Jinahya, Inc.
+ * Copyright (C) 2018 - 2026 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,20 @@ package com.github.jinahya.hello.api.util;
 import java.util.*;
 
 /**
- * Helpers for {@link Object java.lang.Object} — currently a compact {@code SimpleName@hexhash}
- * renderer used by the logging utilities elsewhere in this module.
+ * A class providing test utilities for {@link Object java.lang.Object} &mdash; currently a compact
+ * {@code SimpleName@hexhash} renderer.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class JavaLangObjectUtils {
+public final class _Java_Lang_Object_TestUtils {
 
     /**
-     * Returns a short, log-friendly string for {@code obj} of the form
-     * {@code "<SimpleName>@<hex(hashCode)>"} — falling back to the supplied {@code cls}'s simple
+     * Returns a short, log-friendly string for the given {@code obj} of the form
+     * {@code "<SimpleName>@<hex(hashCode)>"} &mdash; falling back to the given {@code cls}'s simple
      * name when {@code obj.getClass().getSimpleName()} is blank (anonymous classes).
      *
-     * @param cls a class whose simple name is used when {@code obj}'s runtime class lacks one; must
-     *            not be {@code null}.
+     * @param cls a class whose simple name is used when the given {@code obj}'s runtime class lacks
+     *            one; must not be {@code null}.
      * @param obj the object to render; may be {@code null}.
      * @param <T> the static type captured by {@code cls}.
      * @return a string of the form {@code SimpleName@hexHash}, or {@code "null"} when {@code obj}
@@ -62,19 +62,15 @@ public final class JavaLangObjectUtils {
      * The single-argument convenience of
      * {@link #toSimpleString(Class, Object) toSimpleString(obj.getClass(), obj)}.
      *
-     * @param obj the object to render; must not be {@code null} (use
-     *            {@link #toSimpleString(Class, Object)} with a {@code null} {@code obj} when
-     *            null-safety is required).
+     * @param obj the object to render; must not be {@code null}.
      * @return the string {@code SimpleName@hexHash}; never {@code null}.
-     * @throws NullPointerException if {@code obj} is {@code null} (dereferenced for
-     *                              {@code getClass()}).
+     * @throws NullPointerException if {@code obj} is {@code null}.
      */
     public static String toSimpleString(final Object obj) {
         return toSimpleStringHelper(obj.getClass(), obj);
     }
 
-    @_ExcludeFromCoverage_PrivateConstructor_Obviously
-    private JavaLangObjectUtils() {
+    private _Java_Lang_Object_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

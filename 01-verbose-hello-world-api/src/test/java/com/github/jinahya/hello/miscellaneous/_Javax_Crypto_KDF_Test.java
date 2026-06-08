@@ -27,7 +27,7 @@ import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_KDF_TestUtils
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * .
+ * A class for testing {@link javax.crypto.KDF} with the JCA-mandatory {@code HKDF} algorithms.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
@@ -47,6 +47,13 @@ class _Javax_Crypto_KDF_Test {
     private static final String KEY_ALGORITHM = "AES";
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HKDF-SHA256} derives deterministic data and keys from the same
+     * {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("HKDF-SHA256")
     @Test
     void __HKDF_SHA256() throws Exception {
@@ -69,6 +76,13 @@ class _Javax_Crypto_KDF_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HKDF-SHA384} derives deterministic data and keys from the same
+     * {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("HKDF-SHA384")
     @Test
     void __HKDF_SHA384() throws Exception {
@@ -91,6 +105,13 @@ class _Javax_Crypto_KDF_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code HKDF-SHA512} derives deterministic data and keys from the same
+     * {@code spec}.
+     *
+     * @throws Exception if any error occurs.
+     */
     @DisplayName("HKDF-SHA512")
     @Test
     void __HKDF_SHA512() throws Exception {

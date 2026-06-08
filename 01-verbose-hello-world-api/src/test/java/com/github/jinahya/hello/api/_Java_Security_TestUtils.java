@@ -26,22 +26,33 @@ import java.security.*;
 import java.security.spec.*;
 import java.util.*;
 
+/**
+ * A class providing test utilities for {@link java.security} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_TestUtils {
 
+    /**
+     * The {@link MessageDigest} algorithm names tested by this module.
+     */
     public static final List<String> MESSAGE_DIGEST_ALGORITHMS = List.of(
             "SHA-1",
             "SHA-256",
             "SHA-384"
     );
 
+    /**
+     * The {@link Signature} algorithm names tested by this module.
+     */
     public static final List<String> SIGNATURE_ALGORITHMS = List.of(
             "RSASSA-PSS",
             "SHA1withDSA",
             "SHA256withDSA",
             "SHA256withECDSA",
-            "SHA384withECDS",
+            "SHA384withECDSA",
             "SHA1withRSA",
             "SHA256withRSA",
             "SHA384withRSA"
@@ -55,6 +66,14 @@ public final class _Java_Security_TestUtils {
     //X25519
 //    public static final List<String> KEY_PAIR_ALGORITHMS_AND_KEYSIZES = List.of()
 
+    /**
+     * Generates a key pair using the specified algorithm and key size.
+     *
+     * @param algorithm the standard algorithm name.
+     * @param keysize   the key size, in bits.
+     * @return a new key pair.
+     * @throws NoSuchAlgorithmException if no provider supports the given {@code algorithm}.
+     */
     public static KeyPair generateKeyPair(final String algorithm, final int keysize)
             throws NoSuchAlgorithmException {
         final var generator = KeyPairGenerator.getInstance(algorithm);
@@ -63,6 +82,17 @@ public final class _Java_Security_TestUtils {
         return generator.generateKeyPair();
     }
 
+    /**
+     * Generates a key pair using the specified algorithm and parameter specification.
+     *
+     * @param algorithm the standard algorithm name.
+     * @param spec      the algorithm parameter specification.
+     * @return a new key pair.
+     * @throws NoSuchAlgorithmException           if no provider supports the given
+     *                                            {@code algorithm}.
+     * @throws InvalidAlgorithmParameterException if the {@code spec} is invalid for the given
+     *                                            {@code algorithm}.
+     */
     public static KeyPair generateKeyPair(final String algorithm, final AlgorithmParameterSpec spec)
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         final var generator = KeyPairGenerator.getInstance(algorithm);

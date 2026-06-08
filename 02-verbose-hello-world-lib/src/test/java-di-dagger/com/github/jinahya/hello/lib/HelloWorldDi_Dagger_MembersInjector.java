@@ -21,6 +21,8 @@ package com.github.jinahya.hello.lib;
  */
 
 /**
+ * A Dagger members-injector for {@link HelloWorldDi_Dagger_Test}.
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @dagger.Component(modules = {HelloWorldDi_Dagger_Module.class})

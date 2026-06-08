@@ -26,6 +26,9 @@ import org.jspecify.annotations.*;
 import javax.crypto.*;
 import java.security.*;
 
+/**
+ * A class providing test utilities for {@link javax.crypto.SecretKey}.
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Javax_Crypto_SecretKey_TestUtils {

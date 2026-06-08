@@ -38,6 +38,10 @@ import java.util.concurrent.*;
 class HelloWorld_Set_BitSet_Index_Test
         extends HelloWorld__Test {
 
+    /**
+     * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method throws a
+     * {@link NullPointerException} when the {@code bitset} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <bitset> argument is <null>")
     @Test
     void _ThrowNullPointerException_BitSetIsNull() {
@@ -52,6 +56,10 @@ class HelloWorld_Set_BitSet_Index_Test
         );
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method throws an
+     * {@link IllegalArgumentException} when the {@code index} argument is negative.
+     */
     @DisplayName("should throw an <IllegalArgumentException> when the <index> argument is negative")
     @Test
     void _ThrowIllegalArgumentException_IndexIsNegative() {
@@ -66,6 +74,11 @@ class HelloWorld_Set_BitSet_Index_Test
         );
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method invokes
+     * {@link HelloWorld#set(byte[]) set(array)} once and sets the bits of the given {@link BitSet}
+     * in little-endian order from the array bytes, and returns the {@code bitset}.
+     */
     @DisplayName("should invoke <set(byte[])> and set bits in little-endian order")
     @Test
     void __() {

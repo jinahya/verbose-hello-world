@@ -34,6 +34,14 @@ import java.util.function.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for exploring
+ * {@link AsynchronousHelloWorld#write(AsynchronousByteChannel, Object) write(channel, attachment)}
+ * method with real implementations.
+ *
+ * @param <T> the subtype of {@link AsynchronousHelloWorld}.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel, attachment)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test<
@@ -77,6 +85,12 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__
     @Nested
     class EchoServer_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server with a real
+         * {@link AsynchronousChannelGroup}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> to an <echo server>
                 with a real <AsynchronousChannelGroup>""")

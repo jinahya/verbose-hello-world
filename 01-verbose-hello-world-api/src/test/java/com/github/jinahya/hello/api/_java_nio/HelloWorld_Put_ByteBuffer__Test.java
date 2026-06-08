@@ -1,10 +1,10 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api._java_nio;
 
 /*-
  * #%L
  * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2023 Jinahya, Inc.
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import java.lang.annotation.*;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+
+import java.nio.*;
 
 /**
- * A roof above a roof.
+ * A class for exploring {@link HelloWorld#put(ByteBuffer) put(buffer)} method with real
+ * implementations.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://namu.wiki/w/%EC%98%A5%EC%83%81%EA%B0%80%EC%98%A5">옥상가옥</a> (manu.wiki)
- * @see 屋下架屋
- * @see 畵蛇添足
  */
-@Documented
-@Repeatable(屋上架屋Container.class)
-@Retention(RetentionPolicy.SOURCE)
-@SuppressWarnings({"UnicodeInCode"})
-public @interface 屋上架屋 {
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+@SuppressWarnings({"java:S101"})
+class HelloWorld_Put_ByteBuffer__Test extends HelloWorld__Test {
 
-    String value() default "";
 }

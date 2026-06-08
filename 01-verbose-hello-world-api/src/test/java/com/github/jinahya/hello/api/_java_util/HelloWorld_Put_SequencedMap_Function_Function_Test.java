@@ -45,6 +45,11 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)}
+     * method throws a {@link NullPointerException} when the {@code map} argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <map> argument is <null>")
     @Test
     void _ThrowNullPointerException_MapIsNull() {
@@ -57,6 +62,12 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
         assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)}
+     * method throws a {@link NullPointerException} when the {@code keyMapper} argument is
+     * {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <keyMapper> argument is <null>")
     @Test
     void _ThrowNullPointerException_KeyMapperIsNull() {
@@ -69,6 +80,12 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
         assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)}
+     * method throws a {@link NullPointerException} when the {@code valueMapper} argument is
+     * {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <valueMapper> argument is <null>")
     @Test
     void _ThrowNullPointerException_ValueMapperIsNull() {
@@ -81,6 +98,14 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
         assertThrows(NullPointerException.class, () -> service.put(map, keyMapper, valueMapper));
     }
 
+    /**
+     * Verifies that the
+     * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)}
+     * method invokes {@link HelloWorld#set(byte[]) set(array)} once, then for each byte {@code b}
+     * invokes
+     * {@link SequencedMap#putLast(Object, Object) map.putLast(keyMapper.apply(b),
+     * valueMapper.apply(b))} in order, and returns the {@code map}.
+     */
     @DisplayName("""
             should invoke <set(byte[])>,
             and <map.putLast(keyMapper.apply(b), valueMapper.apply(b))> for each byte b""")

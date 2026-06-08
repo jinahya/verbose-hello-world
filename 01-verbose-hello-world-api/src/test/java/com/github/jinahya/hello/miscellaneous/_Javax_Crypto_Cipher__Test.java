@@ -85,9 +85,9 @@ class _Javax_Crypto_Cipher__Test {
 
     /**
      * Verifies that {@code AESWrap} (RFC 3394 AES Key Wrap) round-trips an AES SecretKey: an AES
-     * KEK is generated, an AES data key is wrapped under the KEK, then unwrapped, and the
-     * unwrapped key is byte-equal to the original. Listed on the spec page but not in the
-     * mandatory transformations list.
+     * KEK is generated, an AES data key is wrapped under the KEK, then unwrapped, and the unwrapped
+     * key is byte-equal to the original. Listed on the spec page but not in the mandatory
+     * transformations list.
      *
      * @param keksize the AES KEK size in bits.
      */
@@ -126,8 +126,8 @@ class _Javax_Crypto_Cipher__Test {
     /**
      * Verifies that {@code ChaCha20} (the streaming, non-AEAD form &mdash; distinct from the
      * mandatory {@code ChaCha20-Poly1305}) round-trips arbitrary-length plain text. Listed on the
-     * spec page but not mandatory; uses a 256-bit key and a 12-byte nonce, with the optional
-     * 4-byte counter starting at zero.
+     * spec page but not mandatory; uses a 256-bit key and a 12-byte nonce, with the optional 4-byte
+     * counter starting at zero.
      */
     @DisplayName("ChaCha20")
     @Test

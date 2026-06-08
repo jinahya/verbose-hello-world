@@ -50,6 +50,10 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code path} argument
+     * is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
     @Test
     @SuppressWarnings({"unchecked"})
@@ -66,6 +70,10 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         );
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code handler}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
@@ -80,6 +88,12 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         );
     }
 
+    /**
+     * Verifies that the method invokes {@code synchronousService.append(path)}, and invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(path, attachment)}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("""
             should invoke <synchronousService.append(path)>,
             and invoke <handler.completed(path, attachment)>""")
@@ -103,6 +117,13 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
                 .failed(Mockito.any(), Mockito.any());
     }
 
+    /**
+     * Verifies that the method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} when
+     * {@code synchronousService.append(path)} throws.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("""
             should invoke <handler.failed(exc, attachment)>
             when <synchronousService.append(path)> throws""")

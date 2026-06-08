@@ -44,6 +44,11 @@ import static org.mockito.Mockito.*;
 class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
@@ -54,6 +59,10 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         assertThrows(NullPointerException.class, () -> service.send(channel));
     }
 
+    /**
+     * Verifies that the method throws an {@link IllegalArgumentException} when the {@code channel}
+     * is not connected.
+     */
     @DisplayName("should throw an <IllegalArgumentException> when the <channel> is not <connected>")
     @Test
     void _ThrowIllegalArgumentException_ChannelIsNotConnected() {
@@ -65,6 +74,12 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         assertThrows(IllegalArgumentException.class, () -> service.send(channel));
     }
 
+    /**
+     * Verifies that the method delegates to {@code send(socket)} when the {@code channel} is in
+     * blocking mode.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should delegate to <send(socket)> when the <channel> is in <blocking> mode")
     @Test
     void __ChannelIsBlocking() throws IOException {
@@ -84,6 +99,12 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
         assertSame(channel, result);
     }
 
+    /**
+     * Verifies that the method delegates to {@code write(channel)} when the {@code channel} is in
+     * non-blocking mode.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should delegate to <write(channel)> when the <channel> is in <non-blocking> mode")
     @Test
     void __ChannelIsNotBlocking() throws IOException {

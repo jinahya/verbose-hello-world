@@ -27,10 +27,21 @@ import java.nio.charset.*;
 import java.util.*;
 import java.util.stream.*;
 
+/**
+ * A class providing test utilities for {@link java.nio.charset} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Nio_Charset_TestUtils {
 
+    /**
+     * Returns a stream of {@link Charset}s consisting of every {@link StandardCharsets} constant
+     * plus the {@code X-UTF-32BE-BOM} and {@code X-UTF-32LE-BOM} variants.
+     *
+     * @return a stream of charsets.
+     */
     public static Stream<Charset> charsetStream() {
         return Stream.concat(
                 Arrays.stream(StandardCharsets.class.getFields())
@@ -52,12 +63,23 @@ public final class _Java_Nio_Charset_TestUtils {
         );
     }
 
+    /**
+     * Returns a stream of {@link CharsetEncoder}s, one per encodable charset from
+     * {@link #charsetStream()}.
+     *
+     * @return a stream of charset encoders.
+     */
     public static Stream<CharsetEncoder> charsetEncoderStream() {
         return charsetStream()
                 .filter(Charset::canEncode)
                 .map(Charset::newEncoder);
     }
 
+    /**
+     * Returns a stream of {@link CharsetDecoder}s, one per charset from {@link #charsetStream()}.
+     *
+     * @return a stream of charset decoders.
+     */
     public static Stream<CharsetDecoder> charsetDecoderStream() {
         return charsetStream()
                 .map(Charset::newDecoder);

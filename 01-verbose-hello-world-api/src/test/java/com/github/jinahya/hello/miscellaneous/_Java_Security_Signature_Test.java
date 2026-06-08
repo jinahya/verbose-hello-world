@@ -37,7 +37,7 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_Signature_Te
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * .
+ * A class for testing {@link java.security.Signature}.
  *
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
@@ -49,6 +49,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Java_Security_Signature_Test {
 
+    /**
+     * Verifies that every {@link Signature} algorithm registered with each provider can be
+     * printed.
+     */
     @Test
     void algorithms__() {
         securityProviders().forEach(p -> {
@@ -64,6 +68,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA1withDSA} signs and verifies random data.
+     *
+     * @param keysize the DSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA1withDSA")
@@ -94,6 +105,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA256withDSA} signs and verifies random data.
+     *
+     * @param keysize the DSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA256withDSA")
@@ -124,6 +142,12 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA256withECDSA} signs and verifies random data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA256withECDSA")
@@ -153,6 +177,12 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA384withECDSA} signs and verifies random data.
+     *
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA384withECDSA")
@@ -182,6 +212,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA1withRSA} signs and verifies random data.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA1withRSA")
@@ -212,6 +249,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA256withRSA} signs and verifies random data.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA256withRSA")
@@ -242,6 +286,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code SHA384withRSA} signs and verifies random data.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("SHA384withRSA")
@@ -272,6 +323,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code RSASSA-PSS} with SHA-256 signs and verifies random data.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("RSASSA-PSS with SHA-256")
@@ -302,6 +360,13 @@ class _Java_Security_Signature_Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@code RSASSA-PSS} with SHA-384 signs and verifies random data.
+     *
+     * @param keysize the RSA key size, in bits.
+     * @throws Exception if any error occurs.
+     */
     @LatestLTS
     @LatestJDK
     @DisplayName("RSASSA-PSS with SHA-384")

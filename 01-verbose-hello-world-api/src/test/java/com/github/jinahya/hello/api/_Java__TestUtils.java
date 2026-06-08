@@ -24,6 +24,11 @@ import lombok.extern.slf4j.*;
 
 import java.util.*;
 
+/**
+ * A class providing common test utilities shared across the {@code _Java_*_TestUtils} family.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java__TestUtils {

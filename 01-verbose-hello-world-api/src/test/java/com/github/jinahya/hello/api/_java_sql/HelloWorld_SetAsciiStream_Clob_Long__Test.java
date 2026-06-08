@@ -29,6 +29,13 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+/**
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long) setAsciiStream(clob,
+ * pos)} method with real {@link Clob} implementations from JDBC drivers.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("setAsciiStream(clob, pos)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -60,6 +67,12 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
+         * setAsciiStream(clob, pos)} method populates a real H2 {@link Clob} with the
+         * {@code "hello, world"} bytes.
+         */
         @DisplayName("should populate a <real H2 Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
@@ -86,6 +99,12 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
+         * setAsciiStream(clob, pos)} method populates a real HSQLDB {@link Clob} with the
+         * {@code "hello, world"} bytes.
+         */
         @DisplayName("should populate a <real HSQLDB Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {
@@ -113,6 +132,12 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
 
         private static final String PASSWORD = "";
 
+        /**
+         * Verifies that the
+         * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)
+         * setAsciiStream(clob, pos)} method populates a real SQLite {@link Clob} with the
+         * {@code "hello, world"} bytes.
+         */
         @DisplayName("should populate a <real SQLite Clob> through <setAsciiStream(clob, 1L)>")
         @Test
         void __() throws IOException, SQLException {

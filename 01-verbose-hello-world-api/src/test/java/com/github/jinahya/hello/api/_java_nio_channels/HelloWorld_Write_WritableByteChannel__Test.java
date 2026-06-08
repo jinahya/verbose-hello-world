@@ -24,6 +24,7 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 import org.junit.jupiter.api.io.*;
 
 import java.io.*;
@@ -34,9 +35,16 @@ import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.api._Java_Nio_Channels_TestUtils.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class for exploring {@link HelloWorld#write(WritableByteChannel) write(channel)} method with
+ * real implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(channel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -57,6 +65,11 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     @Nested
     class Pipe_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} through a {@link Pipe}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a <pipe>")
         @Test
         void __() throws IOException {
@@ -83,6 +96,12 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     @Nested
     class SocketChannel_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} through a {@link SocketChannel}
+         * over a loopback address.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> through a <SocketChannel>
                 over a <loopback> address""")
@@ -115,30 +134,30 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
     @Nested
     class EchoServer_Test {
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server over an
+         * {@link InetSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName(
                 "should write <hello-world-bytes> to an <echo server> over an <InetSocketAddress>")
         @Test
-        void __InetSocketAddress() throws IOException {
-            try (var server = ServerSocketChannel.open()) {
-                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                log.debug("[server] bound: {}", server.getLocalAddress());
+        void __INET() throws IOException {
+            try (var server = ServerSocketChannel.open(StandardProtocolFamily.INET)) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
-                    try (var client = server.accept()) {
-                        final var buf = ByteBuffer.allocate(1);
-                        while (client.read(buf.clear()) != -1) {
-                            for (buf.flip(); buf.hasRemaining(); ) {
-                                client.write(buf);
-                            }
-                        }
+                    try (var accepted = server.accept()) {
+                        copy1(ByteBuffer.allocate(1), accepted, accepted);
                     } catch (final IOException ioe) {
                         log.error("failed to read", ioe);
                     }
                 });
                 try (var client = SocketChannel.open()) {
                     client.connect(server.getLocalAddress());
-                    log.debug("[client] connected to : {}", client.getRemoteAddress());
-                    service().write(client);
-                    client.shutdownOutput();
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    service().write(client).shutdownOutput();
                     final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
                     for (int r; dst.hasRemaining(); ) {
                         r = client.read(dst);
@@ -149,34 +168,67 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server over an
+         * {@link Inet6Address}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
+        @DisplayName(
+                "should write <hello-world-bytes> to an <echo server> over an <Inet6Address>")
+        @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
+                                  disabledReason = "IPv6 disabled by preferIPv4Stack=true")
+        @Test
+        void __INET6() throws IOException {
+            try (var server = ServerSocketChannel.open(StandardProtocolFamily.INET6)) {
+                server.bind(new InetSocketAddress(InetAddress.getByName("::1"), 0));
+                log.debug("[server] bound to {}", server.getLocalAddress());
+                Thread.ofPlatform().start(() -> {
+                    try (var accepted = server.accept()) {
+                        copy1(ByteBuffer.allocate(1), accepted, accepted);
+                    } catch (final IOException ioe) {
+                        log.error("failed to read", ioe);
+                    }
+                });
+                try (var client = SocketChannel.open(StandardProtocolFamily.INET6)) {
+                    client.connect(server.getLocalAddress());
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    service().write(client).shutdownOutput();
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    for (int r; dst.hasRemaining(); ) {
+                        r = client.read(dst);
+                        assert r != -1;
+                    }
+                    assertEquals(hello_world_byte_buffer(), dst.flip());
+                }
+            }
+        }
+
+        /**
+         * Verifies that the method writes {@code hello-world-bytes} to an echo server over a
+         * {@link UnixDomainSocketAddress}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> to an <echo server>
                 over a <UnixDomainSocketAddress>""")
         @Test
-        void ___UnixDomainSocketAddress() throws IOException {
+        void __UNIX() throws IOException {
             try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX)) {
                 server.bind(null);
-                log.debug("[server] bound: {}", server.getLocalAddress());
+                log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
-                    try (var client = server.accept()) {
-                        final var buf = ByteBuffer.allocate(1);
-                        buf.clear();
-                        while (client.read(buf) != -1) {
-                            client.write(buf.flip());
-                            buf.compact();
-                        }
-                        for (buf.flip(); buf.hasRemaining(); ) {
-                            client.write(buf);
-                        }
+                    try (var accepted = server.accept()) {
+                        copy1(ByteBuffer.allocate(1), accepted, accepted);
                     } catch (final IOException ioe) {
                         log.error("failed to read", ioe);
                     }
                 });
                 try (var client = SocketChannel.open(StandardProtocolFamily.UNIX)) {
                     client.connect(server.getLocalAddress());
-                    log.debug("[client] connected to : {}", client.getRemoteAddress());
-                    service().write(client);
-                    client.shutdownOutput();
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    service().write(client).shutdownOutput();
                     final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
                     for (int r; dst.hasRemaining(); ) {
                         r = client.read(dst);
