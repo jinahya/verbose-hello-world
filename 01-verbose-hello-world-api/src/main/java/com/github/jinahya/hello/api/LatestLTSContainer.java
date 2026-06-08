@@ -30,7 +30,6 @@ import java.lang.annotation.*;
  * @see LatestLTS
  */
 @Documented
-@SuppressWarnings({"UnicodeInCode"})
 public @interface LatestLTSContainer {
 
     /**

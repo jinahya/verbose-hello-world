@@ -33,10 +33,6 @@ import java.util.*;
  */
 public final class _Java_Nio_Buffer_TestUtils {
 
-    private _Java_Nio_Buffer_TestUtils() {
-        throw new AssertionError("instantiation is not allowed");
-    }
-
     /**
      * Prints a multi-line, human-readable snapshot of {@code buffer}'s current state to
      * {@code printer}: identity hash, {@code remaining}, {@code direct}, {@code hasArray},
@@ -106,5 +102,10 @@ public final class _Java_Nio_Buffer_TestUtils {
     })
     public static <T extends Buffer> T print(final T buffer) {
         return _Java_Nio_Buffer_TestUtils.print(buffer, System.out);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    private _Java_Nio_Buffer_TestUtils() {
+        throw new AssertionError("instantiation is not allowed");
     }
 }

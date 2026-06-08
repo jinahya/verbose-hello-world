@@ -30,7 +30,6 @@ import java.lang.annotation.*;
  * @see LatestJDK
  */
 @Documented
-@SuppressWarnings({"UnicodeInCode"})
 public @interface LatestJDKContainer {
 
     /**

@@ -61,8 +61,7 @@ import static java.nio.charset.StandardCharsets.*;
         "java:S1481", // Unused local variables should be removed
         "java:S1854", // Unused assignments should be removed
         "java:S1865", // useless assignments
-        "java:S4274", // assert ...
-        "UnicodeInCode" // https://errorprone.info/bugpattern/UnicodeInCode
+        "java:S4274" // assert ...
 })
 public interface HelloWorld {
 
