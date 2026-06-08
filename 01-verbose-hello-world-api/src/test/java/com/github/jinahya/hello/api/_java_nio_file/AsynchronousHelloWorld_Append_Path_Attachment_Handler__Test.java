@@ -65,7 +65,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
             and invoke <handler.completed(path, attachment)>""")
     @Test
     @SuppressWarnings({"unchecked"})
-    void __(final @TempDir Path tempDir) throws Exception {
+    void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
         HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());

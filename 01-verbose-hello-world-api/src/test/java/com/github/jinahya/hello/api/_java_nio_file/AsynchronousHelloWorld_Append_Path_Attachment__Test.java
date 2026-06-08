@@ -61,7 +61,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
             should append <hello-world-bytes> to a real <Path>,
             and complete the returned stage with the <attachment>""")
     @Test
-    void __(final @TempDir Path tempDir) throws Exception {
+    void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
         HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());

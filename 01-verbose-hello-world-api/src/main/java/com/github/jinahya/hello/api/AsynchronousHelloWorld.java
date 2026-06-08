@@ -396,17 +396,17 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             }
             channel.write(b, position, position, new CompletionHandler<>() { // @formatter:off
                 @Override
-                public void completed(final Integer result, Long attachment_) {
+                public void completed(final Integer result, Long position) {
                     if (b.hasRemaining()) {
-                        attachment_ += result;
-                        channel.write(b, attachment_, attachment_, this);
+                        position += result;
+                        channel.write(b, position, position, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
 
                 @Override
-                public void failed(final Throwable exc, final Long attachment_) {
+                public void failed(final Throwable exc, final Long position) {
                     handler.failed(exc, attachment);
                 } // @formatter:on
             });
