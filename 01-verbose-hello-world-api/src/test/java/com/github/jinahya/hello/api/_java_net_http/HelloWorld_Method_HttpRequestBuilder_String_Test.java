@@ -112,7 +112,6 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
      * @throws Exception if an error occurs.
      */
     @DisplayName("should send <hello-world-bytes> through a real <HttpClient> request")
-    @畵蛇添足
     @Test
     void _添足_畵蛇() throws Exception {
         // ----------------------------------------------------------------------------------- given
