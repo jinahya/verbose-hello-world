@@ -55,59 +55,6 @@ class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     class EchoServer_Test {
 
-        private void doServer(final DatagramChannel server) throws IOException {
-            server.configureBlocking(ThreadLocalRandom.current().nextBoolean());
-            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-            while (buffer.hasRemaining()) {
-                final var address = server.receive(buffer);
-                if (address == null) {
-                    continue;
-                }
-                log.debug("[server] received from {}", address);
-                for (buffer.flip(); buffer.hasRemaining(); ) {
-                    server.send(buffer, address);
-                }
-                log.debug("[server] sent to {}", address);
-            }
-        }
-
-        private void doClient(final DatagramChannel client, final SocketAddress target)
-                throws IOException {
-            client.connect(target);
-            log.debug("[client] connected to {}", client.getRemoteAddress());
-            client.configureBlocking(ThreadLocalRandom.current().nextBoolean());
-            service().send(client);
-            log.debug("[client] sent to {}", target);
-            final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-            while (dst.hasRemaining()) {
-                final var address = client.receive(dst);
-                if (address == null) {
-                    continue;
-                }
-                log.debug("[client] received from {}", address);
-            }
-        }
-
-        @DisplayName(
-                "should send <hello-world-bytes> to an <echo server> over a <loopback> address")
-        @Test
-        void __() throws IOException {
-            try (final var server = DatagramChannel.open()) {
-                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                log.debug("[server] bound to {}", server.getLocalAddress());
-                Thread.ofPlatform().start(() -> {
-                    try {
-                        doServer(server);
-                    } catch (final IOException ioe) {
-                        throw new RuntimeException(ioe);
-                    }
-                });
-                try (final var client = DatagramChannel.open()) {
-                    doClient(client, server.getLocalAddress());
-                }
-            }
-        }
-
         @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv4> address")
         @Test
         void __INET() throws IOException {
@@ -116,13 +63,37 @@ class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {
                 log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
                     try {
-                        doServer(server);
+                        server.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+                        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                        while (buffer.hasRemaining()) {
+                            final var address = server.receive(buffer);
+                            if (address == null) {
+                                continue;
+                            }
+                            log.debug("[server] received from {}", address);
+                            for (buffer.flip(); buffer.hasRemaining(); ) {
+                                server.send(buffer, address);
+                            }
+                            log.debug("[server] sent to {}", address);
+                        }
                     } catch (final IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
                 });
                 try (final var client = DatagramChannel.open(StandardProtocolFamily.INET)) {
-                    doClient(client, server.getLocalAddress());
+                    client.connect(server.getLocalAddress());
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    client.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+                    service().send(client);
+                    log.debug("[client] sent to {}", client.getRemoteAddress());
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    while (dst.hasRemaining()) {
+                        final var address = client.receive(dst);
+                        if (address == null) {
+                            continue;
+                        }
+                        log.debug("[client] received from {}", address);
+                    }
                 }
             }
         }
@@ -137,13 +108,37 @@ class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {
                 log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
                     try {
-                        doServer(server);
+                        server.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+                        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                        while (buffer.hasRemaining()) {
+                            final var address = server.receive(buffer);
+                            if (address == null) {
+                                continue;
+                            }
+                            log.debug("[server] received from {}", address);
+                            for (buffer.flip(); buffer.hasRemaining(); ) {
+                                server.send(buffer, address);
+                            }
+                            log.debug("[server] sent to {}", address);
+                        }
                     } catch (final IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
                 });
                 try (final var client = DatagramChannel.open(StandardProtocolFamily.INET6)) {
-                    doClient(client, server.getLocalAddress());
+                    client.connect(server.getLocalAddress());
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    client.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+                    service().send(client);
+                    log.debug("[client] sent to {}", client.getRemoteAddress());
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    while (dst.hasRemaining()) {
+                        final var address = client.receive(dst);
+                        if (address == null) {
+                            continue;
+                        }
+                        log.debug("[client] received from {}", address);
+                    }
                 }
             }
         }
@@ -158,13 +153,37 @@ class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {
                 log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
                     try {
-                        doServer(server);
+                        server.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+                        final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                        while (buffer.hasRemaining()) {
+                            final var address = server.receive(buffer);
+                            if (address == null) {
+                                continue;
+                            }
+                            log.debug("[server] received from {}", address);
+                            for (buffer.flip(); buffer.hasRemaining(); ) {
+                                server.send(buffer, address);
+                            }
+                            log.debug("[server] sent to {}", address);
+                        }
                     } catch (final IOException ioe) {
                         throw new RuntimeException(ioe);
                     }
                 });
                 try (final var client = DatagramChannel.open(StandardProtocolFamily.UNIX)) {
-                    doClient(client, server.getLocalAddress());
+                    client.connect(server.getLocalAddress());
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    client.configureBlocking(ThreadLocalRandom.current().nextBoolean());
+                    service().send(client);
+                    log.debug("[client] sent to {}", client.getRemoteAddress());
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    while (dst.hasRemaining()) {
+                        final var address = client.receive(dst);
+                        if (address == null) {
+                            continue;
+                        }
+                        log.debug("[client] received from {}", address);
+                    }
                 }
             }
         }

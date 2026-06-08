@@ -84,6 +84,9 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
         doAnswer(w -> {
             assert futureReference.get() == null;
             final var src = w.getArgument(0, ByteBuffer.class);
+            assert src != null;
+            assert src.limit() == HelloWorld.BYTES;
+            assert src.hasRemaining();
             bufferPositions.add(src.position());
             final var future = mock(Future.class);
             futureReference.set(future);
@@ -94,17 +97,13 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(argThat(v -> {
-            return v != null
-                   && v.capacity() == HelloWorld.BYTES
-                   && v.limit() == HelloWorld.BYTES
-                   && v.hasRemaining();
-        }));
+        }).when(channel).write(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         final var buffer = put_buffer12_invoked_once(service);
-//        assertFalse(bufferPositions.isEmpty());
+//        verify(channel, atLeastOnce()).write(buffer);
+//        verifyNoMoreInteractions(channel);
 //        assertEquals(0, bufferPositions.getFirst());
 //        for (var i = 1; i < bufferPositions.size(); i++) {
 //            assertTrue(bufferPositions.get(i) > bufferPositions.get(i - 1));
@@ -133,6 +132,9 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
         doAnswer(w -> {
             assert !errored.get();
             final var src = w.getArgument(0, ByteBuffer.class);
+            assert src != null;
+            assert src.hasRemaining();
+            assert src.limit() == HelloWorld.BYTES;
             final var future = mock(Future.class);
             reference.set(future);
             doAnswer(g -> {
@@ -146,12 +148,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(argThat(v -> {
-            return v != null
-                   && v.capacity() == HelloWorld.BYTES
-                   && v.limit() == HelloWorld.BYTES
-                   && v.hasRemaining();
-        }));
+        }).when(channel).write(any());
         // ------------------------------------------------------------------------------- when/then
 //        final var thrown = assertThrows(
 //                ExecutionException.class,

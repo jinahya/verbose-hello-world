@@ -47,5 +47,7 @@ class HelloWorldDi_Spring_Configuration { // @formatter:off
     HelloWorld qualifiedDemo() { return new HelloWorldDemo(); }
 
     @_Impl @org.springframework.context.annotation.Bean
-    HelloWorld qualifiedImpl() { return new HelloWorldImpl(); } // @formatter:on
+    HelloWorld qualifiedImpl() {
+        return new HelloWorldImpl();
+    } // @formatter:on
 }

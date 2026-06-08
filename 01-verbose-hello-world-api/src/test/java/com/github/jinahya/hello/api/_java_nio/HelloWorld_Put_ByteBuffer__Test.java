@@ -1,10 +1,10 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.api._java_nio;
 
 /*-
  * #%L
  * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import org.bouncycastle.jce.provider.*;
+import com.github.jinahya.hello.api.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
 
-public class _org_bouncycastle_jce_provider__TestConstants {
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+@SuppressWarnings({"java:S101"})
+class HelloWorld_Put_ByteBuffer__Test extends HelloWorld__Test {
 
-    public static final String BOUNCY_CASTLE_PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;
-
-    private _org_bouncycastle_jce_provider__TestConstants() {
-        throw new AssertionError("instantiation is not allowed");
-    }
 }

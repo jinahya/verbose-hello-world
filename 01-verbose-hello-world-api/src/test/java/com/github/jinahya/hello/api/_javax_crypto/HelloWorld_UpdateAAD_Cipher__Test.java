@@ -75,10 +75,11 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
     }
 
     /**
-     * Stubs {@link com.github.jinahya.hello.api.HelloWorld#updateAAD(Cipher)
-     * service().updateAAD(cipher)} so that, when invoked with any non-{@code null} {@link Cipher},
-     * it forwards the {@link HelloWorld__TestUtils#hello_world_byte_array() hello-world bytes} to
-     * the cipher's {@link Cipher#updateAAD(byte[])} method and returns the cipher.
+     * Stubs
+     * {@link com.github.jinahya.hello.api.HelloWorld#updateAAD(Cipher) service().updateAAD(cipher)}
+     * so that, when invoked with any non-{@code null} {@link Cipher}, it forwards the
+     * {@link HelloWorld__TestUtils#hello_world_byte_array() hello-world bytes} to the cipher's
+     * {@link Cipher#updateAAD(byte[])} method and returns the cipher.
      */
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
@@ -92,9 +93,9 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
 
     /**
      * A nested test class for {@code AES/GCM/NoPadding}: feeds the hello-world bytes as AAD on the
-     * encryption side, encrypts the canonical plaintext, then on a freshly initialized cipher
-     * feeds the same AAD on the decryption side, and asserts the decrypted bytes match the
-     * original plaintext &mdash; verifying that AAD on both sides authenticates.
+     * encryption side, encrypts the canonical plaintext, then on a freshly initialized cipher feeds
+     * the same AAD on the decryption side, and asserts the decrypted bytes match the original
+     * plaintext &mdash; verifying that AAD on both sides authenticates.
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc5116">RFC 5116 &mdash; AEAD</a>
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc5288">RFC 5288 &mdash; AES-GCM Cipher
@@ -162,9 +163,9 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
 
     /**
      * A nested test class for {@code ChaCha20-Poly1305}: feeds the hello-world bytes as AAD on the
-     * encryption side, encrypts the canonical plaintext, then on a freshly initialized cipher
-     * feeds the same AAD on the decryption side, and asserts the decrypted bytes match the
-     * original plaintext.
+     * encryption side, encrypts the canonical plaintext, then on a freshly initialized cipher feeds
+     * the same AAD on the decryption side, and asserts the decrypted bytes match the original
+     * plaintext.
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc8439">RFC 8439 &mdash; ChaCha20 and
      * Poly1305</a>
@@ -182,9 +183,9 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
         private static final int NONCE_LENGTH = 12;
 
         /**
-         * Verifies that a round trip through a {@link Cipher#getInstance(String)
-         * ChaCha20-Poly1305} cipher, with the hello-world bytes fed as AAD on both encryption and
-         * decryption sides, recovers the original plaintext.
+         * Verifies that a round trip through a {@link Cipher#getInstance(String) ChaCha20-Poly1305}
+         * cipher, with the hello-world bytes fed as AAD on both encryption and decryption sides,
+         * recovers the original plaintext.
          */
         @DisplayName("should round-trip plaintext through a <real ChaCha20-Poly1305> cipher")
         @Test

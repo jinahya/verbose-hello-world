@@ -1160,8 +1160,8 @@ public interface HelloWorld {
      * @throws IllegalArgumentException if {@code parameterIndex} is not positive.
      * @throws IOException              if an I/O error occurs.
      * @throws SQLException             if {@code parameterIndex} does not correspond to a parameter
-     *                                  marker in the SQL statement, if a database access
-     *                                  error occurs, or if this method is called on a closed
+     *                                  marker in the SQL statement, if a database access error
+     *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, wraps the array in a {@link ByteArrayInputStream}, invokes

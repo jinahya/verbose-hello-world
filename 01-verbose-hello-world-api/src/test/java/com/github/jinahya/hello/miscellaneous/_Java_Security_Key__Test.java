@@ -114,8 +114,8 @@ class _Java_Security_Key__Test {
      *
      * @param algorithm the JCE standard {@link KeyAgreement} algorithm name (e.g.,
      *                  {@code "DiffieHellman"}, {@code "ECDH"}, {@code "X25519"}).
-     * @param label     a human-readable label used in the printed summary (typically
-     *                  algorithm + curve / key size).
+     * @param label     a human-readable label used in the printed summary (typically algorithm +
+     *                  curve / key size).
      * @param alice     Alice's key pair (private + public).
      * @param bob       Bob's key pair (must share the same group / parameters as Alice's).
      */
@@ -142,11 +142,11 @@ class _Java_Security_Key__Test {
      * recovered key is byte-for-byte equal to the original.
      *
      * <p>For asymmetric key transport, {@code wrappingKey} is the receiver's public key and
-     * {@code unwrappingKey} is the receiver's private key. For symmetric key wrapping, both are
-     * the same shared KEK.
+     * {@code unwrappingKey} is the receiver's private key. For symmetric key wrapping, both are the
+     * same shared KEK.
      *
-     * @param transformation the {@link Cipher} transformation
-     *                       (e.g., {@code "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"},
+     * @param transformation the {@link Cipher} transformation (e.g.,
+     *                       {@code "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"},
      *                       {@code "AES/KW/NoPadding"}).
      * @param wrappingKey    the key passed to {@link Cipher#WRAP_MODE}.
      * @param unwrappingKey  the key passed to {@link Cipher#UNWRAP_MODE}.
@@ -181,10 +181,11 @@ class _Java_Security_Key__Test {
      * sender's encapsulated shared key matches the receiver's decapsulated shared key
      * byte-for-byte.
      *
-     * @param algorithm        the JCE standard {@link KEM} algorithm name (e.g., {@code "DHKEM"},
-     *                         {@code "ML-KEM-768"}).
-     * @param label            a human-readable label used in the printed summary.
-     * @param receiverKeyPair  the receiver's asymmetric key pair (compatible with {@code algorithm}).
+     * @param algorithm       the JCE standard {@link KEM} algorithm name (e.g., {@code "DHKEM"},
+     *                        {@code "ML-KEM-768"}).
+     * @param label           a human-readable label used in the printed summary.
+     * @param receiverKeyPair the receiver's asymmetric key pair (compatible with
+     *                        {@code algorithm}).
      */
     private static void encapsulate(final String algorithm, final String label,
                                     final KeyPair receiverKeyPair) throws Exception {
@@ -212,8 +213,8 @@ class _Java_Security_Key__Test {
 
     /**
      * A nested test class demonstrating RSA-based key transport (§2 of {@code _KEY.asciidoc}): the
-     * sender generates a fresh AES data key, wraps it under the receiver's RSA public key with
-     * each registered asymmetric {@link Cipher} transformation, and the receiver unwraps with the
+     * sender generates a fresh AES data key, wraps it under the receiver's RSA public key with each
+     * registered asymmetric {@link Cipher} transformation, and the receiver unwraps with the
      * matching private key. Parameterised over every RSA padding listed on the JDK 25 standard
      * names page (the only asymmetric {@link Cipher} algorithms registered by SunJCE).
      */
@@ -234,10 +235,11 @@ class _Java_Security_Key__Test {
          * {@code transformation} is recovered byte-for-byte when the receiver unwraps it with the
          * matching private key.
          *
-         * @param transformation a JCE {@link Cipher} transformation for RSA key transport
-         *                       (e.g., {@code "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"}).
+         * @param transformation a JCE {@link Cipher} transformation for RSA key transport (e.g.,
+         *                       {@code "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"}).
          */
-        @DisplayName("should round-trip an <AES> data key wrapped under the given <RSA> transformation")
+        @DisplayName(
+                "should round-trip an <AES> data key wrapped under the given <RSA> transformation")
         @ValueSource(strings = {
                 "RSA/ECB/PKCS1Padding",
                 "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
@@ -264,7 +266,8 @@ class _Java_Security_Key__Test {
                 dataKey = generator.generateKey();
             }
             // -------------------------------------------------------------------------- when/then
-            wrap(transformation, receiverKeyPair.getPublic(), receiverKeyPair.getPrivate(), dataKey);
+            wrap(transformation, receiverKeyPair.getPublic(), receiverKeyPair.getPrivate(),
+                 dataKey);
         }
     }
 
@@ -359,8 +362,8 @@ class _Java_Security_Key__Test {
 
     /**
      * A nested test class demonstrating symmetric AES key wrapping (§4 of {@code _KEY.asciidoc}):
-     * Alice and Bob share a common AES KEK in advance, Alice wraps a fresh AES data key under
-     * that KEK so it can be transmitted as opaque bytes, and Bob unwraps with the same KEK.
+     * Alice and Bob share a common AES KEK in advance, Alice wraps a fresh AES data key under that
+     * KEK so it can be transmitted as opaque bytes, and Bob unwraps with the same KEK.
      * Parameterised over every AES key-wrap transformation registered by SunJCE on JDK 25 (the
      * {@code AESWrap} / {@code AESWrapPad} legacy aliases plus the {@code AES/KW/*} /
      * {@code AES/KWP/*} JDK 17+ forms).
@@ -454,8 +457,8 @@ class _Java_Security_Key__Test {
 
     /**
      * A nested test class demonstrating key derivation (§6 of {@code _KEY.asciidoc}) at a thin,
-     * one-test-per-flavour level: one {@code HKDF-SHA256} derivation from uniformly-random IKM
-     * (via {@link KDF}), and one {@code PBKDF2WithHmacSHA256} derivation from a passphrase (via
+     * one-test-per-flavour level: one {@code HKDF-SHA256} derivation from uniformly-random IKM (via
+     * {@link KDF}), and one {@code PBKDF2WithHmacSHA256} derivation from a passphrase (via
      * {@link SecretKeyFactory}). The full sweeps live in {@link _Javax_Crypto_KDF_Test} and
      * {@link _Javax_Crypto_PBE_Test}.
      */

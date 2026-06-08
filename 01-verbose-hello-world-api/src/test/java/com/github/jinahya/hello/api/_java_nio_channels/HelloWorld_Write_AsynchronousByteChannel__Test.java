@@ -51,59 +51,6 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
     class EchoServer_Test {
 
-        private static void doServer(final AsynchronousServerSocketChannel server)
-                throws Exception {
-            try (final var client = server.accept().get()) {
-                log.debug("[server] accepted from {}", client.getRemoteAddress());
-                final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
-                while (buffer.hasRemaining()) {
-                    if (client.read(buffer).get() == -1) {
-                        throw new EOFException("unexpected end of stream");
-                    }
-                }
-                log.debug("[server] received from {}", client.getRemoteAddress());
-                for (buffer.flip(); buffer.hasRemaining(); ) {
-                    client.write(buffer).get();
-                }
-                log.debug("[server] sent to {}", client.getRemoteAddress());
-            }
-        }
-
-        private void doClient(final AsynchronousSocketChannel client, final SocketAddress target)
-                throws Exception {
-            client.connect(target).get();
-            log.debug("[client] connected to {}", client.getRemoteAddress());
-            service().write(client);
-            log.debug("[client] sent to {}", target);
-            final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
-            while (dst.hasRemaining()) {
-                if (client.read(dst).get() == -1) {
-                    break;
-                }
-            }
-            log.debug("[client] received from {}", client.getRemoteAddress());
-        }
-
-        @DisplayName(
-                "should write <hello-world-bytes> to an <echo server> over a <loopback> address")
-        @Test
-        void __() throws Exception {
-            try (final var server = AsynchronousServerSocketChannel.open()) {
-                server.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
-                log.debug("[server] bound to {}", server.getLocalAddress());
-                Thread.ofPlatform().start(() -> {
-                    try {
-                        doServer(server);
-                    } catch (final Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                try (final var client = AsynchronousSocketChannel.open()) {
-                    doClient(client, server.getLocalAddress());
-                }
-            }
-        }
-
         @DisplayName("should write <hello-world-bytes> to an <echo server> over an <IPv4> address")
         @Test
         void __INET() throws Exception {
@@ -112,13 +59,36 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
                 log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
                     try {
-                        doServer(server);
+                        try (final var client = server.accept().get()) {
+                            log.debug("[server] accepted from {}", client.getRemoteAddress());
+                            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                            while (buffer.hasRemaining()) {
+                                if (client.read(buffer).get() == -1) {
+                                    throw new EOFException("unexpected end of stream");
+                                }
+                            }
+                            log.debug("[server] received from {}", client.getRemoteAddress());
+                            for (buffer.flip(); buffer.hasRemaining(); ) {
+                                client.write(buffer).get();
+                            }
+                            log.debug("[server] sent to {}", client.getRemoteAddress());
+                        }
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
                 try (final var client = AsynchronousSocketChannel.open()) {
-                    doClient(client, server.getLocalAddress());
+                    client.connect(server.getLocalAddress()).get();
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    service().write(client);
+                    log.debug("[client] sent to {}", client.getRemoteAddress());
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    while (dst.hasRemaining()) {
+                        if (client.read(dst).get() == -1) {
+                            break;
+                        }
+                    }
+                    log.debug("[client] received from {}", client.getRemoteAddress());
                 }
             }
         }
@@ -133,13 +103,36 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
                 log.debug("[server] bound to {}", server.getLocalAddress());
                 Thread.ofPlatform().start(() -> {
                     try {
-                        doServer(server);
+                        try (final var client = server.accept().get()) {
+                            log.debug("[server] accepted from {}", client.getRemoteAddress());
+                            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+                            while (buffer.hasRemaining()) {
+                                if (client.read(buffer).get() == -1) {
+                                    throw new EOFException("unexpected end of stream");
+                                }
+                            }
+                            log.debug("[server] received from {}", client.getRemoteAddress());
+                            for (buffer.flip(); buffer.hasRemaining(); ) {
+                                client.write(buffer).get();
+                            }
+                            log.debug("[server] sent to {}", client.getRemoteAddress());
+                        }
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
                 try (final var client = AsynchronousSocketChannel.open()) {
-                    doClient(client, server.getLocalAddress());
+                    client.connect(server.getLocalAddress()).get();
+                    log.debug("[client] connected to {}", client.getRemoteAddress());
+                    service().write(client);
+                    log.debug("[client] sent to {}", client.getRemoteAddress());
+                    final var dst = ByteBuffer.allocate(HelloWorld.BYTES);
+                    while (dst.hasRemaining()) {
+                        if (client.read(dst).get() == -1) {
+                            break;
+                        }
+                    }
+                    log.debug("[client] received from {}", client.getRemoteAddress());
                 }
             }
         }

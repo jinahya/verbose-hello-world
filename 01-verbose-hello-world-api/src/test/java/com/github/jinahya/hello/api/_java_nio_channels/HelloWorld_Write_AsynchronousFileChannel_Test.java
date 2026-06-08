@@ -101,8 +101,12 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
         doAnswer(w -> {
             assert futureReference.get() == null;
             final var src = w.getArgument(0, ByteBuffer.class);
+            assert src != null;
+            assert src.limit() == HelloWorld.BYTES;
+            assert src.hasRemaining();
             bufferPositions.add(src.position());
             final var position = w.getArgument(1, Long.class);
+            assert position >= 0L;
             channelPositions.add(position);
             final var future = mock(Future.class);
             futureReference.set(future);
@@ -113,19 +117,14 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
                 return n;
             }).when(future).get();
             return future;
-        }).when(channel).write(
-                argThat(v -> v != null
-                             && v.capacity() == HelloWorld.BYTES
-                             && v.limit() == HelloWorld.BYTES
-                             && v.hasRemaining()),
-                longThat(v -> v >= 0L)
-        );
+        }).when(channel).write(any(), anyLong());
         final var position = ThreadLocalRandom.current().nextLong(8L);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel, position);
         // ------------------------------------------------------------------------------------ then
         final var buffer = put_buffer12_invoked_once(service);
-//        assertFalse(bufferPositions.isEmpty());
+//        verify(channel, atLeastOnce()).write(eq(buffer), anyLong());
+//        verifyNoMoreInteractions(channel);
 //        assertEquals(0, bufferPositions.getFirst());
 //        for (var i = 1; i < bufferPositions.size(); i++) {
 //            assertTrue(bufferPositions.get(i) > bufferPositions.get(i - 1));

@@ -142,19 +142,21 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
         final var bufferPositions = new ArrayList<Integer>();
         doAnswer(i -> {
             final var src = i.getArgument(0, ByteBuffer.class);
-            assert src.hasRemaining();
+            assert src != null;
             assert src.limit() == HelloWorld.BYTES;
+            assert src.hasRemaining();
             final var position = src.position();
             bufferPositions.add(position);
             final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
             src.position(position + n);
             return n;
-        }).when(channel).write(notNull());
+        }).when(channel).write(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
         final var buffer = put_buffer12_invoked_once(service);
-//        assertFalse(bufferPositions.isEmpty());
+//        verify(channel, atLeastOnce()).write(buffer);
+//        verifyNoMoreInteractions(channel);
 //        assertEquals(0, bufferPositions.getFirst());
 //        for (var i = 1; i < bufferPositions.size(); i++) {
 //            assertTrue(bufferPositions.get(i) > bufferPositions.get(i - 1));
