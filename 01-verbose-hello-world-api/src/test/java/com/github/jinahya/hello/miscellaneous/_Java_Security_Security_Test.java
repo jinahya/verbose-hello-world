@@ -34,7 +34,7 @@ class _Java_Security_Security_Test {
 
     @Test
     void __() {
-        for (final var provider: Security.getProviders()) {
+        for (final var provider : Security.getProviders()) {
         }
     }
 }

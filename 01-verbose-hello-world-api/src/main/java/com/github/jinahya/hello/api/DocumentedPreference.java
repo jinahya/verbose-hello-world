@@ -23,9 +23,9 @@ package com.github.jinahya.hello.api;
 import java.lang.annotation.*;
 
 /**
- * A source-only marker that records <em>where</em> a declaration's algorithm / parameter /
- * spec is documented within the JDK, ranked by how canonical the documentation is. The
- * {@link #value()} carries one of three positive integer tiers:
+ * A source-only marker that records <em>where</em> a declaration's algorithm / parameter / spec is
+ * documented within the JDK, ranked by how canonical the documentation is. The {@link #value()}
+ * carries one of three positive integer tiers:
  * <ol>
  *   <li>specified in the JCA API spec / javadoc (e.g., {@code "DiffieHellman"} cited in
  *       {@link javax.crypto.KeyAgreement#getInstance(String)} javadoc, or the static

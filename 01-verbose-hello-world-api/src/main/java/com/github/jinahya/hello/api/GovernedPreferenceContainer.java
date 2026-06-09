@@ -24,10 +24,10 @@ import java.lang.annotation.*;
 
 /**
  * The {@link Repeatable} container annotation that holds multiple {@link GovernedPreference}
- * markers on the same element. Each contained marker records a preference rank under an
- * independent criterion (for example, one rank for general-interoperability use and another for a
- * specific policy domain). Parallel to {@link LatestLTSContainer} and {@link LatestJDKContainer},
- * which serve the same role for their respective markers.
+ * markers on the same element. Each contained marker records a preference rank under an independent
+ * criterion (for example, one rank for general-interoperability use and another for a specific
+ * policy domain). Parallel to {@link LatestLTSContainer} and {@link LatestJDKContainer}, which
+ * serve the same role for their respective markers.
  *
  * <p>Concrete sites where this container would surface &mdash; one rank set per KeyAgreement
  * family in {@code com.github.jinahya.hello.miscellaneous._Javax_Crypto_KeyAgreement__Test}:

@@ -25,7 +25,6 @@ import lombok.*;
 import org.bouncycastle.crypto.agreement.*;
 import org.bouncycastle.jcajce.spec.*;
 import org.bouncycastle.jce.provider.*;
-import org.bouncycastle.jce.spec.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
@@ -298,7 +297,8 @@ class _Javax_Crypto_KeyAgreement__Test {
         @LatestJDK
         @DocumentedPreference(1)
         @GovernedPreference(4)
-        @Disabled("BC's AlgorithmParameterGenerator(\"DH\") generates a fresh safe prime per call which takes many minutes even at 2048-bit; impractical wall-clock for unit tests")
+        @Disabled(
+                "BC's AlgorithmParameterGenerator(\"DH\") generates a fresh safe prime per call which takes many minutes even at 2048-bit; impractical wall-clock for unit tests")
         @DisplayName("shared AlgorithmParameterGenerator output")
         @ValueSource(ints = {
                 2048
@@ -320,9 +320,9 @@ class _Javax_Crypto_KeyAgreement__Test {
 
         /**
          * Verifies that finite-field Diffie-Hellman produces the same shared secret on both sides
-         * when Alice and Bob each generate their own key pair in a pre-agreed RFC 2409 (IKE
-         * Oakley) MODP group. These groups are far too small for modern use (768 / 1024 bits) and
-         * are kept here only for historical completeness.
+         * when Alice and Bob each generate their own key pair in a pre-agreed RFC 2409 (IKE Oakley)
+         * MODP group. These groups are far too small for modern use (768 / 1024 bits) and are kept
+         * here only for historical completeness.
          *
          * @param groupName the BouncyCastle {@code DHStandardGroups} constant name (e.g.,
          *                  {@code "rfc2409_1024"}).
@@ -337,7 +337,8 @@ class _Javax_Crypto_KeyAgreement__Test {
                 "rfc2409_1024"
         })
         @ParameterizedTest
-        @Disabled("768 / 1024-bit DH is below the JDK 25 SunJCE legacy threshold; runs only as a curiosity")
+        @Disabled(
+                "768 / 1024-bit DH is below the JDK 25 SunJCE legacy threshold; runs only as a curiosity")
         void __DH4(final String groupName) throws Exception {
             // ------------------------------------------------------------------------------- given
             final var bc = switch (groupName) {
@@ -352,7 +353,6 @@ class _Javax_Crypto_KeyAgreement__Test {
             agree("DiffieHellman", BOUNCY_CASTLE_PROVIDER_NAME,
                   "DiffieHellman/" + groupName, aliceKp, bobKp);
         }
-
     }
 
     /**
@@ -391,9 +391,9 @@ class _Javax_Crypto_KeyAgreement__Test {
     class ECDH_Test {
 
         /**
-         * Verifies that elliptic-curve Diffie-Hellman over the given NIST P-curve produces the
-         * same shared secret on both sides. {@code ECDH} is not JCA-mandatory, so the test binds
-         * the KeyPair generation and the KeyAgreement to {@link BouncyCastleProvider} explicitly.
+         * Verifies that elliptic-curve Diffie-Hellman over the given NIST P-curve produces the same
+         * shared secret on both sides. {@code ECDH} is not JCA-mandatory, so the test binds the
+         * KeyPair generation and the KeyAgreement to {@link BouncyCastleProvider} explicitly.
          *
          * @param stdName the standard curve name (e.g., {@code "secp256r1"}).
          */
@@ -478,9 +478,8 @@ class _Javax_Crypto_KeyAgreement__Test {
         }
 
         /**
-         * Verifies that elliptic-curve Diffie-Hellman over a Brainpool <em>twisted</em> curve
-         * (RFC 5639's {@code brainpoolPNNNt1} family) produces the same shared secret on both
-         * sides.
+         * Verifies that elliptic-curve Diffie-Hellman over a Brainpool <em>twisted</em> curve (RFC
+         * 5639's {@code brainpoolPNNNt1} family) produces the same shared secret on both sides.
          *
          * @param stdName the Brainpool twisted curve name (e.g., {@code "brainpoolP256t1"}).
          */
@@ -538,7 +537,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          * algorithm name across BC releases — running this case requires verifying the algorithm
          * name BC currently registers for SM2-curve agreement.
          */
-        @Disabled("SM2 key exchange uses BC's dedicated protocol — algorithm name varies by release")
+        @Disabled(
+                "SM2 key exchange uses BC's dedicated protocol — algorithm name varies by release")
         @GovernedPreference(6)
         @DisplayName("SM2 curve (sm2p256v1)")
         @Test
@@ -577,7 +577,6 @@ class _Javax_Crypto_KeyAgreement__Test {
             // --------------------------------------------------------------------------- when/then
             agree("ECDHC", BOUNCY_CASTLE_PROVIDER_NAME, "ECDHC/" + stdName, aliceKp, bobKp);
         }
-
     }
 
     /**
@@ -612,8 +611,8 @@ class _Javax_Crypto_KeyAgreement__Test {
         /**
          * Verifies that Montgomery-curve Diffie-Hellman produces the same shared secret on both
          * sides when reached via the {@code XDH} umbrella name with the canonical static
-         * {@link NamedParameterSpec#X25519} / {@link NamedParameterSpec#X448} constants (as
-         * opposed to the string-constructed instances used in {@code __XDH1}).
+         * {@link NamedParameterSpec#X25519} / {@link NamedParameterSpec#X448} constants (as opposed
+         * to the string-constructed instances used in {@code __XDH1}).
          */
         @LatestLTS
         @LatestJDK

@@ -27,18 +27,18 @@ import java.lang.annotation.*;
  * discouraged by a standards body (NIST, IETF, IANA, BSI, &hellip;) or otherwise widely considered
  * obsolete &mdash; even when the underlying API still accepts it. The {@link #value()} carries a
  * short free-text qualifier (typically the citing document, e.g., {@code "NIST SP 800-56A r3"},
- * {@code "RFC 8247"}, {@code "FIPS 186-5"}) so each marker explains <em>why</em> the declaration
- * is flagged. The annotation is {@link Repeatable repeatable} via {@link NotRecommendedContainer}:
- * stack multiple {@code @NotRecommended} markers when more than one authority discourages the
- * same item.
+ * {@code "RFC 8247"}, {@code "FIPS 186-5"}) so each marker explains <em>why</em> the declaration is
+ * flagged. The annotation is {@link Repeatable repeatable} via {@link NotRecommendedContainer}:
+ * stack multiple {@code @NotRecommended} markers when more than one authority discourages the same
+ * item.
  *
  * <p>Typical use is on test methods, constants, or factory members that intentionally cover a
  * legacy / non-mainstream option (e.g., RFC 2409 Oakley DH groups, {@code ECMQV}, sub-floor
  * Brainpool / Koblitz curves) so readers see at a glance that the case is retained for
  * <em>historical or interoperability reference</em>, not as a present-day recommendation. Unlike
  * {@link LatestLTS} / {@link LatestJDK} (which document <em>what the JDK platform provides</em>)
- * and {@link GovernedPreference} (which records the author's <em>editorial preference among
- * valid alternatives</em>), this marker reports an <em>external standards-body verdict</em>.
+ * and {@link GovernedPreference} (which records the author's <em>editorial preference among valid
+ * alternatives</em>), this marker reports an <em>external standards-body verdict</em>.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see NotRecommendedContainer

@@ -25,18 +25,17 @@ import java.lang.annotation.*;
 /**
  * A source-only marker that records the practical preference ranking of a declaration among
  * alternatives that target the same primitive / scenario. The {@link #value()} carries a single
- * positive integer rank &mdash; {@code 1} for the most preferred (the recommended default in
- * modern practice), {@code 2} for the next, and so on. The annotation is {@link Repeatable
- * repeatable} via {@link GovernedPreferenceContainer}: stack multiple {@code @GovernedPreference}
- * markers on the same element to record ranks under more than one independent criterion (for
- * example, {@code @GovernedPreference(1) @GovernedPreference(3)} on an ECDH curve =
- * first-choice for general TLS / FIPS interoperability but third-choice when scoped to a specific
- * policy domain).
+ * positive integer rank &mdash; {@code 1} for the most preferred (the recommended default in modern
+ * practice), {@code 2} for the next, and so on. The annotation is {@link Repeatable repeatable} via
+ * {@link GovernedPreferenceContainer}: stack multiple {@code @GovernedPreference} markers on the
+ * same element to record ranks under more than one independent criterion (for example,
+ * {@code @GovernedPreference(1) @GovernedPreference(3)} on an ECDH curve = first-choice for general
+ * TLS / FIPS interoperability but third-choice when scoped to a specific policy domain).
  *
  * <p>Typical use is on test methods, constants, or factory members that enumerate competing ways
  * of reaching the same end (DH group sources, ECDH curve families, XDH API entry points, cipher
- * transformation variants, &hellip;) to flag which one is the modern default versus legacy /
- * niche alternatives. Unlike {@link LatestLTS} and {@link LatestJDK} &mdash; which document
+ * transformation variants, &hellip;) to flag which one is the modern default versus legacy / niche
+ * alternatives. Unlike {@link LatestLTS} and {@link LatestJDK} &mdash; which document
  * <em>what the JDK platform itself requires</em> &mdash; this marker carries the author's
  * <em>editorial</em> recommendation among options that are all already valid.
  *

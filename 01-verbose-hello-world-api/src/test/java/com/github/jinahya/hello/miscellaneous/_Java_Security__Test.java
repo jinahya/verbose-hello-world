@@ -36,7 +36,7 @@ class _Java_Security__Test {
 
     @Test
     void __() {
-        for (final var provider: Security.getProviders()) {
+        for (final var provider : Security.getProviders()) {
             System.out.printf("%s (%s)%n", provider.getName(), provider.getVersionStr());
             servicesAndAlgorithms(provider).forEach((type, algorithms) -> {
                 System.out.printf("\t%s: %s%n", type, String.join(", ", algorithms));
