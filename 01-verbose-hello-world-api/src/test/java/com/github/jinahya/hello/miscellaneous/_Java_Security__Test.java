@@ -25,16 +25,22 @@ import org.junit.jupiter.api.*;
 
 import java.security.*;
 
+import static com.github.jinahya.hello.miscellaneous._Java_Security_Provider_TestUtils.*;
+
 /**
- * A class for testing {@link java.security.Security}.
+ * A class for testing {@link Security}.
  */
-@DisplayName("Security")
+@DisplayName("java.security")
 @Slf4j
-class _Java_Security_Security_Test {
+class _Java_Security__Test {
 
     @Test
     void __() {
         for (final var provider: Security.getProviders()) {
+            System.out.printf("%s (%s)%n", provider.getName(), provider.getVersionStr());
+            servicesAndAlgorithms(provider).forEach((type, algorithms) -> {
+                System.out.printf("\t%s: %s%n", type, String.join(", ", algorithms));
+            });
         }
     }
 }

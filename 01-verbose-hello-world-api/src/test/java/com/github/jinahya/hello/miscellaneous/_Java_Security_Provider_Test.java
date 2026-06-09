@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.*;
 /**
  * A class for testing {@link java.security.Provider}.
  */
-@DisplayName("Security")
+@DisplayName("java.security.Provider")
 @Slf4j
 class _Java_Security_Provider_Test {
 
