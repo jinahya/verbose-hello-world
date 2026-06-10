@@ -52,6 +52,7 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
         write_stream_writes_hello_world_bytes(service());
     }
 
+    // ---------------------------------------------------------------------------------------------
     @DisplayName("JarOutputStream")
     @Nested
     class JarOutputStream_Test {

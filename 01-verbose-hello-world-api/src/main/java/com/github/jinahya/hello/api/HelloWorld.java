@@ -36,6 +36,7 @@ import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+import java.util.stream.*;
 import java.util.zip.*;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -1679,53 +1680,31 @@ public interface HelloWorld {
         return consumer;
     }
 
+    // undocumented, yet
+    default <T extends IntConsumer> T accept(final T consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        accept(consumer::accept, Byte::intValue);
+        return consumer;
+    }
+
     // ------------------------------------------------------------------------------- java.util.jar
 
     // ---------------------------------------------------------------------------- java.util.stream
+    // undocumented, yet
+    default <T extends Stream.Builder<? super U>, U>
+    T all(final T builder, final Function<? super Byte, ? extends U> mapper) {
+        Objects.requireNonNull(builder, "builder is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        accept(builder, mapper);
+        return builder;
+    }
 
-//    /**
-//     * Adds, to the specified stream builder, a value mapped from each of the <a
-//     * href="#hello-world-bytes">hello-world-bytes</a> by the specified mapper.
-//     *
-//     * @param <T>     stream builder type parameter
-//     * @param <U>     mapped value type parameter
-//     * @param builder the stream builder to which each mapped value is added.
-//     * @param mapper  the mapper for mapping each byte, boxed as {@link Byte}, to a value of type
-//     *                {@code U}.
-//     * @return the given {@code builder}.
-//     * @throws NullPointerException if either {@code builder} or {@code mapper} is {@code null}.
-//     * @implSpec Default implementation invokes
-//     * {@link #acceptEach(Consumer, Function) acceptEach(consumer, mapper)} method with the
-//     * {@code builder} and the {@code mapper}, and returns the {@code builder}.
-//     * @see #acceptEach(Consumer, Function)
-//     * @see Stream.Builder#accept(Object)
-//     */
-//    @SuppressWarnings({"unchecked"})
-//    default <T extends Stream.Builder<? super U>, U>
-//    T allAll(final T builder, final Function<? super Byte, ? extends U> mapper) {
-//        Objects.requireNonNull(builder, "builder is null");
-//        Objects.requireNonNull(mapper, "mapper is null");
-//        return (T) acceptEach((Consumer<? super U>) builder, mapper);
-//    }
-//
-//    /**
-//     * Adds, to the specified int stream builder, each of the <a
-//     * href="#hello-world-bytes">hello-world-bytes</a>, widened to {@code int}.
-//     *
-//     * @param <T>     int stream builder type parameter
-//     * @param builder the int stream builder to which each byte, widened to {@code int}, is added.
-//     * @return the given {@code builder}.
-//     * @throws NullPointerException if {@code builder} is {@code null}.
-//     * @implSpec Default implementation invokes {@link #acceptEach(IntConsumer) acceptEach(consumer)}
-//     * method with the {@code builder}, and returns the {@code builder}.
-//     * @see #acceptEach(IntConsumer)
-//     * @see IntStream.Builder#accept(int)
-//     */
-//    @SuppressWarnings({"unchecked"})
-//    default <T extends IntStream.Builder> T addAll(final T builder) {
-//        Objects.requireNonNull(builder, "builder is null");
-//        return (T) acceptEach((IntConsumer) builder);
-//    }
+    // undocumented, yet
+    default <T extends IntStream.Builder> T add(final T builder) {
+        Objects.requireNonNull(builder, "builder is null");
+        accept(builder::add);
+        return builder;
+    }
 
     // ------------------------------------------------------------------------------- java.util.zip
 

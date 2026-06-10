@@ -65,7 +65,7 @@ class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes(service());
+        final var service = set_array_returns_the_array(service());
         final var deflater = mock(Deflater.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setInput(deflater);

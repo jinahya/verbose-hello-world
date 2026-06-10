@@ -28,6 +28,9 @@ import org.mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for testing {@link HelloWorld#set(BitSet, int)} method.
  *
@@ -50,10 +53,7 @@ class HelloWorld_Set_BitSet_Index_Test
         final var bitset = (BitSet) null;
         final var index = 0;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.set(bitset, index)
-        );
+        assertThrows(NullPointerException.class, () -> service.set(bitset, index));
     }
 
     /**
@@ -68,10 +68,7 @@ class HelloWorld_Set_BitSet_Index_Test
         final var bitset = new BitSet();
         final var index = ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, 0);
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> service.set(bitset, index)
-        );
+        assertThrows(IllegalArgumentException.class, () -> service.set(bitset, index));
     }
 
     /**
@@ -83,14 +80,14 @@ class HelloWorld_Set_BitSet_Index_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes(service());
         final var bitset = Mockito.spy(new BitSet(HelloWorld.BYTES << 3));
         final var index = 0;
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Assertions.assertArrayEquals(array, bitset.toByteArray());
-        Assertions.assertSame(bitset, result);
+        final var array = set_array12_invoked_once(service);
+        assertArrayEquals(array, bitset.toByteArray());
+        assertSame(bitset, result);
     }
 }

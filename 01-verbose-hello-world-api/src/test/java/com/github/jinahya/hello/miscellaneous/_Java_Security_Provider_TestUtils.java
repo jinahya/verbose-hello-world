@@ -97,6 +97,16 @@ class _Java_Security_Provider_TestUtils {
         });
     }
 
+    static Map<String, List<String>> servicesAndAlgorithms(final Provider provider) {
+        return provider.getServices().stream().collect(
+                groupingBy(
+                        Provider.Service::getType,
+                        LinkedHashMap::new,
+                        mapping(Provider.Service::getAlgorithm, toList())
+                )
+        );
+    }
+
     private _Java_Security_Provider_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

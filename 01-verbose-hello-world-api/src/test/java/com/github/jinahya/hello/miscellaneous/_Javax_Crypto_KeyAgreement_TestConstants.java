@@ -34,7 +34,7 @@ import java.util.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/KeyAgreement.html">javax.crypto.KeyAgreement</a>
  * (Java 26)
  */
-final class _Javax_Crypto_KeyAgreement__TestConstants {
+final class _Javax_Crypto_KeyAgreement_TestConstants {
 
     static final String KEY_AGREEMENT_SERVICE_TYPE = "KeyAgreement";
 
@@ -64,7 +64,7 @@ final class _Javax_Crypto_KeyAgreement__TestConstants {
                     Map.entry("DiffieHellman", List.of(1024, 2048))
             );
 
-    private _Javax_Crypto_KeyAgreement__TestConstants() {
+    private _Javax_Crypto_KeyAgreement_TestConstants() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

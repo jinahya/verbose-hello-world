@@ -51,11 +51,12 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
      */
     @DisplayName("should throw a <NullPointerException> when the <collection> argument is <null>")
     @Test
+    @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_CollectionIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var collection = (SequencedCollection<Byte>) null;
-        final Function<? super Byte, ? extends Byte> mapper = b -> b;
+        final Function mapper = b -> b;
         // ----------------------------------------------------------------------------- when / then
         assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
@@ -67,11 +68,12 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
      */
     @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
+    @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         final var collection = new ArrayList<Byte>();
-        final Function<? super Byte, ? extends Byte> mapper = null;
+        final Function mapper = null;
         // ----------------------------------------------------------------------------- when / then
         assertThrows(NullPointerException.class, () -> service.add(collection, mapper));
     }
@@ -86,13 +88,12 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
      */
     @DisplayName("should invoke <set(byte[])>, and <collection.add(mapper.apply(b))> for each byte")
     @Test
+    @SuppressWarnings("unchecked")
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_sets_random_bytes(service());
-        @SuppressWarnings("unchecked")
-        final var collection = (SequencedCollection<Byte>) mock(SequencedCollection.class);
-        @SuppressWarnings("unchecked")
-        final Function<Byte, Byte> mapper = mock(Function.class);
+        final var collection = mock(SequencedCollection.class);
+        final var mapper = mock(Function.class);
         doAnswer(i -> i.getArgument(0)).when(mapper).apply(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.add(collection, mapper);
