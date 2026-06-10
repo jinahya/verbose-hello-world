@@ -29,6 +29,8 @@ import org.mockito.*;
 import java.nio.charset.*;
 import java.sql.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(PreparedStatement, int)
@@ -111,8 +113,8 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         assert resultSet.next();
                         final var bytes = resultSet.getBytes(COLUMN);
-                        Assertions.assertNotNull(bytes);
-                        Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
+                        assertNotNull(bytes);
+                        assertEquals(HelloWorld.BYTES, bytes.length);
                     }
                 }
             }
@@ -171,8 +173,8 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
                          var resultSet = statement.executeQuery(sql)) {
                         assert resultSet.next();
                         final var bytes = resultSet.getBytes(COLUMN);
-                        Assertions.assertNotNull(bytes);
-                        Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
+                        assertNotNull(bytes);
+                        assertEquals(HelloWorld.BYTES, bytes.length);
                     }
                 }
             }
@@ -229,10 +231,10 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         final var bytes = resultSet.getBytes(COLUMN);
-                        Assertions.assertNotNull(bytes);
-                        Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
+                        assertNotNull(bytes);
+                        assertEquals(HelloWorld.BYTES, bytes.length);
                     }
                 }
             }

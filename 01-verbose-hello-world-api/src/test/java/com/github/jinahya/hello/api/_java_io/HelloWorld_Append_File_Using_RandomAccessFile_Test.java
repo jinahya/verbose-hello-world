@@ -31,6 +31,10 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for exploring {@link HelloWorld#write(java.io.DataOutput) write(output)} method against a
  * real {@link File} through a {@link RandomAccessFile}.
@@ -51,9 +55,9 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
         // ----------------------------------------------------------------------------------- given
         final var service = service();
         // stub: <service.write(RandomAccessFile)> will write the <hello, world> bytes.
-        Mockito.doAnswer(i -> {
+        doAnswer(i -> {
             final var file = i.getArgument(0, RandomAccessFile.class);
-            file.write(HelloWorld__TestUtils.hello_world_byte_array());
+            file.write(hello_world_byte_array());
             return file;
         }).when(service).write(ArgumentMatchers.<RandomAccessFile>notNull());
         // prepare: create a temp file
@@ -70,14 +74,11 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
         }
         // ------------------------------------------------------------------------------------ then
         // verify: <service.write(RandomAccessFile)> invoked, once
-        Mockito.verify(service, Mockito.times(1))
+        verify(service, times(1))
                 .write(ArgumentMatchers.<RandomAccessFile>notNull());
-        Mockito.verifyNoMoreInteractions(service);
+        verifyNoMoreInteractions(service);
         // assert: <file>'s <length> increased by <12>
-        Assertions.assertEquals(
-                pos + HelloWorld.BYTES,
-                file.length()
-        );
+        assertEquals(pos + HelloWorld.BYTES, file.length());
         // verify: print <file>'s content
         try (var f = new RandomAccessFile(file, "r")) {
             f.seek(pos);

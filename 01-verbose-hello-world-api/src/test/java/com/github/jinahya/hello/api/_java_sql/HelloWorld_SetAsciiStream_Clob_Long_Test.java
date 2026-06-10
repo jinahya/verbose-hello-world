@@ -23,11 +23,14 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long)}
@@ -55,10 +58,7 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
         final Clob clob = null;
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setAsciiStream(clob, pos)
-        );
+        assertThrows(NullPointerException.class, () -> service.setAsciiStream(clob, pos));
     }
 
     /**
@@ -72,10 +72,10 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var clob = Mockito.mock(Clob.class);
+        final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, 1L);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> service.setAsciiStream(clob, pos)
         );
@@ -93,19 +93,17 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.write_outputstream_writes_hello_world_bytes(
-                service());
+        final var service = write_outputstream_writes_hello_world_bytes(service());
         final var sink = new ByteArrayOutputStream();
-        final var clob = Mockito.mock(Clob.class);
+        final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
-        Mockito.doReturn(sink).when(clob).setAsciiStream(pos);
+        doReturn(sink).when(clob).setAsciiStream(pos);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setAsciiStream(clob, pos);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(clob, Mockito.times(1)).setAsciiStream(pos);
-        Mockito.verify(service, Mockito.times(1)).write((OutputStream) sink);
-        Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                     sink.toByteArray());
-        Assertions.assertSame(clob, result);
+        verify(clob, times(1)).setAsciiStream(pos);
+        verify(service, times(1)).write((OutputStream) sink);
+        assertArrayEquals(hello_world_byte_array(), sink.toByteArray());
+        assertSame(clob, result);
     }
 }

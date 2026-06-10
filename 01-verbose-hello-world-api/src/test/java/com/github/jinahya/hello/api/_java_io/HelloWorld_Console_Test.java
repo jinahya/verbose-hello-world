@@ -27,6 +27,11 @@ import org.mockito.*;
 import java.io.*;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for testing {@link HelloWorld#write(java.io.Writer) write(writer)} delegation through a
  * {@link Console}.
@@ -58,13 +63,10 @@ class HelloWorld_Console_Test
     @Test
     void _ThrowNullPointerException_ConsoleIsNull() {
         // ----------------------------------------------------------------------------------- given
-        final var service = Mockito.spy(PrivateHelloWorld.class);
+        final var service = spy(PrivateHelloWorld.class);
         final Console console = null;
         // ------------------------------------------------------------------------------------ when
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(console)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(console));
     }
 
     @DisplayName("should invoke <write(console.writer)>, and return the <console>")
@@ -72,17 +74,17 @@ class HelloWorld_Console_Test
     void __()
             throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = Mockito.spy(PrivateHelloWorld.class);
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
+        final var service = spy(PrivateHelloWorld.class);
+        doAnswer(returnsFirstArg())
                 .when(service)
-                .write(Mockito.any(Writer.class));
+                .write(any(Writer.class));
         final var console = Optional
                 .ofNullable(System.console())
-                .orElseGet(() -> Mockito.mock(Console.class, Mockito.RETURNS_DEEP_STUBS));
+                .orElseGet(() -> mock(Console.class, Mockito.RETURNS_DEEP_STUBS));
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(console);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).write(console.writer());
-        Assertions.assertSame(console, result);
+        verify(service, times(1)).write(console.writer());
+        assertSame(console, result);
     }
 }

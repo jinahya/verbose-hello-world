@@ -31,6 +31,10 @@ import java.nio.channels.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for testing {@link HelloWorld#write(GatheringByteChannel) write(channel)} method.
  *
@@ -52,10 +56,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
         final var service = service();
         final GatheringByteChannel channel = null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.write(channel)
-        );
+        assertThrows(NullPointerException.class, () -> service.write(channel));
     }
 
     /**
@@ -69,15 +70,15 @@ class HelloWorld_Write_GatheringByteChannel_Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
+        doAnswer(returnsFirstArg())
                 .when(service)
                 .write(ArgumentMatchers.<WritableByteChannel>notNull());
-        final var channel = Mockito.mock(GatheringByteChannel.class);
+        final var channel = mock(GatheringByteChannel.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(service, Mockito.times(1)).write((WritableByteChannel) channel);
-        Assertions.assertSame(channel, result);
+        verify(service, times(1)).write((WritableByteChannel) channel);
+        assertSame(channel, result);
     }
 
     /**
@@ -128,7 +129,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
                 dst.get(result, offset, length);
                 offset += length;
             }
-            Assertions.assertArrayEquals(bytes, result);
+            assertArrayEquals(bytes, result);
         }
         writer.join();
     }
@@ -315,11 +316,11 @@ class HelloWorld_Write_GatheringByteChannel_Test
             final var readOperand1 = dsts[1].getFloat();
             final var readOperand2 = dsts[2].getFloat();
             final var readResult = dsts[3].getFloat();
-            Assertions.assertEquals(operator, readOperator);
-            Assertions.assertEquals(operand1, readOperand1);
-            Assertions.assertEquals(operand2, readOperand2);
-            Assertions.assertEquals(result, readResult);
-            Assertions.assertEquals(readOperator.calc(readOperand1, readOperand2), readResult);
+            assertEquals(operator, readOperator);
+            assertEquals(operand1, readOperand1);
+            assertEquals(operand2, readOperand2);
+            assertEquals(result, readResult);
+            assertEquals(readOperator.calc(readOperand1, readOperand2), readResult);
             log.debug("({} {} {}) = {}", readOperator, readOperand1, readOperand2, readResult);
         }
         thread.join();

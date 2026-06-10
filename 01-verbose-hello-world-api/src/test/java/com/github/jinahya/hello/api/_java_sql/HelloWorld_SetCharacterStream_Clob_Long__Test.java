@@ -29,6 +29,8 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setCharacterStream(Clob, long)
@@ -79,9 +81,9 @@ class HelloWorld_SetCharacterStream_Clob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
                 final var result = service().setCharacterStream(clob, 1L);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals(
                         HelloWorld__TestConstants.HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
@@ -111,9 +113,9 @@ class HelloWorld_SetCharacterStream_Clob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
                 final var result = service().setCharacterStream(clob, 1L);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals(
                         HelloWorld__TestConstants.HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
@@ -144,7 +146,7 @@ class HelloWorld_SetCharacterStream_Clob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
                 final var result = service().setCharacterStream(clob, 1L);
-                Assertions.assertSame(clob, result);
+                assertSame(clob, result);
             }
         }
     }

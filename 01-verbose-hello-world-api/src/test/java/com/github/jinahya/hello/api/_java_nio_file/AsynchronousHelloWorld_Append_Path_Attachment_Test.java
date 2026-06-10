@@ -23,12 +23,14 @@ package com.github.jinahya.hello.api._java_nio_file;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link AsynchronousHelloWorld#append(Path, Object) append(path, attachment)}
@@ -57,10 +59,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
     void _ThrowNullPointerException_PathIsNull() {
         final var asynchronousService = asynchronousService();
         final var path = (Path) null;
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> asynchronousService.append(path, null)
-        );
+        assertThrows(NullPointerException.class, () -> asynchronousService.append(path, null));
     }
 
     /**
@@ -75,11 +74,11 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
     @Test
     void __completed() throws Exception {
         final var asynchronousService = asynchronousService();
-        final var path = Mockito.mock(Path.class);
-        Mockito.doReturn(path).when(synchronousService()).append(path);
+        final var path = mock(Path.class);
+        doReturn(path).when(synchronousService()).append(path);
         final var attachment = new Object();
         final var future = asynchronousService.append(path, attachment);
-        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
     }
 
     /**
@@ -93,15 +92,15 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
     @Test
     void __failed() throws IOException {
         final var asynchronousService = asynchronousService();
-        final var path = Mockito.mock(Path.class);
+        final var path = mock(Path.class);
         final var exc = new IOException("simulated append failure");
-        Mockito.doThrow(exc).when(synchronousService()).append(path);
+        doThrow(exc).when(synchronousService()).append(path);
         final var attachment = new Object();
         final var future = asynchronousService.append(path, attachment);
-        final var cause = Assertions.assertThrows(
+        final var cause = assertThrows(
                 ExecutionException.class,
                 () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
         ).getCause();
-        Assertions.assertSame(exc, cause);
+        assertSame(exc, cause);
     }
 }

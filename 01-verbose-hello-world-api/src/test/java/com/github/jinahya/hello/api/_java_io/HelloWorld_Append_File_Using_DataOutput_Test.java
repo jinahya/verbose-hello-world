@@ -31,6 +31,9 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for exploring {@link HelloWorld#write(java.io.DataOutput) write(output)} method against a
  * real {@link File} through a {@link DataOutputStream}.
@@ -72,10 +75,10 @@ class HelloWorld_Append_File_Using_DataOutput_Test
         }
         // ------------------------------------------------------------------------------------ then
         // verify: <service.write(output)> invoked, once
-        Mockito.verify(service, Mockito.times(1)).write(ArgumentMatchers.<DataOutput>notNull());
-        Mockito.verifyNoMoreInteractions(service);
+        verify(service, times(1)).write(ArgumentMatchers.<DataOutput>notNull());
+        verifyNoMoreInteractions(service);
         // assert: <file>'s <length> increased by <12>
-        Assertions.assertEquals(
+        assertEquals(
                 length + HelloWorld.BYTES,
                 file.length()
         );

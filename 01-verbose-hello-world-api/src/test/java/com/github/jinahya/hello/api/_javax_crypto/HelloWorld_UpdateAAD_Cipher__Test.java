@@ -34,6 +34,8 @@ import java.security.spec.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * An integration test class for
  * {@link com.github.jinahya.hello.api.HelloWorld#updateAAD(Cipher) HelloWorld.updateAAD(cipher)}
@@ -157,7 +159,7 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
                 decrypted = cipher.doFinal(ciphertext);
             }
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(plaintext, decrypted);
+            assertArrayEquals(plaintext, decrypted);
         }
     }
 
@@ -220,7 +222,7 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
                 decrypted = cipher.doFinal(ciphertext);
             }
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(plaintext, decrypted);
+            assertArrayEquals(plaintext, decrypted);
         }
     }
 }

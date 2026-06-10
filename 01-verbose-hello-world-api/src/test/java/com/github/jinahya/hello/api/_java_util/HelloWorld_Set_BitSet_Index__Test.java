@@ -253,8 +253,8 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
      * Demonstrates a Bloom filter — a probabilistic membership structure. Each insert deposits a
      * known fingerprint via {@link HelloWorld#set(BitSet, int) set(bitset, index)} into the filter;
      * a query checks whether every bit of the queried fingerprint is present in the filter
-     * ({@code (query AND filter) == query}). False positives are possible; false negatives are
-     * not. Used in caches, URL shortlists, malicious-URL detection, and database join-key pruning.
+     * ({@code (query AND filter) == query}). False positives are possible; false negatives are not.
+     * Used in caches, URL shortlists, malicious-URL detection, and database join-key pruning.
      */
     @DisplayName("Bloom filter")
     @Nested

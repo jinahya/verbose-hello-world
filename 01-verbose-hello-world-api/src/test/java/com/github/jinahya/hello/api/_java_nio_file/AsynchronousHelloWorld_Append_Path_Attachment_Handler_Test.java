@@ -23,13 +23,16 @@ package com.github.jinahya.hello.api._java_nio_file;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -61,10 +64,9 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
         final var path = (Path) null;
-        final var handler = (CompletionHandler<Path, Object>)
-                Mockito.mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> asynchronousService.append(path, null, handler)
         );
@@ -79,10 +81,10 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        final var path = Mockito.mock(Path.class);
+        final var path = mock(Path.class);
         final var handler = (CompletionHandler<Path, Object>) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> asynchronousService.append(path, null, handler)
         );
@@ -102,19 +104,17 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
     void __completed() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        final var path = Mockito.mock(Path.class);
-        Mockito.doReturn(path).when(synchronousService()).append(path);
+        final var path = mock(Path.class);
+        doReturn(path).when(synchronousService()).append(path);
         final var attachment = new Object();
-        final var handler = (CompletionHandler<Path, Object>)
-                Mockito.mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(path, attachment);
-        Mockito.verify(synchronousService(), Mockito.times(1)).append(path);
-        Mockito.verify(handler, Mockito.never())
-                .failed(Mockito.any(), Mockito.any());
+        verify(synchronousService(), times(1)).append(path);
+        verify(handler, never()).failed(any(), any());
     }
 
     /**
@@ -132,18 +132,16 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
     void __failed() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        final var path = Mockito.mock(Path.class);
+        final var path = mock(Path.class);
         final var exc = new IOException("simulated append failure");
-        Mockito.doThrow(exc).when(synchronousService()).append(path);
+        doThrow(exc).when(synchronousService()).append(path);
         final var attachment = new Object();
-        final var handler = (CompletionHandler<Path, Object>)
-                Mockito.mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .failed(exc, attachment);
-        Mockito.verify(handler, Mockito.never())
-                .completed(Mockito.any(), Mockito.any());
+        verify(handler, never()).completed(any(), any());
     }
 }

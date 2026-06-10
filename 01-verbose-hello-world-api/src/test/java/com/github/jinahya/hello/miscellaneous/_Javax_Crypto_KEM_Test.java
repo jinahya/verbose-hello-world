@@ -30,6 +30,8 @@ import java.security.*;
 import java.security.spec.*;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A test class demonstrating the {@link KEM} (Key Encapsulation Mechanism) API: a sender
  * encapsulates a freshly-generated shared {@link SecretKey} under the receiver's public key, the
@@ -98,7 +100,7 @@ class _Javax_Crypto_KEM_Test {
         // --------------------------------------------------------------------------------- match
         printf(label, encapsulator.providerName(), encapsulated.key(),
                encapsulated.encapsulation().length);
-        Assertions.assertArrayEquals(
+        assertArrayEquals(
                 encapsulated.key().getEncoded(),
                 sharedKey.getEncoded());
     }

@@ -33,6 +33,7 @@ import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -126,7 +127,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
                     )
             );
             return builder;
-        }).when(service).method(Mockito.<HttpRequest.Builder>any(), Mockito.anyString());
+        }).when(service).method(any(), anyString());
         HelloWorld__TestUtils.executeWithHttpEchoStarted(p -> () -> {
             final HttpClient.Version version;
             {

@@ -29,6 +29,9 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(Blob, long) setBinaryStream(blob,
@@ -47,7 +50,7 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
         Mockito.doAnswer(invocation -> {
             final var blob = invocation.getArgument(0, Blob.class);
             final var pos = invocation.getArgument(1, Long.class);
-            blob.setBytes(pos, HelloWorld__TestUtils.hello_world_byte_array());
+            blob.setBytes(pos, hello_world_byte_array());
             return blob;
         }).when(service()).setBinaryStream(
                 ArgumentMatchers.<Blob>notNull(),
@@ -79,12 +82,9 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var blob = connection.createBlob();
                 final var result = service().setBinaryStream(blob, 1L);
-                Assertions.assertSame(blob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, blob.length());
-                Assertions.assertArrayEquals(
-                        HelloWorld__TestUtils.hello_world_byte_array(),
-                        blob.getBytes(1L, HelloWorld.BYTES)
-                );
+                assertSame(blob, result);
+                assertEquals(HelloWorld.BYTES, blob.length());
+                assertArrayEquals(hello_world_byte_array(), blob.getBytes(1L, HelloWorld.BYTES));
             }
         }
     }
@@ -111,10 +111,10 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var blob = connection.createBlob();
                 final var result = service().setBinaryStream(blob, 1L);
-                Assertions.assertSame(blob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, blob.length());
-                Assertions.assertArrayEquals(
-                        HelloWorld__TestUtils.hello_world_byte_array(),
+                assertSame(blob, result);
+                assertEquals(HelloWorld.BYTES, blob.length());
+                assertArrayEquals(
+                        hello_world_byte_array(),
                         blob.getBytes(1L, HelloWorld.BYTES)
                 );
             }
@@ -144,7 +144,7 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var blob = connection.createBlob();
                 final var result = service().setBinaryStream(blob, 1L);
-                Assertions.assertSame(blob, result);
+                assertSame(blob, result);
             }
         }
     }

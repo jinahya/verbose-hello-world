@@ -91,7 +91,7 @@ public final class Mockito__TestUtils {
      */
     public static <T> T requireMock(final T object) {
         Objects.requireNonNull(object, "object is null");
-        if (!Mockito.mockingDetails(object).isMock()) {
+        if (!mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("is not a mock: " + object);
         }
         return object;
@@ -114,7 +114,7 @@ public final class Mockito__TestUtils {
      */
     public static <T> T requireNotMock(final T object) {
         Objects.requireNonNull(object, "object is null");
-        if (Mockito.mockingDetails(object).isMock()) {
+        if (mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("is a mock: " + object);
         }
         return object;
@@ -136,7 +136,7 @@ public final class Mockito__TestUtils {
      */
     static <T extends HelloWorld> T requireMock(final T object) {
         Objects.requireNonNull(object, "object is null");
-        if (!Mockito.mockingDetails(object).isMock()) {
+        if (!mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("is not a mock: " + object);
         }
         return object;
@@ -157,7 +157,7 @@ public final class Mockito__TestUtils {
      */
     static <T extends HelloWorld> T requireNotMock(final T object) {
         Objects.requireNonNull(object, "object is null");
-        if (Mockito.mockingDetails(object).isMock()) {
+        if (mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("is a mock: " + object);
         }
         return object;

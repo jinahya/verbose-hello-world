@@ -33,6 +33,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+
 /**
  * A class for exploring {@link Flow} with a {@link DayOfWeek} {@link Flow.Publisher} /
  * {@link Flow.Subscriber} example.
@@ -192,7 +195,7 @@ class _Flow_DayOfWeek_Example_Test {
     }
 
     Flow.Subscriber<DayOfWeek> newSubscriber() {
-        return Mockito.spy(new DayOfWeekSubscriber() { // @formatter:off
+        return spy(new DayOfWeekSubscriber() { // @formatter:off
             @Override public String toString() {
                 return DayOfWeekSubscriber.class.getSimpleName() + '@' + super.toString();
             }
@@ -221,10 +224,10 @@ class _Flow_DayOfWeek_Example_Test {
         // ----------------------------------------------------------------------------------- given
         final var subscriber = newSubscriber();
         // intercept, <subscriber.onSubscribe(subscription)> to wrap the <subscription> as a spy
-        BDDMockito.willAnswer(i -> {
-            i.getRawArguments()[0] = Mockito.spy(i.getArgument(0, Flow.Subscription.class));
+        willAnswer(i -> {
+            i.getRawArguments()[0] = spy(i.getArgument(0, Flow.Subscription.class));
             return i.callRealMethod();
-        }).given(subscriber).onSubscribe(ArgumentMatchers.notNull());
+        }).given(subscriber).onSubscribe(notNull());
         // ------------------------------------------------------------------------------------ when
         // subscribe
         DayOfWeekPublisher.getInstance().subscribe(subscriber);
@@ -232,17 +235,16 @@ class _Flow_DayOfWeek_Example_Test {
         final Flow.Subscription subscription;
         {
             final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
-            Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(captor.capture());
+            verify(subscriber, times(1)).onSubscribe(captor.capture());
             subscription = captor.getValue();
         }
         // request a random number of items
         final var n = ThreadLocalRandom.current().nextInt(5, 14);
         subscription.request(n);
         // await, <subscriber.onNext(item)> invoked, at most <n> times
-        Mockito.verify(subscriber, Mockito.timeout(10_000L).times(Math.min(n, 7)))
-                .onNext(ArgumentMatchers.notNull());
+        verify(subscriber, timeout(10_000L).times(Math.min(n, 7))).onNext(notNull());
         if (n >= DayOfWeek.values().length) {
-            Mockito.verify(subscriber, Mockito.times(1)).onComplete();
+            verify(subscriber, times(1)).onComplete();
         }
         // cancel the <subscription>
         subscription.cancel();
@@ -263,11 +265,11 @@ class _Flow_DayOfWeek_Example_Test {
                 .map(Mockito::spy)
                 .peek(s -> {
                     // intercept, <subscriber.onSubscribe(subscription)> to wrap the <subscription> as a spy
-                    BDDMockito.willAnswer(i -> {
-                        i.getRawArguments()[0] = Mockito.spy(
+                    willAnswer(i -> {
+                        i.getRawArguments()[0] = spy(
                                 i.getArgument(0, Flow.Subscription.class));
                         return i.callRealMethod();
-                    }).given(s).onSubscribe(ArgumentMatchers.notNull());
+                    }).given(s).onSubscribe(notNull());
                 })
                 .toList();
         // ------------------------------------------------------------------------------------ when
@@ -281,7 +283,7 @@ class _Flow_DayOfWeek_Example_Test {
         {
             final var captor = ArgumentCaptor.forClass(Flow.Subscription.class);
             subscribers.forEach(s -> {
-                Mockito.verify(s, Mockito.times(1)).onSubscribe(captor.capture());
+                verify(s, times(1)).onSubscribe(captor.capture());
             });
             subscriptions = captor.getAllValues();
         }

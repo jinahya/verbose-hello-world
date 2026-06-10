@@ -32,6 +32,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.stream.*;
 
+import static org.junit.jupiter.api.Assumptions.*;
+
 /**
  * A class for testing {@link HelloWorld#send(DatagramSocket) send(socket)} method against a real
  * {@link MulticastSocket}.
@@ -99,7 +101,7 @@ class HelloWorld_Send_MulticastSocket_Test
                 })
                 .findFirst()
                 .orElse(null);
-        Assumptions.assumeTrue(netIf != null, "no IPv4 multicast-capable non-loopback interface");
+        assumeTrue(netIf != null, "no IPv4 multicast-capable non-loopback interface");
         log.debug("netIf: {} ({})", netIf.getName(), netIf.getDisplayName());
         final var count = ThreadLocalRandom.current().nextInt(2, 6);
         final var latch = new CountDownLatch(count);
@@ -143,7 +145,7 @@ class HelloWorld_Send_MulticastSocket_Test
                 service.send(sender);
             }
         }
-        Assumptions.assumeTrue(
+        assumeTrue(
                 received.get() == count,
                 "only " + received.get() + "/" + count + " receivers got the packet"
         );
@@ -189,8 +191,8 @@ class HelloWorld_Send_MulticastSocket_Test
                 })
                 .findFirst()
                 .orElse(null);
-        Assumptions.assumeTrue(netIf != null,
-                               "no IPv6 link-local multicast-capable non-loopback interface");
+        assumeTrue(netIf != null,
+                   "no IPv6 link-local multicast-capable non-loopback interface");
         log.debug("netIf: {} ({})", netIf.getName(), netIf.getDisplayName());
         final var count = ThreadLocalRandom.current().nextInt(2, 6);
         final var latch = new CountDownLatch(count);
@@ -233,12 +235,12 @@ class HelloWorld_Send_MulticastSocket_Test
                 try {
                     sender.connect(mcastaddr);
                 } catch (final IOException ioe) {
-                    Assumptions.assumeTrue(false, "sender cannot connect: " + ioe.getMessage());
+                    assumeTrue(false, "sender cannot connect: " + ioe.getMessage());
                 }
                 service.send(sender);
             }
         }
-        Assumptions.assumeTrue(
+        assumeTrue(
                 received.get() == count,
                 "only " + received.get() + "/" + count + " receivers got the packet"
         );

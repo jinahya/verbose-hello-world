@@ -23,11 +23,15 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -56,7 +60,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         final PreparedStatement statement = null;
         final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> service.setCharacterStream(statement, index)
         );
@@ -73,10 +77,10 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var statement = Mockito.mock(PreparedStatement.class);
+        final var statement = mock(PreparedStatement.class);
         final var index = ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, 1);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> service.setCharacterStream(statement, index)
         );
@@ -98,22 +102,18 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         // ----------------------------------------------------------------------------------- given
         final var service = HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
         final var sink = new StringWriter();
-        final var statement = Mockito.mock(PreparedStatement.class);
-        Mockito.doAnswer(i -> {
+        final var statement = mock(PreparedStatement.class);
+        doAnswer(i -> {
             i.getArgument(1, Reader.class).transferTo(sink);
             return null;
-        }).when(statement).setCharacterStream(
-                ArgumentMatchers.intThat(v -> v >= 1),
-                ArgumentMatchers.<Reader>notNull()
-        );
+        }).when(statement).setCharacterStream(intThat(v -> v >= 1), notNull());
         final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setCharacterStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(statement, Mockito.times(1))
-                .setCharacterStream(Mockito.eq(index), Mockito.<Reader>notNull());
-        Assertions.assertEquals(HelloWorld__TestUtils.hello_world_string(), sink.toString());
-        Assertions.assertSame(statement, result);
+        final var array = set_array12_invoked_once(service);
+        verify(statement, times(1)).setCharacterStream(eq(index), notNull());
+        assertEquals(hello_world_string(), sink.toString());
+        assertSame(statement, result);
     }
 }

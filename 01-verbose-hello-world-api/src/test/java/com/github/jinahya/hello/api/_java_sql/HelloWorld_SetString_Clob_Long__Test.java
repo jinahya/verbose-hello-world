@@ -28,6 +28,9 @@ import org.mockito.*;
 
 import java.sql.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob, pos)} method
@@ -46,7 +49,7 @@ class HelloWorld_SetString_Clob_Long__Test
         Mockito.doAnswer(invocation -> {
             final var c = invocation.getArgument(0, Clob.class);
             final var p = invocation.getArgument(1, Long.class);
-            c.setString(p, HelloWorld__TestConstants.HELLO_WORLD_STRING);
+            c.setString(p, HELLO_WORLD_STRING);
             return c;
         }).when(service()).setString(
                 ArgumentMatchers.<Clob>notNull(),
@@ -76,13 +79,12 @@ class HelloWorld_SetString_Clob_Long__Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
-                Assertions.assertEquals(0L, clob.length());
+                assertEquals(0L, clob.length());
                 final var pos = 1L;
                 final var result = service().setString(clob, pos);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING,
-                                        clob.getSubString(1L, HelloWorld.BYTES));
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals(HELLO_WORLD_STRING, clob.getSubString(1L, HelloWorld.BYTES));
             }
         }
     }
@@ -110,9 +112,9 @@ class HelloWorld_SetString_Clob_Long__Test
                 final var clob = connection.createClob();
                 final var pos = 1L;
                 final var result = service().setString(clob, pos);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals("hello, world", clob.getSubString(1L, HelloWorld.BYTES));
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals("hello, world", clob.getSubString(1L, HelloWorld.BYTES));
             }
         }
     }
@@ -141,9 +143,9 @@ class HelloWorld_SetString_Clob_Long__Test
                 final var clob = connection.createClob();
                 final var pos = 1L;
                 final var result = service().setString(clob, pos);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals("hello, world", clob.getSubString(1L, HelloWorld.BYTES));
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals("hello, world", clob.getSubString(1L, HelloWorld.BYTES));
             }
         }
     }

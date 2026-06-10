@@ -24,13 +24,13 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.net.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -94,7 +94,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        doAnswer(returnsFirstArg()).when(service).append(Mockito.<DatagramPacket>any());
+        doAnswer(returnsFirstArg()).when(service).append(any(DatagramPacket.class));
         final var socket = mock(DatagramSocket.class);
         final var target = new InetSocketAddress("127.0.0.1", 12345);
         // ------------------------------------------------------------------------------------ when

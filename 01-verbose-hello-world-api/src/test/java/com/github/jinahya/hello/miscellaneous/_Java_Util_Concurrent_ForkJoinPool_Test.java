@@ -26,6 +26,8 @@ import org.junit.jupiter.api.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for testing {@link ForkJoinPool} with fork/join workloads of varying shapes.
  */
@@ -74,7 +76,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
             // -------------------------------------------------------------------------------- when
             final var actual = ForkJoinPool.commonPool().invoke(new Fib(n));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 
@@ -147,7 +149,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
             // -------------------------------------------------------------------------------- when
             final var actual = ForkJoinPool.commonPool().invoke(new NQueens(n, 0, new int[n]));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 
@@ -223,7 +225,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
             // -------------------------------------------------------------------------------- when
             ForkJoinPool.commonPool().invoke(new MergeSort(array, 0, array.length));
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(expected, array);
+            assertArrayEquals(expected, array);
         }
     }
 }

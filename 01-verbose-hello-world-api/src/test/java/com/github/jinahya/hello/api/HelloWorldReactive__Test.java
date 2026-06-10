@@ -27,6 +27,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.mockito.Mockito.*;
 
 /**
  * An abstract base for tests that demonstrate a reactive library's <em>own</em> publisher-creation
@@ -44,10 +45,8 @@ abstract class HelloWorldReactive__Test {
 
     HelloWorldReactive__Test() {
         super();
-        this.synchronousService = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        this.asynchronousService = Mockito.spy(
-                new ExecutorHelloWorld<>(synchronousService, Runnable::run)
-        );
+        this.synchronousService = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        this.asynchronousService = spy(new ExecutorHelloWorld<>(synchronousService, Runnable::run));
     }
 
     // ---------------------------------------------------------------------------------------------

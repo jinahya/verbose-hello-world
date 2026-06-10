@@ -879,21 +879,21 @@ class _Effective_Java_PECS_Test {
                 final List<Cat> cats = new ArrayList<>(List.of(new Cat(), new Cat()));
                 final var first = cats.getFirst();
                 Zoo.swap(cats, 0, 1);
-                Assertions.assertSame(first, cats.get(1));
+                assertSame(first, cats.get(1));
             }
             // T = Mammal
             {
                 final List<Mammal> mammals = new ArrayList<>(List.of(new Cat(), new Whale()));
                 final var first = mammals.getFirst();
                 Zoo.swap(mammals, 0, 1);
-                Assertions.assertSame(first, mammals.get(1));
+                assertSame(first, mammals.get(1));
             }
             // T = Animal
             {
                 final List<Animal> animals = new ArrayList<>(List.of(new Cat(), new Snake()));
                 final var first = animals.getFirst();
                 Zoo.swap(animals, 0, 1);
-                Assertions.assertSame(first, animals.get(1));
+                assertSame(first, animals.get(1));
             }
             // these would NOT have worked inside <swap> if we'd tried PECS — but unlike the
             // caller-side experiments we did for collect/inspect/etc., the failure here
@@ -954,33 +954,33 @@ class _Effective_Java_PECS_Test {
             {
                 final List<Cat> cats = List.of(new Cat(), new Cat());
                 final Cat heaviest = Zoo.heaviest(cats);
-                Assertions.assertNotNull(heaviest);
+                assertNotNull(heaviest);
             }
             // T = Mammal — Cat (4.5kg) vs Whale (130_000kg) ⇒ Whale
             {
                 final List<Mammal> mammals = List.of(new Cat(), new Whale());
                 final Mammal heaviest = Zoo.heaviest(mammals);
-                Assertions.assertInstanceOf(Whale.class, heaviest);
+                assertInstanceOf(Whale.class, heaviest);
             }
             // T = Reptile — Tortoise (2.0kg) vs Snake (0.2kg) ⇒ Tortoise
             {
                 final List<Reptile> reptiles = List.of(new Tortoise(), new Snake());
                 final Reptile heaviest = Zoo.heaviest(reptiles);
-                Assertions.assertInstanceOf(Tortoise.class, heaviest);
+                assertInstanceOf(Tortoise.class, heaviest);
             }
             // T = Animal — Whale wins overall
             {
                 final List<Animal> all = List.of(new Cat(), new Tortoise(), new Whale(),
                                                  new Snake());
                 final Animal heaviest = Zoo.heaviest(all);
-                Assertions.assertInstanceOf(Whale.class, heaviest);
+                assertInstanceOf(Whale.class, heaviest);
             }
             // Producer Extends side: passing Collection<Cat> when T = Mammal is also fine,
             // because of <Collection<? extends T>>:
             {
                 final List<Cat> cats = List.of(new Cat(), new Cat());
                 final Mammal heaviest = Zoo.<Mammal>heaviest(cats); // ✅ Cat <: Mammal
-                Assertions.assertInstanceOf(Cat.class, heaviest);
+                assertInstanceOf(Cat.class, heaviest);
             }
         }
     }

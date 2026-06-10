@@ -23,10 +23,13 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -56,7 +59,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
         final PreparedStatement preparedStatement = null;
         final var parameterIndex = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> service.setBytes(preparedStatement, parameterIndex)
         );
@@ -73,10 +76,10 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var preparedStatement = Mockito.mock(PreparedStatement.class);
+        final var preparedStatement = mock(PreparedStatement.class);
         final var parameterIndex = ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, 1);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> service.setBytes(preparedStatement, parameterIndex)
         );
@@ -94,14 +97,14 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
-        final var preparedStatement = Mockito.mock(PreparedStatement.class);
+        final var service = set_array_returns_the_array(service());
+        final var preparedStatement = mock(PreparedStatement.class);
         final var parameterIndex = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBytes(preparedStatement, parameterIndex);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(preparedStatement, Mockito.times(1)).setBytes(parameterIndex, array);
-        Assertions.assertSame(preparedStatement, result);
+        final var array = set_array12_invoked_once(service);
+        verify(preparedStatement, times(1)).setBytes(parameterIndex, array);
+        assertSame(preparedStatement, result);
     }
 }

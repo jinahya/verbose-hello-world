@@ -29,6 +29,9 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setBinaryStream(PreparedStatement, int)
@@ -50,7 +53,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
             final var pi = invocation.getArgument(1, Integer.class);
             ps.setBinaryStream(
                     pi,
-                    new ByteArrayInputStream(HelloWorld__TestUtils.hello_world_byte_array())
+                    new ByteArrayInputStream(hello_world_byte_array())
             );
             return ps;
         }).when(service()).setBinaryStream(
@@ -112,15 +115,12 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         try (var stream = resultSet.getBinaryStream(COLUMN)) {
-                            Assertions.assertNotNull(stream);
+                            assertNotNull(stream);
                             final var bytes = stream.readAllBytes();
-                            Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
-                            Assertions.assertArrayEquals(
-                                    HelloWorld__TestUtils.hello_world_byte_array(),
-                                    bytes
-                            );
+                            assertEquals(HelloWorld.BYTES, bytes.length);
+                            assertArrayEquals(hello_world_byte_array(), bytes);
                         }
                     }
                 }
@@ -179,15 +179,12 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         try (var stream = resultSet.getBinaryStream(COLUMN)) {
-                            Assertions.assertNotNull(stream);
+                            assertNotNull(stream);
                             final var bytes = stream.readAllBytes();
-                            Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
-                            Assertions.assertArrayEquals(
-                                    HelloWorld__TestUtils.hello_world_byte_array(),
-                                    bytes
-                            );
+                            assertEquals(HelloWorld.BYTES, bytes.length);
+                            assertArrayEquals(hello_world_byte_array(), bytes);
                         }
                     }
                 }
@@ -245,13 +242,13 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                     final var sql = "SELECT * FROM %s".formatted(TABLE);
                     try (var statement = connection.createStatement();
                          var resultSet = statement.executeQuery(sql)) {
-                        Assertions.assertTrue(resultSet.next());
+                        assertTrue(resultSet.next());
                         try (var stream = resultSet.getBinaryStream(COLUMN)) {
-                            Assertions.assertNotNull(stream);
+                            assertNotNull(stream);
                             final var bytes = stream.readAllBytes();
-                            Assertions.assertEquals(HelloWorld.BYTES, bytes.length);
-                            Assertions.assertArrayEquals(
-                                    HelloWorld__TestUtils.hello_world_byte_array(),
+                            assertEquals(HelloWorld.BYTES, bytes.length);
+                            assertArrayEquals(
+                                    hello_world_byte_array(),
                                     bytes
                             );
                         }

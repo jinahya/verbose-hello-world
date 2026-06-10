@@ -24,6 +24,9 @@ import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 @DisplayName("applyAsync(mapper)")
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
         extends
@@ -66,10 +69,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
             );
             final var array = stage.toCompletableFuture().get(5L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(
-                    HelloWorld__TestUtils.hello_world_byte_array(),
-                    array
-            );
+            assertArrayEquals(hello_world_byte_array(), array);
         }
     }
 

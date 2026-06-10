@@ -23,13 +23,13 @@ package com.github.jinahya.hello.api._java_util;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#set(BitSet, int)} method.
@@ -81,7 +81,7 @@ class HelloWorld_Set_BitSet_Index_Test
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_sets_random_bytes(service());
-        final var bitset = Mockito.spy(new BitSet(HelloWorld.BYTES << 3));
+        final var bitset = spy(new BitSet(HelloWorld.BYTES << 3));
         final var index = 0;
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);

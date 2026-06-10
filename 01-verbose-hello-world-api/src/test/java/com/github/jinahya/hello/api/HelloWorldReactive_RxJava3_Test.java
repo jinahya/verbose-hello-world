@@ -27,6 +27,8 @@ import org.junit.jupiter.api.*;
 
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A pedagogical tour of <a href="https://github.com/ReactiveX/RxJava">RxJava 3</a>'s own
  * publisher-creation idioms — each test creates a {@link Single Single&lt;byte[]&gt;},
@@ -55,7 +57,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             final var array = Single.just(HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("should emit <hello-world-bytes> via <Single.fromCallable(Callable)>")
@@ -66,7 +68,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             () -> HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -79,7 +81,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("should return <BYTES> via <Single.fromCallable(...).map(byte[]::length)>")
@@ -91,7 +93,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .map(a -> a.length)
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(HelloWorld.BYTES, length);
+            assertEquals(HelloWorld.BYTES, length);
         }
     }
 
@@ -107,7 +109,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             final var array = Maybe.just(HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("should emit <hello-world-bytes> via <Maybe.fromCallable(Callable)>")
@@ -118,7 +120,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             () -> HelloWorldUtils.array(synchronousService()))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -131,7 +133,7 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
     }
 
@@ -148,9 +150,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .toList()
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                         list.get(0));
+            assertEquals(1, list.size());
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                              list.get(0));
         }
 
         @DisplayName("should emit <hello-world-bytes> via <Flowable.just(byte[]...)>")
@@ -165,10 +167,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .toList()
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(3, list.size());
+            assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -183,10 +185,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .toList()
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(2, list.size());
+            assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -204,10 +206,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .toList()
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(2, list.size());
+            assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -221,10 +223,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                     .toList()
                     .blockingGet();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                  element);
             }
         }
     }

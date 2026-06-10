@@ -56,7 +56,7 @@ class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
         final var service = service();
         final var writer = (Writer) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(NullPointerException.class, () -> service.write(writer));
+        assertThrows(NullPointerException.class, () -> service.write(writer));
     }
 
     /**
