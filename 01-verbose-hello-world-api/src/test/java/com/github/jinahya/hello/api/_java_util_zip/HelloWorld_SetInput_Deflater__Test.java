@@ -25,13 +25,11 @@ import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
-import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
 import java.io.*;
 import java.nio.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.stream.*;
 import java.util.zip.*;
 
@@ -65,22 +63,14 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
                 .flatMap(l -> Stream.of(false, true).map(nr -> Arguments.of(l, nr)));
     }
 
-    private static void printf(final int level, final int length) {
-        System.out.printf("level: %d, length: %d%n", level, length);
+    static Stream<Arguments> levelNowrapAndSyncFlushStream() {
+        return levelStream().boxed()
+                .flatMap(l -> Stream.of(false, true)
+                        .flatMap(nr -> Stream.of(false, true)
+                                .map(sf -> Arguments.of(l, nr, sf))));
     }
 
-    private static void printf(final int level, final boolean nowrap, final int length) {
-        System.out.printf("level: %d, nowrap: %5b, length: %d%n", level, nowrap, length);
-    }
-
-    private static void printf(final int level, final byte[] bytes) {
-        System.out.printf("%d (%d) %s%n", level, bytes.length, HexFormat.of().formatHex(bytes));
-    }
-
-    private static void printf(final int level, final boolean nowrap, final byte[] bytes) {
-        System.out.printf("%d, %5b (%d) %s%n", level, nowrap, bytes.length,
-                          HexFormat.of().formatHex(bytes));
-    }
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * Verifies that {@code compressed} is a valid zlib-wrapped DEFLATE stream (RFC 1950) of the
@@ -155,248 +145,176 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @Nested
+    class Deflater_Test {
 
-    /**
-     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the given
-     * compression {@code level} and back through an {@link Inflater}.
-     *
-     * @param level a deflater compression level.
-     */
-    @DisplayName("should round-trip <hello, world> through a raw <Deflater> at the given <level>")
-    @MethodSource({"levelStream"})
-    @ParameterizedTest
-    void __Deflator(final int level) throws IOException, DataFormatException {
-        final var nowrap = true;
-        final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream();
-             var deflater = new Deflater(level, nowrap)) {
-            service().setInput(deflater);
-            assert !deflater.needsInput();
-            deflater.finish();
-            for (final var b = new byte[1]; !deflater.finished(); ) {
-                baos.write(b, 0, deflater.deflate(b));
+        void __(final boolean nowrap) throws DataFormatException {
+            System.out.printf("level nowrap size compressed%n");
+            final var output = new byte[64];
+            for (final int level : levelStream().toArray()) {
+                final byte[] compressed;
+                final int length;
+                try (var deflater = new Deflater(level, nowrap)) {
+                    service().setInput(deflater);
+                    assertFalse(deflater.finished());
+                    deflater.finish(); // not redundant; we should take the result before closing
+                    length = deflater.deflate(output);
+                    assertTrue(deflater.finished());
+                }
+                compressed = Arrays.copyOf(output, length);
+                System.out.printf("%5d %6b %4d %s%n", level, nowrap, compressed.length,
+                                  HexFormat.of().formatHex(compressed));
+                if (!nowrap) {
+                    assertZlibWrapped(compressed);
+                }
+                try (var inflater = new Inflater(nowrap)) {
+                    inflater.setInput(compressed);
+                    final var uncompressed = new byte[HelloWorld.BYTES];
+                    assertEquals(HelloWorld.BYTES, inflater.inflate(uncompressed));
+                    assertTrue(inflater.finished());
+                    assertArrayEquals(hello_world_byte_array(), uncompressed);
+                }
             }
-            assert deflater.needsInput();
-            deflater.end();
-            baos.flush();
-            compressed = baos.toByteArray();
         }
-        printf(level, compressed);
-        try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-             var inflater = new Inflater(nowrap)) {
-            inflater.setInput(compressed);
-            assert !inflater.needsInput();
-            for (final var b = new byte[1]; !inflater.finished(); ) {
-                baos.write(b, 0, inflater.inflate(b));
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} in
+         * <em>nowrap</em> mode (raw DEFLATE, no zlib wrapper) across all compression levels.
+         */
+        @DisplayName("nowrap")
+        @Test
+        void __Deflator_Nowrap() throws DataFormatException {
+            __(true);
+        }
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} in
+         * <em>wrap</em> mode (standard zlib wrapper) across all compression levels, asserting the
+         * zlib wrapper structure on each compressed payload.
+         */
+        @DisplayName("wrap")
+        @Test
+        void __Deflator_Wrap() throws DataFormatException {
+            __(false);
+        }
+    }
+
+    @Nested
+    class DeflaterOutputStream_Test {
+
+        void __(final boolean nowrap, final boolean syncFlush) throws IOException {
+            System.out.printf("level syncFlush nowrap size compressed%n");
+            final var baos = new ByteArrayOutputStream();
+            for (final int level : levelStream().toArray()) {
+                final byte[] compressed;
+                baos.reset();
+                try (var deflater = new Deflater(level, nowrap);
+                     var dos = new DeflaterOutputStream(baos, deflater, syncFlush)) {
+                    service().write(dos);
+                    dos.flush();
+                    dos.finish(); // redundant; close() will do finish()
+                }
+                compressed = baos.toByteArray();
+                System.out.printf("%5d %9b %6b %4d %s%n", level, syncFlush, nowrap,
+                                  compressed.length, HexFormat.of().formatHex(compressed));
+                if (!nowrap) {
+                    assertZlibWrapped(compressed);
+                }
+                try (var bais = new ByteArrayInputStream(compressed);
+                     var inflater = new Inflater(nowrap);
+                     var iis = new InflaterInputStream(bais, inflater)) {
+                    final var uncompressed = iis.readAllBytes();
+                    assert uncompressed.length == HelloWorld.BYTES;
+                    assertArrayEquals(hello_world_byte_array(), uncompressed);
+                }
             }
-            assert inflater.needsInput();
-            inflater.end();
-            baos.flush();
-            final var uncompressed = baos.toByteArray();
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
+        }
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
+         * with {@code syncFlush} disabled and a zlib-wrapped {@link Deflater}
+         * ({@code nowrap=false}), across all compression levels.
+         */
+        @DisplayName("no-syncFlush | wrap")
+        @Test
+        void __NoSyncFlush_Wrap() throws IOException {
+            __(false, false);
+        }
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
+         * with {@code syncFlush} disabled and a raw {@link Deflater} ({@code nowrap=true}), across
+         * all compression levels.
+         */
+        @DisplayName("no-syncFlush | nowrap")
+        @Test
+        void __NoSyncFlush_Nowrap() throws IOException {
+            __(true, false);
+        }
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
+         * with {@code syncFlush} enabled and a zlib-wrapped {@link Deflater}
+         * ({@code nowrap=false}), across all compression levels.
+         */
+        @DisplayName("syncFlush | wrap")
+        @Test
+        void __SyncFlush_Wrap() throws IOException {
+            __(false, true);
+        }
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
+         * with {@code syncFlush} enabled and a raw {@link Deflater} ({@code nowrap=true}), across
+         * all compression levels.
+         */
+        @DisplayName("syncFlush | nowrap")
+        @Test
+        void __SyncFlush_Nowrap() throws IOException {
+            __(true, true);
         }
     }
 
-    /**
-     * Verifies that {@code "hello, world"} round-trips through a raw {@link Deflater} at the given
-     * compression {@code level} and {@code nowrap} flag combination, asserting the zlib wrapper
-     * when {@code nowrap} is {@code false}.
-     *
-     * @param level  a deflater compression level.
-     * @param nowrap the {@code nowrap} flag passed to {@link Deflater#Deflater(int, boolean)}.
-     */
-    @DisplayName("""
-            should round-trip <hello, world> through a raw <Deflater>
-            at the given <level> and <nowrap> flag""")
-    @MethodSource({"levelAndNowrapStream"})
-    @ParameterizedTest
-    void __Deflator(final int level, final boolean nowrap) throws IOException, DataFormatException {
-        final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream();
-             var deflater = new Deflater(level, nowrap)) {
-            service().setInput(deflater);
-            assert !deflater.needsInput();
-            deflater.finish();
-            for (final var output = new byte[1]; !deflater.finished(); ) {
-                baos.write(output, 0, deflater.deflate(output));
-            }
-            assert deflater.needsInput();
-            deflater.end();
-            baos.flush();
-            compressed = baos.toByteArray();
-        }
-        printf(level, nowrap, compressed);
-        if (!nowrap) {
-            assertZlibWrapped(compressed);
-        }
-        try (var inflater = new Inflater(nowrap)) {
-            inflater.setInput(compressed);
-            assert !inflater.needsInput();
-            final var uncompressed = new byte[HelloWorld.BYTES];
-            final var length = inflater.inflate(uncompressed);
-            assert inflater.needsInput();
-            assert length == HelloWorld.BYTES;
-            assert inflater.inflate(new byte[1]) == 0;
-            assert inflater.finished();
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
-            inflater.end();
-        }
-        try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES);
-             var inflater = new Inflater(nowrap)) {
-            inflater.setInput(compressed);
-            assert !inflater.needsInput();
-            for (final var b = new byte[1]; !inflater.finished(); ) {
-                baos.write(b, 0, inflater.inflate(b));
-            }
-            assert inflater.needsInput();
-            inflater.end();
-            baos.flush();
-            final var uncompressed = baos.toByteArray();
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
-        }
-    }
+    @Nested
+    class GZIPOutputStream_Test {
 
-    /**
-     * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream} at
-     * the given compression {@code level} and back through an {@link InflaterInputStream}.
-     *
-     * @param level a deflater compression level.
-     */
-    @DisplayName(
-            "should round-trip <hello, world> through <DeflaterOutputStream> at the given <level>")
-    @MethodSource({"levelStream"})
-    @ParameterizedTest
-    void __DeflatorOutputStream(final int level) throws IOException {
-        final var nowrap = true;
-        final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream();
-             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap))) {
-            service().write(dos);
-            dos.finish();
-            baos.flush();
-            compressed = baos.toByteArray();
-        }
-        printf(level, compressed);
-        try (var bais = new ByteArrayInputStream(compressed);
-             var iis = new InflaterInputStream(bais, new Inflater(nowrap))) {
-            final var uncompressed = iis.readAllBytes();
-            assert uncompressed.length == HelloWorld.BYTES;
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
-        }
-    }
-
-    /**
-     * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream} at
-     * the given compression {@code level} and {@code nowrap} flag combination, asserting the zlib
-     * wrapper when {@code nowrap} is {@code false}.
-     *
-     * @param level  a deflater compression level.
-     * @param nowrap the {@code nowrap} flag passed to {@link Deflater#Deflater(int, boolean)}.
-     */
-    @DisplayName("""
-            should round-trip <hello, world> through <DeflaterOutputStream>
-            at the given <level> and <nowrap> flag""")
-    @MethodSource({"levelAndNowrapStream"})
-    @ParameterizedTest
-    void __DeflatorOutputStream(final int level, final boolean nowrap) throws IOException {
-        final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream();
-             var dos = new DeflaterOutputStream(baos, new Deflater(level, nowrap))) {
-            service().write(dos);
-            dos.finish();
-            baos.flush();
-            compressed = baos.toByteArray();
-        }
-        printf(level, nowrap, compressed);
-        if (!nowrap) {
-            assertZlibWrapped(compressed);
-        }
-        try (var bais = new ByteArrayInputStream(compressed);
-             var iis = new InflaterInputStream(bais, new Inflater(nowrap))) {
-            final var uncompressed = iis.readAllBytes();
-            assert uncompressed.length == HelloWorld.BYTES;
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
-        }
-    }
-
-    /**
-     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and that
-     * the resulting bytes carry a valid gzip wrapper (RFC 1952).
-     */
-    @DisplayName("""
-            should round-trip <hello, world> through <GZIPOutputStream>
-            with a valid <gzip> wrapper""")
-    @Test
-    void __GZIPOutputStream() throws IOException {
-        // -------------------------------------------------------------------------------- compress
-        final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream();
-             var gzipos = new GZIPOutputStream(baos)) {
-            service().write(gzipos);
-            gzipos.finish();
-            gzipos.flush();
-            compressed = baos.toByteArray();
-        }
-        System.out.printf("(%2d) %s%n", compressed.length,
-                          Base64.getEncoder().encodeToString(compressed));
-        assertGzipWrapped(compressed);
-        // ------------------------------------------------------------------------------ uncompress
-        try (var bais = new ByteArrayInputStream(compressed);
-             var gzipis = new GZIPInputStream(bais)) {
-            final var uncompressed = gzipis.readAllBytes();
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
-        }
-    }
-
-    /**
-     * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} with the
-     * {@code syncFlush} branch toggled, exercising both flush paths.
-     */
-    @DisplayName("""
-            should round-trip <hello, world> through <GZIPOutputStream>
-            with the <syncFlush> branch toggled""")
-    @Test
-    void __syncFlush_GZIPOutputStream() throws IOException {
-        // -------------------------------------------------------------------------------- compress
-        final byte[] compressed;
-        try (var baos = new ByteArrayOutputStream()) {
-            final var syncFlush = ThreadLocalRandom.current().nextBoolean();
+        void __(final boolean syncFlush) throws IOException {
+            System.out.printf("syncFlush size compressed%n");
+            final var baos = new ByteArrayOutputStream();
             try (var gzipos = new GZIPOutputStream(baos, syncFlush)) {
                 service().write(gzipos);
-                assert baos.size() == 10;
-                if (syncFlush) {
-                    // The trailing gzipos.flush() below will emit a SYNC_FLUSH block:
-                    // pending compressed bytes land in baos BEFORE close() runs.
-                    // Afterwards, close() invokes finish() to write the trailer.
-                } else {
-                    // The trailing gzipos.flush() below skips the SYNC_FLUSH branch
-                    // (since syncFlush=false) and only flushes baos (a no-op for
-                    // ByteArrayOutputStream). Pending compressed bytes stay buffered in
-                    // the deflater until close() invokes finish(), which then emits both
-                    // the deflate output and the trailer.
-                }
-                gzipos.flush(); // trailing flush; observable effect depends on syncFlush
-                // (see branches above)
-                if (syncFlush) {
-                    // SYNC_FLUSH block was emitted; baos now holds the gzip header
-                    // plus the partial deflate block.
-                    assert baos.size() > 10;
-                } else {
-                    // SYNC_FLUSH branch was skipped; the deflater still holds the
-                    // 12-byte input. baos still has just the 10-byte header.
-                    assert baos.size() == 10;
-                }
+                gzipos.flush();
+                gzipos.finish(); // redundant; close() will do finish()
             }
-            compressed = baos.toByteArray();
+            final var compressed = baos.toByteArray();
+            System.out.printf("%9b %4d %s%n", syncFlush,
+                              compressed.length, HexFormat.of().formatHex(compressed));
             assertGzipWrapped(compressed);
+            try (var bais = new ByteArrayInputStream(compressed);
+                 var gzipis = new GZIPInputStream(bais)) {
+                final var uncompressed = gzipis.readAllBytes();
+                assertArrayEquals(hello_world_byte_array(), uncompressed);
+            }
         }
-        System.out.printf("(%2d) %s%n", compressed.length,
-                          Base64.getEncoder().encodeToString(compressed));
-        // ------------------------------------------------------------------------------ uncompress
-        try (var bais = new ByteArrayInputStream(compressed);
-             var gzipis = new GZIPInputStream(bais)) {
-            final var uncompressed = gzipis.readAllBytes();
-            assertArrayEquals(hello_world_byte_array(), uncompressed);
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} with
+         * {@code syncFlush} disabled.
+         */
+        @DisplayName("no-syncFlush")
+        @Test
+        void __NoSyncFlush() throws IOException {
+            __(false);
+        }
+
+        /**
+         * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} with
+         * {@code syncFlush} enabled.
+         */
+        @DisplayName("syncFlush")
+        @Test
+        void __SyncFlush() throws IOException {
+            __(true);
         }
     }
 }

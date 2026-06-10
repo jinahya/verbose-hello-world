@@ -583,6 +583,22 @@
       <properties>
         <test>HelloWorldDiMicronautTest</test>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <dependency><!-- pin before Micronaut BOM so its logback.version=1.5.32 doesn't win -->
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${version.ch.logback.classic}</version>
+          </dependency>
+          <dependency>
+            <groupId>io.micronaut.platform</groupId>
+            <artifactId>micronaut-platform</artifactId>
+            <version>${version.io.micronaut.platform}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
       <dependencies>
         <dependency>
           <groupId>io.micronaut</groupId>

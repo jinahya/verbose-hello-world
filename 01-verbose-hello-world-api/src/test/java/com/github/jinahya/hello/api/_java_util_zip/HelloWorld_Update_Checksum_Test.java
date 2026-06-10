@@ -64,7 +64,7 @@ class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes(service());
+        final var service = set_array_returns_the_array(service());
         final var checksum = mock(Checksum.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(checksum);

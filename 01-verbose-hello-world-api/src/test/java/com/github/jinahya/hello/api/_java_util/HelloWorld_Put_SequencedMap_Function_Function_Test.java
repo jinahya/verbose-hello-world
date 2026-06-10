@@ -113,7 +113,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
     @SuppressWarnings({"unchecked"})
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_hello_world_bytes(service());
+        final var service = set_array_sets_random_bytes(service());
         final var map = mock(SequencedMap.class);
         final var keyMapper = mock(Function.class);
         doAnswer(i -> (byte) ((Byte) i.getArgument(0) + 1)).when(keyMapper).apply(any());

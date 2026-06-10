@@ -85,7 +85,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
             final Function<? super Byte, ?> function = i.getArgument(1, Function.class);
             hello_world_byte_stream().map(function).forEach(collection::addLast);
             return collection;
-        }).when(service()).add(any(), any());
+        }).when(service()).add(any(SequencedCollection.class), any(Function.class));
     }
 
     // ---------------------------------------------------------------------------------------------

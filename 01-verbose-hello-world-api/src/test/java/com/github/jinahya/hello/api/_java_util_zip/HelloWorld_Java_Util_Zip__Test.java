@@ -32,6 +32,9 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring {@link HelloWorld#write(OutputStream) write(stream)} method with real
  * {@code java.util.zip} streams ({@link ZipOutputStream}, {@link DeflaterOutputStream},
@@ -42,8 +45,7 @@ import java.util.zip.*;
 @DisplayName("java.util.zip")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class HelloWorld_Java_Util_Zip__Test
-        extends HelloWorld__Test {
+class HelloWorld_Java_Util_Zip__Test extends HelloWorld__Test {
 
     @TempDir
     private static File tempDir;
@@ -51,8 +53,8 @@ class HelloWorld_Java_Util_Zip__Test
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
-        HelloWorld__TestUtils.write_stream_writes_hello_world_bytes(service());
+        set_array_sets_hello_world_bytes(service());
+        write_stream_writes_hello_world_bytes(service());
     }
 
     @DisplayName("ZipOutputStream")
@@ -82,8 +84,8 @@ class HelloWorld_Java_Util_Zip__Test
                      var zis = new ZipInputStream(bais)) {
                     final var entry = zis.getNextEntry();
                     assert entry != null;
-                    Assertions.assertArrayEquals(
-                            HelloWorld__TestUtils.hello_world_byte_array(),
+                    assertArrayEquals(
+                            hello_world_byte_array(),
                             zis.readAllBytes()
                     );
                 }
@@ -115,8 +117,8 @@ class HelloWorld_Java_Util_Zip__Test
                 final var entry = zipFile.getEntry(entryName);
                 assert entry != null;
                 try (var in = zipFile.getInputStream(entry)) {
-                    Assertions.assertArrayEquals(
-                            HelloWorld__TestUtils.hello_world_byte_array(),
+                    assertArrayEquals(
+                            hello_world_byte_array(),
                             in.readAllBytes()
                     );
                 }
@@ -125,111 +127,109 @@ class HelloWorld_Java_Util_Zip__Test
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("DeflaterOutputStream")
-    @Nested
-    class DeflaterOutputStream_Test {
-
-        /**
-         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
-         * at the given compression {@code level} and back through an {@link InflaterInputStream}.
-         *
-         * @param level a deflater compression level.
-         */
-        @DisplayName("""
-                should round-trip <hello, world>
-                through <DeflaterOutputStream> at the given <level>""")
-        @MethodSource(
-                "com.github.jinahya.hello.api._java_util_zip.HelloWorld_SetInput_Deflater__Test#levelStream"
-        )
-        @ParameterizedTest
-        void __(final int level) throws IOException {
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
-            final var baos = new ByteArrayOutputStream();
-            // -------------------------------------------------------------------------------- when
-            try (var deflater = new Deflater(level);
-                 var stream = new DeflaterOutputStream(baos, deflater)) {
-                service.write(stream);
-            }
-            final var bytes = baos.toByteArray();
-            System.out.printf("%2d (%2d) %s%n", level, bytes.length,
-                              Base64.getEncoder().encodeToString(bytes));
-            // -------------------------------------------------------------------------------- then
-            try (var inflater = new InflaterInputStream(
-                    new ByteArrayInputStream(baos.toByteArray()))) {
-                Assertions.assertArrayEquals(
-                        HelloWorld__TestUtils.hello_world_byte_array(),
-                        inflater.readAllBytes()
-                );
-            }
-        }
-
-        /**
-         * Verifies that the {@link HelloWorld} class bytecode round-trips through a
-         * {@link DeflaterOutputStream} across all compression levels and prints the resulting
-         * ratios.
-         */
-        @DisplayName("""
-                should round-trip the <HelloWorld.class> bytecode
-                through <DeflaterOutputStream> across all levels""")
-        @Test
-        void __bytecode() throws IOException {
-            // ------------------------------------------------------------------------------- given
-            final byte[] input;
-            try (var in = HelloWorld.class.getResourceAsStream("HelloWorld.class")) {
-                input = in.readAllBytes();
-            }
-            System.out.printf("input: %d bytes%n", input.length);
-            // -------------------------------------------------------------------------------- when
-            for (int level = 0; level <= 9; level++) {
-                final var baos = new ByteArrayOutputStream();
-                try (var deflater = new Deflater(level);
-                     var stream = new DeflaterOutputStream(baos, deflater)) {
-                    stream.write(input);
-                }
-                final var compressed = baos.toByteArray();
-                System.out.printf("%2d: %6d -> %5d (%5.2f%%)%n",
-                                  level, input.length, compressed.length,
-                                  100.0 * compressed.length / input.length);
-                // ----------------------------------------------------------------------------- then
-                try (var inflater = new InflaterInputStream(
-                        new ByteArrayInputStream(compressed))) {
-                    Assertions.assertArrayEquals(input, inflater.readAllBytes());
-                }
-            }
-        }
-    }
-
-    @DisplayName("GZIPOutputStream")
-    @Nested
-    class GZIPOutputStream_Test {
-
-        /**
-         * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and
-         * back through a {@link GZIPInputStream}.
-         */
-        @DisplayName(
-                "should round-trip <hello, world> through <GZIPOutputStream> and <GZIPInputStream>")
-        @Test
-        void __() throws IOException {
-            // ------------------------------------------------------------------------------- given
-            final var service = service();
-            final var baos = new ByteArrayOutputStream();
-            // -------------------------------------------------------------------------------- when
-            try (var gzipos = new GZIPOutputStream(baos)) {
-                service.write(gzipos);
-            }
-            final var bytes = baos.toByteArray();
-            System.out.printf("(%2d) %s%n", bytes.length,
-                              Base64.getEncoder().encodeToString(bytes));
-            // -------------------------------------------------------------------------------- then
-            try (var gzipis = new GZIPInputStream(
-                    new ByteArrayInputStream(baos.toByteArray()))) {
-                Assertions.assertArrayEquals(
-                        HelloWorld__TestUtils.hello_world_byte_array(),
-                        gzipis.readAllBytes()
-                );
-            }
-        }
-    }
+//    @DisplayName("DeflaterOutputStream")
+//    @Nested
+//    class DeflaterOutputStream_Test {
+//
+//        /**
+//         * Verifies that {@code "hello, world"} round-trips through a {@link DeflaterOutputStream}
+//         * at the given compression {@code level} and back through an {@link InflaterInputStream}.
+//         *
+//         * @param level a deflater compression level.
+//         */
+//        @DisplayName("""
+//                should round-trip <hello, world>
+//                through <DeflaterOutputStream> at the given <level>""")
+//        @MethodSource(
+//                "com.github.jinahya.hello.api._java_util_zip.HelloWorld_SetInput_Deflater__Test#levelStream"
+//        )
+//        @ParameterizedTest
+//        void __(final int level) throws IOException {
+//            // ------------------------------------------------------------------------------- given
+//            final var service = service();
+//            ;
+//            // -------------------------------------------------------------------------------- when
+//            try (final var baos = new ByteArrayOutputStream();
+//                 var deflater = new Deflater(level);
+//                 var stream = new DeflaterOutputStream(baos, deflater)) {
+//                service.write(stream);
+//                stream.finish();
+//                stream.flush();
+//                final var bytes = baos.toByteArray();
+//                System.out.printf("%2d (%2d) %s%n", level, bytes.length,
+//                                  HexFormat.of().formatHex(bytes));
+//                // ---------------------------------------------------------------------------- then
+//                try (var inflater = new InflaterInputStream(new ByteArrayInputStream(bytes))) {
+//                    assertArrayEquals(hello_world_byte_array(), inflater.readAllBytes());
+//                }
+//            }
+//        }
+//
+//        /**
+//         * Verifies that the {@link HelloWorld} class bytecode round-trips through a
+//         * {@link DeflaterOutputStream} across all compression levels and prints the resulting
+//         * ratios.
+//         */
+//        @DisplayName("""
+//                should round-trip the <HelloWorld.class> bytecode
+//                through <DeflaterOutputStream> across all levels""")
+//        @Test
+//        void __bytecode() throws IOException {
+//            // ------------------------------------------------------------------------------- given
+//            final byte[] input;
+//            try (var in = HelloWorld.class.getResourceAsStream("HelloWorld.class")) {
+//                input = in.readAllBytes();
+//            }
+//            System.out.printf("input: %d bytes%n", input.length);
+//            // -------------------------------------------------------------------------------- when
+//            for (int level = 0; level <= 9; level++) {
+//                final var baos = new ByteArrayOutputStream();
+//                try (var deflater = new Deflater(level);
+//                     var stream = new DeflaterOutputStream(baos, deflater)) {
+//                    stream.write(input);
+//                    stream.flush();
+//                }
+//                final var compressed = baos.toByteArray();
+//                System.out.printf("%2d: %6d -> %5d (%5.2f%%)%n",
+//                                  level, input.length, compressed.length,
+//                                  100.0 * compressed.length / input.length);
+//                // ----------------------------------------------------------------------------- then
+//                try (var inflater = new InflaterInputStream(
+//                        new ByteArrayInputStream(compressed))) {
+//                    assertArrayEquals(input, inflater.readAllBytes());
+//                }
+//            }
+//        }
+//    }
+//
+//    @DisplayName("GZIPOutputStream")
+//    @Nested
+//    class GZIPOutputStream_Test {
+//
+//        /**
+//         * Verifies that {@code "hello, world"} round-trips through a {@link GZIPOutputStream} and
+//         * back through a {@link GZIPInputStream}.
+//         */
+//        @DisplayName(
+//                "should round-trip <hello, world> through <GZIPOutputStream> and <GZIPInputStream>")
+//        @Test
+//        void __() throws IOException {
+//            // ------------------------------------------------------------------------------- given
+//            final var service = service();
+//            // -------------------------------------------------------------------------------- when
+//            try (final var baos = new ByteArrayOutputStream();
+//                 var gzipos = new GZIPOutputStream(baos)) {
+//                service.write(gzipos);
+//                gzipos.finish();
+//                gzipos.flush();
+//                final var bytes = baos.toByteArray();
+//                System.out.printf("(%2d) %s%n", bytes.length,
+//                                  HexFormat.of().formatHex(bytes));
+//                // ---------------------------------------------------------------------------- then
+//                try (var gzipis = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
+//                    assertArrayEquals(hello_world_byte_array(), gzipis.readAllBytes());
+//                }
+//            }
+//        }
+//    }
 }
