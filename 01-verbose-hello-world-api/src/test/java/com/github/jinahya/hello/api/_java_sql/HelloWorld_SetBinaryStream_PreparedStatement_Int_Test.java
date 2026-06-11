@@ -23,11 +23,15 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
@@ -57,7 +61,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
         final PreparedStatement statement = null;
         final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> service.setBinaryStream(statement, index)
         );
@@ -74,10 +78,10 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var statement = Mockito.mock(PreparedStatement.class);
+        final var statement = mock(PreparedStatement.class);
         final var index = ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, 1);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> service.setBinaryStream(statement, index)
         );
@@ -96,24 +100,20 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes(service());
         final var sink = new ByteArrayOutputStream();
-        final var statement = Mockito.mock(PreparedStatement.class);
-        Mockito.doAnswer(i -> {
+        final var statement = mock(PreparedStatement.class);
+        doAnswer(i -> {
             i.getArgument(1, InputStream.class).transferTo(sink);
             return null;
-        }).when(statement).setBinaryStream(
-                ArgumentMatchers.intThat(v -> v >= 1),
-                ArgumentMatchers.<InputStream>notNull()
-        );
+        }).when(statement).setBinaryStream(intThat(v -> v >= 1), notNull());
         final var index = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBinaryStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(statement, Mockito.times(1))
-                .setBinaryStream(Mockito.eq(index), Mockito.<InputStream>notNull());
-        Assertions.assertArrayEquals(array, sink.toByteArray());
-        Assertions.assertSame(statement, result);
+        final var array = set_array12_invoked_once(service);
+        verify(statement, times(1)).setBinaryStream(eq(index), notNull());
+        assertArrayEquals(array, sink.toByteArray());
+        assertSame(statement, result);
     }
 }

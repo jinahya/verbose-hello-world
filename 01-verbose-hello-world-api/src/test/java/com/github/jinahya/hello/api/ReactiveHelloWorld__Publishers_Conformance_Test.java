@@ -32,6 +32,10 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
  * Conformance tests for {@link ReactiveHelloWorldBytePublisher} and
  * {@link ReactiveHelloWorldArrayPublisher} — each consumed through a different
@@ -75,34 +79,34 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
     // ---------------------------------------------------------------------------------------------
     private static void assertBytes(final List<Byte> bytes) {
-        Assertions.assertEquals(HelloWorld.BYTES, bytes.size());
+        assertEquals(HelloWorld.BYTES, bytes.size());
         final var expected = HelloWorld__TestUtils.hello_world_byte_array();
         for (var i = 0; i < expected.length; i++) {
-            Assertions.assertEquals(expected[i], bytes.get(i));
+            assertEquals(expected[i], bytes.get(i));
         }
     }
 
     private static void assertArrays(final List<byte[]> arrays) {
-        Assertions.assertEquals(N, arrays.size());
+        assertEquals(N, arrays.size());
         final var expected = HelloWorld__TestUtils.hello_world_byte_array();
         for (final var array : arrays) {
-            Assertions.assertArrayEquals(expected, array);
+            assertArrayEquals(expected, array);
         }
     }
 
     private static void assertStrings(final List<String> strings) {
-        Assertions.assertEquals(N, strings.size());
-        final var expected = HelloWorld__TestUtils.hello_world_string();
+        assertEquals(N, strings.size());
+        final var expected = hello_world_string();
         for (final var string : strings) {
-            Assertions.assertEquals(expected, string);
+            assertEquals(expected, string);
         }
     }
 
     // ---------------------------------------------------------------------------------------------
     ReactiveHelloWorldPublishers_Conformance_Test() {
         super();
-        service = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service);
+        service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        set_array_sets_hello_world_bytes(service);
     }
 
     private final HelloWorld service;

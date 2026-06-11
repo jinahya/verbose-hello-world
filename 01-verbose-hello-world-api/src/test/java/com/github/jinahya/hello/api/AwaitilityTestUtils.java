@@ -22,10 +22,11 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.awaitility.*;
-import org.junit.jupiter.api.*;
 
 import java.time.*;
 import java.time.temporal.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A class providing test utilities for {@link Awaitility} usages.
@@ -50,7 +51,7 @@ public final class AwaitilityTestUtils {
         Awaitility.await()
                 .timeout(duration.plusSeconds(1L))
                 .pollDelay(duration)
-                .untilAsserted(() -> Assertions.assertTrue(true));
+                .untilAsserted(() -> assertTrue(true));
     }
 
     /**

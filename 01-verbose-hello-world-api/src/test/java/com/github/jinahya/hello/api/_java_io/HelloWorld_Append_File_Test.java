@@ -55,10 +55,7 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
         final var service = service();
         final var file = (File) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.append(file)
-        );
+        assertThrows(NullPointerException.class, () -> service.append(file));
     }
 
     /**

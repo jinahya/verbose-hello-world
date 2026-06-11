@@ -35,6 +35,9 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 /**
  * A class for testing {@link HelloWorld#append(File, Charset)} method.
  *
@@ -65,10 +68,7 @@ class HelloWorld_Append_File_Charset_Test
         final var file = (File) null;
         final var charset = Charset.defaultCharset();
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.append(file, charset)
-        );
+        assertThrows(NullPointerException.class, () -> service.append(file, charset));
     }
 
     /**
@@ -80,13 +80,10 @@ class HelloWorld_Append_File_Charset_Test
     void _ThrowNullPointerException_CharsetIsNull() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var file = Mockito.mock(File.class);
+        final var file = mock(File.class);
         final var charset = (Charset) null;
         // ------------------------------------------------------------------------------- when/then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.append(file, charset)
-        );
+        assertThrows(NullPointerException.class, () -> service.append(file, charset));
     }
 
     /**
@@ -105,31 +102,29 @@ class HelloWorld_Append_File_Charset_Test
     void __(final Charset charset) throws IOException, NoSuchMethodException {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        Mockito.doAnswer(AdditionalAnswers.returnsFirstArg())
+        doAnswer(AdditionalAnswers.returnsFirstArg())
                 .when(service)
                 .write(ArgumentMatchers.<Writer>any());
-        final var file = Mockito.mock(File.class);
-        try (var mockConstruction = Mockito.mockConstruction(FileWriter.class, (m, c) -> {
-            Assertions.assertEquals(
-                    FileWriter.class.getConstructor(File.class, Charset.class, boolean.class),
-                    c.constructor()
-            );
+        final var file = mock(File.class);
+        try (var mockConstruction = mockConstruction(FileWriter.class, (m, c) -> {
+            assertEquals(FileWriter.class.getConstructor(File.class, Charset.class, boolean.class),
+                         c.constructor());
             final var arguments = c.arguments();
             assert arguments.size() == 3;
-            Assertions.assertSame(file, arguments.get(0));
-            Assertions.assertSame(charset, arguments.get(1));
-            Assertions.assertTrue((Boolean) arguments.get(2));
+            assertSame(file, arguments.get(0));
+            assertSame(charset, arguments.get(1));
+            assertTrue((Boolean) arguments.get(2));
         })) {
             // -------------------------------------------------------------------------------- when
             final var result = service.append(file, charset);
             // -------------------------------------------------------------------------------- then
             final var constructed = mockConstruction.constructed();
-//            Assertions.assertEquals(1, constructed.size());
+//            assertEquals(1, constructed.size());
 //            final var writer = constructed.getFirst();
-//            Mockito.verify(service, Mockito.times(1)).write(writer);
-//            Mockito.verify(writer, Mockito.times(1)).flush();
-//            Mockito.verify(writer, Mockito.times(1)).close();
-            Assertions.assertSame(file, result);
+//            verify(service, times(1)).write(writer);
+//            verify(writer, times(1)).flush();
+//            verify(writer, times(1)).close();
+            assertSame(file, result);
         }
     }
 
@@ -154,22 +149,22 @@ class HelloWorld_Append_File_Charset_Test
         final var service = service();
         final var decoded = "hello, world";
         final var encoded = decoded.toCharArray();
-        Mockito.doAnswer(i -> {
-                    final var writer = i.getArgument(0, Writer.class);
-                    writer.write(encoded);
-                    return writer;
-                })
+        doAnswer(i -> {
+            final var writer = i.getArgument(0, Writer.class);
+            writer.write(encoded);
+            return writer;
+        })
                 .when(service)
                 .write(ArgumentMatchers.<Writer>any());
-        Mockito.doAnswer(i -> {
-                    final var f = i.getArgument(0, File.class);
-                    final var c = i.getArgument(1, Charset.class);
-                    try (var w = new FileWriter(f, c, true)) {
-                        service.write(w);
-                        w.flush();
-                    }
-                    return f;
-                })
+        doAnswer(i -> {
+            final var f = i.getArgument(0, File.class);
+            final var c = i.getArgument(1, Charset.class);
+            try (var w = new FileWriter(f, c, true)) {
+                service.write(w);
+                w.flush();
+            }
+            return f;
+        })
                 .when(service)
                 .append(ArgumentMatchers.any(), ArgumentMatchers.any());
         // ------------------------------------------------------------------------------------ when

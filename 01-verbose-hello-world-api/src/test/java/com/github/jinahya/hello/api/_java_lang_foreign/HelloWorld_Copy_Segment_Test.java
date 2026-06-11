@@ -31,6 +31,10 @@ import java.lang.foreign.*;
 import java.nio.channels.*;
 import java.nio.file.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
+import static org.mockito.ArgumentMatchers.*;
+
 /**
  * A class for testing {@link HelloWorld#copy(java.lang.foreign.MemorySegment) copy(segment)}
  * method.
@@ -56,15 +60,15 @@ class HelloWorld_Copy_Segment_Test
                 // ---------------------------------------------------------------------------- when
                 final var result = service.copy(segment);
                 // ---------------------------------------------------------------------------- then
-                Assertions.assertSame(segment, result);
+                assertSame(segment, result);
                 final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
                 mockedStatic.verify(() -> MemorySegment.copy(
-                        Mockito.same(array),
-                        Mockito.eq(0),
-                        Mockito.same(segment),
-                        Mockito.eq(ValueLayout.JAVA_BYTE),
-                        Mockito.eq(0L),
-                        Mockito.eq(array.length)
+                        same(array),
+                        eq(0),
+                        same(segment),
+                        eq(ValueLayout.JAVA_BYTE),
+                        eq(0L),
+                        eq(array.length)
                 ));
             }
         }
@@ -95,8 +99,7 @@ class HelloWorld_Copy_Segment_Test
             }
         }
         log.debug("detected compiler: {}", compiler);
-        Assumptions.assumeFalse(compiler == null,
-                                "No C compiler found (tried gcc, clang, cc, msvc)");
+        assumeFalse(compiler == null, "No C compiler found (tried gcc, clang, cc, msvc)");
         ProcessBuilder pb;
         if (compiler.equals("cl")) {
             // MSVC syntax: cl source.c /Fe:target.exe
@@ -140,7 +143,7 @@ class HelloWorld_Copy_Segment_Test
                                                    dataPath.toAbsolutePath().toString())
                     .inheritIO()
                     .start();
-            Assertions.assertEquals(0, process.waitFor());
+            assertEquals(0, process.waitFor());
         }
     }
 }

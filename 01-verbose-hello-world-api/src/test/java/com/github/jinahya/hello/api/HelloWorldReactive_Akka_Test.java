@@ -134,12 +134,12 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
                             array(synchronousService()),
                             array(synchronousService())
                     ))
-                    .runWith(Sink.<byte[]>seq(), system)
+                    .runWith(Sink.seq(), system)
                     .toCompletableFuture()
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(3, list.size());
+            assertEquals(3, list.size());
             for (final var element : list) {
                 assertArrayEquals(hello_world_byte_array(), element);
             }
@@ -159,7 +159,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
                 assertArrayEquals(hello_world_byte_array(), element);
             }
@@ -179,7 +179,7 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
                 assertArrayEquals(hello_world_byte_array(), element);
             }

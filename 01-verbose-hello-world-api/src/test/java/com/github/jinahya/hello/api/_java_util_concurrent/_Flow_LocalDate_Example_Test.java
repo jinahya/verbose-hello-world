@@ -33,6 +33,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
+import static org.mockito.Mockito.*;
+
 /**
  * A class for exploring {@link Flow} with a {@link LocalDate} {@link Flow.Publisher} /
  * {@link Flow.Subscriber} example.
@@ -191,7 +193,7 @@ class _Flow_LocalDate_Example_Test {
         @Override
         public void onSubscribe(final Flow.Subscription subscription) {
             log.debug("onSubscribe({}", subscription);
-            reference.set(Mockito.spy(subscription));
+            reference.set(spy(subscription));
         }
 
         @Override
@@ -222,7 +224,7 @@ class _Flow_LocalDate_Example_Test {
     @Test
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();
-        final var subscriber = Mockito.spy(new LocalDateSubscriber(reference) { // @formatter:off
+        final var subscriber = spy(new LocalDateSubscriber(reference) { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 super.onSubscribe(subscription);
                 if (ThreadLocalRandom.current().nextBoolean()) {
@@ -239,7 +241,7 @@ class _Flow_LocalDate_Example_Test {
         // subscribe
         LocalDatePublisher.getInstance().subscribe(subscriber);
         // verify, <subscriber.onSubscribe(...)> invoked, once
-        Mockito.verify(subscriber, Mockito.times(1)).onSubscribe(ArgumentMatchers.notNull());
+        verify(subscriber, times(1)).onSubscribe(ArgumentMatchers.notNull());
         // subscription
         final var subscription = reference.get();
         assert subscription != null;

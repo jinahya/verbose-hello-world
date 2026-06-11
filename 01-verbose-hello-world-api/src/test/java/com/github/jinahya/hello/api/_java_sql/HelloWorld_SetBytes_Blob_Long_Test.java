@@ -23,10 +23,13 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long)} method.
@@ -52,10 +55,7 @@ class HelloWorld_SetBytes_Blob_Long_Test
         final Blob blob = null;
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setBytes(blob, pos)
-        );
+        assertThrows(NullPointerException.class, () -> service.setBytes(blob, pos));
     }
 
     /**
@@ -69,10 +69,10 @@ class HelloWorld_SetBytes_Blob_Long_Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var blob = Mockito.mock(Blob.class);
+        final var blob = mock(Blob.class);
         final var pos = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, 1L);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
+        assertThrows(
                 IllegalArgumentException.class,
                 () -> service.setBytes(blob, pos)
         );
@@ -89,14 +89,14 @@ class HelloWorld_SetBytes_Blob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
-        final var blob = Mockito.mock(Blob.class);
+        final var service = set_array_returns_the_array(service());
+        final var blob = mock(Blob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBytes(blob, pos);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(blob, Mockito.times(1)).setBytes(pos, array);
-        Assertions.assertSame(blob, result);
+        final var array = set_array12_invoked_once(service);
+        verify(blob, times(1)).setBytes(pos, array);
+        assertSame(blob, result);
     }
 }

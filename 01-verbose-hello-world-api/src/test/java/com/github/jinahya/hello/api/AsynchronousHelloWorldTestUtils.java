@@ -26,6 +26,8 @@ import org.mockito.stubbing.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+import static org.mockito.Mockito.*;
+
 /**
  * Utilities for testing {@link AsynchronousHelloWorld}.
  *
@@ -63,7 +65,7 @@ public final class AsynchronousHelloWorldTestUtils {
             final AsynchronousHelloWorld asynchronousService) {
         Mockito__TestUtils.requireMock(service);
         Mockito__TestUtils.requireMock(asynchronousService);
-        Mockito.doAnswer(applies_(service))
+        doAnswer(applies_(service))
                 .when(asynchronousService)
                 .applyAsync(ArgumentMatchers.notNull());
     }

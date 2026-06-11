@@ -30,6 +30,8 @@ import java.time.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorldUtils.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A pedagogical tour of <a href="https://projectreactor.io/">Project Reactor</a>'s own
@@ -53,7 +55,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
 
     // ---------------------------------------------------------------------------------------------
     private static void assertPayload(final byte[] array) {
-        Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+        assertArrayEquals(hello_world_byte_array(), array);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -91,7 +93,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .map(i -> array(synchronousService()))
                     .collectList()
                     .block(TIMEOUT);
-            Assertions.assertEquals(N, list.size());
+            assertEquals(N, list.size());
             list.forEach(HelloWorldReactive_Reactor_Test::assertPayload);
         }
 
@@ -117,7 +119,7 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                             () -> asynchronousService().applyAsync(HelloWorldUtils::array)))
                     .collectList()
                     .block(TIMEOUT);
-            Assertions.assertEquals(N, list.size());
+            assertEquals(N, list.size());
             list.forEach(HelloWorldReactive_Reactor_Test::assertPayload);
         }
     }

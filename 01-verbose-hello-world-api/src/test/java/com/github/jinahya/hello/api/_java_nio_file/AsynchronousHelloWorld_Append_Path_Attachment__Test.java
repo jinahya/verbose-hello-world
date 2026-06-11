@@ -29,6 +29,8 @@ import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link AsynchronousHelloWorld#append(Path, Object) append(path, attachment)} method with real
@@ -64,7 +66,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
     void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());
+        HelloWorld__TestUtils.put_buffer12_increases_buffer_position_by_12(synchronousService());
         final var path = Files.createTempFile(tempDir, null, null);
         HelloWorld__TestUtils.writeSome(path);
         final var size = Files.size(path);
@@ -72,10 +74,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
         // ---------------------------------------------------------------------------------- when
         final var future = asynchronousService.append(path, attachment);
         // ---------------------------------------------------------------------------------- then
-        Assertions.assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
-        Assertions.assertEquals(
-                size + HelloWorld.BYTES,
-                Files.size(path)
-        );
+        assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        assertEquals(size + HelloWorld.BYTES, Files.size(path));
     }
 }

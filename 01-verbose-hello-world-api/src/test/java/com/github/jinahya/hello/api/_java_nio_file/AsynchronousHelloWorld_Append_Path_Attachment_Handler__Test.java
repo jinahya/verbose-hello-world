@@ -24,12 +24,15 @@ import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
-import org.mockito.*;
 
 import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for exploring
@@ -68,20 +71,17 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
     void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
         final var path = Files.createTempFile(tempDir, null, null);
         HelloWorld__TestUtils.writeSome(path);
         final var size = Files.size(path);
         final var attachment = new Object();
-        final var handler = (CompletionHandler<Path, Object>) Mockito.mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         asynchronousService.append(path, attachment, handler);
         // ------------------------------------------------------------------------------------ then
-        Mockito.verify(handler, Mockito.timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
+        verify(handler, timeout(TimeUnit.SECONDS.toMillis(8L)).times(1))
                 .completed(path, attachment);
-        Assertions.assertEquals(
-                size + HelloWorld.BYTES,
-                Files.size(path)
-        );
+        assertEquals(size + HelloWorld.BYTES, Files.size(path));
     }
 }

@@ -23,11 +23,15 @@ package com.github.jinahya.hello.api._java_lang_foreign;
 import com.github.jinahya.hello.api.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
-import org.mockito.*;
 
 import java.lang.foreign.*;
 import java.nio.charset.*;
 import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests {@link HelloWorld#copy(MemorySegment)} with various native libraries via FFM API. Tests are
@@ -72,14 +76,12 @@ class HelloWorld_Copy_Segment_FFM_Test {
     }
 
     private static void stubSetArrayWillCopyHelloWorldBytes(final HelloWorld service) {
-        Mockito.doAnswer(i -> {
-                    final var array = i.getArgument(0, byte[].class);
-                    final var bytes = "hello, world".getBytes(StandardCharsets.US_ASCII);
-                    System.arraycopy(bytes, 0, array, 0, bytes.length);
-                    return array;
-                })
-                .when(service)
-                .set(Mockito.any(byte[].class));
+        doAnswer(i -> {
+            final var array = i.getArgument(0, byte[].class);
+            final var bytes = "hello, world".getBytes(StandardCharsets.US_ASCII);
+            System.arraycopy(bytes, 0, array, 0, bytes.length);
+            return array;
+        }).when(service).set(any(byte[].class));
     }
 
     // -------------------------------------------------------------------------------------- C/libc
@@ -132,7 +134,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 // ---------------------------------------------------------------------------- then
                 final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
                 final var content = readSegmentAsString(segment);
-                Assertions.assertEquals("hello, world", content);
+                assertEquals("hello, world", content);
                 final var linker = Linker.nativeLinker();
                 final var puts = linker.downcallHandle(
                         linker.defaultLookup().find("puts").orElseThrow(),
@@ -166,7 +168,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                         FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)
                 );
                 final var len = (long) strlen.invoke(segment);
-                Assertions.assertEquals(HelloWorld.BYTES, len);
+                assertEquals(HelloWorld.BYTES, len);
             }
         }
 
@@ -200,7 +202,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 );
                 final var expected = arena.allocateFrom("hello, world", StandardCharsets.US_ASCII);
                 final var result = (int) memcmp.invoke(segment, expected, (long) HelloWorld.BYTES);
-                Assertions.assertEquals(0, result, "Memory content should match 'hello, world'");
+                assertEquals(0, result, "Memory content should match 'hello, world'");
             }
         }
     }
@@ -272,7 +274,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
         void _print_()
                 throws Throwable {
             // ------------------------------------------------------------------------------- given
-            Assumptions.assumeTrue(
+            assumeTrue(
                     isLibraryAvailable(getPythonLibs().toArray(String[]::new)),
                     "Python library not found - skipping test"
             );
@@ -307,7 +309,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 pyInitialize.invoke();
                 try {
                     final var result = (int) pyRunSimpleString.invoke(script);
-                    Assertions.assertEquals(0, result, "PyRun_SimpleString should succeed");
+                    assertEquals(0, result, "PyRun_SimpleString should succeed");
                 } finally {
                     pyFinalize.invoke();
                 }
@@ -374,7 +376,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 System.out.flush();
                 final var bytesWritten = (long) write.invoke(1, segment, (long) HelloWorld.BYTES);
                 System.out.println();  // newline after native write
-                Assertions.assertEquals(HelloWorld.BYTES, bytesWritten);
+                assertEquals(HelloWorld.BYTES, bytesWritten);
             }
         }
     }
@@ -422,7 +424,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                 System.out.flush();
                 final var bytesWritten = (long) write.invoke(1, segment, (long) HelloWorld.BYTES);
                 System.out.println();
-                Assertions.assertEquals(HelloWorld.BYTES, bytesWritten);
+                assertEquals(HelloWorld.BYTES, bytesWritten);
             }
         }
     }
@@ -464,7 +466,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
         void _WriteConsoleA_()
                 throws Throwable {
             // ------------------------------------------------------------------------------- given
-            Assumptions.assumeTrue(
+            assumeTrue(
                     isLibraryAvailable("kernel32", "kernel32.dll"),
                     "kernel32.dll not found"
             );
@@ -500,7 +502,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                         stdout, segment, HelloWorld.BYTES, bytesWritten, MemorySegment.NULL
                 );
                 System.out.println();
-                Assertions.assertNotEquals(0, result, "WriteConsoleA should succeed");
+                assertNotEquals(0, result, "WriteConsoleA should succeed");
             }
         }
     }

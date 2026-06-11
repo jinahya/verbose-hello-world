@@ -29,6 +29,8 @@ import org.junit.jupiter.api.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A pedagogical tour of <a href="https://pekko.apache.org/docs/pekko/current/stream/">Apache Pekko
  * Streams</a>'s own publisher-creation idioms — each test creates a
@@ -79,7 +81,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -95,7 +97,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -112,7 +114,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
     }
 
@@ -131,15 +133,14 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                             HelloWorldUtils.array(synchronousService()),
                             HelloWorldUtils.array(synchronousService())
                     ))
-                    .runWith(Sink.<byte[]>seq(), system)
+                    .runWith(Sink.seq(), system)
                     .toCompletableFuture()
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(3, list.size());
+            assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), element);
             }
         }
 
@@ -157,10 +158,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -178,10 +179,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
                     .orTimeout(10L, TimeUnit.SECONDS)
                     .join();
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
+                                  element);
             }
         }
     }

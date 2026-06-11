@@ -28,6 +28,9 @@ import org.junit.jupiter.api.*;
 import java.time.*;
 import java.util.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A pedagogical tour of <a href="https://smallrye.io/smallrye-mutiny/">SmallRye Mutiny</a>'s own
  * publisher-creation idioms — each test creates a Mutiny {@link Uni Uni&lt;byte[]&gt;} or
@@ -64,7 +67,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .item(HelloWorldUtils.array(synchronousService()))
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(Supplier)>")
@@ -75,7 +78,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .item(() -> HelloWorldUtils.array(synchronousService()))
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -90,7 +93,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     ))
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -104,7 +107,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .onItem().transform(a -> a.length)
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(HelloWorld.BYTES, length);
+            assertEquals(HelloWorld.BYTES, length);
         }
     }
 
@@ -122,9 +125,9 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .collect().asList()
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                         list.get(0));
+            assertEquals(1, list.size());
+            assertArrayEquals(hello_world_byte_array(),
+                              list.get(0));
         }
 
         @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().items(byte[]...)>")
@@ -140,10 +143,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .collect().asList()
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(3, list.size());
+            assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -159,10 +162,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .collect().asList()
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(2, list.size());
+            assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -179,10 +182,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .collect().asList()
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(2, list.size());
+            assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -199,10 +202,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .collect().asList()
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -217,9 +220,9 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                     .collect().asList()
                     .await().atMost(TIMEOUT);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                         list.get(0));
+            assertEquals(1, list.size());
+            assertArrayEquals(hello_world_byte_array(),
+                              list.get(0));
         }
     }
 }

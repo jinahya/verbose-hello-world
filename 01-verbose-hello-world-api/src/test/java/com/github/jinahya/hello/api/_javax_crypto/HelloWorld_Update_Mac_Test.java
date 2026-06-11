@@ -23,9 +23,12 @@ package com.github.jinahya.hello.api._javax_crypto;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import javax.crypto.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#update(Mac)} method.
@@ -52,7 +55,7 @@ class HelloWorld_Update_Mac_Test
         final var service = service();
         final Mac mac = null;
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(NullPointerException.class, () -> service.update(mac));
+        assertThrows(NullPointerException.class, () -> service.update(mac));
     }
 
     /**
@@ -62,13 +65,13 @@ class HelloWorld_Update_Mac_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
-        final var mac = Mockito.mock(Mac.class);
+        final var service = set_array_returns_the_array(service());
+        final var mac = mock(Mac.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(mac);
         // ------------------------------------------------------------------------------------ then
-        final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(mac, Mockito.times(1)).update(array);
-        Assertions.assertSame(mac, result);
+        final var array = set_array12_invoked_once(service);
+        verify(mac, times(1)).update(array);
+        assertSame(mac, result);
     }
 }

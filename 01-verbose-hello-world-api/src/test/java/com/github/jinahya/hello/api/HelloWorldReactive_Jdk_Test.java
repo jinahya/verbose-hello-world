@@ -29,6 +29,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A pedagogical tour of the JDK's built-in {@link SubmissionPublisher SubmissionPublisher&lt;T&gt;}
  * (in {@code java.util.concurrent}, since Java 9) — the reference implementation of
@@ -56,7 +58,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
     // ---------------------------------------------------------------------------------------------
 
     private static void assertPayload(final byte[] array) {
-        Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+        assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
     }
 
     /**
@@ -130,7 +132,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
             publisher.close();
             done.get(TIMEOUT, TimeUnit.SECONDS);
         }
-        Assertions.assertEquals(1, items.size());
+        assertEquals(1, items.size());
         assertPayload(items.get(0)); // @formatter:on
     }
 
@@ -149,7 +151,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
             publisher.close();
             done.get(TIMEOUT, TimeUnit.SECONDS);
         }
-        Assertions.assertEquals(N, items.size());
+        assertEquals(N, items.size());
         items.forEach(HelloWorldReactive_Jdk_Test::assertPayload); // @formatter:on
     }
 
@@ -169,7 +171,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
             publisher.close();
             done.get(TIMEOUT, TimeUnit.SECONDS);
         }
-        Assertions.assertEquals(1, items.size());
+        assertEquals(1, items.size());
         assertPayload(items.get(0)); // @formatter:on
     }
 
@@ -191,7 +193,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
             publisher.close();
             done.get(TIMEOUT, TimeUnit.SECONDS);
         }
-        Assertions.assertEquals(N, items.size());
+        assertEquals(N, items.size());
         items.forEach(HelloWorldReactive_Jdk_Test::assertPayload); // @formatter:on
     }
 }

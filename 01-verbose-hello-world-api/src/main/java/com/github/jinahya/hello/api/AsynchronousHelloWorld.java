@@ -22,6 +22,7 @@ package com.github.jinahya.hello.api;
 
 import org.jspecify.annotations.*;
 
+import java.io.*;
 import java.lang.invoke.*;
 import java.net.http.*;
 import java.nio.*;
@@ -38,12 +39,11 @@ import java.util.function.*;
  * <p>
  * Each instance wraps a service of type {@code T} (a {@link HelloWorld} subtype) that supplies the
  * bytes, and a dispatch strategy of the implementation's choosing on which the synchronous
- * {@link HelloWorld} calls are run — an {@link Executor} for {@link ExecutorHelloWorld}, a per-call
- * {@link java.util.concurrent.StructuredTaskScope StructuredTaskScope} on a virtual thread for
- * {@link StructuredConcurrencyAsynchronousHelloWorld}. Every method on this interface uses that
- * strategy — directly via the two shape-paired primitives {@link #applyAsync(Function)}
- * ({@link CompletionStage}-based) and {@link #applyAsync(Function, Object, CompletionHandler)}
- * ({@link CompletionHandler}-based), or indirectly via the default methods built on them.
+ * {@link HelloWorld} calls are run — an {@link Executor} for {@link ExecutorHelloWorld}. Every
+ * method on this interface uses that strategy — directly via the two shape-paired primitives
+ * {@link #applyAsync(Function)} ({@link CompletionStage}-based) and
+ * {@link #applyAsync(Function, Object, CompletionHandler)} ({@link CompletionHandler}-based), or
+ * indirectly via the default methods built on them.
  * <p>
  * Channel and path operations come as a matched pair:
  * <ul>
@@ -78,6 +78,26 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
 
     /**
      * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
+     * instance's dispatch strategy, and returns the result as a {@link CompletionStage}.
+     *
+     * @param <R>    result type parameter.
+     * @param mapper the mapper to apply; receives the wrapped {@link HelloWorld} service and
+     *               returns a result.
+     * @return a {@link CompletionStage} that completes with the value produced by the
+     * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
+     * @throws NullPointerException if {@code mapper} is {@code null}.
+     * @apiNote This method is the {@link CompletionStage}-based primitive on which every
+     * stage-based default method in this interface — {@code write(...)} (no-handler overload),
+     * {@code append(...)} (no-handler overload), {@code sendBinary}, {@code sendPing},
+     * {@code sendPong}, and {@code sendAsync} — is built. Its {@link CompletionHandler}-based
+     * counterpart is
+     * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
+     * handler)}.
+     */
+    <R> CompletionStage<R> applyAsync(Function<? super T, ? extends R> mapper);
+
+    /**
+     * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
      * instance's dispatch strategy, and notifies the specified handler with the result and the
      * specified attachment.
      *
@@ -97,26 +117,6 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
     <R, A> void applyAsync(Function<? super T, ? extends R> mapper,
                            @Nullable A attachment,
                            CompletionHandler<? super R, ? super A> handler);
-
-    /**
-     * Applies the specified mapper to the wrapped {@link HelloWorld} service asynchronously on the
-     * instance's dispatch strategy, and returns the result as a {@link CompletionStage}.
-     *
-     * @param <R>    result type parameter.
-     * @param mapper the mapper to apply; receives the wrapped {@link HelloWorld} service and
-     *               returns a result.
-     * @return a {@link CompletionStage} that completes with the value produced by the
-     * {@code mapper}, or completes exceptionally if the {@code mapper} throws.
-     * @throws NullPointerException if {@code mapper} is {@code null}.
-     * @apiNote This method is the {@link CompletionStage}-based primitive on which every
-     * stage-based default method in this interface — {@code write(...)} (no-handler overload),
-     * {@code append(...)} (no-handler overload), {@code sendBinary}, {@code sendPing},
-     * {@code sendPong}, and {@code sendAsync} — is built. Its {@link CompletionHandler}-based
-     * counterpart is
-     * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
-     * handler)}.
-     */
-    <R> CompletionStage<R> applyAsync(Function<? super T, ? extends R> mapper);
 
     // ------------------------------------------------------------------------------- java.net.http
 
@@ -291,7 +291,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * @see #applyAsync(Function)
      */
-    default <C extends AsynchronousByteChannel, A> void write(
+    default <C extends AsynchronousByteChannel, A> void write_(
             final C channel, @Nullable final A attachment,
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
@@ -315,6 +315,60 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                     handler.failed(exc, attachment);
                 } // @formatter:on
             });
+        });
+    }
+
+    /**
+     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+     * asynchronous byte channel, and notifies a completion (or a failure) to the specified handler
+     * with the specified attachment.
+     *
+     * @param <C>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param channel    the asynchronous byte channel to which the bytes are written.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with a completion (or a failure).
+     * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
+     * @implSpec The default implementation invokes
+     * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
+     * handler)} with a mapper that prepares a {@value HelloWorld#BYTES}-byte source buffer via
+     * {@link HelloWorld#put(ByteBuffer)} on the wrapped service; on the mapper's completion, the
+     * inner handler starts the recursive
+     * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel.write}
+     * loop that, on the final completion, notifies {@code handler.completed(channel, attachment)} —
+     * or, on failure (either of the mapper or of the channel write), notifies
+     * {@code handler.failed(exc, attachment)}.
+     * @see HelloWorld#put(ByteBuffer)
+     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
+     * @see #applyAsync(Function, Object, CompletionHandler)
+     */
+    default <C extends AsynchronousByteChannel, A> void write(
+            final C channel, @Nullable final A attachment,
+            final CompletionHandler<? super C, ? super A> handler) {
+        Objects.requireNonNull(channel, "channel is null");
+        Objects.requireNonNull(handler, "handler is null");
+        applyAsync(HelloWorldUtils::buffer, attachment, new CompletionHandler<>() { // @formatter:off
+            @Override
+            public void completed(final ByteBuffer b, final A attachment) {
+                channel.write(b, attachment, new CompletionHandler<>() {
+                    @Override
+                    public void completed(final Integer result, final A attachment) {
+                        if (b.hasRemaining()) {
+                            channel.write(b, attachment, this);
+                            return;
+                        }
+                        handler.completed(channel, attachment);
+                    }
+                    @Override
+                    public void failed(final Throwable exc, final A attachment) {
+                        handler.failed(exc, attachment);
+                    }
+                });
+            }
+            @Override
+            public void failed(final Throwable exc, final A attachment) {
+                handler.failed(exc, attachment);
+            } // @formatter:on
         });
     }
 
@@ -381,7 +435,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      * @see #applyAsync(Function)
      */
-    default <C extends AsynchronousFileChannel, A> void write(
+    default <C extends AsynchronousFileChannel, A> void write_(
             final C channel, final long position, final @Nullable A attachment,
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
@@ -410,6 +464,67 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
                     handler.failed(exc, attachment);
                 } // @formatter:on
             });
+        });
+    }
+
+    /**
+     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
+     * asynchronous file channel starting at the specified position, and notifies a completion (or a
+     * failure) to the specified handler with the specified attachment.
+     *
+     * @param <C>        channel type parameter
+     * @param <A>        attachment type parameter
+     * @param channel    the asynchronous file channel to which the bytes are written.
+     * @param position   the file position at which the transfer is to begin; must be non-negative.
+     * @param attachment the attachment for the {@code handler}; may be {@code null}.
+     * @param handler    the completion handler to be notified with a completion (or a failure).
+     * @throws NullPointerException     if either {@code channel} or {@code handler} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if {@code position} is negative.
+     * @implSpec The default implementation invokes
+     * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
+     * handler)} with a mapper that prepares a {@value HelloWorld#BYTES}-byte source buffer via
+     * {@link HelloWorld#put(ByteBuffer)} on the wrapped service; on the mapper's completion, the
+     * inner handler starts the recursive
+     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     * channel.write} loop that, on the final completion, notifies
+     * {@code handler.completed(channel, attachment)} — or, on failure (either of the mapper or of
+     * the channel write), notifies {@code handler.failed(exc, attachment)}.
+     * @see HelloWorld#put(ByteBuffer)
+     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
+     * @see #applyAsync(Function, Object, CompletionHandler)
+     */
+    default <C extends AsynchronousFileChannel, A> void write(
+            final C channel, final long position, final @Nullable A attachment,
+            final CompletionHandler<? super C, ? super A> handler) {
+        Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
+        }
+        Objects.requireNonNull(handler, "handler is null");
+        applyAsync(HelloWorldUtils::buffer, attachment, new CompletionHandler<>() { // @formatter:off
+            @Override
+            public void completed(final ByteBuffer b, final A attachment) {
+                channel.write(b, position, position, new CompletionHandler<>() {
+                    @Override
+                    public void completed(final Integer result, Long position) {
+                        if (b.hasRemaining()) {
+                            position += result;
+                            channel.write(b, position, position, this);
+                            return;
+                        }
+                        handler.completed(channel, attachment);
+                    }
+                    @Override
+                    public void failed(final Throwable exc, final Long position) {
+                        handler.failed(exc, attachment);
+                    }
+                });
+            }
+            @Override
+            public void failed(final Throwable exc, final A attachment) {
+                handler.failed(exc, attachment);
+            } // @formatter:on
         });
     }
 
@@ -465,30 +580,67 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
      * @throws NullPointerException if either {@code path} or {@code handler} is {@code null}.
-     * @implSpec The default implementation invokes {@link #applyAsync(Function)} with a mapper that
-     * calls {@link HelloWorld#append(Path)} on the wrapped service and, on success, notifies
-     * {@code handler.completed(path, attachment)} — or, on any thrown {@link Exception} (checked or
-     * unchecked), notifies {@code handler.failed(exc, attachment)}.
-     * @see HelloWorld#append(Path)
-     * @see #applyAsync(Function)
+     * @implSpec The default implementation opens the file at the specified {@code path} as an
+     * {@link AsynchronousFileChannel} with {@link StandardOpenOption#WRITE WRITE} and
+     * {@link StandardOpenOption#CREATE CREATE}, queries its current
+     * {@link AsynchronousFileChannel#size() size} as the starting position, then delegates to
+     * {@link #write(AsynchronousFileChannel, long, Object, CompletionHandler)} with an inner
+     * {@link CompletionHandler} that closes the channel before notifying the outer {@code handler}
+     * — {@code handler.completed(path, attachment)} on success, or
+     * {@code handler.failed(exc, attachment)} on failure (failures from {@code open} / {@code size}
+     * / {@code close} are routed the same way).
+     * @apiNote {@link AsynchronousFileChannel} does not support {@link StandardOpenOption#APPEND};
+     * the end-of-file position is obtained via {@link AsynchronousFileChannel#size()} and used as
+     * the starting write position. With concurrent writers, this is not OS-level atomic append.
+     * @see AsynchronousFileChannel#open(Path, java.nio.file.OpenOption...)
+     * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
      */
     default <P extends Path, A>
     void append(final P path, final @Nullable A attachment,
                 final CompletionHandler<? super P, ? super A> handler) {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(
-                s -> {
-                    try {
-                        s.append(path);
-                    } catch (final Exception e) {
-                        handler.failed(e, attachment);
-                        return null;
-                    }
-                    handler.completed(path, attachment);
-                    return null;
+        final AsynchronousFileChannel channel;
+        try {
+            channel = AsynchronousFileChannel.open(
+                    path, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        } catch (final IOException e) {
+            handler.failed(e, attachment);
+            return;
+        }
+        final long position;
+        try {
+            position = channel.size();
+        } catch (final IOException e) {
+            try {
+                channel.close();
+            } catch (final IOException s) {
+                e.addSuppressed(s);
+            }
+            handler.failed(e, attachment);
+            return;
+        }
+        write(channel, position, attachment, new CompletionHandler<>() { // @formatter:off
+            @Override
+            public void completed(final AsynchronousFileChannel result, final A attachment) {
+                try {
+                    channel.close();
+                } catch (final IOException e) {
+                    handler.failed(e, attachment);
+                    return;
                 }
-        );
+                handler.completed(path, attachment);
+            }
+            @Override
+            public void failed(final Throwable exc, final A attachment) {
+                try {
+                    channel.close();
+                } catch (final IOException s) {
+                    exc.addSuppressed(s);
+                }
+                handler.failed(exc, attachment);
+            } // @formatter:on
+        });
     }
 
     /**

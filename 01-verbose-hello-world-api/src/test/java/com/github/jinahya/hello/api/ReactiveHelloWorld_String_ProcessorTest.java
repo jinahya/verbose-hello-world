@@ -48,7 +48,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
     // ---------------------------------------------------------------------------------------------
     ReactiveHelloWorld_String_ProcessorTest() {
         super();
-        service = Mockito.mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -28,6 +28,8 @@ import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A pedagogical tour of <a href="https://vertx.io/docs/">Vert.x</a>'s own publisher-creation idioms
  * — each test creates a {@link Future Future&lt;byte[]&gt;} that pulls the <a
@@ -66,7 +68,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName(
@@ -81,7 +83,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -96,7 +98,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
         @DisplayName("should return <BYTES> via <Future.succeededFuture(...).map(byte[]::length)>")
@@ -110,7 +112,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
                     .toCompletableFuture()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(HelloWorld.BYTES, length.intValue());
+            assertEquals(HelloWorld.BYTES, length.intValue());
         }
     }
 }

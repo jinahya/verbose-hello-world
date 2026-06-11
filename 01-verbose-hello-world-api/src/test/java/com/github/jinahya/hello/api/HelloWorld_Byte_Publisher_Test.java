@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.time.*;
 import java.util.*;
@@ -153,7 +152,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     void __serviceThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
-        Mockito.doThrow(error).when(service()).set(ArgumentMatchers.any(byte[].class));
+        doThrow(error).when(service()).set(any(byte[].class));
         final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);

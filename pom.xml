@@ -633,6 +633,10 @@
           <version>${version.maven-javadoc-plugin}</version>
           <configuration>
             <doclint>none</doclint>
+            <release>${maven.compiler.release}</release>
+            <additionalOptions>
+              <additionalOption>--enable-preview</additionalOption>
+            </additionalOptions>
             <!--            <detectLinks>true</detectLinks>-->
             <links>
               <!--              <link>https://static.javadoc.io/org.junit.jupiter/junit-jupiter-api/${version.org.junit.jupiter}</link>-->

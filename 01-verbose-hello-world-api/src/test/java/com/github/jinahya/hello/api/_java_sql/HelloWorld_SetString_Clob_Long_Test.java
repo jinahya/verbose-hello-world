@@ -23,10 +23,13 @@ package com.github.jinahya.hello.api._java_sql;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.sql.*;
 import java.util.concurrent.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long)}
@@ -55,10 +58,7 @@ class HelloWorld_SetString_Clob_Long_Test
         final Clob clob = null;
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                NullPointerException.class,
-                () -> service.setString(clob, pos)
-        );
+        assertThrows(NullPointerException.class, () -> service.setString(clob, pos));
     }
 
     /**
@@ -72,13 +72,10 @@ class HelloWorld_SetString_Clob_Long_Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
         final var service = service();
-        final var clob = Mockito.mock(Clob.class);
+        final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, 1L);
         // ----------------------------------------------------------------------------- when / then
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> service.setString(clob, pos)
-        );
+        assertThrows(IllegalArgumentException.class, () -> service.setString(clob, pos));
     }
 
     /**
@@ -91,15 +88,14 @@ class HelloWorld_SetString_Clob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
-        final var clob = Mockito.mock(Clob.class);
+        final var service = set_array_sets_hello_world_bytes(service());
+        final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setString(clob, pos);
         // ------------------------------------------------------------------------------------ then
-        HelloWorld__TestUtils.set_array12_invoked_once(service);
-        Mockito.verify(clob, Mockito.times(1))
-                .setString(pos, HelloWorld__TestUtils.hello_world_string());
-        Assertions.assertSame(clob, result);
+        final var array = set_array12_invoked_once(service);
+        verify(clob, times(1)).setString(pos, hello_world_string());
+        assertSame(clob, result);
     }
 }

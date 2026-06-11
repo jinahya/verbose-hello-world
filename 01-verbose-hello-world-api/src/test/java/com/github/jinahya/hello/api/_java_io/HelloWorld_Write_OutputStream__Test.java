@@ -249,8 +249,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 final var decompressed = gzipis.readAllBytes();
                 log.debug("decompressed: {} ({})", HexFormat.of().formatHex(decompressed),
                           decompressed.length);
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             decompressed);
+                assertArrayEquals(hello_world_byte_array(), decompressed);
             }
         }
 

@@ -29,6 +29,9 @@ import org.mockito.*;
 import java.io.*;
 import java.sql.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#setAsciiStream(Clob, long) setAsciiStream(clob,
@@ -47,7 +50,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
         Mockito.doAnswer(invocation -> {
             final var clob = invocation.getArgument(0, Clob.class);
             final var pos = invocation.getArgument(1, Long.class);
-            clob.setString(pos, HelloWorld__TestConstants.HELLO_WORLD_STRING);
+            clob.setString(pos, HELLO_WORLD_STRING);
             return clob;
         }).when(service()).setAsciiStream(
                 ArgumentMatchers.<Clob>notNull(),
@@ -79,12 +82,9 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
                 final var result = service().setAsciiStream(clob, 1L);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(
-                        HelloWorld__TestConstants.HELLO_WORLD_STRING,
-                        clob.getSubString(1L, HelloWorld.BYTES)
-                );
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals(HELLO_WORLD_STRING, clob.getSubString(1L, HelloWorld.BYTES));
             }
         }
     }
@@ -111,10 +111,10 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
                 final var result = service().setAsciiStream(clob, 1L);
-                Assertions.assertSame(clob, result);
-                Assertions.assertEquals(HelloWorld.BYTES, clob.length());
-                Assertions.assertEquals(
-                        HelloWorld__TestConstants.HELLO_WORLD_STRING,
+                assertSame(clob, result);
+                assertEquals(HelloWorld.BYTES, clob.length());
+                assertEquals(
+                        HELLO_WORLD_STRING,
                         clob.getSubString(1L, HelloWorld.BYTES)
                 );
             }
@@ -144,7 +144,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
                 final var clob = connection.createClob();
                 final var result = service().setAsciiStream(clob, 1L);
-                Assertions.assertSame(clob, result);
+                assertSame(clob, result);
             }
         }
     }

@@ -29,6 +29,9 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A pedagogical tour of <a href="https://helidon.io/">Helidon</a> Common Reactive's own
  * publisher-creation idioms — each test creates a {@link Single Single&lt;byte[]&gt;} or
@@ -57,7 +60,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             final var array = Single.just(HelloWorldUtils.array(synchronousService()))
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @DisplayName("""
@@ -70,7 +73,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                             asynchronousService().applyAsync(HelloWorldUtils::array))
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
+            assertArrayEquals(hello_world_byte_array(), array);
         }
 
         @DisplayName("should return <BYTES> via <Single.just(...).map(byte[]::length)>")
@@ -81,7 +84,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .map(a -> a.length)
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(HelloWorld.BYTES, length);
+            assertEquals(HelloWorld.BYTES, length);
         }
     }
 
@@ -102,10 +105,10 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .collectList()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(3, list.size());
+            assertEquals(3, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -120,10 +123,10 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .collectList()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(2, list.size());
+            assertEquals(2, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -138,10 +141,10 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .collectList()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(n, list.size());
+            assertEquals(n, list.size());
             for (final var element : list) {
-                Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                             element);
+                assertArrayEquals(hello_world_byte_array(),
+                                  element);
             }
         }
 
@@ -153,9 +156,9 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
                     .collectList()
                     .get(10L, TimeUnit.SECONDS);
             // -------------------------------------------------------------------------------- then
-            Assertions.assertEquals(1, list.size());
-            Assertions.assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(),
-                                         list.get(0));
+            assertEquals(1, list.size());
+            assertArrayEquals(hello_world_byte_array(),
+                              list.get(0));
         }
     }
 }

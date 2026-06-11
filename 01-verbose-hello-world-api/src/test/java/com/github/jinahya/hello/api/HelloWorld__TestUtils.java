@@ -25,7 +25,6 @@ import com.github.tomakehurst.wiremock.client.*;
 import com.github.tomakehurst.wiremock.core.*;
 import lombok.extern.slf4j.*;
 import org.awaitility.*;
-import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.*;
 import org.mockito.*;
 
@@ -227,7 +226,7 @@ public final class HelloWorld__TestUtils {
      */
     public static <T extends HelloWorld> T requireMock(final T object) {
         requireNonNull(object, "object is null");
-        if (!Mockito.mockingDetails(object).isMock()) {
+        if (!mockingDetails(object).isMock()) {
             throw new IllegalArgumentException("not a mock: " + object);
         }
         return object;
@@ -246,7 +245,7 @@ public final class HelloWorld__TestUtils {
      */
     public static <T extends HelloWorld> T requireNotMock(final T service) {
         requireNonNull(service, "service is null");
-        if (Mockito.mockingDetails(service).isMock()) {
+        if (mockingDetails(service).isMock()) {
             throw new IllegalArgumentException("a mock: " + service);
         }
         return service;
@@ -1092,7 +1091,7 @@ public final class HelloWorld__TestUtils {
         Awaitility.await()
                 .timeout(duration.plusSeconds(1L))
                 .pollDelay(duration)
-                .untilAsserted(() -> Assertions.assertTrue(true));
+                .untilAsserted(() -> assertTrue(true));
     }
 
     /**

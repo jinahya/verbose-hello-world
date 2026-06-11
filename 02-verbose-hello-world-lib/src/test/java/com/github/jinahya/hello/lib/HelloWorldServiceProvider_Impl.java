@@ -24,7 +24,7 @@ import com.github.jinahya.hello.api.*;
 
 /**
  * A {@link HelloWorldServiceProvider} that supplies {@link HelloWorldImpl} instances. The supplied
- * service is classified as <em>qualified</em> ({@link #isServiceQualified()} returns
+ * service is classified as <em>qualified</em> ({@link #isQualified()} returns
  * {@code true}).
  *
  * <p>{@code public} so {@link java.util.ServiceLoader ServiceLoader}'s classpath-mode
@@ -40,7 +40,7 @@ public class HelloWorldServiceProvider_Impl implements HelloWorldServiceProvider
      * @return {@code true}.
      */
     @Override
-    public boolean isServiceQualified() {
+    public boolean isQualified() {
         return true;
     }
 

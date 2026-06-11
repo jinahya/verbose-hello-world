@@ -36,7 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 class HelloWorldDi_Spring_Test extends HelloWorldDi__Test {
 
     @BeforeEach
-    void autowireBean() {
+    void _beforeEach() {
         final var context =
                 new org.springframework.context.annotation.AnnotationConfigApplicationContext(
                         HelloWorldDi_Spring_Configuration.class

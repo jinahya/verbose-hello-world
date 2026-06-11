@@ -33,6 +33,8 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * A test class demonstrating password hashing for credential storage using {@code PBKDF2},
  * {@code scrypt}, and {@code Argon2id}: each test signs up a password by deriving a hash, packs
@@ -158,7 +160,7 @@ class _Javax_Crypto_PBE_Test {
                 final var attempt = new byte[COLUMN_BYTES];
                 System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                 System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                Assertions.assertArrayEquals(column, attempt);
+                assertArrayEquals(column, attempt);
             }
         }
     }
@@ -257,7 +259,7 @@ class _Javax_Crypto_PBE_Test {
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                    Assertions.assertArrayEquals(column, attempt);
+                    assertArrayEquals(column, attempt);
                 }
             }
         }
@@ -319,7 +321,7 @@ class _Javax_Crypto_PBE_Test {
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                    Assertions.assertArrayEquals(column, attempt);
+                    assertArrayEquals(column, attempt);
                 }
             }
         }
@@ -426,7 +428,7 @@ class _Javax_Crypto_PBE_Test {
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                    Assertions.assertArrayEquals(column, attempt);
+                    assertArrayEquals(column, attempt);
                 }
             }
         }
@@ -509,7 +511,7 @@ class _Javax_Crypto_PBE_Test {
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                    Assertions.assertArrayEquals(column, attempt);
+                    assertArrayEquals(column, attempt);
                 }
             }
         }

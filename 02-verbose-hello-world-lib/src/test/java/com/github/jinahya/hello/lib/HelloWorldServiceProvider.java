@@ -25,7 +25,7 @@ import com.github.jinahya.hello.api.*;
 /**
  * A test-only {@link java.util.ServiceLoader ServiceLoader} SPI in which each provider supplies a
  * {@link HelloWorld} instance and classifies it as either <em>qualified</em>
- * ({@link #isServiceQualified()} {@code == true}) or <em>unqualified</em> (the complementary set).
+ * ({@link #isQualified()} {@code == true}) or <em>unqualified</em> (the complementary set).
  * The {@code HelloWorldSpi_*_Test} family uses this partition to exercise the
  * {@link HelloWorld#set(byte[], int)} contract against different service subsets.
  *
@@ -38,16 +38,7 @@ interface HelloWorldServiceProvider {
      *
      * @return {@code true} if the supplied service is qualified; {@code false} otherwise.
      */
-    boolean isServiceQualified();
-
-    /**
-     * Convenience utility that returns the inverse of {@link #isServiceQualified()}.
-     *
-     * @return {@code !isServiceQualified()}.
-     */
-    default boolean isServiceUnqualified() {
-        return !isServiceQualified();
-    }
+    boolean isQualified();
 
     /**
      * Returns a {@link HelloWorld} instance to be exercised by the tests. Implementations should
