@@ -35,7 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 class HelloWorldDi_Hk2_Test extends HelloWorldDi__Test {
 
     @BeforeEach
-    void inject() {
+    void _beforeEach() {
         final var binder = new HelloWorldDi_Hk2_Binder();
         final var locator = org.glassfish.hk2.utilities.ServiceLocatorUtilities.bind(binder);
         locator.inject(this);

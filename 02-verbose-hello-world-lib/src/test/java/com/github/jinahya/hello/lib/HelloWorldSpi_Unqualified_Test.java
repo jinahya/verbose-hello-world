@@ -29,10 +29,9 @@ import java.util.stream.*;
 /**
  * Runs the {@link HelloWorld#set(byte[], int) set(array, index)} contract inherited from
  * {@link HelloWorld__Test} against every <em>unqualified</em> {@link HelloWorld} — i.e. services
- * supplied by providers whose
- * {@link HelloWorldServiceProvider#isServiceUnqualified() isServiceUnqualified()} returns
- * {@code true} ({@link HelloWorldDemo}) — filtering the stream returned by the base class's
- * {@link HelloWorldSpi__Test#providers() providers()}.
+ * supplied by providers whose {@link HelloWorldServiceProvider#isQualified() isServiceQualified()}
+ * returns {@code false} ({@link HelloWorldDemo}) — filtering the stream returned by the base
+ * class's {@link HelloWorldSpi__Test#providers() providers()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -42,7 +41,7 @@ class HelloWorldSpi_Unqualified_Test extends HelloWorldSpi__Test {
 
     static Stream<HelloWorldServiceProvider> providers() {
         return HelloWorldSpi__Test.providers()
-                .filter(HelloWorldServiceProvider::isServiceUnqualified);
+                .filter(p -> !p.isQualified());
     }
 
     @Override

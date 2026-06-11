@@ -24,7 +24,7 @@ import com.github.jinahya.hello.api.*;
 
 /**
  * A {@link HelloWorldServiceProvider} that supplies {@link HelloWorldDemo} instances. The supplied
- * service is classified as <em>unqualified</em> ({@link #isServiceQualified()} returns
+ * service is classified as <em>unqualified</em> ({@link #isQualified()} returns
  * {@code false}).
  *
  * <p>{@code public} so {@link java.util.ServiceLoader ServiceLoader}'s classpath-mode
@@ -40,7 +40,7 @@ public class HelloWorldServiceProvider_Demo implements HelloWorldServiceProvider
      * @return {@code false}.
      */
     @Override
-    public boolean isServiceQualified() {
+    public boolean isQualified() {
         return false;
     }
 

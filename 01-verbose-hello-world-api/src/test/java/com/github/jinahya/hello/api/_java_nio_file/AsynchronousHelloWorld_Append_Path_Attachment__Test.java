@@ -66,7 +66,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
     void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
-        HelloWorld__TestUtils.append_path_appends_hello_world(synchronousService());
+        HelloWorld__TestUtils.put_buffer12_increases_buffer_position_by_12(synchronousService());
         final var path = Files.createTempFile(tempDir, null, null);
         HelloWorld__TestUtils.writeSome(path);
         final var size = Files.size(path);

@@ -79,7 +79,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         final var mapper = mock(Function.class);
         doReturn(value).when(mapper).apply(synchronousService);
         final var attachment = new Object();
-        final var handler = (CompletionHandler<Integer, Object>) mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         asynchronousService.applyAsync(mapper, attachment, handler);
         // ------------------------------------------------------------------------------------ then
@@ -102,7 +102,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         final var mapper = mock(Function.class);
         doThrow(exc).when(mapper).apply(synchronousService);
         final var attachment = new Object();
-        final var handler = (CompletionHandler<Object, Object>) mock(CompletionHandler.class);
+        final var handler = mock(CompletionHandler.class);
         // ------------------------------------------------------------------------------------ when
         asynchronousService.applyAsync(mapper, attachment, handler);
         // ------------------------------------------------------------------------------------ then

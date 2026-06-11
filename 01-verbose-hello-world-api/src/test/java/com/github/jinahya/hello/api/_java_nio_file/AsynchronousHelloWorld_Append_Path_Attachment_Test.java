@@ -25,11 +25,15 @@ import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -44,6 +48,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
         >
         extends AsynchronousHelloWorld__Test<HelloWorld, T> {
+
+    private static final long TIMEOUT_SECONDS = 8L;
 
     AsynchronousHelloWorld_Append_Path_Attachment_Test(
             final Function<? super HelloWorld, ? extends T> initializer) {
@@ -64,43 +70,73 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
 
     /**
      * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
-     * the supplied {@code attachment} once the synchronous append succeeds.
+     * the supplied {@code attachment} once the asynchronous append succeeds.
      *
      * @throws Exception if an error occurs.
      */
     @DisplayName("""
             should complete the returned stage with the <attachment>
-            once the synchronous append succeeds""")
+            once the asynchronous append succeeds""")
     @Test
+    @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
         final var asynchronousService = asynchronousService();
         final var path = mock(Path.class);
-        doReturn(path).when(synchronousService()).append(path);
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var initialSize = ThreadLocalRandom.current().nextLong(1024L);
+        doReturn(initialSize).when(channel).size();
+        doAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var att = i.getArgument(2);
+            final CompletionHandler innerHandler = i.getArgument(3, CompletionHandler.class);
+            final var n = src.remaining();
+            src.position(src.position() + n);
+            innerHandler.completed(n, att);
+            return null;
+        }).when(channel).write(any(), anyLong(), any(), any());
         final var attachment = new Object();
-        final var future = asynchronousService.append(path, attachment);
-        assertSame(attachment, future.toCompletableFuture().get(8L, TimeUnit.SECONDS));
+        try (var mockStatic = mockStatic(AsynchronousFileChannel.class)) {
+            mockStatic.when(() -> AsynchronousFileChannel.open(same(path), any(OpenOption[].class)))
+                    .thenReturn(channel);
+            // -------------------------------------------------------------------------------- when
+            final var future = asynchronousService.append(path, attachment);
+            // -------------------------------------------------------------------------------- then
+            assertSame(attachment, future.toCompletableFuture().get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        }
+        verify(channel, times(1)).close();
     }
 
     /**
      * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes
-     * exceptionally when the synchronous append fails.
+     * exceptionally when
+     * {@link AsynchronousFileChannel#open(Path, java.nio.file.OpenOption...)
+     * AsynchronousFileChannel.open(path, ...)} throws.
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "should complete the returned stage exceptionally when the synchronous append fails")
+    @DisplayName("""
+            should complete the returned stage exceptionally
+            when <AsynchronousFileChannel.open(path, ...)> throws""")
     @Test
     void __failed() throws IOException {
+        // ----------------------------------------------------------------------------------- given
         final var asynchronousService = asynchronousService();
         final var path = mock(Path.class);
-        final var exc = new IOException("simulated append failure");
-        doThrow(exc).when(synchronousService()).append(path);
+        final var exc = new IOException("simulated open failure");
         final var attachment = new Object();
-        final var future = asynchronousService.append(path, attachment);
-        final var cause = assertThrows(
-                ExecutionException.class,
-                () -> future.toCompletableFuture().get(8L, TimeUnit.SECONDS)
-        ).getCause();
-        assertSame(exc, cause);
+        try (var mockStatic = mockStatic(AsynchronousFileChannel.class)) {
+            mockStatic.when(() -> AsynchronousFileChannel.open(same(path), any(OpenOption[].class)))
+                    .thenThrow(exc);
+            // -------------------------------------------------------------------------------- when
+            final var future = asynchronousService.append(path, attachment);
+            // -------------------------------------------------------------------------------- then
+            final var cause = assertThrows(
+                    ExecutionException.class,
+                    () -> future.toCompletableFuture().get(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            ).getCause();
+            assertSame(exc, cause);
+        }
     }
 }

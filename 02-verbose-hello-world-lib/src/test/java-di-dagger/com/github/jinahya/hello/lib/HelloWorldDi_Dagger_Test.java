@@ -37,7 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 class HelloWorldDi_Dagger_Test extends HelloWorldDi__Test {
 
     @BeforeEach
-    void injectMembers() {
+    void _beforeEach() {
         final var injector = DaggerHelloWorldDi_Dagger_MembersInjector.create();
         injector.injectMembers(this);
     }
