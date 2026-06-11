@@ -633,7 +633,11 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             }
             @Override
             public void failed(final Throwable exc, final A attachment) {
-                try { channel.close(); } catch (final IOException s) { exc.addSuppressed(s); }
+                try {
+                    channel.close();
+                } catch (final IOException s) {
+                    exc.addSuppressed(s);
+                }
                 handler.failed(exc, attachment);
             } // @formatter:on
         });
