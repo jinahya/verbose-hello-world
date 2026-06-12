@@ -27,6 +27,13 @@ import java.util.concurrent.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising
+ * {@link StructuredConcurrencyHelloWorld#applyAsync(java.util.function.Function) applyAsync(mapper)}
+ * on each {@link HelloWorld} method, organized as one {@link Nested} class per target method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("applyAsync(mapper)")
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
         extends
@@ -39,6 +46,11 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code applyAsync(mapper)} on the asynchronous service to invoke the mapper on the
+     * synchronous service before each test.
+     */
     @BeforeEach
     void __() {
         AsynchronousHelloWorldTestUtils.applyAsync_mapper_applies_(

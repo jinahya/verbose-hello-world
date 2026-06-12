@@ -43,6 +43,9 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class ReactiveHelloWorld_Byte_ProcessorTest {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(30L);
 
     // ---------------------------------------------------------------------------------------------
@@ -52,12 +55,20 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code set(array)} writes the {@code hello-world-bytes} before each
+     * test.
+     */
     @BeforeEach
     void stubService() {
         set_array_sets_hello_world_bytes(service);
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the processor closes cleanly when no subscriber is ever attached.
+     */
     @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
@@ -65,6 +76,11 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
         }
     }
 
+    /**
+     * Verifies that the processor delivers {@code min(d, 12)} elements to each subscriber and an
+     * {@code onComplete} signal when {@code d >= 12}, given two subscribers requesting
+     * {@code BYTES - 1} and {@code BYTES + 1}.
+     */
     @DisplayName("""
             should deliver <min(d, 12)> elements to each subscriber and <onComplete>
             when <d >= 12>, given two subscribers requesting <BYTES - 1> and <BYTES + 1>""")
@@ -80,7 +96,7 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
                 final var subscriber = spy(new Subscriber<Byte>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
-                        Thread.ofVirtual().start(() -> {
+                        Thread.ofPlatform().daemon().start(() -> {
                             for (int i = 0; i < d; i++) {
                                 s.request(1L);
                             }

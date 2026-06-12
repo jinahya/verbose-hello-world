@@ -59,6 +59,9 @@ import static org.mockito.Mockito.*;
 class ReactiveHelloWorld_Byte_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<Byte> {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     // ---------------------------------------------------------------------------------------------
@@ -67,6 +70,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the publisher emits exactly {@value HelloWorld#BYTES} elements followed by
+     * {@code onComplete} when the subscriber calls {@code request(12)}.
+     */
     @DisplayName(
             "should emit <12> elements and <onComplete> when the subscriber calls <request(12)>")
     @Test
@@ -98,6 +105,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher emits {@code n} elements with no {@code onComplete} signal when
+     * the subscriber calls {@code request(n)} with {@code n} in {@code [1, 12)}.
+     */
     @DisplayName("""
             should emit <n> elements with no <onComplete>
             when the subscriber calls <request(n)> with <n> in <[1, 12)>""")
@@ -128,6 +139,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher emits {@value HelloWorld#BYTES} elements followed by
+     * {@code onComplete} when the subscriber calls {@code request(n)} with {@code n > 12}.
+     */
     @DisplayName("""
             should emit <12> elements and <onComplete>
             when the subscriber calls <request(n)> with <n > 12>""")
@@ -159,6 +174,12 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher signals neither {@code onError} nor {@code onComplete} when
+     * {@code request(1)} is called repeatedly while a concurrent {@code cancel} arrives.
+     *
+     * @throws InterruptedException if the joining threads are interrupted.
+     */
     @DisplayName("""
             should signal neither <onError> nor <onComplete>
             when <request(1)> is called repeatedly with concurrent <cancel>""")
@@ -171,7 +192,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         final var canceller = new AtomicReference<Thread>();
         final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
-                requester.set(Thread.ofVirtual().start(() -> {
+                requester.set(Thread.ofPlatform().daemon().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {
                         sleep(Duration.ofSeconds(1L));
                         lock.lock();
@@ -179,7 +200,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
                         } finally { lock.unlock(); }
                     }
                 }));
-                canceller.set(Thread.ofVirtual().start(() -> {
+                canceller.set(Thread.ofPlatform().daemon().start(() -> {
                     sleep(3L, 6L);
                     lock.lock();
                     try { s.cancel(); terminated.set(true); } finally { lock.unlock(); }

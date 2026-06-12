@@ -32,21 +32,40 @@ import java.util.concurrent.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising {@link HelloWorld#append(File) append(file)} against a real {@link File}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("append(file)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Append_File__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static File tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code service.append(file)} to append the {@code hello-world-bytes} to {@code file}.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __stubService() throws IOException {
         append_file_appends_hello_world(service());
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that {@link HelloWorld#append(File) append(file)} throws a
+     * {@link FileNotFoundException} when the {@code file} is a directory.
+     */
     @DisplayName("should throw a <FileNotFoundException> when the <file> is a <directory>")
     @Test
     void __Directory() {
@@ -62,6 +81,12 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         assertThrows(FileNotFoundException.class, () -> service.append(directory));
     }
 
+    /**
+     * Verifies that {@link HelloWorld#append(File) append(file)} increases the {@code file}'s
+     * length by {@value HelloWorld#BYTES} bytes when the {@code file} exists.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
     @Test
     void __Existing() throws IOException {
@@ -79,6 +104,12 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         assertEquals(length + HelloWorld.BYTES, file.length());
     }
 
+    /**
+     * Verifies that {@link HelloWorld#append(File) append(file)} creates the {@code file} with
+     * {@value HelloWorld#BYTES} bytes when the {@code file} does not exist.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should create the <file> with <12> bytes when the <file> does not exist")
     @Test
     void __NotExisting() throws IOException {
@@ -97,6 +128,12 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
         assertEquals(HelloWorld.BYTES, file.length());
     }
 
+    /**
+     * Verifies that {@link HelloWorld#append(File) append(file)} produces a file of
+     * {@value HelloWorld#BYTES} bytes regardless of whether the file existed beforehand.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
     @Test
     void __() throws IOException {

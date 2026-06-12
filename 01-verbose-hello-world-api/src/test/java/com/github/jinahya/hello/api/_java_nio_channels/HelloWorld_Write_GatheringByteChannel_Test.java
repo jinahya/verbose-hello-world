@@ -95,7 +95,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
         final var bytes = HelloWorld__TestUtils.hello_world_byte_array();
         final var pipe = Pipe.open();
         // ----------------------------------------------------------------------------------- write
-        final var writer = Thread.ofVirtual().start(() -> {
+        final var writer = Thread.ofPlatform().daemon().start(() -> {
             try (var sink = pipe.sink()) {
                 final var srcs = new ByteBuffer[] {
                         ByteBuffer.wrap(bytes, 0, 5), // "hello"
@@ -275,7 +275,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
         final var result = operator.calc(operand1, operand2);
         final var pipe = Pipe.open();
         // ----------------------------------------------------------------------------------- write
-        final var thread = Thread.ofVirtual().start(() -> {
+        final var thread = Thread.ofPlatform().daemon().start(() -> {
             try (var sink = pipe.sink()) {
                 final var srcs = new ByteBuffer[] {
                         ByteBuffer.wrap(operator.name().getBytes(StandardCharsets.US_ASCII)),

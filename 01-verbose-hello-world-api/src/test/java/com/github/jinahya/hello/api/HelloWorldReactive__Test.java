@@ -30,13 +30,11 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
- * An abstract base for tests that demonstrate a reactive library's <em>own</em> publisher-creation
- * idioms against {@link HelloWorld} / {@link AsynchronousHelloWorld} — i.e., the library defines
- * its own publisher and fetches the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> directly from the service
- * (no intermediate {@code org.reactivestreams.Publisher}).
- * <p>
- * Subclasses are expected to be named {@code ReactiveHelloWorld_<Library>_Test}.
+ * An abstract base for tests demonstrating a reactive library's own publisher-creation idioms
+ * against {@link HelloWorld} / {@link AsynchronousHelloWorld} — the library defines its own
+ * publisher and fetches the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
+ * directly from the service (no intermediate {@code org.reactivestreams.Publisher}). Subclasses
+ * are named {@code HelloWorldReactive_<Library>_Test}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -50,6 +48,11 @@ abstract class HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the synchronous service so that {@code set(array)} writes the {@code hello-world-bytes}
+     * before each test.
+     */
     @BeforeEach
     void stubService() {
         set_array_sets_hello_world_bytes(synchronousService);

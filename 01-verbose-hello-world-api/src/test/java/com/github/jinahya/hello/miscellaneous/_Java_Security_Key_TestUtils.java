@@ -26,9 +26,12 @@ import java.security.*;
 import java.util.*;
 
 /**
- * A class providing test utilities for {@link java.security.Key}.
+ * A class providing test utilities for {@link java.security.Key} usages.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
+@SuppressWarnings({"java:S101"})
 class _Java_Security_Key_TestUtils {
 
     static void printKey(final Key key) {

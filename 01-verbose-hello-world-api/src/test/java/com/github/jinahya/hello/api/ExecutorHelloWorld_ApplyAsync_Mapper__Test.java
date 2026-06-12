@@ -27,6 +27,13 @@ import java.util.concurrent.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising {@link ExecutorHelloWorld#applyAsync(java.util.function.Function)
+ * applyAsync(mapper)} on each {@link HelloWorld} method through a same-thread
+ * ({@code Runnable::run}) executor, organized as one {@link Nested} class per target method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("applyAsync(mapper)")
 class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
@@ -37,6 +44,11 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code applyAsync(mapper)} on the asynchronous service to invoke the mapper on the
+     * synchronous service before each test.
+     */
     @BeforeEach
     void __() {
         AsynchronousHelloWorldTestUtils.applyAsync_mapper_applies_(
@@ -56,6 +68,12 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetArray_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor} and returns
+         * the {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should apply <mapper> via the <executor> and return the <hello-world-bytes>")
         @Test
         void __() throws Exception {
@@ -75,6 +93,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class ByteArray_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -85,6 +106,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class String_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -95,6 +119,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Appendable_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -106,6 +133,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Segment_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -117,6 +147,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class OutputStream_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -127,6 +160,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class InputStream_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -137,6 +173,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class File_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -147,6 +186,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DataOutput_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -157,6 +199,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Writer_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -167,6 +212,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Reader_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -177,6 +225,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class File_Charset_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -187,6 +238,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class AsInputStream_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -198,6 +252,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramPacket_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -208,6 +265,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramSocket_SocketAddress_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -218,6 +278,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramSocket_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -228,6 +291,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Socket_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -238,6 +304,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class URLConnection_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -249,6 +318,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class HttpRequestBuilder_String_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -262,6 +334,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class ByteBuffer_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -272,6 +347,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Supplier_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -282,6 +360,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class ByteBuffer__Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -292,6 +373,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Put_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -303,6 +387,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class WritableByteChannel_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -313,6 +400,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramChannel_SocketAddress_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -323,6 +413,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramChannel_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -333,6 +426,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class AsynchronousByteChannel_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -343,6 +439,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class AsynchronousFileChannel_Long_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -354,6 +453,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Path_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -365,6 +467,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class MessageDigest_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -375,6 +480,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Signature_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -386,6 +494,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetAsciiStream_PreparedStatement_Int_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -396,6 +507,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBinaryStream_PreparedStatement_Int_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -406,6 +520,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBytes_PreparedStatement_Int_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -416,6 +533,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetCharacterStream_PreparedStatement_Int_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -426,6 +546,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBinaryStream_Blob_Long_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -436,6 +559,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBytes_Blob_Long_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -446,6 +572,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetAsciiStream_Clob_Long_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -456,6 +585,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetCharacterStream_Clob_Long_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -466,6 +598,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetString_Clob_Long_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -477,6 +612,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class BitSet_Int_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -487,6 +625,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SequencedCollection_Function_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -497,6 +638,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SequencedCollection_IntFunction_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -507,6 +651,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SequencedMap_IntFunction_Function_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -518,6 +665,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Consumer_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -528,6 +678,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Consumer_Function_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -538,6 +691,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class IntConsumer_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -551,6 +707,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Checksum_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -561,6 +720,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Deflater_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {
@@ -574,6 +736,9 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Mac_Test {
 
+        /**
+         * Asserts that the method applies the {@code mapper} via the {@code executor}.
+         */
         @DisplayName("should apply <mapper> via the <executor>")
         @Test
         void __() {

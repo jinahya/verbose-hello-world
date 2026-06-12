@@ -43,6 +43,9 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]> {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     // ---------------------------------------------------------------------------------------------
@@ -50,7 +53,12 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         super(HelloWorldArrayPublisher::new);
     }
 
-    // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the publisher emits at least {@code n} elements when a single subscriber calls
+     * {@code request(n)} with {@code n > 0}.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName(
             "should emit at least <n> elements when the subscriber calls <request(n)> with <n > 0>")
     @Test
@@ -90,6 +98,12 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         } // @formatter:on
     }
 
+    /**
+     * Verifies that, with multiple subscribers each calling {@code request(n)}, every subscriber
+     * receives its own {@code n} elements independently.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should give each subscriber its own <n> elements
             when multiple subscribers each call <request(n)>""")
@@ -144,6 +158,12 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher signals {@code onError} (and no further signals) when
+     * {@code service.set} throws.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("should signal <onError> with no further signals when <service.set> throws")
     @Test
     void __serviceThrows() throws Exception { // @formatter:off

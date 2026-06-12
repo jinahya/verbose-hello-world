@@ -69,6 +69,8 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_T
      * Verifies that the returned {@link java.util.concurrent.CompletionStage stage} completes with
      * the supplied {@code attachment} once all {@value HelloWorld#BYTES} bytes have been written
      * across one or more partial writes.
+     *
+     * @throws Exception if an error occurs.
      */
     @DisplayName("""
             should complete the returned stage with the <attachment>

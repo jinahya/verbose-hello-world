@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.miscellaneous;
 
 /*-
  * #%L
@@ -28,8 +28,8 @@ import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import static com.github.jinahya.hello.api._Java_Nio__TestUtils.*;
-import static com.github.jinahya.hello.api._Java__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Nio__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java__TestUtils.*;
 
 /**
  * A class providing test utilities for {@link java.nio.channels} usages.

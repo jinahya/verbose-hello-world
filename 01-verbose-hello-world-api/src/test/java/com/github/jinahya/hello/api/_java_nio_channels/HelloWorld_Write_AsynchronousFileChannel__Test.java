@@ -44,10 +44,21 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 @Slf4j
 class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static Path tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code service.write(channel, position)} to write the {@code hello-world-bytes} to the
+     * channel before each test.
+     *
+     * @throws ExecutionException   if an error occurs.
+     * @throws InterruptedException if interrupted while stubbing.
+     */
     @BeforeEach
     void __stubService() throws ExecutionException, InterruptedException {
         write_asynchronousfilechannel_long_writes_hello_world(service());

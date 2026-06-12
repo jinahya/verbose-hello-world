@@ -48,6 +48,13 @@ import static org.mockito.Mockito.*;
 class HelloWorld_Append_File_Using_RandomAccessFile_Test
         extends HelloWorld__Test {
 
+    /**
+     * Verifies that {@link HelloWorld#write(DataOutput)} writes the {@code hello-world-bytes} to a
+     * real {@link File} when driven through a {@link RandomAccessFile} positioned at a random offset.
+     *
+     * @param dir the {@link TempDir} that holds the temp file.
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should write <hello-world-bytes> to the <file> through a <RandomAccessFile>")
     @Test
     void __(@TempDir final File dir)

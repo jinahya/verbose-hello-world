@@ -2,6 +2,26 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## This is a standalone Java code project
+
+This repository is a standalone Java code project. Treat it as one: edit `.java` sources, run `./mvnw test`, write javadoc in English, follow the conventions in this file. No asciidoc-book conventions, no Korean-prose rules, no "submodule is read-only" guard — those belong to other projects that may embed this one, not to this repository.
+
+This CLAUDE.md is the project's own — the only ruleset that applies when working in this tree.
+
+## Do not touch any `.git`-related stuff
+
+Git is entirely the author's domain. Do not read, write, stage, commit, stash, branch, reset, restore, push, pull, fetch, merge, rebase, tag, or otherwise touch git state. Do not run mutating git commands (`git add` / `commit` / `stash` / `reset` / `checkout` / `branch` / `rm` / `mv` / `switch` / `restore` / `push` / `pull` / `fetch` / `merge` / `rebase` / `cherry-pick` / `tag` / `submodule update` / `config` / `clean`) and do not run read-only git commands (`git status` / `diff` / `log` / `rev-parse` / `show` / `ls-files` / `blame` / `rev-list` / `for-each-ref` / `remote` / `submodule status`). Do not touch `.git/` filesystem entries — no removing `.git/index.lock`, no editing `.git/HEAD`, nothing under `.git/`.
+
+The working tree's dirty state is invisible. Modified files, untracked files, half-applied edits from prior sessions, stale lock files — none of it blocks work, none of it gets surfaced as a question. Proceed with the actual task as if the working tree were perfectly clean.
+
+Single exception: the user types an explicit git command request in the current turn ("commit this with message X", "what does git status show"). Then run exactly that command and nothing more.
+
+## Do not touch anything outside this CLAUDE.md's scope
+
+The scope of this CLAUDE.md is this repository's working tree (the directory this file lives in, recursively). **Do not read, write, copy, move, delete, or otherwise touch any file outside that scope** — not parent directories, not sibling projects that may embed this one, not the host project's `.claude/` or `CLAUDE.md` or skills, not anything reachable via `../` or absolute paths above this tree.
+
+This holds even when the cwd is somewhere above this directory and this tree appears as a sub-path. If a request would require touching files outside this scope, stop and surface the request to the user rather than reaching out. "While I'm here" cross-tree edits, "let me sync this from the parent" reflexes, and "I'll just copy that skill in" shortcuts are all forbidden by this rule.
+
 ## Project Overview
 
 A verbose "hello, world" project whose sole purpose is to explore and learn about (almost) all Java I/O related APIs, using the simplest possible payload: the 12-byte string `"hello, world"`. The API module's `HelloWorld` interface provides default method implementations covering every major I/O pathway in the JDK (`java.io`, `java.nio`, `java.net`, async channels, reactive streams, etc.). The lib and app modules additionally demonstrate DI/CDI integration patterns (Dagger, Guice, HK2, Spring, OpenWebBeans, Weld).

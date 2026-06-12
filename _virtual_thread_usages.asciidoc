@@ -1,0 +1,64 @@
+= 가상 스레드 사용 현황 (virtual thread usages)
+:toc: macro
+
+이 파일은 `verbose-hello-world` 코드 프로젝트 안에서 **가상 스레드** API (`Thread.ofVirtual()`, `Thread.startVirtualThread(...)`, `Executors.newVirtualThreadPerTaskExecutor()`) 를 그대로 둘 수밖에 없는 위치들을 정리한다. 다른 호출 지점들은 모두 플랫폼 스레드 (`Thread.ofPlatform().daemon()`, `Executors.newCachedThreadPool()`) 로 옮겼다.
+
+toc::[]
+
+== main 트리
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 사유
+
+| VT-0001
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldArrayPublisher.java[`HelloWorldArrayPublisher.java:95`]
+| 설계 의도
+| 클래스 javadoc 이 명시적으로 "Virtual threads are always daemon, so an abandoned subscriber cannot block JVM shutdown" 이라고 적고 있고, 구독 한 건당 하나의 가상 스레드를 띄우는 모양이 클래스 자체의 교습 포인트이다. `Thread.ofVirtual().name("hello-world-array-producer").start(...)` 호출은 `SubmissionPublisher.hasSubscribers()` 가 거짓이 될 때까지 루프하면서 페이로드를 공급한다. 플랫폼 스레드로 옮기면 daemon 플래그를 별도로 설정해야 하고 "구독자별 가상 스레드" 라는 책의 화제가 사라진다.
+
+| VT-0002
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/HelloWorldBytePublisher.java[`HelloWorldBytePublisher.java:65`]
+| javadoc 참조
+| 실제 호출은 없고, 클래스 javadoc 의 executor 선택 절에서 ``\`Executors.newVirtualThreadPerTaskExecutor()\` is a fine alternative`` 라고 안내하는 문장 안에만 등장한다. 생성자는 임의의 `Executor` 를 받으므로 가상 스레드는 사용자의 선택지 중 하나로 소개될 뿐이다. 코드 변경 대상이 아니다.
+
+| VT-0003
+| link:01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/StructuredConcurrencyHelloWorld.java[`StructuredConcurrencyHelloWorld.java:102, 135`]
+| 설계 의도
+| `StructuredTaskScope` (JEP 505 / 506, JDK 25) 기반 `AsynchronousHelloWorld` 구현이다. `applyAsync(...)` 호출마다 가상 스레드를 새로 띄워 그 안에서 scope 를 열고 단일 subtask 를 fork 한다. 가상 스레드 전제로 도입된 구조적 동시성 API 의 쓰임 자체가 이 클래스의 존재 이유이며, 플랫폼 스레드를 쓰는 변형은 별도의 `ExecutorHelloWorld` 클래스로 분리되어 있다.
+|===
+
+== test 트리
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| ID | 위치 | 종류 | 사유
+
+| VT-0004
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/ReactiveHelloWorldArrayPublisher.java[`ReactiveHelloWorldArrayPublisher.java:144`]
+| 설계 의도
+| `org.reactivestreams.Publisher` 의 다른 변형 (`byte[]` 단위) 구현이다. 클래스 javadoc 이 "Virtual threads are always daemon threads, so an abandoned subscriber cannot block JVM shutdown" 이라고 명시하고 구독 한 건당 가상 스레드 하나를 띄우는 모양을 설명한다. main 트리의 `HelloWorldArrayPublisher` 와 같은 사유로 가상 스레드를 유지한다.
+
+| VT-0005
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/api/ReactiveHelloWorldBytePublisher.java[`ReactiveHelloWorldBytePublisher.java:134`]
+| 설계 의도
+| 같은 패키지의 단일 `Byte` 발행 변형이다. javadoc 이 동일하게 daemon-by-default 동작을 인용하며, 구독자 단위 가상 스레드가 클래스의 발행 모델 자체이다. 플랫폼 스레드로 옮기면 javadoc 과 코드가 어긋난다.
+
+| VT-0006
+| link:01-verbose-hello-world-api/src/test/java/com/github/jinahya/hello/miscellaneous/_Java_Util_Concurrent_ExecutorService_TestUtils.java[`_Java_Util_Concurrent_ExecutorService_TestUtils.java:58`]
+| 파라미터화 대상
+| `executorStreamAsynchronousChannelGroup()` 은 `AsynchronousChannelGroup` 의 backing executor 후보들을 `Named` 로 묶어 스트림으로 돌려준다. 후보 네 가지 중 하나가 바로 `newThreadPerTaskExecutor(Thread.ofVirtual().name("ch-", 0).factory())` 이며, 나머지 셋은 `newFixedThreadPool` / `newCachedThreadPool` / `newThreadPerTaskExecutor` 의 플랫폼 변형이다. 이 파일의 목적 자체가 가상 / 플랫폼 두 갈래를 동시에 시험하는 것이므로 가상 항목은 제거 대상이 아니다.
+|===
+
+== 교체 결과 요약
+
+플랫폼 스레드로 옮긴 호출 지점 (총 10 건):
+
+- `ReactiveHelloWorld_Byte_ProcessorTest.java:83` — `Thread.ofPlatform().daemon().start(...)`
+- `ReactiveHelloWorld_Byte_PublisherTest.java:174, 182` — `Thread.ofPlatform().daemon().start(...)`
+- `ReactiveHelloWorld_String_ProcessorTest.java:85` — `Thread.ofPlatform().daemon().start(...)`
+- `_java_net/HelloWorld_Send_MulticastSocket_Test.java:109, 200` — `Executors.newCachedThreadPool()`
+- `_java_nio_channels/AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test.java:117, 171` — `Thread.ofPlatform().daemon().unstarted(...)`
+- `_java_nio_channels/AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handler_Test.java:146, 206` — `Thread.ofPlatform().daemon().unstarted(...)`
+- `_java_nio_channels/HelloWorld_Write_GatheringByteChannel_Test.java:98, 278` — `Thread.ofPlatform().daemon().start(...)`
+
+유지된 가상 스레드 호출 지점은 위 표 (총 7 건, doc-only 1 건 포함) 와 같다.

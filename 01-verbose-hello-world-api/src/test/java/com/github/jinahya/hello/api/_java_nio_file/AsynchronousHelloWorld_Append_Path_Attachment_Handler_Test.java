@@ -50,8 +50,16 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         >
         extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
+    /**
+     * Verification timeout, in milliseconds, used to await asynchronous {@code handler.completed}.
+     */
     private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(8L);
 
+    /**
+     * Creates a new instance with the specified service initializer.
+     *
+     * @param initializer the function that wraps a {@link HelloWorld} into the subject under test.
+     */
     AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test(
             final Function<? super HelloWorld, ? extends T> initializer) {
         super(HelloWorld.class, initializer);
@@ -100,9 +108,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
      * {@link AsynchronousFileChannel#size() channel.size()}, closes the channel, and invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(path, attachment)}.
      */
-    @DisplayName("""
-            should open <path>, write at <channel.size()>, close,
-            and invoke <handler.completed(path, attachment)>""")
+    @DisplayName("should open <path>, write at <channel.size()>, close, and invoke <handler.completed(path, attachment)>")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
@@ -143,9 +149,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
      * AsynchronousFileChannel.open(path, ...)} throws an {@link IOException}, the method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName("""
-            should invoke <handler.failed(exc, attachment)>
-            when <AsynchronousFileChannel.open(path, ...)> throws""")
+    @DisplayName("should invoke <handler.failed(exc, attachment)> when <AsynchronousFileChannel.open(path, ...)> throws")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

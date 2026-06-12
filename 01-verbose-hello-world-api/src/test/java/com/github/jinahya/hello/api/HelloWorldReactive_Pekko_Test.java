@@ -32,18 +32,12 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of <a href="https://pekko.apache.org/docs/pekko/current/stream/">Apache Pekko
- * Streams</a>'s own publisher-creation idioms — each test creates a
- * {@link Source Source&lt;byte[],?&gt;} that pulls the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
- * Streams publisher).
- * <p>
- * Pekko is the Apache Software Foundation fork of Akka 2.6 (kept under Apache-2.0 after Lightbend's
- * relicensing) and is API-compatible with the Akka tests; the nested split is by
- * <em>terminal sink</em>: single-value sinks ({@link Sink#head()}) versus multi-value sinks
- * ({@link Sink#seq()}).
+ * Tests <a href="https://pekko.apache.org/docs/pekko/current/stream/">Apache Pekko Streams</a>'s
+ * publisher-creation idioms — each test builds a {@link Source Source&lt;byte[],?&gt;} pulling the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
+ * asynchronous service. Pekko is the Apache fork of Akka 2.6 and is API-compatible with the Akka
+ * tests; the nested split is by terminal sink: single-value ({@link Sink#head()}) versus
+ * multi-value ({@link Sink#seq()}).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -54,11 +48,17 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
 
     private static ActorSystem system;
 
+    /**
+     * Creates an {@link ActorSystem} shared by all tests in this class.
+     */
     @BeforeAll
     static void setUpSystem() {
         system = ActorSystem.create("ReactiveHelloWorld_Pekko_Test");
     }
 
+    /**
+     * Terminates the {@link ActorSystem} after all tests.
+     */
     @AfterAll
     static void shutDownSystem() {
         system.terminate();
@@ -70,6 +70,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
     @Nested
     class Sink_head_Test {
 
+        /**
+         * Asserts that {@code Source.single(byte[]).runWith(Sink.head())} emits the
+         * {@code hello-world-bytes}.
+         */
         @DisplayName(
                 "should emit <hello-world-bytes> via <Source.single(byte[]).runWith(Sink.head())>")
         @Test
@@ -84,6 +88,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Source.lazySingle(Supplier).runWith(Sink.head())} emits the
+         * {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Source.lazySingle(Supplier).runWith(Sink.head())>""")
@@ -100,6 +108,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Source.completionStage(asynchronousService.applyAsync(...))
+         * .runWith(Sink.head())} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Source.completionStage(AsynchronousHelloWorld.applyAsync)
@@ -123,6 +135,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
     @Nested
     class Sink_seq_Test {
 
+        /**
+         * Asserts that {@code Source.from(Iterable).runWith(Sink.seq())} emits all elements as
+         * {@code hello-world-bytes}.
+         */
         @DisplayName(
                 "should emit <hello-world-bytes> via <Source.from(Iterable).runWith(Sink.seq())>")
         @Test
@@ -144,6 +160,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Source.range(0, n-1).map(...).runWith(Sink.seq())} emits {@code n}
+         * elements of {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Source.range(0, n-1).map(...).runWith(Sink.seq())>""")
@@ -165,6 +185,10 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Source.repeat(byte[]).take(n).runWith(Sink.seq())} emits {@code n}
+         * elements of {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Source.repeat(byte[]).take(n).runWith(Sink.seq())>""")

@@ -73,6 +73,11 @@ abstract class ReactiveHelloWorld__PublisherTest<U> {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code set(array)} writes the {@code hello-world-bytes} before each
+     * test.
+     */
     @BeforeEach
     void stubService() {
         set_array_sets_hello_world_bytes(service);

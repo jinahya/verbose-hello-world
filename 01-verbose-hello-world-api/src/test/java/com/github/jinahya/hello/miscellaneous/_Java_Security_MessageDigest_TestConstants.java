@@ -21,12 +21,14 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
 
 import java.util.*;
 
 /**
- * Constants for testing {@link java.security.MessageDigest}.
+ * Constants for testing {@link java.security.MessageDigest} usages.
  *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
  * (Java 25)
@@ -34,9 +36,20 @@ import java.util.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
  * (Java 26)
  */
+@Slf4j
+@SuppressWarnings({"java:S101"})
 public final class _Java_Security_MessageDigest_TestConstants {
 
     public static final String MESSAGE_DIGEST_SERVICE_TYPE = "MessageDigest";
+
+    /**
+     * The {@link java.security.MessageDigest} algorithm names tested by this module.
+     */
+    public static final List<String> MESSAGE_DIGEST_ALGORITHMS = List.of(
+            "SHA-1",
+            "SHA-256",
+            "SHA-384"
+    );
 
     /**
      * .

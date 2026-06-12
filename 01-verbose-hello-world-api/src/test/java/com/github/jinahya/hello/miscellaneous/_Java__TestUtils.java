@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.miscellaneous;
 
 /*-
  * #%L
@@ -22,18 +22,26 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 
-import java.security.*;
+import java.util.*;
 
 /**
- * Test utilities for the {@link MessageDigest} class.
+ * A class providing common test utilities shared across the {@code _Java_*_TestUtils} family.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
 @SuppressWarnings({"java:S101"})
-public final class _Java_Security_MessageDigest_Test {
+public final class _Java__TestUtils {
 
-    private _Java_Security_MessageDigest_Test() {
+    static <T> void requireNotSame(final T in, final T out) {
+        Objects.requireNonNull(in, "in is null");
+        Objects.requireNonNull(out, "out is null");
+        if (out == in) {
+            throw new IllegalArgumentException("out(" + out + ") is same as in(" + in + ")");
+        }
+    }
+
+    private _Java__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

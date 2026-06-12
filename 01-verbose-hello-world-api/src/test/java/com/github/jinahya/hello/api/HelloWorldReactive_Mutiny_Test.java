@@ -32,16 +32,10 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of <a href="https://smallrye.io/smallrye-mutiny/">SmallRye Mutiny</a>'s own
- * publisher-creation idioms — each test creates a Mutiny {@link Uni Uni&lt;byte[]&gt;} or
- * {@link Multi Multi&lt;byte[]&gt;} that pulls the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
- * Streams publisher).
- * <p>
- * The element type is fixed to {@code byte[]} so each test reads as a pure showcase of the library
- * factory in question.
+ * Tests <a href="https://smallrye.io/smallrye-mutiny/">SmallRye Mutiny</a>'s publisher-creation
+ * idioms — each test builds a {@link Uni Uni&lt;byte[]&gt;} or {@link Multi Multi&lt;byte[]&gt;}
+ * pulling the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the
+ * synchronous or asynchronous service.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -50,6 +44,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
 
+    /**
+     * Maximum time to wait for the reactive pipeline to emit.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
@@ -59,6 +56,9 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
     @Nested
     class Uni_Test {
 
+        /**
+         * Asserts that {@code Uni.createFrom().item(byte[])} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(byte[])>")
         @Test
         void __createFrom_item() {
@@ -70,6 +70,9 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Uni.createFrom().item(Supplier)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(Supplier)>")
         @Test
         void __createFrom_item_supplier() {
@@ -81,6 +84,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Uni.createFrom().completionStage(...)} bridged to
+         * {@code asynchronousService.applyAsync(...)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Uni.createFrom().completionStage(AsynchronousHelloWorld.applyAsync)>""")
@@ -96,6 +103,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Uni.createFrom().item(...).onItem().transform(byte[]::length)} emits
+         * {@link HelloWorld#BYTES}.
+         */
         @DisplayName("""
                 should return <BYTES>
                 via <Uni.createFrom().item(...).onItem().transform(byte[]::length)>""")
@@ -116,6 +127,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
     @Nested
     class Multi_Test {
 
+        /**
+         * Asserts that {@code Multi.createFrom().item(byte[])} emits one element as the
+         * {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().item(byte[])>")
         @Test
         void __createFrom_item() {
@@ -130,6 +145,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
                               list.get(0));
         }
 
+        /**
+         * Asserts that {@code Multi.createFrom().items(byte[]...)} emits all elements as
+         * {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().items(byte[]...)>")
         @Test
         void __createFrom_items() {
@@ -150,6 +169,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.createFrom().iterable(List)} emits all elements as
+         * {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().iterable(List)>")
         @Test
         void __createFrom_iterable() {
@@ -169,6 +192,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.createFrom().<byte[]>emitter(...)} emits all pushed elements as
+         * {@code hello-world-bytes}.
+         */
         @DisplayName(
                 "should emit <hello-world-bytes> via <Multi.createFrom().<byte[]>emitter(...)>")
         @Test
@@ -189,6 +216,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.createBy().repeating().supplier(...).atMost(n)} emits {@code n}
+         * elements of {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Multi.createBy().repeating().supplier(...).atMost(n)>""")
@@ -209,6 +240,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.createFrom().completionStage(...)} bridged to
+         * {@code asynchronousService.applyAsync(...)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Multi.createFrom().completionStage(AsynchronousHelloWorld.applyAsync)>""")

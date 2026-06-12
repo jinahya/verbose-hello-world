@@ -20,6 +20,14 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+/**
+ * A class for testing
+ * {@link ExecutorHelloWorld#applyAsync(java.util.function.Function, Object,
+ * java.nio.channels.CompletionHandler) applyAsync(mapper, attachment, handler)} with a same-thread
+ * ({@code Runnable::run}) executor.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class ExecutorHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test
         extends AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         ExecutorHelloWorld<HelloWorld>

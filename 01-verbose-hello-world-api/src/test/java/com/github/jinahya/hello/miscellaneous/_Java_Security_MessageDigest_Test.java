@@ -35,9 +35,12 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_Tes
 
 /**
  * A class for testing {@link MessageDigest}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("MessageDigest")
 @Slf4j
+@SuppressWarnings({"java:S101"})
 class _Java_Security_MessageDigest_Test {
 
     private static void __(final String providerName) {

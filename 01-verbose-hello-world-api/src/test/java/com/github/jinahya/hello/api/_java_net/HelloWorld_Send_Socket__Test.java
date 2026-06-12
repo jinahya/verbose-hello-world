@@ -45,10 +45,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static File tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code service.send(socket)} to send the {@code hello-world-bytes} before each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __() throws IOException {
         send_socket_sends_hello_world_bytes(service());

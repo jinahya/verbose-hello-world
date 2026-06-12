@@ -54,6 +54,9 @@ import static org.mockito.Mockito.*;
 class ReactiveHelloWorld_Array_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<byte[]> {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
@@ -62,6 +65,10 @@ class ReactiveHelloWorld_Array_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the publisher emits exactly one element and no {@code onComplete} signal when
+     * the subscriber calls {@code request(1)}.
+     */
     @DisplayName(
             "should emit <1> element with no <onComplete> when the subscriber calls <request(1)>")
     @Test
@@ -85,6 +92,10 @@ class ReactiveHelloWorld_Array_PublisherTest
         assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue()); // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher emits exactly {@code n} elements and no {@code onComplete} signal
+     * when the subscriber calls {@code request(n)} with {@code n > 0}.
+     */
     @DisplayName("""
             should emit <n> elements with no <onComplete>
             when the subscriber calls <request(n)> with <n > 0>""")

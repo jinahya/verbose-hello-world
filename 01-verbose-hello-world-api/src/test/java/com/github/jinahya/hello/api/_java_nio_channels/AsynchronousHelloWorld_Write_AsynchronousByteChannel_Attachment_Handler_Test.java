@@ -48,6 +48,9 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
         >
         extends AsynchronousHelloWorld__Test<HelloWorld, T> {
 
+    /**
+     * Maximum time in milliseconds to wait for handler callbacks.
+     */
     private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
     // ---------------------------------------------------------------------------------------------
@@ -114,7 +117,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
             bufferPositions.add(src.position());
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
-            threadReference.set(Thread.ofVirtual().unstarted(() -> {
+            threadReference.set(Thread.ofPlatform().daemon().unstarted(() -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
                 threadReference.set(null);
@@ -168,7 +171,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
             bufferPositions.add(src.position());
             final var attachment = i.getArgument(1);
             final var handler = i.getArgument(2, CompletionHandler.class);
-            threadReference.set(Thread.ofVirtual().unstarted(() -> {
+            threadReference.set(Thread.ofPlatform().daemon().unstarted(() -> {
                 final var n = ThreadLocalRandom.current().nextInt(src.remaining()) + 1;
                 src.position(src.position() + n);
                 threadReference.set(null);

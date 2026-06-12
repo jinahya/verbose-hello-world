@@ -52,6 +52,10 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service's collaborator methods used by the tests in this class.
+     */
     @BeforeEach
     void __() {
         set_array_sets_hello_world_bytes(service());
@@ -64,6 +68,9 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
     @Nested
     class Array_Test {
 
+        /**
+         * Asserts that {@code HelloWorldUtils.array(service)} returns the {@code hello-world-bytes}.
+         */
         @DisplayName("should return the <hello-world-bytes>")
         @Test
         void __() {
@@ -80,6 +87,12 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
             return HelloWorldUtils_Test.byteBufferSupplierStream();
         }
 
+        /**
+         * Asserts that {@code HelloWorldUtils.buffer(service, supplier)} returns a {@link ByteBuffer}
+         * containing the {@code hello-world-bytes}.
+         *
+         * @param supplier the {@link ByteBuffer} supplier under test.
+         */
         @DisplayName("should return a <ByteBuffer> containing the <hello-world-bytes>")
         @MethodSource({"byteBufferSupplierStream"})
         @ParameterizedTest
@@ -93,6 +106,9 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
     @Nested
     class String_Test {
 
+        /**
+         * Asserts that {@code HelloWorldUtils.string(service)} returns the {@code hello-world-string}.
+         */
         @DisplayName("should return the <hello-world-string>")
         @Test
         void __() {
@@ -109,6 +125,13 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
             return HelloWorldUtils_Test.byteBufferSupplierStream();
         }
 
+        /**
+         * Asserts that {@code HelloWorldUtils.decode(service, supplier)} returns a {@link CharBuffer}
+         * containing the {@code hello-world-string}.
+         *
+         * @param supplier the {@link ByteBuffer} supplier under test.
+         * @throws CharacterCodingException if a decoding error occurs.
+         */
         @DisplayName("should return a <CharBuffer> containing the <hello-world-string>")
         @MethodSource({"byteBufferSupplierStream"})
         @ParameterizedTest

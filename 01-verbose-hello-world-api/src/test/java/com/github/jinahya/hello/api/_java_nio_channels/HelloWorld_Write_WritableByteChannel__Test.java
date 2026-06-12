@@ -35,7 +35,7 @@ import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.api._Java_Nio_Channels_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Nio_Channels_TestUtils.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,10 +51,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static Path tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code service.write(channel)} to write the {@code hello-world-bytes} via the channel
+     * before each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void beforeEach() throws IOException {
         write_writablebytechannel_writes_hello_world_buffer(service());

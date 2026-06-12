@@ -31,11 +31,21 @@ import java.net.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class exercising {@link HelloWorld#append(DatagramPacket) append(packet)} against real
+ * {@link DatagramPacket} instances.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_DatagramPacket__Test extends HelloWorld__Test {
 
+    /**
+     * Stubs {@code service.append(packet)} to copy the {@code hello-world-bytes} into the packet's
+     * buffer before each test.
+     */
     @BeforeEach
     void __stubService() {
         doAnswer(i -> {

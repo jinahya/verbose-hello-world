@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.miscellaneous;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.*;
 import java.io.*;
 import java.util.*;
 
-import static com.github.jinahya.hello.api._Java__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java__TestUtils.*;
 
 /**
  * A class providing test utilities for {@link java.io} usages.

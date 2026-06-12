@@ -68,8 +68,14 @@ import static org.mockito.Mockito.*;
 @DisplayName("publishers — TCK conformance")
 class ReactiveHelloWorldPublishers_Conformance_Test {
 
+    /**
+     * Maximum time in seconds to wait for a library to collect the payload.
+     */
     private static final long TIMEOUT_SECONDS = 10L;
 
+    /**
+     * Maximum time to wait for a library to collect the payload.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(TIMEOUT_SECONDS);
 
     /**
@@ -116,6 +122,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     @Nested
     class Reactor_Test {
 
+        /**
+         * Verifies that Reactor's {@code Flux.from(ofBytes).collectList()} collects all twelve bytes
+         * and completes.
+         */
         @DisplayName(
                 "should collect <12 bytes> and <onComplete> via <Flux.from(ofBytes).collectList()>")
         @Test
@@ -126,6 +136,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(list);
         }
 
+        /**
+         * Verifies that Reactor's {@code Flux.from(ofArrays).take(N).collectList()} collects
+         * {@value #N} arrays.
+         */
         @DisplayName("should collect <N byte[]> via <Flux.from(ofArrays).take(N).collectList()>")
         @Test
         void ofArrays__() {
@@ -142,6 +156,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     @Nested
     class RxJava3_Test {
 
+        /**
+         * Verifies that RxJava 3's {@code Flowable.fromPublisher(ofBytes).toList()} collects all
+         * twelve bytes.
+         */
         @DisplayName("should collect <12 bytes> via <Flowable.fromPublisher(ofBytes).toList()>")
         @Test
         void ofBytes__() {
@@ -151,6 +169,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(list);
         }
 
+        /**
+         * Verifies that RxJava 3's {@code Flowable.fromPublisher(ofArrays).take(N).toList()} collects
+         * {@value #N} arrays.
+         */
         @DisplayName(
                 "should collect <N byte[]> via <Flowable.fromPublisher(ofArrays).take(N).toList()>")
         @Test
@@ -173,6 +195,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     @Nested
     class Mutiny_Test {
 
+        /**
+         * Verifies that Mutiny's {@code Multi.createFrom().publisher(...).collect().asList()}
+         * collects all twelve bytes.
+         */
         @DisplayName("""
                 should collect <12 bytes> via
                 <Multi.createFrom().publisher(Flow.Publisher).collect().asList()>""")
@@ -186,6 +212,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(list);
         }
 
+        /**
+         * Verifies that Mutiny's {@code Multi.createFrom().publisher(...).select().first(N)}
+         * collects {@value #N} arrays.
+         */
         @DisplayName("""
                 should collect <N byte[]> via
                 <Multi.createFrom().publisher(...).select().first(N)>""")
@@ -211,6 +241,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     @Nested
     class Helidon_Test {
 
+        /**
+         * Verifies that Helidon's {@code Multi.create(Flow.Publisher).collectList()} collects all
+         * twelve bytes.
+         */
         @DisplayName("should collect <12 bytes> via <Multi.create(Flow.Publisher).collectList()>")
         @Test
         void ofBytes__() {
@@ -221,6 +255,10 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(list);
         }
 
+        /**
+         * Verifies that Helidon's {@code Multi.create(Flow.Publisher).limit(N).collectList()}
+         * collects {@value #N} arrays.
+         */
         @DisplayName("""
                 should collect <N byte[]> via
                 <Multi.create(Flow.Publisher).limit(N).collectList()>""")
@@ -243,11 +281,19 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
         private akka.actor.ActorSystem system;
 
+        /**
+         * Creates the Akka {@link akka.actor.ActorSystem} shared by tests in this nested class.
+         */
         @BeforeAll
         void startSystem() {
             system = akka.actor.ActorSystem.create("ReactiveHelloWorldPublishers_Conformance_Akka");
         }
 
+        /**
+         * Terminates the Akka {@link akka.actor.ActorSystem} after all tests.
+         *
+         * @throws Exception if the termination times out.
+         */
         @AfterAll
         void stopSystem() throws Exception {
             system.terminate();
@@ -256,6 +302,12 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
 
+        /**
+         * Verifies that Akka's {@code Source.fromPublisher(ofBytes).runWith(Sink.seq())} collects all
+         * twelve bytes.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName(
                 "should collect <12 bytes> via <Source.fromPublisher(ofBytes).runWith(Sink.seq())>")
         @Test
@@ -268,6 +320,12 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(list);
         }
 
+        /**
+         * Verifies that Akka's {@code Source.fromPublisher(ofArrays).take(N).runWith(Sink.seq())}
+         * collects {@value #N} arrays.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should collect <N byte[]> via
                 <Source.fromPublisher(ofArrays).take(N).runWith(Sink.seq())>""")
@@ -291,12 +349,21 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
 
         private org.apache.pekko.actor.ActorSystem system;
 
+        /**
+         * Creates the Pekko {@link org.apache.pekko.actor.ActorSystem} shared by tests in this
+         * nested class.
+         */
         @BeforeAll
         void startSystem() {
             system = org.apache.pekko.actor.ActorSystem.create(
                     "ReactiveHelloWorldPublishers_Conformance_Pekko");
         }
 
+        /**
+         * Terminates the Pekko {@link org.apache.pekko.actor.ActorSystem} after all tests.
+         *
+         * @throws Exception if the termination times out.
+         */
         @AfterAll
         void stopSystem() throws Exception {
             system.terminate();
@@ -305,6 +372,12 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                     .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
 
+        /**
+         * Verifies that Pekko's {@code Source.fromPublisher(ofBytes).runWith(Sink.seq())} collects
+         * all twelve bytes.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName(
                 "should collect <12 bytes> via <Source.fromPublisher(ofBytes).runWith(Sink.seq())>")
         @Test
@@ -317,6 +390,12 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(list);
         }
 
+        /**
+         * Verifies that Pekko's {@code Source.fromPublisher(ofArrays).take(N).runWith(Sink.seq())}
+         * collects {@value #N} arrays.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should collect <N byte[]> via
                 <Source.fromPublisher(ofArrays).take(N).runWith(Sink.seq())>""")
@@ -363,12 +442,24 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             return done.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
 
+        /**
+         * Verifies that Vert.x's {@link ReactiveReadStream} collects all twelve bytes from
+         * {@code ofBytes} and reaches the end-of-stream callback.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should collect <12 bytes> and <end> via <ReactiveReadStream> over <ofBytes>")
         @Test
         void ofBytes__() throws Exception {
             assertBytes(collect(new ReactiveHelloWorldBytePublisher(service), 0));
         }
 
+        /**
+         * Verifies that Vert.x's {@link ReactiveReadStream} collects the first {@value #N} arrays
+         * from {@code ofArrays}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should collect the first <N byte[]> via <ReactiveReadStream> over <ofArrays>")
         @Test
         void ofArrays__() throws Exception {
@@ -424,6 +515,12 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             return done.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
 
+        /**
+         * Verifies that a hand-rolled {@link Flow.Subscriber} requesting {@link Long#MAX_VALUE}
+         * collects all twelve bytes from {@code ofBytes} and receives {@code onComplete}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should collect <12 bytes> and <onComplete>
                 when the <Flow.Subscriber> requests <Long.MAX_VALUE>""")
@@ -432,6 +529,12 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
             assertBytes(collect(new ReactiveHelloWorldBytePublisher(service), 0));
         }
 
+        /**
+         * Verifies that a hand-rolled {@link Flow.Subscriber} that cancels after {@value #N} items
+         * collects {@value #N} arrays from {@code ofArrays}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should collect <N byte[]> when the <Flow.Subscriber> cancels after <N> items")
         @Test
         void ofArrays__() throws Exception {

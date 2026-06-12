@@ -35,16 +35,32 @@ import java.util.zip.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising {@link HelloWorld#write(OutputStream) write(stream)} against various real
+ * {@link OutputStream} implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(stream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static File tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code write(stream)} writes the {@code hello-world-bytes} before
+     * each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __() throws IOException {
         write_outputstream_writes_hello_world_bytes(service());
@@ -55,6 +71,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     @Nested
     class ByteArrayOutputStream_Test {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a real
+         * {@link ByteArrayOutputStream}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a real <ByteArrayOutputStream>")
         @Test
         void __() throws IOException {
@@ -125,6 +147,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     @Nested
     class DataOutputStream_Test {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a real
+         * {@link DataOutputStream}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
         @Test
         void __() throws IOException {
@@ -145,6 +173,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     @Nested
     class FileOutputStreamTest {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a real
+         * {@link FileOutputStream}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a real <FileOutputStream>")
         @Test
         void __() throws IOException {
@@ -165,6 +199,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     @Nested
     class PipeOutputStream_Test {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a
+         * {@link PipedOutputStream} when the pipe size is sufficient.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> through a
                 <PipedOutputStream> with sufficient pipe size""")
@@ -183,6 +223,13 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a
+         * {@link PipedOutputStream} when the pipe size is insufficient (the writer runs on another
+         * thread).
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-bytes> through a
                 <PipedOutputStream> with insufficient pipe size""")
@@ -214,6 +261,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
     @Nested
     class JavaUtilZipTest {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a
+         * {@link DeflaterOutputStream}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a <DeflaterOutputStream>")
         @Test
         void __DeflaterOutputStream() throws IOException {
@@ -230,6 +283,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a
+         * {@link GZIPOutputStream}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a <GZIPOutputStream>")
         @Test
         void __GZIPOutputStream() throws IOException {
@@ -253,6 +312,12 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a
+         * {@link ZipOutputStream} into a single entry.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a <ZipOutputStream>")
         @Test
         void __ZipOutputStream() throws IOException {
