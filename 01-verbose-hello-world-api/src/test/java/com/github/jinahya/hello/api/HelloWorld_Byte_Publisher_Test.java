@@ -54,6 +54,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the publisher emits exactly {@value HelloWorld#BYTES} elements followed by
      * {@code onComplete} when a single subscriber requests unbounded demand.
@@ -64,19 +65,27 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             should emit exactly <12> elements and <onComplete>
             when the subscriber calls <request(12)>""")
     @Test
-    void __singleExactly12() throws Exception { // @formatter:off
+    void __singleExactly12() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = spy(new Flow.Subscriber<Byte>() {
+        final var subscriber =                 spy(new Flow.Subscriber<Byte>() { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
+//                log.debug("onSubscriber({})", subscription);
                 subscription.request(Long.MAX_VALUE);
             }
-            @Override public void onNext(final Byte item) { }
-            @Override public void onError(final Throwable throwable) { }
-            @Override public void onComplete() { }
-        });
+            @Override public void onNext(final Byte item) {
+//                log.debug("onNext(0x{})", String.format("%02x", item));
+            }
+            @Override public void onError(final Throwable throwable) {
+//                log.debug("onError({})", throwable, throwable);
+            }
+            @Override public void onComplete() {
+//                log.debug("onComplete()");
+            }
+        })
+        ; // @formatter:on
         // ------------------------------------------------------------------------------------ when
-        applyPublisher(publisher -> {
-            publisher.subscribe(subscriber);
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
             verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
             return null;
         });
@@ -92,12 +101,13 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         assertEquals(expected.length, elements.size());
         for (int i = 0; i < elements.size(); i++) {
             assertEquals(expected[i], elements.get(i));
-        } // @formatter:on
+        }
     }
 
     /**
      * Verifies that, given multiple subscribers each requesting {@code n} in {@code [1, 24)}, every
-     * subscriber receives {@code min(n, 12)} elements and an {@code onComplete} when {@code n >= 12}.
+     * subscriber receives {@code min(n, 12)} elements and an {@code onComplete} when
+     * {@code n >= 12}.
      *
      * @throws Exception if an error occurs.
      */

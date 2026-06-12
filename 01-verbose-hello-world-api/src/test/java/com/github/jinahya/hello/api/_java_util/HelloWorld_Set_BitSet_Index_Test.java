@@ -38,8 +38,7 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("set(bitset, index)")
 @Slf4j
-class HelloWorld_Set_BitSet_Index_Test
-        extends HelloWorld__Test {
+class HelloWorld_Set_BitSet_Index_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method throws a

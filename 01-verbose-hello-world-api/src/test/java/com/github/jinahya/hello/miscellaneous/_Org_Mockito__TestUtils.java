@@ -21,9 +21,13 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import com.github.jinahya.hello.api.*;
+import lombok.extern.slf4j.*;
 import org.mockito.*;
+import org.mockito.invocation.*;
 
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 import static org.mockito.Mockito.*;
 
@@ -36,9 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@SuppressWarnings({
-        "java:S101"
-})
+@Slf4j
 public final class _Org_Mockito__TestUtils {
 
     // -------------------------------------------------------------------------- PREDICATES / ASSERTIONS
@@ -125,6 +127,76 @@ public final class _Org_Mockito__TestUtils {
             throw new IllegalArgumentException("is a mock: " + object);
         }
         return object;
+    }
+
+    //    /**
+//     * Returns a {@linkplain Mockito#spy(Object) Mockito spy} of the given real instance whose every
+//     * non-{@link Object} method invocation is logged at {@code DEBUG} via an
+//     * {@link org.mockito.listeners.InvocationListener InvocationListener}. Unlike
+//     * {@link #loggingSpy(Class, Object) loggingSpy(...)}, this preserves <em>true</em> spy
+//     * semantics — internal {@code this.foo(...)} calls from interface default-method bodies still
+//     * route through the spy proxy — so {@link Mockito#verify(Object) verify} sees nested call
+//     * chains and a contract test can assert delegation patterns such as
+//     * {@code verify(service, times(1)).write(same(channel), same(attachment), notNull())}.
+//     * <p>
+//     * The {@link org.mockito.listeners.InvocationListener InvocationListener} fires on every
+//     * invocation — including stubbed ones — so stubbed calls are logged just like unstubbed ones.
+//     * <p>
+//     * {@code realInstance} must be a real (non-mock) object: this method calls
+//     * {@link #requireNotMock(Object) requireNotMock(realInstance)} first and throws
+//     * {@link IllegalArgumentException} if a Mockito mock is passed in.
+//     *
+//     * @param realInstance the real instance to spy on; must not be {@code null} and must not be a
+//     *                     Mockito mock.
+//     * @param <T>          the runtime type of {@code realInstance}.
+//     * @return a Mockito spy of {@code realInstance} that logs every non-{@link Object} method
+//     * invocation; never {@code null}.
+//     * @throws NullPointerException     if {@code realInstance} is {@code null}.
+//     * @throws IllegalArgumentException if {@code realInstance} is a Mockito mock.
+//     * @see #loggingSpy(Class, Object)
+//     * @see #requireNotMock(Object)
+//     */
+    @SuppressWarnings("unchecked")
+    public static <T> T loggingSpiedInstance(final T realInstance) {
+        requireNotMock(realInstance);
+        final Class<T> clazz = (Class<T>) realInstance.getClass();
+        return mock(clazz, withSettings()
+                .spiedInstance(realInstance)
+                .defaultAnswer(CALLS_REAL_METHODS)
+                .invocationListeners(report -> {
+                    final var inv = (Invocation) report.getInvocation();
+                    if (inv.getMethod().getDeclaringClass() == Flow.Subscriber.class) {
+                        log.debug("xxxxxx");
+//                        log.debug("{}.{}({})",
+//                                  toHashcodeString(inv.getMock()),
+//                                  inv.getMethod().getName(),
+//                                  argsString(inv.getArguments()));
+                    } else {
+                        log.debug("yyyyyyy");
+                    }
+                }));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Flow.Subscriber<T> loggingSubscriber(
+            final Flow.Subscriber<T> realInstance,
+            final Function<? super Object[], ? extends CharSequence> formatter) {
+        requireNotMock(realInstance);
+        final Class<T> clazz = (Class<T>) realInstance.getClass();
+        return (Flow.Subscriber<T>) mock(clazz, withSettings()
+                .spiedInstance(realInstance)
+                .defaultAnswer(CALLS_REAL_METHODS)
+                .invocationListeners(report -> {
+                    final var inv = (Invocation) report.getInvocation();
+                    if (inv.getMethod().getDeclaringClass() != Object.class) {
+                        log.debug("{}.{}({})",
+                                  inv.getMock(),
+                                  inv.getMethod().getName(),
+                                  formatter.apply(inv.getArguments()));
+                    } else {
+                        log.debug("xxxxxxx");
+                    }
+                }));
     }
 
     // ---------------------------------------------------------------------------------------------
