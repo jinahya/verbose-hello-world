@@ -21,7 +21,6 @@ package com.github.jinahya.hello.api._java_util_concurrent;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.miscellaneous.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -93,11 +92,6 @@ class _Flow_LocalDate_Example_Test {
         }
 
         @Override
-        public String toString() {
-            return _Java_Lang_Object_TestUtils.toSimpleString(this);
-        }
-
-        @Override
         public void request(final long n) {
             log.debug("{}.request({})", this, n);
             if (n <= 0) {
@@ -164,11 +158,6 @@ class _Flow_LocalDate_Example_Test {
         }
 
         @Override
-        public String toString() {
-            return _Java_Lang_Object_TestUtils.toSimpleString(this);
-        }
-
-        @Override
         public void subscribe(final Flow.Subscriber<? super LocalDate> subscriber) {
             log.debug("{}.subscribe({})", this, subscriber);
             Objects.requireNonNull(subscriber, "subscriber is null");
@@ -183,11 +172,6 @@ class _Flow_LocalDate_Example_Test {
         private LocalDateSubscriber(final AtomicReference<Flow.Subscription> reference) {
             super();
             this.reference = Objects.requireNonNull(reference, "reference is null");
-        }
-
-        @Override
-        public String toString() {
-            return _Java_Lang_Object_TestUtils.toSimpleString(this);
         }
 
         @Override

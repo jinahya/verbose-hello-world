@@ -20,148 +20,23 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.*;
-import org.reactivestreams.*;
-
-import java.lang.invoke.*;
-import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.stream.*;
 
 /**
- * Package-private utilities shared by the {@code ReactiveHelloWorld*} family of tests.
+ * Package-private utilities shared by the test sources.
  * <ul>
  *   <li>{@link #toSimplifiedString(String)} — strips both the package prefix and any
  *       enclosing-class prefixes from a class-name-like string; used by overridden
- *       {@link Object#toString() toString()} methods throughout the test sources to produce
- *       readable log output.</li>
- *   <li>{@link #formatByte(byte)} / {@link #formatArray(byte[])} — render a single {@code byte} or
- *       a {@code byte[]} payload as {@code <hex>'<char>'} tokens (e.g. {@code 68'h'},
- *       {@code [68'h' 65'e' …]}); used by the byte / byte-array logging subscribers to produce
- *       human-readable {@code onNext} log lines.</li>
- *   <li>{@link #loggingProxy(Class, Object)} — wraps any interface-typed instance in a JDK
- *       dynamic proxy that {@code DEBUG}-logs every interface method invocation before delegating
- *       to the wrapped instance.</li>
+ *       {@link Object#toString() toString()} methods to produce readable log output.</li>
+ *   <li>{@link #formatArray(byte[])} renders a {@code byte[]} payload as bracketed
+ *       {@code <hex>'<char>'} tokens (e.g. {@code [68'h' 65'e' …]}) for human-readable log lines;
+ *       {@link #formatByte(byte)} is the per-byte building block.</li>
  * </ul>
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 final class HelloWorldBookUtils {
-
-    private static final System.Logger logger = System.getLogger(
-            MethodHandles.lookup().lookupClass().getName()
-    );
-
-    // ---------------------------------------------------------------------------------------------
-    static String toHashcodeString(final Object object) {
-        return String.format("@%08x", System.identityHashCode(object));
-    }
-
-    static String argsString(final @Nullable Object[] args) {
-        if (args == null) {
-            return "";
-        }
-        return Arrays.stream(args)
-                .map(HelloWorldBookUtils::format)
-                .collect(Collectors.joining(", "));
-    }
-
-    /**
-     * Renders the given value in a log-friendly form, type-dispatched:
-     * <ul>
-     *   <li>{@code null} → {@code "null"}</li>
-     *   <li>{@link Byte} → {@link #formatByte(byte)} (e.g. {@code 68'h'})</li>
-     *   <li>{@code byte[]} → {@link #formatArray(byte[])} (e.g. {@code [68'h' 65'e' …]})</li>
-     *   <li>{@link Number} (int, long, …) → its {@code toString}, as is</li>
-     *   <li>{@link CharSequence} → the string content, unquoted (identifier-like)</li>
-     *   <li>anything else → {@link #toHashcodeString(Object)} (identity hash)</li>
-     * </ul>
-     */
-    static String format(final @Nullable Object value) {
-        return switch (value) {
-            case null -> "null";
-            case Byte b -> formatByte(b);
-            case byte[] a -> formatArray(a);
-            case Number n -> n.toString();
-            case CharSequence s -> s.toString();
-            default -> toHashcodeString(value);
-        };
-    }
-
-    /**
-     * Wraps the given {@code delegate} in a {@link Proxy JDK dynamic proxy} that {@code DEBUG}-logs
-     * every {@code clazz}-declared method invocation (as {@code @<identity-hex>/<method>(<args>)},
-     * e.g. {@code @7e514482/onNext([68'h'])}) before forwarding the call to {@code delegate}. The
-     * class name is omitted intentionally because the proxied interface is fixed and clear from the
-     * call site; identity hash alone is enough to distinguish concurrent instances in log output.
-     * Methods inherited from {@link Object} (e.g. {@link Object#toString() toString},
-     * {@link Object#hashCode() hashCode}) pass through without a log line.
-     * <p>
-     * Typical use is to instrument a Reactive Streams {@code Subscriber} / {@code Subscription} or
-     * a {@code Flow.Subscriber} / {@code Flow.Subscription} without writing a manual
-     * {@code Logging<X>} wrapper class:
-     * <pre>{@code
-     *     final Subscriber<byte[]> raw = new Subscriber<>() { … };
-     *     final Subscriber<byte[]> logged = loggingProxy(Subscriber.class, raw);
-     *     publisher.subscribe(logged);
-     * }</pre>
-     *
-     * @param clazz    the interface to proxy; must not be {@code null} and must be an interface.
-     * @param delegate the instance to forward calls to; must not be {@code null}.
-     * @param <T>      the interface type.
-     * @return a {@code clazz}-typed proxy that logs and delegates; never {@code null}.
-     * @throws NullPointerException     if either {@code clazz} or {@code delegate} is
-     *                                  {@code null}.
-     * @throws IllegalArgumentException if {@code clazz} is not an interface.
-     */
-    @SuppressWarnings("unchecked")
-    static <T> T loggingProxy(final Class<? super T> clazz, final T delegate) {
-        if (!Objects.requireNonNull(clazz, "clazz is null").isInterface()) {
-            throw new IllegalArgumentException("clazz is not an interface: " + clazz);
-        }
-        Objects.requireNonNull(delegate, "delegate is null");
-        return (T) Proxy.newProxyInstance(
-                clazz.getClassLoader(),
-                new Class<?>[] {clazz},
-                (p, m, args) -> {
-                    if (m.getDeclaringClass() == clazz) {
-                        logger.log(System.Logger.Level.DEBUG, "{0}.{1}({2})",
-                                   toHashcodeString(delegate),
-                                   m.getName(),
-                                   argsString(args));
-                    }
-                    return m.invoke(delegate, args);
-                }
-        );
-    }
-
-    static <T> org.reactivestreams.Publisher<T> loggingPublisher(
-            final org.reactivestreams.Publisher<T> delegate) {
-        return loggingProxy(Publisher.class, delegate);
-    }
-
-    static org.reactivestreams.Subscription loggingSubscription(
-            final org.reactivestreams.Subscription delegate) {
-        return loggingProxy(Subscription.class, delegate);
-    }
-
-    static <T> org.reactivestreams.Subscriber<T> loggingSubscriber(
-            final org.reactivestreams.Subscriber<T> delegate) {
-        return loggingProxy(Subscriber.class, delegate);
-    }
-
-    static <T> Flow.Publisher<T> loggingPublisher(final Flow.Publisher<T> delegate) {
-        return loggingProxy(Flow.Publisher.class, delegate);
-    }
-
-    static Flow.Subscription loggingSubscription(final Flow.Subscription delegate) {
-        return loggingProxy(Flow.Subscription.class, delegate);
-    }
-
-    static <T> Flow.Subscriber<T> loggingSubscriber(final Flow.Subscriber<T> delegate) {
-        return loggingProxy(Flow.Subscriber.class, delegate);
-    }
 
     /**
      * Strips both the package prefix and any enclosing-class prefixes from a class-name-like

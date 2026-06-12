@@ -103,7 +103,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
             // -------------------------------------------------------------------------------- when
             final var future = asynchronousService.append(path, attachment);
             // -------------------------------------------------------------------------------- then
-            assertSame(attachment, future.toCompletableFuture().get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+            assertSame(attachment,
+                       future.toCompletableFuture().get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
         }
         verify(channel, times(1)).close();
     }

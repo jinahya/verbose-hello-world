@@ -79,13 +79,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         }
 
         @Override
-        public String toString() {
-            return HelloWorldBookUtils.toSimplifiedString(super.toString());
-        }
-
-        @Override
-        public void onSubscribe(Flow.Subscription subscription) {
-            subscription = HelloWorldBookUtils.loggingSubscription(subscription);
+        public void onSubscribe(final Flow.Subscription subscription) {
             subscription.request(Long.MAX_VALUE);
         }
 

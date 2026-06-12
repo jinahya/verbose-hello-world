@@ -79,7 +79,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
         try (final var processor = new ReactiveHelloWorldStringProcessor(publisher)) {
             final var subscribers = new ArrayList<Subscriber<String>>();
             for (final int d : ds) {
-                final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<String>() {
+                final var subscriber = spy(new Subscriber<String>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
                         Thread.ofVirtual().start(() -> {

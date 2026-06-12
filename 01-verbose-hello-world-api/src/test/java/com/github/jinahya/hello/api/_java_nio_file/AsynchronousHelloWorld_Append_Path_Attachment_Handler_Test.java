@@ -96,8 +96,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
 
     /**
      * Verifies that the method opens the {@code path} as an {@link AsynchronousFileChannel}, writes
-     * the {@value HelloWorld#BYTES} bytes starting at {@link AsynchronousFileChannel#size()
-     * channel.size()}, closes the channel, and invokes
+     * the {@value HelloWorld#BYTES} bytes starting at
+     * {@link AsynchronousFileChannel#size() channel.size()}, closes the channel, and invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(path, attachment)}.
      */
     @DisplayName("""
@@ -138,7 +138,8 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
     }
 
     /**
-     * Verifies that when {@link AsynchronousFileChannel#open(Path, java.nio.file.OpenOption...)
+     * Verifies that when
+     * {@link AsynchronousFileChannel#open(Path, java.nio.file.OpenOption...)
      * AsynchronousFileChannel.open(path, ...)} throws an {@link IOException}, the method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */

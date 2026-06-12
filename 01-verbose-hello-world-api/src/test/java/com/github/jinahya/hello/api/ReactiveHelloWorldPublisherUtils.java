@@ -39,7 +39,7 @@ final class ReactiveHelloWorldPublisherUtils {
      * @param n      the value to add; must be positive.
      * @return the updated demand value.
      */
-    static long addDemand(final AtomicLong demand, final long n) {
+    static long aggregateDemand(final AtomicLong demand, final long n) {
         Objects.requireNonNull(demand, "demand is null");
         assert n > 0L;
         return demand.updateAndGet(v -> {

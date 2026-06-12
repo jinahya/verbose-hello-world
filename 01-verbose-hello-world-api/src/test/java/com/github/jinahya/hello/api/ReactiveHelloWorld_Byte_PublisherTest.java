@@ -41,15 +41,14 @@ import static org.mockito.Mockito.*;
 /**
  * Subscription-level tests for {@link ReactiveHelloWorldBytePublisher} — verifies the Reactive
  * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation, …)
- * using a {@link Mockito#spy(Object) spied} {@link Subscriber} wrapped in a logging proxy via
- * {@link HelloWorldBookUtils#loggingProxy(Class, Object)}.
+ * using a {@link Mockito#spy(Object) spied} {@link Subscriber}.
  * <p>
  * The constructor passes
  * {@link ReactiveHelloWorldBytePublisher#ReactiveHelloWorldBytePublisher(HelloWorld) new
  * ReactiveHelloWorldBytePublisher(service)} (as a method reference) to
  * {@link ReactiveHelloWorld__PublisherTest super}, which builds the mock {@link HelloWorld} service
- * and the logging-wrapped publisher. The mock is stubbed by the inherited {@code @BeforeEach} hook
- * in the base class — see {@link ReactiveHelloWorld__PublisherTest#stubService()}.
+ * and the publisher. The mock is stubbed by the inherited {@code @BeforeEach} hook in the base
+ * class — see {@link ReactiveHelloWorld__PublisherTest#stubService()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorld__PublisherTest
@@ -73,7 +72,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     @Test
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 s.request(HelloWorld.BYTES);
             }
@@ -106,7 +105,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -136,7 +135,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __requestMoreThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextLong(HelloWorld.BYTES + 1L, 1024L);
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -170,7 +169,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
         final var terminated = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 requester.set(Thread.ofVirtual().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {

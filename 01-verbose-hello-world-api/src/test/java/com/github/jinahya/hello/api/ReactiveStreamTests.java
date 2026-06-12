@@ -51,11 +51,6 @@ final class ReactiveStreamTests {
     abstract static class LoggingSubscription implements Subscription {
 
         @Override
-        public String toString() {
-            return HelloWorldBookUtils.toSimplifiedString(super.toString());
-        }
-
-        @Override
         public void request(final long n) {
             log.debug("request({}) / {}", n, this);
         }
@@ -75,11 +70,6 @@ final class ReactiveStreamTests {
      * @param <T> the type of the element signaled to {@link #onNext(Object)}.
      */
     private abstract static class LoggingSubscriber<T> implements Subscriber<T> {
-
-        @Override
-        public String toString() {
-            return HelloWorldBookUtils.toSimplifiedString(super.toString());
-        }
 
         @Override
         public void onSubscribe(final Subscription s) {
@@ -144,11 +134,6 @@ final class ReactiveStreamTests {
     }
 
     static class LoggingSubmissionPublisher<T> extends SubmissionPublisher<T> {
-
-        @Override
-        public String toString() {
-            return HelloWorldBookUtils.toSimplifiedString(super.toString());
-        }
 
         @Override
         public void subscribe(final Flow.Subscriber<? super T> subscriber) {

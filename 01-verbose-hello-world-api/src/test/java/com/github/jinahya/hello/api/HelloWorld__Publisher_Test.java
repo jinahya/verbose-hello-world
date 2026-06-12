@@ -39,10 +39,8 @@ import static org.mockito.Mockito.*;
  * <p>
  * The constructor builds fresh per-test state: a {@link Mockito#mock(Class) mock}
  * {@link HelloWorld} created with {@link Mockito#CALLS_REAL_METHODS CALLS_REAL_METHODS}, and the
- * publisher produced by the {@code initializer} wrapped with
- * {@link HelloWorldBookUtils#loggingPublisher(Flow.Publisher) loggingPublisher} so every
- * {@code subscribe(...)} call is logged. The raw (un-proxied) {@code delegate} is also retained so
- * that {@link AutoCloseable} cleanup can run after each test.
+ * publisher produced by the {@code initializer}. The {@code delegate} is retained so that
+ * {@link AutoCloseable} cleanup can run after each test.
  *
  * @param <U> the element type emitted by the publisher.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

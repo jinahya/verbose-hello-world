@@ -77,7 +77,7 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
         try (final var processor = new ReactiveHelloWorldByteProcessor(service)) {
             final var subscribers = new ArrayList<Subscriber<Byte>>();
             for (final int d : ds) {
-                final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+                final var subscriber = spy(new Subscriber<Byte>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
                         Thread.ofVirtual().start(() -> {

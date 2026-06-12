@@ -34,7 +34,7 @@ import static com.github.jinahya.hello.api._Java__TestUtils.*;
  */
 @Slf4j
 @SuppressWarnings({"java:S101"})
-public final class _Java_Io_TestUtils {
+public final class _Java_Io__TestUtils {
 
     /**
      * Copies all bytes from the given input stream to the given output stream, using the specified
@@ -60,7 +60,7 @@ public final class _Java_Io_TestUtils {
         return count;
     }
 
-    private _Java_Io_TestUtils() {
+    private _Java_Io__TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

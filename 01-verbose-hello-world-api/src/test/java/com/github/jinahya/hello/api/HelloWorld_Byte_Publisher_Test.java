@@ -57,7 +57,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     @Test
     void __singleExactly12() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = spy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -98,7 +98,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES << 1); // [1, 24)
             demands[i] = n;
-            subscribers.add(Mockito__TestUtils.loggingSpy(new Flow.Subscriber<>() {
+            subscribers.add(spy(new Flow.Subscriber<>() {
                 @Override public void onSubscribe(final Flow.Subscription subscription) {
                     subscription.request(n);
                 }
@@ -153,7 +153,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = spy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -184,7 +184,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated onSubscribe failure");
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = spy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 throw error;
             }

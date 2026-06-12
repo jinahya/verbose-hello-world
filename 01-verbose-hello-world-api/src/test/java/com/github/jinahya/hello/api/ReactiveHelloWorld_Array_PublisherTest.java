@@ -37,15 +37,13 @@ import static org.mockito.Mockito.*;
 /**
  * Subscription-level tests for {@link ReactiveHelloWorldArrayPublisher} — verifies the Reactive
  * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation, …)
- * using a {@link Mockito#spy(Object) spied} {@link Subscriber} wrapped in a logging proxy via
- * {@link HelloWorldBookUtils#loggingProxy(Class, Object)}.
+ * using a {@link Mockito#spy(Object) spied} {@link Subscriber}.
  * <p>
  * The constructor passes
  * {@link ReactiveHelloWorldArrayPublisher#from(HelloWorld) ReactiveHelloWorldArrayPublisher::from}
  * to {@link ReactiveHelloWorld__PublisherTest super}, which builds the mock {@link HelloWorld}
- * service and the logging-wrapped publisher. The mock is stubbed by the inherited
- * {@code @BeforeEach} hook in the base class — see
- * {@link ReactiveHelloWorld__PublisherTest#stubService()}.
+ * service and the publisher. The mock is stubbed by the inherited {@code @BeforeEach} hook in the
+ * base class — see {@link ReactiveHelloWorld__PublisherTest#stubService()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorld__PublisherTest
@@ -69,7 +67,7 @@ class ReactiveHelloWorld_Array_PublisherTest
     @Test
     void __exactly1() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
+        final var subscriber = spy(new Subscriber<byte[]>() {
             @Override public void onSubscribe(final Subscription s) { s.request(1L); }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable t) { }
@@ -94,7 +92,7 @@ class ReactiveHelloWorld_Array_PublisherTest
     void __random() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 8);
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<byte[]>() {
+        final var subscriber = spy(new Subscriber<byte[]>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable t) { }

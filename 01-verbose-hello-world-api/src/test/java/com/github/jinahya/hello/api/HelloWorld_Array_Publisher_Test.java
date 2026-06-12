@@ -58,7 +58,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 10);
         log.debug("n: {}", n);
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = spy(new Flow.Subscriber<byte[]>() {
             private Flow.Subscription subscription;
             private int received;
             @Override public void onSubscribe(final Flow.Subscription s) {
@@ -102,7 +102,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, 10);
             demands[i] = n;
-            subscribers.add(Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
+            subscribers.add(spy(new Flow.Subscriber<byte[]>() {
                 private Flow.Subscription subscription;
                 private int received;
                 @Override public void onSubscribe(final Flow.Subscription s) {
@@ -150,7 +150,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = spy(new Flow.Subscriber<byte[]>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }

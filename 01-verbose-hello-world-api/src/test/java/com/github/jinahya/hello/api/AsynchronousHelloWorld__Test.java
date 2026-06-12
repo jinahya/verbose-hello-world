@@ -25,7 +25,6 @@ import lombok.experimental.*;
 
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.Mockito__TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -41,10 +40,8 @@ public abstract class AsynchronousHelloWorld__Test<T extends HelloWorld,
             final Class<T> synchronousServiceClass,
             final Function<? super T, ? extends U> asynchronousServiceInitializer) {
         super();
-        synchronousService = loggingSpy(mock(synchronousServiceClass));
-        asynchronousService = loggingSpiedInstance(
-                asynchronousServiceInitializer.apply(synchronousService)
-        );
+        synchronousService = mock(synchronousServiceClass);
+        asynchronousService = spy(asynchronousServiceInitializer.apply(synchronousService));
     }
 
     // -------------------------------------------------------------------------- synchronousService
