@@ -183,18 +183,18 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      */
     @DisplayName("should signal <onError> with no further signals when <service.set> throws")
     @Test
-    void __serviceThrows() throws Exception { // @formatter:off
+    void __serviceThrows() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable throwable) { }
             @Override public void onComplete() { }
-        });
+        }); // @formatter:on
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
@@ -207,6 +207,6 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         verify(subscriber, never()).onNext(any());
         verify(subscriber, times(1)).onError(errorCaptor.capture());
         verify(subscriber, never()).onComplete();
-        assertSame(error, errorCaptor.getValue()); // @formatter:on
+        assertSame(error, errorCaptor.getValue());
     }
 }
