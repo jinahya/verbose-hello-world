@@ -46,10 +46,9 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({
         "java:S3577" // Test classes should comply with a naming convention
 })
-class _Flow_LocalDate_Example_Test {
+class _Flow_LocalDate_Example__Test {
 
-    private static class LocalDateSubscription
-            implements Flow.Subscription {
+    private static class LocalDateSubscription implements Flow.Subscription {
 
         private LocalDateSubscription(final Flow.Subscriber<? super LocalDate> subscriber) {
             super();
@@ -137,8 +136,7 @@ class _Flow_LocalDate_Example_Test {
         private final Condition condition;
     }
 
-    private static class LocalDatePublisher
-            implements Flow.Publisher<LocalDate> {
+    private static class LocalDatePublisher implements Flow.Publisher<LocalDate> {
 
         private static class InstanceHolder {
 
@@ -166,8 +164,7 @@ class _Flow_LocalDate_Example_Test {
         }
     }
 
-    private static class LocalDateSubscriber
-            implements Flow.Subscriber<LocalDate> {
+    private static class LocalDateSubscriber implements Flow.Subscriber<LocalDate> {
 
         private LocalDateSubscriber(final AtomicReference<Flow.Subscription> reference) {
             super();
