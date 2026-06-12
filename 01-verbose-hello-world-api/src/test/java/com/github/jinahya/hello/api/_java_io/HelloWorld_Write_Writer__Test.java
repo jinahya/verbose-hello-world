@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_io;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -40,12 +41,21 @@ import static java.io.File.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising {@link HelloWorld#write(Writer) write(writer)} against various real
+ * {@link Writer} implementations and charsets.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static File tempDir;
 
@@ -60,6 +70,13 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code write(writer)} writes the {@code hello-world-string} before
+     * each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __stubService() throws IOException {
         write_writer_writes_hello_world_string(service());
@@ -74,6 +91,13 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
+        /**
+         * Verifies that the method writes the {@code hello-world-string} through an
+         * {@link OutputStreamWriter} configured with the given {@code charset}.
+         *
+         * @param charset the {@link Charset} under test.
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("""
                 should write <hello-world-string> through an
                 <OutputStreamWriter> with the <charset>""")
@@ -93,6 +117,12 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the {@code hello-world-string} round-trips through an
+         * {@link OutputStreamWriter} / {@link InputStreamReader} pair in {@code US_ASCII}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should round-trip <hello-world-string> through an <OutputStreamWriter>")
         @Test
         void __() throws IOException {
@@ -118,6 +148,13 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             return HelloWorld_Write_Writer__Test.charsetStream();
         }
 
+        /**
+         * Verifies that the method writes the {@code hello-world-string} through a
+         * {@link FileWriter} configured with the given {@code charset}.
+         *
+         * @param charset the {@link Charset} under test.
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-string> through a <FileWriter> with the <charset>")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
@@ -133,6 +170,12 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             }
         }
 
+        /**
+         * Verifies that the {@code hello-world-string} round-trips through a {@link FileWriter} in
+         * appending mode using {@code US_ASCII}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should round-trip <hello-world-string> through a <FileWriter>")
         @Test
         void __() throws IOException {

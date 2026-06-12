@@ -31,8 +31,8 @@ import java.io.*;
 import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.api._Javax_Crypto_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Security_KeyPair_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

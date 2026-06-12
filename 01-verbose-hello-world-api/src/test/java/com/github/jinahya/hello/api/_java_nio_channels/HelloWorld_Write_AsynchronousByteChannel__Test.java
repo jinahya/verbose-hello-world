@@ -46,6 +46,14 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code service.write(channel)} to write the {@code hello-world-bytes} through the given
+     * channel before each test.
+     *
+     * @throws ExecutionException   if an error occurs.
+     * @throws InterruptedException if interrupted while stubbing.
+     */
     @BeforeEach
     void __stubService() throws ExecutionException, InterruptedException {
         write_asynchornousbytechannel_writes_hello_world(service());

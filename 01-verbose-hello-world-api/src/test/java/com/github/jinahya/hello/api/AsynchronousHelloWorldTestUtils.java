@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import com.github.jinahya.hello.miscellaneous.*;
 import org.mockito.*;
 import org.mockito.stubbing.*;
 
@@ -63,8 +64,8 @@ public final class AsynchronousHelloWorldTestUtils {
     public static void applyAsync_mapper_applies_(
             final HelloWorld service,
             final AsynchronousHelloWorld asynchronousService) {
-        Mockito__TestUtils.requireMock(service);
-        Mockito__TestUtils.requireMock(asynchronousService);
+        _Org_Mockito__TestUtils.requireMock(service);
+        _Org_Mockito__TestUtils.requireMock(asynchronousService);
         doAnswer(applies_(service))
                 .when(asynchronousService)
                 .applyAsync(ArgumentMatchers.notNull());

@@ -31,20 +31,12 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of <a href="https://vertx.io/docs/">Vert.x</a>'s own publisher-creation idioms
- * — each test creates a {@link Future Future&lt;byte[]&gt;} that pulls the <a
- * href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
- * Streams publisher).
- * <p>
- * Vert.x's core reactive-value type is {@link Future Future&lt;T&gt;} — a 0/1-value asynchronous
- * primitive analogous to Reactor's {@code Mono}, Mutiny's {@code Uni}, RxJava's {@code Single}, and
- * Helidon's {@code Single}. Vert.x has no first-party multi-value publisher type in core; its
- * stream story routes through {@link io.vertx.core.streams.ReadStream ReadStream} (callback-based,
- * not a publisher-creation idiom) or through the {@code vertx-reactive-streams} /
- * {@code vertx-rx-java3} / {@code vertx-mutiny} bridges. Consequently this test exposes only the
- * single-value section.
+ * Tests <a href="https://vertx.io/docs/">Vert.x</a>'s publisher-creation idioms — each test builds
+ * a {@link Future Future&lt;byte[]&gt;} pulling the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
+ * asynchronous service. Vert.x's core reactive-value type is {@link Future Future&lt;T&gt;} —
+ * a 0/1-value primitive analogous to Reactor's {@code Mono} or RxJava's {@code Single}; core has no
+ * first-party multi-value publisher, so only the single-value section is exposed.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -58,6 +50,11 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
     @Nested
     class Future_Test {
 
+        /**
+         * Asserts that {@code Future.succeededFuture(byte[])} emits the {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Future.succeededFuture(byte[])>")
         @Test
         void __succeededFuture() throws Exception {
@@ -71,6 +68,12 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that a {@code Promise.promise()} completed with a {@code byte[]} produces the
+         * {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName(
                 "should emit <hello-world-bytes> via <Promise.promise()> then <complete(byte[])>")
         @Test
@@ -86,6 +89,12 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Future.fromCompletionStage(asynchronousService.applyAsync(...))} emits
+         * the {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Future.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
@@ -101,6 +110,12 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Future.succeededFuture(...).map(byte[]::length)} emits
+         * {@link HelloWorld#BYTES}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should return <BYTES> via <Future.succeededFuture(...).map(byte[]::length)>")
         @Test
         void __map() throws Exception {

@@ -43,6 +43,9 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class ReactiveHelloWorld_String_ProcessorTest {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(30L);
 
     // ---------------------------------------------------------------------------------------------
@@ -52,12 +55,20 @@ class ReactiveHelloWorld_String_ProcessorTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code set(array)} writes the {@code hello-world-bytes} before each
+     * test.
+     */
     @BeforeEach
     void stubService() {
         set_array_sets_hello_world_bytes(service);
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the processor closes cleanly when no subscriber is ever attached.
+     */
     @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
@@ -66,6 +77,10 @@ class ReactiveHelloWorld_String_ProcessorTest {
         }
     }
 
+    /**
+     * Verifies that the processor delivers {@code d} elements to each subscriber with no
+     * {@code onComplete} signal, given two subscribers requesting {@code 3} and {@code 5}.
+     */
     @DisplayName("""
             should deliver <d> elements to each subscriber with no <onComplete>,
             given two subscribers requesting <3> and <5>""")
@@ -79,10 +94,10 @@ class ReactiveHelloWorld_String_ProcessorTest {
         try (final var processor = new ReactiveHelloWorldStringProcessor(publisher)) {
             final var subscribers = new ArrayList<Subscriber<String>>();
             for (final int d : ds) {
-                final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<String>() {
+                final var subscriber = spy(new Subscriber<String>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
-                        Thread.ofVirtual().start(() -> {
+                        Thread.ofPlatform().daemon().start(() -> {
                             for (int i = 0; i < d; i++) {
                                 s.request(1L);
                             }

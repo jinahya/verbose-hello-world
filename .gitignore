@@ -252,6 +252,7 @@ buildNumber.properties
 *.ipr
 .idea
 !.idea/codeStyles
+!.idea/codeinsightSettings.xml
 
 
 *.log

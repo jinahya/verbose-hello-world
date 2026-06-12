@@ -55,6 +55,11 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code asynchronousService.write(channel, attachment)} to write the
+     * {@code hello-world-bytes} via the channel and return a stage completed with the attachment.
+     */
     @BeforeEach
     void __stubService() { // @formatter:off
         doAnswer(i -> {

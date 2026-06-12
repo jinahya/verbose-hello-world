@@ -56,6 +56,10 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
 
     // ---------------------------------------------------------------------------------------------
 
+    /**
+     * Stubs {@code asynchronousService.write(channel, position, attachment, handler)} to write the
+     * {@code hello-world-bytes} to the file channel before each test.
+     */
     @BeforeEach
     @SuppressWarnings({"unchecked"})
     void __() {

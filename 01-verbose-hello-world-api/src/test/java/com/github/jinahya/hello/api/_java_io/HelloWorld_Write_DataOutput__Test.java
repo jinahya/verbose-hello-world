@@ -41,15 +41,31 @@ import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising {@link HelloWorld#write(DataOutput) write(output)} against real
+ * {@link DataOutput} implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("write(output)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
 
+    /**
+     * The {@link TempDir} shared by tests in this class.
+     */
     @TempDir
     private static File tempDir;
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code write(output)} writes the {@code hello-world-bytes} before
+     * each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __() throws IOException {
         write_dataoutput_writes_hello_world_bytes(service());
@@ -60,6 +76,12 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
     @Nested
     class DataOutputStream_Test {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a real
+         * {@link DataOutputStream}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
         @Test
         void __() throws IOException {
@@ -81,6 +103,12 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
     @Nested
     class RandomAccessFile_Test {
 
+        /**
+         * Verifies that the method writes the {@code hello-world-bytes} through a real
+         * {@link java.io.RandomAccessFile RandomAccessFile} at a random offset.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should write <hello-world-bytes> through a real <RandomAccessFile>")
         @Test
         void __() throws IOException {
@@ -108,6 +136,13 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
     @Nested
     class UTF8_Test {
 
+        /**
+         * Verifies that {@link DataOutputStream#writeUTF(String)} and
+         * {@link DataInputStream#readUTF()} round-trip the given {@code string}.
+         *
+         * @param expected the input {@code string} to round-trip.
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should round-trip the <string> through <writeUTF>/<readUTF>")
         @ValueSource(strings = {
                 HELLO_WORLD_STRING,

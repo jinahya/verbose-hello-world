@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_io;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.miscellaneous.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -141,6 +142,14 @@ class HelloWorld_Append_File_Charset_Test
         });
     }
 
+    /**
+     * Verifies that the {@link HelloWorld#append(File, Charset)} method writes the
+     * {@code hello-world-bytes} to a real {@code file} encoded with the given {@code charset}.
+     *
+     * @param file    the real temp {@link File} to write to.
+     * @param charset the {@link Charset} to encode with.
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should write <hello-world-bytes> to a real <file> using the <charset>")
     @MethodSource({"fileAndCharsetArgumentsStream"})
     @ParameterizedTest(name = "[{index}]: {1}")

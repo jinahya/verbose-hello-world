@@ -28,7 +28,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
 
 /**
@@ -222,10 +221,10 @@ final class ReactiveHelloWorldStringProcessor implements Processor<byte[], Strin
         final var state = new State(s, lock, condition, ready);
         states.add(state);
         Thread.ofPlatform().start(state);
-        s.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
+        s.onSubscribe(new Subscription() {
             @Override public void request(final long n) {
                 if (state.terminated.get()) { return; }
-                addDemand(state.demand, n);
+                aggregateDemand(state.demand, n);
                 state.signal();
                 ready.set(true);
                 lock.lock();
@@ -236,7 +235,7 @@ final class ReactiveHelloWorldStringProcessor implements Processor<byte[], Strin
                 states.remove(state);
                 state.signal();
             }
-        })); // @formatter:on
+        }); // @formatter:on
     }
 
     // ---------------------------------------------------------------------------------------------

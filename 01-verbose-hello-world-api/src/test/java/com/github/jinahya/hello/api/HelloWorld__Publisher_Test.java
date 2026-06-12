@@ -33,16 +33,11 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
- * An abstract base for tests that verify subscription-level behaviour of the three concrete
- * {@code HelloWorld<Type>Publisher} {@link Flow.Publisher} implementations against the
- * {@link java.util.concurrent.Flow} contract.
- * <p>
- * The constructor builds fresh per-test state: a {@link Mockito#mock(Class) mock}
- * {@link HelloWorld} created with {@link Mockito#CALLS_REAL_METHODS CALLS_REAL_METHODS}, and the
- * publisher produced by the {@code initializer} wrapped with
- * {@link HelloWorldBookUtils#loggingPublisher(Flow.Publisher) loggingPublisher} so every
- * {@code subscribe(...)} call is logged. The raw (un-proxied) {@code delegate} is also retained so
- * that {@link AutoCloseable} cleanup can run after each test.
+ * An abstract base for subscription-level tests of the {@code HelloWorld<Type>Publisher}
+ * {@link Flow.Publisher} implementations against the {@link java.util.concurrent.Flow} contract.
+ * The constructor builds a {@link Mockito#mock(Class) mock} {@link HelloWorld} with
+ * {@link Mockito#CALLS_REAL_METHODS CALLS_REAL_METHODS}; {@link #applyPublisher(Function)} runs a
+ * test action against a freshly created publisher and closes it if {@link AutoCloseable}.
  *
  * @param <U> the element type emitted by the publisher.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -58,6 +53,11 @@ abstract class HelloWorld__Publisher_Test<U> {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code set(array)} writes the {@code hello-world-bytes} before each
+     * test.
+     */
     @BeforeEach
     void stubService() {
         set_array_sets_hello_world_bytes(service());
@@ -66,6 +66,16 @@ abstract class HelloWorld__Publisher_Test<U> {
     // ------------------------------------------------------------------------------------- service
 
     // --------------------------------------------------------------------------------- initializer
+
+    /**
+     * Creates a fresh publisher, runs the given function against it, and closes the publisher when
+     * the function returns if it is {@link AutoCloseable}.
+     *
+     * @param function the function to apply to the publisher.
+     * @param <R>      the return type of the given function.
+     * @return the value returned by the given function.
+     * @throws Exception if an error occurs while closing the publisher.
+     */
     <R> R applyPublisher(final Function<? super Flow.Publisher<U>, ? extends R> function)
             throws Exception {
         final var publisher = initializer.apply(service);

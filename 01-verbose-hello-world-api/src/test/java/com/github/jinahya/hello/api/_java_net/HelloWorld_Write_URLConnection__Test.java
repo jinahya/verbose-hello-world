@@ -46,6 +46,12 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_URLConnection__Test extends HelloWorld__Test {
 
+    /**
+     * Stubs {@code service.write(connection)} to write the {@code hello-world-bytes} to the
+     * connection's output stream before each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __stubService() throws IOException {
         doAnswer(i -> {

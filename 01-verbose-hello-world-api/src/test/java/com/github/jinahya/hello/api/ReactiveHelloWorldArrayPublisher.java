@@ -27,7 +27,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
 
 /**
@@ -127,10 +126,10 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        subscriber.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
+        subscriber.onSubscribe(new Subscription() {
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
-                addDemand(demand, n);
+                aggregateDemand(demand, n);
                 signal();
             }
             @Override public void cancel() {
@@ -141,7 +140,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        }));
+        });
         Thread.ofVirtual().start(() -> {
             while (true) {
                 lock.lock();
@@ -164,10 +163,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 final var index = new AtomicInteger();
                 final var error = new AtomicReference<Throwable>();
                 final var latch = new CountDownLatch(1);
-                publisher.subscribe(loggingSubscriber(new Subscriber<>() {
-                    @Override public String toString() {
-                        return super.toString().substring(getClass().getPackageName().length() + 1);
-                    }
+                publisher.subscribe(new Subscriber<>() {
                     @Override public void onSubscribe(final Subscription s) {
                         s.request(HelloWorld.BYTES);
                     }
@@ -181,7 +177,7 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                     @Override public void onComplete() {
                         latch.countDown();
                     }
-                }));
+                });
                 try { latch.await(); } catch (final InterruptedException _) {
                     Thread.currentThread().interrupt();
                     return;

@@ -59,6 +59,10 @@ class HelloWorld_Console_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code console}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <console> argument is <null>")
     @Test
     void _ThrowNullPointerException_ConsoleIsNull() {
@@ -69,6 +73,12 @@ class HelloWorld_Console_Test
         assertThrows(NullPointerException.class, () -> service.write(console));
     }
 
+    /**
+     * Verifies that the method invokes {@code write(console.writer())} and returns the
+     * {@code console}.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     @DisplayName("should invoke <write(console.writer)>, and return the <console>")
     @Test
     void __()

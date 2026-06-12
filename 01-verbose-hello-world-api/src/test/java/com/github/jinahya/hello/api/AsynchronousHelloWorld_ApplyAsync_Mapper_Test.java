@@ -27,6 +27,12 @@ import java.util.function.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for testing {@link AsynchronousHelloWorld#applyAsync(Function) applyAsync(mapper)} method.
+ *
+ * @param <T> the {@link AsynchronousHelloWorld} subtype under test.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("applyAsync(mapper)")
 abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -39,6 +45,10 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code mapper}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     @SuppressWarnings({"rawtypes"})
@@ -50,6 +60,12 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
         assertThrows(NullPointerException.class, () -> asynchronousService.applyAsync(mapper));
     }
 
+    /**
+     * Verifies that the method returns a {@link java.util.concurrent.CompletionStage CompletionStage}
+     * that completes normally with the value returned by {@code mapper.apply(service)}.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("should return a <CompletionStage> that completes with <mapper.apply> result")
     @Test
     @SuppressWarnings({"unchecked"})

@@ -32,17 +32,12 @@ import java.util.stream.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of the JDK's built-in {@link SubmissionPublisher SubmissionPublisher&lt;T&gt;}
- * (in {@code java.util.concurrent}, since Java 9) — the reference implementation of
- * {@link Flow.Publisher} — consumed by an explicit {@link Flow.Subscriber} implementation that uses
+ * Tests the JDK's built-in {@link SubmissionPublisher SubmissionPublisher&lt;T&gt;} (the reference
+ * {@link Flow.Publisher}) consumed by a hand-rolled {@link Flow.Subscriber} that uses
  * {@link Flow.Subscription} for back-pressure. Each test publishes the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload obtained from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service}, and a hand-rolled
- * {@code Flow.Subscriber} appends each {@code onNext} item to a list.
- * <p>
- * No external reactive library is involved — this is the JDK-native counterpart to the
- * {@code ReactiveHelloWorld_<Library>_Test} tours.
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
+ * asynchronous service — the JDK-native counterpart to the
+ * {@code HelloWorldReactive_<Library>_Test} tours.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -51,8 +46,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
 
+    /**
+     * Timeout in seconds for awaiting subscriber completion.
+     */
     private static final long TIMEOUT = 10L;
 
+    /**
+     * Number of items emitted in the multi-element tests.
+     */
     private static final int N = 3;
 
     // ---------------------------------------------------------------------------------------------
@@ -79,13 +80,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         }
 
         @Override
-        public String toString() {
-            return HelloWorldBookUtils.toSimplifiedString(super.toString());
-        }
-
-        @Override
-        public void onSubscribe(Flow.Subscription subscription) {
-            subscription = HelloWorldBookUtils.loggingSubscription(subscription);
+        public void onSubscribe(final Flow.Subscription subscription) {
             subscription.request(Long.MAX_VALUE);
         }
 
@@ -119,6 +114,12 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Asserts that a {@link SubmissionPublisher} emits one {@code hello-world-bytes} item submitted
+     * from the synchronous service to a collecting subscriber.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should emit a single <hello-world-bytes> from <HelloWorld>
             through a <SubmissionPublisher>""")
@@ -136,6 +137,12 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         assertPayload(items.get(0)); // @formatter:on
     }
 
+    /**
+     * Asserts that a {@link SubmissionPublisher} emits {@link #N} {@code hello-world-bytes} items
+     * submitted from the synchronous service to a collecting subscriber.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should emit <N> copies of <hello-world-bytes> from <HelloWorld>
             through a <SubmissionPublisher>""")
@@ -155,6 +162,12 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         items.forEach(HelloWorldReactive_Jdk_Test::assertPayload); // @formatter:on
     }
 
+    /**
+     * Asserts that a {@link SubmissionPublisher} emits one {@code hello-world-bytes} item produced
+     * by the asynchronous service to a collecting subscriber.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should emit a single <hello-world-bytes> from <AsynchronousHelloWorld>
             through a <SubmissionPublisher>""")
@@ -175,6 +188,12 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
         assertPayload(items.get(0)); // @formatter:on
     }
 
+    /**
+     * Asserts that a {@link SubmissionPublisher} emits {@link #N} {@code hello-world-bytes} items
+     * produced by the asynchronous service to a collecting subscriber.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should emit <N> copies of <hello-world-bytes> from <AsynchronousHelloWorld>
             through a <SubmissionPublisher>""")

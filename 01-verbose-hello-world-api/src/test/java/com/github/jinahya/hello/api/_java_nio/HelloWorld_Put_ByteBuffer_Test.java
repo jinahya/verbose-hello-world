@@ -54,6 +54,9 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
 
+    /**
+     * The {@link Random} source used to pick slice offsets and lengths.
+     */
     private static final Random RANDOM;
 
     static {

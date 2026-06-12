@@ -54,6 +54,11 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Stubs {@code asynchronousService.write(channel, position, attachment)} to write the
+     * {@code hello-world-bytes} to the file channel and return a stage completed with the
+     * attachment.
+     */
     @BeforeEach
     void __stubService() {
         doAnswer(i -> {

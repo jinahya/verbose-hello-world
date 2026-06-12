@@ -28,8 +28,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
-
 /**
  * A package-private <em>cycle-batched multicast</em> {@link Processor} of {@link Byte} elements.
  * <p>
@@ -199,7 +197,7 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte>, Au
     public void subscribe(final Subscriber<? super Byte> s) { // @formatter:off
         Objects.requireNonNull(s, "s is null");
         final var state = new State(s, lock);
-        s.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
+        s.onSubscribe(new Subscription() {
             @Override public void request(final long n) {
                 assert n > 0L;
                 if (state.terminated.get()) { return; }
@@ -210,7 +208,7 @@ final class ReactiveHelloWorldByteProcessor implements Processor<Byte, Byte>, Au
                 state.terminated.set(true);
                 state.signal();
             }
-        }));
+        });
         Thread.ofPlatform().start(state);
         if (thread == null) {
             synchronized (this) {

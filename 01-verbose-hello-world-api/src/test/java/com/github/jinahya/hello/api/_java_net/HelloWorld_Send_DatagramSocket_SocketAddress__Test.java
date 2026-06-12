@@ -46,6 +46,12 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorld__Test {
 
+    /**
+     * Stubs {@code service.send(socket, target)} to send the {@code hello-world-bytes} through the
+     * given socket to the given target before each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __stubService() throws IOException {
         doAnswer(i -> {

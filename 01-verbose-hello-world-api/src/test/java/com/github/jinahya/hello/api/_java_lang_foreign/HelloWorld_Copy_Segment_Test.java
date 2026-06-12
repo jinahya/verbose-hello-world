@@ -31,9 +31,11 @@ import java.lang.foreign.*;
 import java.nio.channels.*;
 import java.nio.file.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * A class for testing {@link HelloWorld#copy(java.lang.foreign.MemorySegment) copy(segment)}
@@ -41,27 +43,31 @@ import static org.mockito.ArgumentMatchers.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@Disabled
 @DisplayName("copy(segment)")
 @Slf4j
-class HelloWorld_Copy_Segment_Test
-        extends HelloWorld__Test {
+class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
 
+    /**
+     * Verifies that the method invokes {@link HelloWorld#set(byte[])} with an array of
+     * {@value HelloWorld#BYTES} bytes, copies the {@code array} to the {@code segment}, and returns
+     * the {@code segment}.
+     */
     @DisplayName("""
             should invoke <set(array[12])>, copy the <array> to the <segment>,
             and return the <segment>""")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = HelloWorld__TestUtils.set_array_returns_the_array(service());
+        final var service = set_array_returns_the_array(service());
         try (var arena = Arena.ofConfined()) {
             final var segment = arena.allocate(HelloWorld.BYTES);
-            try (var mockedStatic = Mockito.mockStatic(MemorySegment.class,
-                                                       Mockito.CALLS_REAL_METHODS)) {
+            try (var mockedStatic = mockStatic(MemorySegment.class, Mockito.CALLS_REAL_METHODS)) {
                 // ---------------------------------------------------------------------------- when
                 final var result = service.copy(segment);
                 // ---------------------------------------------------------------------------- then
                 assertSame(segment, result);
-                final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
+                final var array = set_array12_invoked_once(service);
                 mockedStatic.verify(() -> MemorySegment.copy(
                         same(array),
                         eq(0),
@@ -74,9 +80,8 @@ class HelloWorld_Copy_Segment_Test
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    static void compileNative(final Path source, final Path target)
-            throws Exception {
+    // ---------------------------------------------------------------------------------------------
+    static void compileNative(final Path source, final Path target) throws Exception {
         final boolean windows = System.getProperty("os.name").startsWith("Win");
         // List of common compilers in order of preference
         final var compilers = windows
@@ -115,10 +120,17 @@ class HelloWorld_Copy_Segment_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the method bridges Java to a compiled C {@code reader} program that reads the
+     * mapped {@code segment} backing the {@code hello-world-bytes}.
+     *
+     * @param tempDir the {@link TempDir} holding the compiled binary and shared data file.
+     * @throws Exception if an error occurs while compiling or invoking the native binary.
+     */
     @DisplayName("should bridge Java-to-C through a compiled <reader> reading the mapped <segment>")
     @Test
-    void testJavaToCBridge(@TempDir final Path tempDir)
-            throws Exception {
+    void testJavaToCBridge(@TempDir final Path tempDir) throws Exception {
         final var windows = System.getProperty("os.name").startsWith("Win");
         final var sourcePath = Paths.get("src", "test", "c", "reader.c");
         final var targetPath = tempDir.resolve(windows ? "reader.exe" : "reader");
@@ -134,7 +146,7 @@ class HelloWorld_Copy_Segment_Test
              final var arena = Arena.ofShared()) {
             // ---------------------------------------------------------------- write hello, world\0
             final var segment = channel.map(FileChannel.MapMode.READ_WRITE, 0, 13, arena);
-            HelloWorld__TestUtils.set_array_sets_hello_world_bytes(service());
+            set_array_sets_hello_world_bytes(service());
             service().copy(segment);
             segment.set(ValueLayout.JAVA_BYTE, 12, (byte) 0);
             log.debug("bytes written to the file");

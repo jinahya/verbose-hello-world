@@ -31,11 +31,23 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A class exercising {@link HelloWorld#append(Appendable) append(appendable)} against various real
+ * {@link Appendable} implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
 
+    /**
+     * Stubs the service so that {@code append(appendable)} appends the {@code hello-world-bytes}
+     * before each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __stubService() throws IOException {
         append_appendable_appends_hello_world_bytes(service());
@@ -46,6 +58,12 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
     @Nested
     class StringBuilder_Test {
 
+        /**
+         * Verifies that the method appends the {@code hello-world-string} to a real
+         * {@link StringBuilder}.
+         *
+         * @throws IOException if an I/O error occurs.
+         */
         @DisplayName("should append <hello-world-string> to a real <StringBuilder>")
         @Test
         void __() throws IOException {

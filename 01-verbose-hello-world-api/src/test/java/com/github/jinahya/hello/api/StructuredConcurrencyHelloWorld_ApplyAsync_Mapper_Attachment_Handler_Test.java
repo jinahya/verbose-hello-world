@@ -22,6 +22,13 @@ package com.github.jinahya.hello.api;
 
 import java.util.function.*;
 
+/**
+ * A class for testing
+ * {@link StructuredConcurrencyHelloWorld#applyAsync(java.util.function.Function, Object,
+ * java.nio.channels.CompletionHandler) applyAsync(mapper, attachment, handler)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test
         extends AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

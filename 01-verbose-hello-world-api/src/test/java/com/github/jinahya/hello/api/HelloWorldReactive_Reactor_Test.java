@@ -34,15 +34,10 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of <a href="https://projectreactor.io/">Project Reactor</a>'s own
- * publisher-creation idioms — each test creates a Reactor {@link Mono Mono&lt;byte[]&gt;} or
- * {@link Flux Flux&lt;byte[]&gt;} that pulls the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
- * Streams publisher).
- * <p>
- * Verification uses Reactor's own {@link StepVerifier}.
+ * Tests <a href="https://projectreactor.io/">Project Reactor</a>'s publisher-creation idioms —
+ * each test builds a {@link Mono Mono&lt;byte[]&gt;} or {@link Flux Flux&lt;byte[]&gt;} pulling
+ * the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
+ * asynchronous service. Verification uses Reactor's own {@link StepVerifier}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -51,6 +46,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
 
+    /**
+     * Maximum time to wait for the reactive pipeline to emit.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10L);
 
     // ---------------------------------------------------------------------------------------------
@@ -71,8 +69,15 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
     @Nested
     class Introduction_Test {
 
+        /**
+         * Number of items emitted in the multi-element tests.
+         */
         private static final int N = 3;
 
+        /**
+         * Asserts that {@code Mono.fromSupplier(() -> array(synchronousService()))} emits one
+         * {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit a single <hello-world-bytes> from <HelloWorld>
                 through <Mono.fromSupplier>""")
@@ -84,6 +89,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             assertPayload(array);
         }
 
+        /**
+         * Asserts that {@code Flux.range(0, N).map(...)} emits {@link #N}
+         * {@code hello-world-bytes} items pulled from the synchronous service.
+         */
         @DisplayName("""
                 should emit <N> copies of <hello-world-bytes> from <HelloWorld>
                 through <Flux.range(0, N).map>""")
@@ -97,6 +106,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             list.forEach(HelloWorldReactive_Reactor_Test::assertPayload);
         }
 
+        /**
+         * Asserts that {@code Mono.fromCompletionStage(() -> asynchronousService().applyAsync(...))}
+         * emits one {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit a single <hello-world-bytes> from <AsynchronousHelloWorld>
                 through <Mono.fromCompletionStage>""")
@@ -109,6 +122,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
             assertPayload(array);
         }
 
+        /**
+         * Asserts that {@code Flux.range(0, N).flatMap(...)} emits {@link #N}
+         * {@code hello-world-bytes} items produced by the asynchronous service.
+         */
         @DisplayName("""
                 should emit <N> copies of <hello-world-bytes> from <AsynchronousHelloWorld>
                 through <Flux.range(0, N).flatMap>""")
@@ -129,6 +146,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
     @Nested
     class Mono_Test {
 
+        /**
+         * Asserts that {@code Mono.just(byte[])} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Mono.just(byte[])>")
         @Test
         void __just() {
@@ -138,6 +158,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Mono.fromSupplier(Supplier)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Mono.fromSupplier(Supplier)>")
         @Test
         void __fromSupplier() {
@@ -149,6 +172,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Mono.fromCallable(Callable)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Mono.fromCallable(Callable)>")
         @Test
         void __fromCallable() {
@@ -160,6 +186,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Mono.fromCompletionStage(() -> asynchronousService().applyAsync(...))}
+         * emits the {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Mono.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
@@ -174,6 +204,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Mono.fromSupplier(...).map(byte[]::length)} emits
+         * {@link HelloWorld#BYTES}.
+         */
         @DisplayName("should return <BYTES> via <Mono.fromSupplier(...).map(byte[]::length)>")
         @Test
         void __map() {
@@ -191,6 +225,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
     @Nested
     class Flux_Test {
 
+        /**
+         * Asserts that {@code Flux.just(byte[])} emits one {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flux.just(byte[])>")
         @Test
         void __just_single() {
@@ -201,6 +238,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Flux.just(byte[]...)} emits each {@code hello-world-bytes} element.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flux.just(byte[]...)>")
         @Test
         void __just_varargs() {
@@ -215,6 +255,9 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Flux.fromIterable(List)} emits each {@code hello-world-bytes} element.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flux.fromIterable(List)>")
         @Test
         void __fromIterable() {
@@ -227,6 +270,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Flux.create(FluxSink)} emits each pushed {@code hello-world-bytes}
+         * element.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flux.create(FluxSink)>")
         @Test
         void __create() {
@@ -241,6 +288,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Flux.range(0, n).map(...)} emits {@code n} {@code hello-world-bytes}
+         * elements.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flux.range(0, n).map(...)>")
         @Test
         void __range_map() {
@@ -253,6 +304,10 @@ class HelloWorldReactive_Reactor_Test extends HelloWorldReactive__Test {
                     .verify(TIMEOUT);
         }
 
+        /**
+         * Asserts that {@code Flux.from(Mono.fromCompletionStage(asynchronousService.applyAsync(...)))}
+         * emits one {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Flux.from(Mono.fromCompletionStage(AsynchronousHelloWorld.applyAsync))>""")

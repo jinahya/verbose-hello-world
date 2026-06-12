@@ -43,6 +43,9 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     // ---------------------------------------------------------------------------------------------
@@ -51,13 +54,19 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the publisher emits exactly {@value HelloWorld#BYTES} elements followed by
+     * {@code onComplete} when a single subscriber requests unbounded demand.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should emit exactly <12> elements and <onComplete>
             when the subscriber calls <request(12)>""")
     @Test
     void __singleExactly12() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = spy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -86,6 +95,12 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         } // @formatter:on
     }
 
+    /**
+     * Verifies that, given multiple subscribers each requesting {@code n} in {@code [1, 24)}, every
+     * subscriber receives {@code min(n, 12)} elements and an {@code onComplete} when {@code n >= 12}.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should give each subscriber <min(n, 12)> elements and <onComplete>
             when <n >= 12>, given multiple subscribers each requesting <n> in <[1, 24)>""")
@@ -98,7 +113,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES << 1); // [1, 24)
             demands[i] = n;
-            subscribers.add(Mockito__TestUtils.loggingSpy(new Flow.Subscriber<>() {
+            subscribers.add(spy(new Flow.Subscriber<>() {
                 @Override public void onSubscribe(final Flow.Subscription subscription) {
                     subscription.request(n);
                 }
@@ -145,6 +160,12 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher signals {@code onError} (with no {@code onNext} and no
+     * {@code onComplete}) when {@code service.set} throws.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should signal <onError> with no <onNext> and no <onComplete>
             when <service.set> throws""")
@@ -153,7 +174,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = spy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -176,6 +197,13 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         assertSame(error, errorCaptor.getValue()); // @formatter:on
     }
 
+    /**
+     * Verifies that, when {@code subscriber.onSubscribe} throws, the publisher delivers
+     * {@code onError} via the inner {@link SubmissionPublisher} and lets {@code subscribe} return
+     * normally.
+     *
+     * @throws Exception if an error occurs.
+     */
     @DisplayName("""
             should deliver <onError> via <SubmissionPublisher>
             and let <subscribe> return normally
@@ -184,7 +212,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated onSubscribe failure");
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Flow.Subscriber<Byte>() {
+        final var subscriber = spy(new Flow.Subscriber<Byte>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 throw error;
             }

@@ -33,13 +33,10 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of <a href="https://helidon.io/">Helidon</a> Common Reactive's own
- * publisher-creation idioms — each test creates a {@link Single Single&lt;byte[]&gt;} or
- * {@link Multi Multi&lt;byte[]&gt;} that pulls the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
- * Streams publisher).
+ * Tests <a href="https://helidon.io/">Helidon</a> Common Reactive's publisher-creation idioms —
+ * each test builds a {@link Single Single&lt;byte[]&gt;} or {@link Multi Multi&lt;byte[]&gt;}
+ * pulling the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the
+ * synchronous or asynchronous service.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -53,6 +50,11 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
     @Nested
     class Single_Test {
 
+        /**
+         * Asserts that {@code Single.just(byte[])} emits the {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Single.just(byte[])>")
         @Test
         void __just() throws Exception {
@@ -63,6 +65,12 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Single.create(CompletionStage)} from
+         * {@code asynchronousService.applyAsync(...)} emits the {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes> via <Single.create(CompletionStage)>
                 from <AsynchronousHelloWorld.applyAsync>""")
@@ -76,6 +84,11 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             assertArrayEquals(hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Single.just(byte[]).map(byte[]::length)} emits {@link HelloWorld#BYTES}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should return <BYTES> via <Single.just(...).map(byte[]::length)>")
         @Test
         void __map() throws Exception {
@@ -93,6 +106,11 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
     @Nested
     class Multi_Test {
 
+        /**
+         * Asserts that {@code Multi.just(byte[]...)} emits all elements as {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.just(byte[]...)>")
         @Test
         void __just_varargs() throws Exception {
@@ -112,6 +130,11 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.create(Iterable)} emits all elements as {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.create(Iterable)>")
         @Test
         void __from_iterable() throws Exception {
@@ -130,6 +153,11 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.create(Stream)} emits all elements as {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.create(Stream)>")
         @Test
         void __from_stream() throws Exception {
@@ -148,6 +176,11 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Multi.singleton(byte[])} emits one element as {@code hello-world-bytes}.
+         *
+         * @throws Exception if an error occurs.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Multi.singleton(byte[])>")
         @Test
         void __singleton() throws Exception {

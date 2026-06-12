@@ -51,6 +51,9 @@ class HelloWorld_Send_MulticastSocket_Test
     // "239.0.0.1"   administratively scoped, local scope (RFC 2365)
     // "239.192.1.1" administratively scoped, organization-local (RFC 2365)
     // "239.255.1.1" administratively scoped, site-local (RFC 2365)
+    /**
+     * The site-local administratively scoped IPv4 multicast address used by the IPv4 test.
+     */
     private static final String MULTICAST_HOST4 = "239.255.1.1";
 
     // "ff02::1"       link-local, all-nodes (well-known, avoid joining)
@@ -58,8 +61,14 @@ class HelloWorld_Send_MulticastSocket_Test
     // "ff05::1"       site-local scope (RFC 4291)
     // "ff08::1"       organization-local scope (RFC 4291)
     // "ff0e::1"       global scope (RFC 4291)
+    /**
+     * The link-local IPv6 multicast group address used by the IPv6 test.
+     */
     private static final String MULTICAST_HOST6 = "ff02::1:2:3";
 
+    /**
+     * The ephemeral port chosen for both IPv4 and IPv6 multicast traffic.
+     */
     private static final int MULTICAST_PORT =
             ThreadLocalRandom.current().nextInt(49152, 65536);
 
@@ -106,7 +115,7 @@ class HelloWorld_Send_MulticastSocket_Test
         final var count = ThreadLocalRandom.current().nextInt(2, 6);
         final var latch = new CountDownLatch(count);
         final var received = new AtomicInteger(0);
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (var executor = Executors.newCachedThreadPool()) {
             IntStream.range(0, count).forEach(i -> executor.execute(() -> {
                 try (var receiver = new MulticastSocket(null)) {
                     receiver.setReuseAddress(true);
@@ -197,7 +206,7 @@ class HelloWorld_Send_MulticastSocket_Test
         final var count = ThreadLocalRandom.current().nextInt(2, 6);
         final var latch = new CountDownLatch(count);
         final var received = new AtomicInteger(0);
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (var executor = Executors.newCachedThreadPool()) {
             IntStream.range(0, count).forEach(i -> executor.execute(() -> {
                 try (var receiver = new MulticastSocket(null)) {
                     receiver.setReuseAddress(true);

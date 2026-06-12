@@ -41,15 +41,14 @@ import static org.mockito.Mockito.*;
 /**
  * Subscription-level tests for {@link ReactiveHelloWorldBytePublisher} — verifies the Reactive
  * Streams 1.0 contract (demand, completion, the single-terminal-signal rule (1.7), cancellation, …)
- * using a {@link Mockito#spy(Object) spied} {@link Subscriber} wrapped in a logging proxy via
- * {@link HelloWorldBookUtils#loggingProxy(Class, Object)}.
+ * using a {@link Mockito#spy(Object) spied} {@link Subscriber}.
  * <p>
  * The constructor passes
  * {@link ReactiveHelloWorldBytePublisher#ReactiveHelloWorldBytePublisher(HelloWorld) new
  * ReactiveHelloWorldBytePublisher(service)} (as a method reference) to
  * {@link ReactiveHelloWorld__PublisherTest super}, which builds the mock {@link HelloWorld} service
- * and the logging-wrapped publisher. The mock is stubbed by the inherited {@code @BeforeEach} hook
- * in the base class — see {@link ReactiveHelloWorld__PublisherTest#stubService()}.
+ * and the publisher. The mock is stubbed by the inherited {@code @BeforeEach} hook in the base
+ * class — see {@link ReactiveHelloWorld__PublisherTest#stubService()}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorld__PublisherTest
@@ -60,6 +59,9 @@ import static org.mockito.Mockito.*;
 class ReactiveHelloWorld_Byte_PublisherTest
         extends ReactiveHelloWorld__PublisherTest<Byte> {
 
+    /**
+     * Maximum time to wait for subscriber interactions.
+     */
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     // ---------------------------------------------------------------------------------------------
@@ -68,12 +70,16 @@ class ReactiveHelloWorld_Byte_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+    /**
+     * Verifies that the publisher emits exactly {@value HelloWorld#BYTES} elements followed by
+     * {@code onComplete} when the subscriber calls {@code request(12)}.
+     */
     @DisplayName(
             "should emit <12> elements and <onComplete> when the subscriber calls <request(12)>")
     @Test
     void __exactly12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
                 s.request(HelloWorld.BYTES);
             }
@@ -99,6 +105,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher emits {@code n} elements with no {@code onComplete} signal when
+     * the subscriber calls {@code request(n)} with {@code n} in {@code [1, 12)}.
+     */
     @DisplayName("""
             should emit <n> elements with no <onComplete>
             when the subscriber calls <request(n)> with <n> in <[1, 12)>""")
@@ -106,7 +116,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES);
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -129,6 +139,10 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher emits {@value HelloWorld#BYTES} elements followed by
+     * {@code onComplete} when the subscriber calls {@code request(n)} with {@code n > 12}.
+     */
     @DisplayName("""
             should emit <12> elements and <onComplete>
             when the subscriber calls <request(n)> with <n > 12>""")
@@ -136,7 +150,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     void __requestMoreThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextLong(HelloWorld.BYTES + 1L, 1024L);
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) { s.request(n); }
             @Override public void onNext(final Byte b) { }
             @Override public void onError(final Throwable t) { }
@@ -160,6 +174,12 @@ class ReactiveHelloWorld_Byte_PublisherTest
         } // @formatter:on
     }
 
+    /**
+     * Verifies that the publisher signals neither {@code onError} nor {@code onComplete} when
+     * {@code request(1)} is called repeatedly while a concurrent {@code cancel} arrives.
+     *
+     * @throws InterruptedException if the joining threads are interrupted.
+     */
     @DisplayName("""
             should signal neither <onError> nor <onComplete>
             when <request(1)> is called repeatedly with concurrent <cancel>""")
@@ -170,9 +190,9 @@ class ReactiveHelloWorld_Byte_PublisherTest
         final var terminated = new AtomicBoolean();
         final var requester = new AtomicReference<Thread>();
         final var canceller = new AtomicReference<Thread>();
-        final var subscriber = Mockito__TestUtils.loggingSpy(new Subscriber<Byte>() {
+        final var subscriber = spy(new Subscriber<Byte>() {
             @Override public void onSubscribe(final Subscription s) {
-                requester.set(Thread.ofVirtual().start(() -> {
+                requester.set(Thread.ofPlatform().daemon().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {
                         sleep(Duration.ofSeconds(1L));
                         lock.lock();
@@ -180,7 +200,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
                         } finally { lock.unlock(); }
                     }
                 }));
-                canceller.set(Thread.ofVirtual().start(() -> {
+                canceller.set(Thread.ofPlatform().daemon().start(() -> {
                     sleep(3L, 6L);
                     lock.lock();
                     try { s.cancel(); terminated.set(true); } finally { lock.unlock(); }

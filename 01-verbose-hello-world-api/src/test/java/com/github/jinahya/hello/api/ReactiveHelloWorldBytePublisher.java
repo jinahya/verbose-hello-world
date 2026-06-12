@@ -26,8 +26,6 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
-
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, in order.
@@ -47,10 +45,8 @@ import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
  * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> The producer virtual thread is the
  * sole sender of {@code onNext} and {@code onComplete}, so signals are naturally serialized (<a
  * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag,
- * satisfying
- * <a
- * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
  * 1.7</a> — at most one terminal ever fires.
  * <p>
  * <strong>Lifetime.</strong> The stream completes naturally after all {@value HelloWorld#BYTES}
@@ -120,10 +116,10 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        s.onSubscribe(loggingProxy(Subscription.class, new Subscription() {
+        s.onSubscribe(new Subscription() {
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
-                ReactiveHelloWorldPublisherUtils.addDemand(demand, n);
+                ReactiveHelloWorldPublisherUtils.aggregateDemand(demand, n);
                 signal();
             }
             @Override public void cancel() {
@@ -134,7 +130,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        }));
+        });
         Thread.ofVirtual().start(() -> {
             byte[] array = null;
             int index = 0;

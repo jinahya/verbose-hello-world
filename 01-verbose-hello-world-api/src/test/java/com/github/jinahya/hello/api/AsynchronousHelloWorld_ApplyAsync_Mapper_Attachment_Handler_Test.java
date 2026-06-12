@@ -29,6 +29,14 @@ import java.util.function.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * A class for testing
+ * {@link AsynchronousHelloWorld#applyAsync(Function, Object, CompletionHandler)
+ * applyAsync(mapper, attachment, handler)} method.
+ *
+ * @param <T> the {@link AsynchronousHelloWorld} subtype under test.
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 @DisplayName("applyAsync(mapper, attachment, handler)")
 abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -41,6 +49,10 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         super(HelloWorld.class, initializer);
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code mapper}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
     @Test
     @SuppressWarnings({"rawtypes"})
@@ -54,6 +66,10 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
                      () -> asynchronousService.applyAsync(mapper, null, handler));
     }
 
+    /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code handler}
+     * argument is {@code null}.
+     */
     @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
     @Test
     @SuppressWarnings({"rawtypes"})
@@ -67,6 +83,11 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
                      () -> asynchronousService.applyAsync(mapper, null, handler));
     }
 
+    /**
+     * Verifies that the method invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)} with
+     * the value returned by {@code mapper.apply(service)} and the supplied {@code attachment}.
+     */
     @DisplayName(
             "should invoke <handler.completed> with the <mapper.apply> result and the <attachment>")
     @Test
@@ -89,9 +110,12 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         verify(handler, never()).failed(any(), any());
     }
 
-    @DisplayName("""
-            should invoke <handler.failed> with the thrown exception and the <attachment>
-            when <mapper.apply> throws""")
+    /**
+     * Verifies that the method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} with the
+     * exception thrown by {@code mapper.apply(service)} and the supplied {@code attachment}.
+     */
+    @DisplayName("should invoke <handler.failed> with the thrown exception and the <attachment>")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

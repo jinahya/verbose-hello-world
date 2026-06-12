@@ -45,6 +45,13 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service's {@code send(socket, target)} and {@code send(channel, target)} so they
+     * send the {@code hello-world-bytes} before each test.
+     *
+     * @throws IOException if an I/O error occurs while stubbing.
+     */
     @BeforeEach
     void __stubService() throws IOException {
         send_datagramsocket_socketaddress_sends_hello_world_packet(service());

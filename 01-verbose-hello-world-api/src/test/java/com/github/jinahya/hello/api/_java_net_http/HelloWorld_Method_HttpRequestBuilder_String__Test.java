@@ -46,6 +46,10 @@ import static org.mockito.Mockito.*;
 @Slf4j
 class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorld__Test {
 
+    /**
+     * Stubs {@code service.method(builder, method)} to set the {@code hello-world-bytes} on the
+     * builder before each test.
+     */
     @BeforeEach
     void __stubService() {
         doAnswer(i -> {

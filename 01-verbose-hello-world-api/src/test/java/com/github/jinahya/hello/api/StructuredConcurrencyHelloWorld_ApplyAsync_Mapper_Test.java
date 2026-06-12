@@ -22,6 +22,12 @@ package com.github.jinahya.hello.api;
 
 import java.util.function.*;
 
+/**
+ * A class for testing
+ * {@link StructuredConcurrencyHelloWorld#applyAsync(Function) applyAsync(mapper)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper_Test
         extends
         AsynchronousHelloWorld_ApplyAsync_Mapper_Test<StructuredConcurrencyHelloWorld<HelloWorld>> {

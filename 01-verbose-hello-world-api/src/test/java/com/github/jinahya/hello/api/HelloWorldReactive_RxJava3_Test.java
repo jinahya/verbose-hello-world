@@ -30,13 +30,11 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A pedagogical tour of <a href="https://github.com/ReactiveX/RxJava">RxJava 3</a>'s own
- * publisher-creation idioms — each test creates a {@link Single Single&lt;byte[]&gt;},
- * {@link Maybe Maybe&lt;byte[]&gt;}, or {@link Flowable Flowable&lt;byte[]&gt;} that pulls the
- * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> payload from either
- * {@link #synchronousService() the synchronous service} or
- * {@link #asynchronousService() the asynchronous service} directly (no intermediate Reactive
- * Streams publisher).
+ * Tests <a href="https://github.com/ReactiveX/RxJava">RxJava 3</a>'s publisher-creation idioms —
+ * each test builds a {@link Single Single&lt;byte[]&gt;}, {@link Maybe Maybe&lt;byte[]&gt;}, or
+ * {@link Flowable Flowable&lt;byte[]&gt;} pulling the
+ * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
+ * asynchronous service.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -50,6 +48,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
     @Nested
     class Single_Test {
 
+        /**
+         * Asserts that {@code Single.just(byte[])} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Single.just(byte[])>")
         @Test
         void __just() {
@@ -60,6 +61,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Single.fromCallable(Callable)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Single.fromCallable(Callable)>")
         @Test
         void __fromCallable() {
@@ -71,6 +75,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Single.fromCompletionStage(asynchronousService.applyAsync(...))} emits
+         * the {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Single.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
@@ -84,6 +92,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Single.fromCallable(...).map(byte[]::length)} emits
+         * {@link HelloWorld#BYTES}.
+         */
         @DisplayName("should return <BYTES> via <Single.fromCallable(...).map(byte[]::length)>")
         @Test
         void __map() {
@@ -102,6 +114,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
     @Nested
     class Maybe_Test {
 
+        /**
+         * Asserts that {@code Maybe.just(byte[])} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Maybe.just(byte[])>")
         @Test
         void __just() {
@@ -112,6 +127,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Maybe.fromCallable(Callable)} emits the {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Maybe.fromCallable(Callable)>")
         @Test
         void __fromCallable() {
@@ -123,6 +141,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             assertArrayEquals(HelloWorld__TestUtils.hello_world_byte_array(), array);
         }
 
+        /**
+         * Asserts that {@code Maybe.fromCompletionStage(asynchronousService.applyAsync(...))} emits
+         * the {@code hello-world-bytes}.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Maybe.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
@@ -142,6 +164,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
     @Nested
     class Flowable_Test {
 
+        /**
+         * Asserts that {@code Flowable.just(byte[])} emits one {@code hello-world-bytes}.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flowable.just(byte[])>")
         @Test
         void __just_single() {
@@ -155,6 +180,9 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
                               list.get(0));
         }
 
+        /**
+         * Asserts that {@code Flowable.just(byte[]...)} emits each {@code hello-world-bytes} element.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flowable.just(byte[]...)>")
         @Test
         void __just_varargs() {
@@ -174,6 +202,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Flowable.fromIterable(List)} emits each {@code hello-world-bytes}
+         * element.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flowable.fromIterable(List)>")
         @Test
         void __fromIterable() {
@@ -192,6 +224,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Flowable.create(emitter, BackpressureStrategy.BUFFER)} emits each
+         * pushed {@code hello-world-bytes} element.
+         */
         @DisplayName("""
                 should emit <hello-world-bytes>
                 via <Flowable.create(emitter, BackpressureStrategy.BUFFER)>""")
@@ -213,6 +249,10 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
             }
         }
 
+        /**
+         * Asserts that {@code Flowable.range(0, n).map(...)} emits {@code n}
+         * {@code hello-world-bytes} elements.
+         */
         @DisplayName("should emit <hello-world-bytes> via <Flowable.range(0, n).map(...)>")
         @Test
         void __range_map() {

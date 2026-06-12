@@ -29,7 +29,6 @@ import org.reactivestreams.*;
 
 import java.util.function.*;
 
-import static com.github.jinahya.hello.api.HelloWorldBookUtils.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.util.Objects.*;
 import static org.mockito.Mockito.*;
@@ -45,9 +44,7 @@ import static org.mockito.Mockito.*;
  *   <li>a {@link Mockito#mock(Class) mock} {@link HelloWorld} created with
  *       {@link Mockito#CALLS_REAL_METHODS CALLS_REAL_METHODS} so the {@code default} methods on
  *       the interface stay live;</li>
- *   <li>the publisher produced by the constructor-supplied {@code initializer}, wrapped with
- *       {@link HelloWorldBookUtils#loggingPublisher(Publisher) loggingPublisher} so every
- *       {@code subscribe(...)} call is logged.</li>
+ *   <li>the publisher produced by the constructor-supplied {@code initializer}.</li>
  * </ul>
  * In addition, {@link #stubService()} is registered here as a {@code @BeforeEach} hook, stubbing
  * {@link HelloWorld#set(byte[]) service.set(...)} to write the actual {@code "hello, world"} bytes.
@@ -72,12 +69,15 @@ abstract class ReactiveHelloWorld__PublisherTest<U> {
         super();
         requireNonNull(initializer, "initializer is null");
         service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
-        publisher = loggingPublisher(
-                requireNonNull(initializer.apply(service), "null initialized")
-        );
+        publisher = requireNonNull(initializer.apply(service), "null initialized");
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs the service so that {@code set(array)} writes the {@code hello-world-bytes} before each
+     * test.
+     */
     @BeforeEach
     void stubService() {
         set_array_sets_hello_world_bytes(service);
