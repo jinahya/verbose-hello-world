@@ -22,12 +22,14 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,16 +43,31 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("byte publisher")
 @Slf4j
+@SuppressWarnings({"rawtypes"})
 class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
 
     /**
-     * Maximum time to wait for subscriber interactions.
+     * Maximum time, in milliseconds, to wait for subscriber interactions.
      */
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(10L);
+
+    // ---------------------------------------------------------------------------------------------
+    private static MockedConstruction<SubmissionPublisher> SUBMISSION_PUBLISHER_CONSTRUCTION;
 
     // ---------------------------------------------------------------------------------------------
     HelloWorld_Byte_Publisher_Test() {
-        super(HelloWorldBytePublisher::new);
+        super(s -> loggingPublisher(new HelloWorldBytePublisher(s)));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeAll
+    static void __stubSubmissionPublisherMockConstruct() {
+        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingMockConstruction();
+    }
+
+    @AfterAll
+    static void __closeSubmissionPublisherMockConstruct() {
+        SUBMISSION_PUBLISHER_CONSTRUCTION.close();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -67,26 +84,18 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     @Test
     void __singleExactly12() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var subscriber =                 spy(new Flow.Subscriber<Byte>() { // @formatter:off
+        final var subscriber = loggingByteSubscriber(new Flow.Subscriber<>() { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
-//                log.debug("onSubscriber({})", subscription);
                 subscription.request(Long.MAX_VALUE);
             }
-            @Override public void onNext(final Byte item) {
-//                log.debug("onNext(0x{})", String.format("%02x", item));
-            }
-            @Override public void onError(final Throwable throwable) {
-//                log.debug("onError({})", throwable, throwable);
-            }
-            @Override public void onComplete() {
-//                log.debug("onComplete()");
-            }
-        })
-        ; // @formatter:on
+            @Override public void onNext(final Byte item) { }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        }); // @formatter:on
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             p.subscribe(subscriber);
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onComplete();
+            verify(subscriber, timeout(TIMEOUT).times(1)).onComplete();
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -123,7 +132,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, HelloWorld.BYTES << 1); // [1, 24)
             demands[i] = n;
-            subscribers.add(spy(new Flow.Subscriber<>() {
+            subscribers.add(loggingByteSubscriber(new Flow.Subscriber<>() {
                 @Override public void onSubscribe(final Flow.Subscription subscription) {
                     subscription.request(n);
                 }
@@ -132,8 +141,6 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
                 @Override public void onComplete() { }
             }));
         }
-        log.debug("count: {}", count);
-        log.debug("demands: {}", demands);
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             for (final var subscriber : subscribers) {
@@ -142,10 +149,10 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             for (int i = 0; i < count; i++) {
                 final var expectedNext = Math.min(demands[i], HelloWorld.BYTES);
                 final var expectedComplete = demands[i] >= HelloWorld.BYTES ? 1 : 0;
-                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(expectedNext))
+                verify(subscribers.get(i), timeout(TIMEOUT).times(expectedNext))
                         .onNext(any());
                 if (expectedComplete > 0) {
-                    verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(expectedComplete))
+                    verify(subscribers.get(i), timeout(TIMEOUT).times(expectedComplete))
                             .onComplete();
                 }
             }
@@ -184,7 +191,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = spy(new Flow.Subscriber<Byte>() {
+        final var subscriber = loggingByteSubscriber(new Flow.Subscriber<>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -193,9 +200,9 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             @Override public void onComplete() { }
         });
         // ------------------------------------------------------------------------------------ when
-        applyPublisher(publisher -> {
-            publisher.subscribe(subscriber);
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
+            verify(subscriber, timeout(TIMEOUT).times(1)).onError(any());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -222,7 +229,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated onSubscribe failure");
-        final var subscriber = spy(new Flow.Subscriber<Byte>() {
+        final var subscriber = loggingByteSubscriber(new Flow.Subscriber<>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 throw error;
             }
@@ -233,7 +240,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);                  // returns normally
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
+            verify(subscriber, timeout(TIMEOUT).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then

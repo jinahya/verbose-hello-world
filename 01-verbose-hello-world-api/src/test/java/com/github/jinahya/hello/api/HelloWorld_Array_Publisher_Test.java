@@ -22,12 +22,14 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,16 +43,31 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("array publisher")
 @Slf4j
+@SuppressWarnings({"rawtypes"})
 class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]> {
 
     /**
-     * Maximum time to wait for subscriber interactions.
+     * Maximum time, in milliseconds, to wait for subscriber interactions.
      */
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(10L);
+
+    // ---------------------------------------------------------------------------------------------
+    private static MockedConstruction<SubmissionPublisher> SUBMISSION_PUBLISHER_CONSTRUCTION;
 
     // ---------------------------------------------------------------------------------------------
     HelloWorld_Array_Publisher_Test() {
-        super(HelloWorldArrayPublisher::new);
+        super(s -> loggingPublisher(new HelloWorldArrayPublisher(s)));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeAll
+    static void __stubSubmissionPublisherMockConstruct() {
+        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingMockConstruction();
+    }
+
+    @AfterAll
+    static void __closeSubmissionPublisherMockConstruct() {
+        SUBMISSION_PUBLISHER_CONSTRUCTION.close();
     }
 
     /**
@@ -66,7 +83,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ----------------------------------------------------------------------------------- given
         final var n = ThreadLocalRandom.current().nextInt(1, 10);
         log.debug("n: {}", n);
-        final var subscriber = spy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
             private int received;
             @Override public void onSubscribe(final Flow.Subscription s) {
@@ -82,7 +99,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             p.subscribe(subscriber);
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
+            verify(subscriber, timeout(TIMEOUT).times(n)).onNext(any());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -116,7 +133,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, 10);
             demands[i] = n;
-            subscribers.add(spy(new Flow.Subscriber<byte[]>() {
+            subscribers.add(loggingArraySubscriber(new Flow.Subscriber<>() {
                 private Flow.Subscription subscription;
                 private int received;
                 @Override public void onSubscribe(final Flow.Subscription s) {
@@ -137,7 +154,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
                 p.subscribe(subscriber);
             }
             for (int i = 0; i < count; i++) {
-                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(demands[i]))
+                verify(subscribers.get(i), timeout(TIMEOUT).times(demands[i]))
                         .onNext(any());
             }
             return null;
@@ -170,7 +187,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = spy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
@@ -181,7 +198,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(publisher -> {
             publisher.subscribe(subscriber);
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
+            verify(subscriber, timeout(TIMEOUT).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then

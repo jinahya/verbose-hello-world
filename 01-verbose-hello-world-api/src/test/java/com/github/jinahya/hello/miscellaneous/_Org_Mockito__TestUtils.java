@@ -28,6 +28,7 @@ import org.mockito.invocation.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
+import java.util.stream.*;
 
 import static org.mockito.Mockito.*;
 
@@ -177,28 +178,290 @@ public final class _Org_Mockito__TestUtils {
                 }));
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Flow.Subscriber<T> loggingSubscriber(
-            final Flow.Subscriber<T> realInstance,
-            final Function<? super Object[], ? extends CharSequence> formatter) {
-        requireNotMock(realInstance);
-        final Class<T> clazz = (Class<T>) realInstance.getClass();
-        return (Flow.Subscriber<T>) mock(clazz, withSettings()
-                .spiedInstance(realInstance)
-                .defaultAnswer(CALLS_REAL_METHODS)
-                .invocationListeners(report -> {
-                    final var inv = (Invocation) report.getInvocation();
-                    if (inv.getMethod().getDeclaringClass() != Object.class) {
-                        log.debug("{}.{}({})",
-                                  inv.getMock(),
-                                  inv.getMethod().getName(),
-                                  formatter.apply(inv.getArguments()));
-                    } else {
-                        log.debug("xxxxxxx");
-                    }
-                }));
+    private static String formatByte(final byte v) {
+        return String.format("0x%02x", Byte.toUnsignedInt(v));
     }
 
+    private static String formatArray(final byte[] v) {
+        return IntStream.range(0, v.length)
+                .mapToObj(i -> formatByte(v[i]))
+                .collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    private static String toIdentityString(final Object object) {
+        if (object == null) {
+            return "null";
+        }
+        return _Java_Lang_TestUtils.toSimplifedString(object);
+    }
+
+    private static <T> CharSequence format(
+            final Function<? super T, ? extends CharSequence> formatter, final T value) {
+        if (value == null) {
+            return "null";
+        }
+        try {
+            return formatter.apply(value);
+        } catch (final RuntimeException re) {
+            return String.valueOf(value);
+        }
+    }
+
+    public static final class OfFlow {
+
+        @SuppressWarnings("unchecked")
+        public static <T> Flow.Publisher<T> loggingPublisher(
+                final Flow.Publisher<? extends T> realInstance) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (Flow.Publisher<T>) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).subscribe(any());
+            return spy;
+        }
+
+        public static Flow.Subscription loggingSubscription(
+                final Flow.Subscription realInstance) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (Flow.Subscription) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.request({})", mock, i.<Long>getArgument(0));
+                return i.callRealMethod();
+            }).when(spy).request(anyLong());
+            doAnswer(i -> {
+                log.debug("{}.cancel()", mock);
+                return i.callRealMethod();
+            }).when(spy).cancel();
+            return spy;
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T> Flow.Subscriber<T> loggingSubscriber(
+                final Flow.Subscriber<? super T> realInstance,
+                final Function<? super T, ? extends CharSequence> itemFormatter) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (Flow.Subscriber<T>) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onSubscribe(any());
+            doAnswer(i -> {
+                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onNext(any());
+            doAnswer(i -> {
+                final var thrown = i.<Throwable>getArgument(0);
+//                log.debug("{}.onError({})", mock, thrown, thrown);
+                log.debug("{}.onError({})", mock, thrown.getMessage());
+                return i.callRealMethod();
+            }).when(spy).onError(any());
+            doAnswer(i -> {
+                log.debug("{}.onComplete()", mock);
+                return i.callRealMethod();
+            }).when(spy).onComplete();
+            return spy;
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T, R> Flow.Processor<T, R> loggingProcessor(
+                final Flow.Processor<? super T, ? extends R> realInstance,
+                final Function<? super T, ? extends CharSequence> itemFormatter) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (Flow.Processor<T, R>) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).subscribe(any());
+            doAnswer(i -> {
+                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onSubscribe(any());
+            doAnswer(i -> {
+                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onNext(any());
+            doAnswer(i -> {
+                final var thrown = i.<Throwable>getArgument(0);
+//                log.debug("{}.onError({})", mock, thrown, thrown);
+                log.debug("{}.onError({})", mock, thrown.getMessage());
+                return i.callRealMethod();
+            }).when(spy).onError(any());
+            doAnswer(i -> {
+                log.debug("{}.onComplete()", mock);
+                return i.callRealMethod();
+            }).when(spy).onComplete();
+            return spy;
+        }
+
+        public static Flow.Subscriber<Byte> loggingByteSubscriber(
+                final Flow.Subscriber<? super Byte> realInstance) {
+            return loggingSubscriber(realInstance, _Org_Mockito__TestUtils::formatByte);
+        }
+
+        public static Flow.Subscriber<byte[]> loggingArraySubscriber(
+                final Flow.Subscriber<? super byte[]> realInstance) {
+            return loggingSubscriber(realInstance, _Org_Mockito__TestUtils::formatArray);
+        }
+
+        public static <R> Flow.Processor<Byte, R> loggingByteProcessor(
+                final Flow.Processor<? super Byte, ? extends R> realInstance) {
+            return loggingProcessor(realInstance, _Org_Mockito__TestUtils::formatByte);
+        }
+
+        public static <R> Flow.Processor<byte[], R> loggingArrayProcessor(
+                final Flow.Processor<? super byte[], ? extends R> realInstance) {
+            return loggingProcessor(realInstance, _Org_Mockito__TestUtils::formatArray);
+        }
+
+        private OfFlow() {
+            throw new AssertionError("instantiation is not allowed");
+        }
+    }
+
+    public static final class OfReactiveStream {
+
+        @SuppressWarnings("unchecked")
+        public static <T> org.reactivestreams.Publisher<T> loggingPublisher(
+                final org.reactivestreams.Publisher<? extends T> realInstance) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (org.reactivestreams.Publisher<T>) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).subscribe(any());
+            return spy;
+        }
+
+        public static org.reactivestreams.Subscription loggingSubscription(
+                final org.reactivestreams.Subscription realInstance) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (org.reactivestreams.Subscription) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.request({})", mock, i.<Long>getArgument(0));
+                return i.callRealMethod();
+            }).when(spy).request(anyLong());
+            doAnswer(i -> {
+                log.debug("{}.cancel()", mock);
+                return i.callRealMethod();
+            }).when(spy).cancel();
+            return spy;
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T> org.reactivestreams.Subscriber<T> loggingSubscriber(
+                final org.reactivestreams.Subscriber<? super T> realInstance,
+                final Function<? super T, ? extends CharSequence> itemFormatter) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (org.reactivestreams.Subscriber<T>) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onSubscribe(any());
+            doAnswer(i -> {
+                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onNext(any());
+            doAnswer(i -> {
+                final var thrown = i.<Throwable>getArgument(0);
+                log.debug("{}.onError({})", mock, thrown, thrown);
+                return i.callRealMethod();
+            }).when(spy).onError(any());
+            doAnswer(i -> {
+                log.debug("{}.onComplete()", mock);
+                return i.callRealMethod();
+            }).when(spy).onComplete();
+            return spy;
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T, R> org.reactivestreams.Processor<T, R> loggingProcessor(
+                final org.reactivestreams.Processor<? super T, ? extends R> realInstance,
+                final Function<? super T, ? extends CharSequence> itemFormatter) {
+            requireNotMock(realInstance);
+            final var clazz = realInstance.getClass();
+            final var spy = (org.reactivestreams.Processor<T, R>) mock(clazz, withSettings()
+                    .spiedInstance(realInstance)
+                    .defaultAnswer(CALLS_REAL_METHODS));
+            final var mock = toIdentityString(spy);
+            doAnswer(i -> {
+                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).subscribe(any());
+            doAnswer(i -> {
+                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onSubscribe(any());
+            doAnswer(i -> {
+                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                return i.callRealMethod();
+            }).when(spy).onNext(any());
+            doAnswer(i -> {
+                final var thrown = i.<Throwable>getArgument(0);
+                log.debug("{}.onError({})", mock, thrown, thrown);
+                return i.callRealMethod();
+            }).when(spy).onError(any());
+            doAnswer(i -> {
+                log.debug("{}.onComplete()", mock);
+                return i.callRealMethod();
+            }).when(spy).onComplete();
+            return spy;
+        }
+
+        public static org.reactivestreams.Subscriber<Byte> loggingByteSubscriber(
+                final org.reactivestreams.Subscriber<? super Byte> realInstance) {
+            return loggingSubscriber(realInstance, _Org_Mockito__TestUtils::formatByte);
+        }
+
+        public static org.reactivestreams.Subscriber<byte[]> loggingArraySubscriber(
+                final org.reactivestreams.Subscriber<? super byte[]> realInstance) {
+            return loggingSubscriber(realInstance, _Org_Mockito__TestUtils::formatArray);
+        }
+
+        public static <R> org.reactivestreams.Processor<Byte, R> loggingByteProcessor(
+                final org.reactivestreams.Processor<? super Byte, ? extends R> realInstance) {
+            return loggingProcessor(realInstance, _Org_Mockito__TestUtils::formatByte);
+        }
+
+        public static <R> org.reactivestreams.Processor<byte[], R> loggingArrayProcessor(
+                final org.reactivestreams.Processor<? super byte[], ? extends R> realInstance) {
+            return loggingProcessor(realInstance, _Org_Mockito__TestUtils::formatArray);
+        }
+
+        private OfReactiveStream() {
+            throw new AssertionError("instantiation is not allowed");
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     private _Org_Mockito__TestUtils() {
         throw new AssertionError("instantiation is not allowed");

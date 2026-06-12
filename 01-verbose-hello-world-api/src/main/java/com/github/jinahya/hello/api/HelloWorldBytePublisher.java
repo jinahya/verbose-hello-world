@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import java.lang.invoke.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -89,6 +90,10 @@ import java.util.concurrent.*;
  * @see HelloWorldArrayPublisher
  */
 public class HelloWorldBytePublisher implements Flow.Publisher<Byte> {
+
+    private static final System.Logger logger = System.getLogger(
+            MethodHandles.lookup().lookupClass().getName()
+    );
 
     /**
      * Creates a new instance backed by the specified service, dispatching the producer task and the
