@@ -31,13 +31,17 @@ public final class _Java_Lang_TestUtils {
     /**
      * Returns the identity-hash suffix of the specified object as {@code '@' + hex}, where
      * {@code hex} is the {@code 8}-digit, zero-padded, lowercase hexadecimal representation of
-     * {@link System#identityHashCode(Object) System.identityHashCode(object)}. Reads as
-     * {@code "@00000000"} for {@code null}.
+     * {@link System#identityHashCode(Object) System.identityHashCode(object)}. Returns the literal
+     * {@code "null"} for {@code null}.
      *
      * @param object the object whose identity hash code is taken; may be {@code null}.
-     * @return {@code String.format("@%08x", System.identityHashCode(object))}; never {@code null}.
+     * @return {@code "null"} if {@code object} is {@code null}; otherwise
+     * {@code String.format("@%08x", System.identityHashCode(object))}. Never {@code null}.
      */
     public static String toSimplifedString(final Object object) {
+        if (object == null) {
+            return "null";
+        }
         return String.format("@%08x", System.identityHashCode(object));
     }
 

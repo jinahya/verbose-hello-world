@@ -143,7 +143,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("should collect <N byte[]> via <Flux.from(ofArrays).take(N).collectList()>")
         @Test
         void ofArrays__() {
-            final var list = Flux.from(ReactiveHelloWorldArrayPublisher.from(service))
+            final var list = Flux.from(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .collectList()
                     .block(TIMEOUT);
@@ -177,7 +177,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
                 "should collect <N byte[]> via <Flowable.fromPublisher(ofArrays).take(N).toList()>")
         @Test
         void ofArrays__() {
-            final var list = Flowable.fromPublisher(ReactiveHelloWorldArrayPublisher.from(service))
+            final var list = Flowable.fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .toList()
                     .blockingGet();
@@ -223,7 +223,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         void ofArrays__() {
             final var list = io.smallrye.mutiny.Multi.createFrom()
                     .publisher(FlowAdapters.toFlowPublisher(
-                            ReactiveHelloWorldArrayPublisher.from(service)))
+                            new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service))))
                     .select().first(N)
                     .collect().asList()
                     .await().atMost(TIMEOUT);
@@ -265,7 +265,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @Test
         void ofArrays__() {
             final var list = Multi.create(FlowAdapters.toFlowPublisher(
-                            ReactiveHelloWorldArrayPublisher.from(service)))
+                            new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service))))
                     .limit(N)
                     .collectList()
                     .await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -332,7 +332,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @Test
         void ofArrays__() throws Exception {
             final var list = akka.stream.javadsl.Source
-                    .fromPublisher(ReactiveHelloWorldArrayPublisher.from(service))
+                    .fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .runWith(akka.stream.javadsl.Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
@@ -402,7 +402,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @Test
         void ofArrays__() throws Exception {
             final var list = org.apache.pekko.stream.javadsl.Source
-                    .fromPublisher(ReactiveHelloWorldArrayPublisher.from(service))
+                    .fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .runWith(org.apache.pekko.stream.javadsl.Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
@@ -463,7 +463,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("should collect the first <N byte[]> via <ReactiveReadStream> over <ofArrays>")
         @Test
         void ofArrays__() throws Exception {
-            assertArrays(collect(ReactiveHelloWorldArrayPublisher.from(service), N));
+            assertArrays(collect(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)), N));
         }
     }
 
@@ -538,7 +538,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("should collect <N byte[]> when the <Flow.Subscriber> cancels after <N> items")
         @Test
         void ofArrays__() throws Exception {
-            assertArrays(collect(ReactiveHelloWorldArrayPublisher.from(service), N));
+            assertArrays(collect(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)), N));
         }
     }
 }

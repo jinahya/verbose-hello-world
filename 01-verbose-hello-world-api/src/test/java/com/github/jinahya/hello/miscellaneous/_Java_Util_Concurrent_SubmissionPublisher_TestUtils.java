@@ -63,7 +63,7 @@ public final class _Java_Util_Concurrent_SubmissionPublisher_TestUtils {
                     // by the shared helper. NOTE: Mockito's spiedInstance creates a *sibling* of
                     // `real` with copied state — operations on the spy use the spy's own state,
                     // not `real`'s — so every method call on the mock must hit this same spy.
-                    final var logging = (SubmissionPublisher<Object>) loggingPublisher(real);
+                    final var logging = loggingPublisher(real);
                     siblings.put(mock, logging);
                     // subscribe is the only call that needs custom handling: wrap the incoming
                     // subscriber so its subscription's request(n)/cancel() are logged. Every other

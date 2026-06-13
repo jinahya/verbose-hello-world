@@ -72,7 +72,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
     @DisplayName("should close cleanly without any subscriber")
     @Test
     void __immediateClose() {
-        final var publisher = ReactiveHelloWorldArrayPublisher.from(service);
+        final var publisher = new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service));
         try (final var processor = new ReactiveHelloWorldStringProcessor(publisher)) {
         }
     }
@@ -90,7 +90,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
         final var ds = new int[] {
                 3, 5
         };
-        final var publisher = ReactiveHelloWorldArrayPublisher.from(service);
+        final var publisher = new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service));
         try (final var processor = new ReactiveHelloWorldStringProcessor(publisher)) {
             final var subscribers = new ArrayList<Subscriber<String>>();
             for (final int d : ds) {

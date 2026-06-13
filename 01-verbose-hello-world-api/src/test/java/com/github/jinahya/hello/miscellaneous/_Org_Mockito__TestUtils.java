@@ -23,13 +23,13 @@ package com.github.jinahya.hello.miscellaneous;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.mockito.*;
-import org.mockito.invocation.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+import static com.github.jinahya.hello.miscellaneous._Java_Lang_TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -87,97 +87,6 @@ public final class _Org_Mockito__TestUtils {
         return object;
     }
 
-    // ---------------------------------------------------------------------------------------------
-
-    /**
-     * The {@link HelloWorld}-bounded counterpart of {@link #requireMock(Object) requireMock(T)};
-     * preserves the {@code <T extends HelloWorld>} bound at the call site for stubbing helpers that
-     * want to keep their {@link HelloWorld} return type.
-     *
-     * @param object the {@link HelloWorld}-typed object to check; must not be {@code null}.
-     * @param <T>    the {@link HelloWorld} subtype of {@code object}.
-     * @return the given {@code object}, unchanged.
-     * @throws NullPointerException     if {@code object} is {@code null}.
-     * @throws IllegalArgumentException if {@code object} is not a Mockito mock.
-     * @see #requireMock(Object)
-     */
-    static <T extends HelloWorld> T requireMock(final T object) {
-        Objects.requireNonNull(object, "object is null");
-        if (!mockingDetails(object).isMock()) {
-            throw new IllegalArgumentException("is not a mock: " + object);
-        }
-        return object;
-    }
-
-    /**
-     * The {@link HelloWorld}-bounded counterpart of
-     * {@link #requireNotMock(Object) requireNotMock(T)}; preserves the
-     * {@code <T extends HelloWorld>} bound at the call site for helpers that want to exercise a
-     * real {@link HelloWorld} rather than a mock.
-     *
-     * @param object the {@link HelloWorld}-typed object to check; must not be {@code null}.
-     * @param <T>    the {@link HelloWorld} subtype of {@code object}.
-     * @return the given {@code object}, unchanged.
-     * @throws NullPointerException     if {@code object} is {@code null}.
-     * @throws IllegalArgumentException if {@code object} is a Mockito mock.
-     * @see #requireNotMock(Object)
-     */
-    static <T extends HelloWorld> T requireNotMock(final T object) {
-        Objects.requireNonNull(object, "object is null");
-        if (mockingDetails(object).isMock()) {
-            throw new IllegalArgumentException("is a mock: " + object);
-        }
-        return object;
-    }
-
-    //    /**
-//     * Returns a {@linkplain Mockito#spy(Object) Mockito spy} of the given real instance whose every
-//     * non-{@link Object} method invocation is logged at {@code DEBUG} via an
-//     * {@link org.mockito.listeners.InvocationListener InvocationListener}. Unlike
-//     * {@link #loggingSpy(Class, Object) loggingSpy(...)}, this preserves <em>true</em> spy
-//     * semantics — internal {@code this.foo(...)} calls from interface default-method bodies still
-//     * route through the spy proxy — so {@link Mockito#verify(Object) verify} sees nested call
-//     * chains and a contract test can assert delegation patterns such as
-//     * {@code verify(service, times(1)).write(same(channel), same(attachment), notNull())}.
-//     * <p>
-//     * The {@link org.mockito.listeners.InvocationListener InvocationListener} fires on every
-//     * invocation — including stubbed ones — so stubbed calls are logged just like unstubbed ones.
-//     * <p>
-//     * {@code realInstance} must be a real (non-mock) object: this method calls
-//     * {@link #requireNotMock(Object) requireNotMock(realInstance)} first and throws
-//     * {@link IllegalArgumentException} if a Mockito mock is passed in.
-//     *
-//     * @param realInstance the real instance to spy on; must not be {@code null} and must not be a
-//     *                     Mockito mock.
-//     * @param <T>          the runtime type of {@code realInstance}.
-//     * @return a Mockito spy of {@code realInstance} that logs every non-{@link Object} method
-//     * invocation; never {@code null}.
-//     * @throws NullPointerException     if {@code realInstance} is {@code null}.
-//     * @throws IllegalArgumentException if {@code realInstance} is a Mockito mock.
-//     * @see #loggingSpy(Class, Object)
-//     * @see #requireNotMock(Object)
-//     */
-    @SuppressWarnings("unchecked")
-    public static <T> T loggingSpiedInstance(final T realInstance) {
-        requireNotMock(realInstance);
-        final Class<T> clazz = (Class<T>) realInstance.getClass();
-        return mock(clazz, withSettings()
-                .spiedInstance(realInstance)
-                .defaultAnswer(CALLS_REAL_METHODS)
-                .invocationListeners(report -> {
-                    final var inv = (Invocation) report.getInvocation();
-                    if (inv.getMethod().getDeclaringClass() == Flow.Subscriber.class) {
-                        log.debug("xxxxxx");
-//                        log.debug("{}.{}({})",
-//                                  toHashcodeString(inv.getMock()),
-//                                  inv.getMethod().getName(),
-//                                  argsString(inv.getArguments()));
-                    } else {
-                        log.debug("yyyyyyy");
-                    }
-                }));
-    }
-
     private static String formatByte(final byte v) {
         return String.format("0x%02x", Byte.toUnsignedInt(v));
     }
@@ -188,15 +97,8 @@ public final class _Org_Mockito__TestUtils {
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    private static String toIdentityString(final Object object) {
-        if (object == null) {
-            return "null";
-        }
-        return _Java_Lang_TestUtils.toSimplifedString(object);
-    }
-
-    private static <T> CharSequence format(
-            final Function<? super T, ? extends CharSequence> formatter, final T value) {
+    private static <T> CharSequence print(
+            final T value, final Function<? super T, ? extends CharSequence> formatter) {
         if (value == null) {
             return "null";
         }
@@ -207,32 +109,44 @@ public final class _Org_Mockito__TestUtils {
         }
     }
 
+    /**
+     * Builds a {@linkplain Mockito#spy(Object) Mockito spy} of the specified {@code realInstance}
+     * with {@link Mockito#CALLS_REAL_METHODS CALLS_REAL_METHODS} as the default answer — the shared
+     * baseline used by every {@code logging*} helper below. The returned spy has the same static
+     * type as the input.
+     *
+     * @param realInstance the real, non-mock instance to spy on.
+     * @param <T>          the runtime type of {@code realInstance}.
+     * @return a spy of {@code realInstance}; never {@code null}.
+     * @throws NullPointerException     if {@code realInstance} is {@code null}.
+     * @throws IllegalArgumentException if {@code realInstance} is already a Mockito mock.
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> T loggingSpyOf(final T realInstance) {
+        requireNotMock(realInstance);
+        final var clazz = (Class<T>) realInstance.getClass();
+        return mock(clazz, withSettings()
+                .spiedInstance(realInstance)
+                .defaultAnswer(CALLS_REAL_METHODS));
+    }
+
     public static final class OfFlow {
 
-        @SuppressWarnings("unchecked")
-        public static <T> Flow.Publisher<T> loggingPublisher(
-                final Flow.Publisher<? extends T> realInstance) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (Flow.Publisher<T>) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        public static <P extends Flow.Publisher<?>> P loggingPublisher(final P realInstance) {
+            final P spy = loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
-                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
-            }).when(spy).subscribe(any());
+            }).when((Flow.Publisher) spy).subscribe(any());
             return spy;
         }
 
         public static Flow.Subscription loggingSubscription(
                 final Flow.Subscription realInstance) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (Flow.Subscription) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+            final var spy = loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
                 log.debug("{}.request({})", mock, i.<Long>getArgument(0));
                 return i.callRealMethod();
@@ -248,18 +162,14 @@ public final class _Org_Mockito__TestUtils {
         public static <T> Flow.Subscriber<T> loggingSubscriber(
                 final Flow.Subscriber<? super T> realInstance,
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (Flow.Subscriber<T>) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+            final Flow.Subscriber<T> spy = (Flow.Subscriber<T>) loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
-                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.onSubscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
             }).when(spy).onSubscribe(any());
             doAnswer(i -> {
-                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                log.debug("{}.onNext({})", mock, print(i.getArgument(0), itemFormatter));
                 return i.callRealMethod();
             }).when(spy).onNext(any());
             doAnswer(i -> {
@@ -279,22 +189,18 @@ public final class _Org_Mockito__TestUtils {
         public static <T, R> Flow.Processor<T, R> loggingProcessor(
                 final Flow.Processor<? super T, ? extends R> realInstance,
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (Flow.Processor<T, R>) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+            final Flow.Processor<T, R> spy = (Flow.Processor<T, R>) loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
-                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
             }).when(spy).subscribe(any());
             doAnswer(i -> {
-                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.onSubscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
             }).when(spy).onSubscribe(any());
             doAnswer(i -> {
-                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                log.debug("{}.onNext({})", mock, print(i.getArgument(0), itemFormatter));
                 return i.callRealMethod();
             }).when(spy).onNext(any());
             doAnswer(i -> {
@@ -337,30 +243,22 @@ public final class _Org_Mockito__TestUtils {
 
     public static final class OfReactiveStream {
 
-        @SuppressWarnings("unchecked")
-        public static <T> org.reactivestreams.Publisher<T> loggingPublisher(
-                final org.reactivestreams.Publisher<? extends T> realInstance) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (org.reactivestreams.Publisher<T>) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+        @SuppressWarnings("rawtypes")
+        public static <P extends org.reactivestreams.Publisher<?>> P loggingPublisher(
+                final P realInstance) {
+            final P spy = loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
-                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
-            }).when(spy).subscribe(any());
+            }).when((org.reactivestreams.Publisher) spy).subscribe(any());
             return spy;
         }
 
         public static org.reactivestreams.Subscription loggingSubscription(
                 final org.reactivestreams.Subscription realInstance) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (org.reactivestreams.Subscription) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+            final var spy = loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
                 log.debug("{}.request({})", mock, i.<Long>getArgument(0));
                 return i.callRealMethod();
@@ -376,23 +274,21 @@ public final class _Org_Mockito__TestUtils {
         public static <T> org.reactivestreams.Subscriber<T> loggingSubscriber(
                 final org.reactivestreams.Subscriber<? super T> realInstance,
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (org.reactivestreams.Subscriber<T>) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+            final org.reactivestreams.Subscriber<T> spy =
+                    (org.reactivestreams.Subscriber<T>) loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
-                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.onSubscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
             }).when(spy).onSubscribe(any());
             doAnswer(i -> {
-                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                log.debug("{}.onNext({})", mock, print(i.getArgument(0), itemFormatter));
                 return i.callRealMethod();
             }).when(spy).onNext(any());
             doAnswer(i -> {
                 final var thrown = i.<Throwable>getArgument(0);
-                log.debug("{}.onError({})", mock, thrown, thrown);
+//                log.debug("{}.onError({})", mock, thrown, thrown);
+                log.debug("{}.onError({})", mock, thrown.getMessage());
                 return i.callRealMethod();
             }).when(spy).onError(any());
             doAnswer(i -> {
@@ -406,27 +302,25 @@ public final class _Org_Mockito__TestUtils {
         public static <T, R> org.reactivestreams.Processor<T, R> loggingProcessor(
                 final org.reactivestreams.Processor<? super T, ? extends R> realInstance,
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
-            requireNotMock(realInstance);
-            final var clazz = realInstance.getClass();
-            final var spy = (org.reactivestreams.Processor<T, R>) mock(clazz, withSettings()
-                    .spiedInstance(realInstance)
-                    .defaultAnswer(CALLS_REAL_METHODS));
-            final var mock = toIdentityString(spy);
+            final org.reactivestreams.Processor<T, R> spy =
+                    (org.reactivestreams.Processor<T, R>) loggingSpyOf(realInstance);
+            final var mock = toSimplifedString(spy);
             doAnswer(i -> {
-                log.debug("{}.subscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
             }).when(spy).subscribe(any());
             doAnswer(i -> {
-                log.debug("{}.onSubscribe({})", mock, toIdentityString(i.getArgument(0)));
+                log.debug("{}.onSubscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
             }).when(spy).onSubscribe(any());
             doAnswer(i -> {
-                log.debug("{}.onNext({})", mock, format(itemFormatter, i.getArgument(0)));
+                log.debug("{}.onNext({})", mock, print(i.getArgument(0), itemFormatter));
                 return i.callRealMethod();
             }).when(spy).onNext(any());
             doAnswer(i -> {
                 final var thrown = i.<Throwable>getArgument(0);
-                log.debug("{}.onError({})", mock, thrown, thrown);
+//                log.debug("{}.onError({})", mock, thrown);
+                log.debug("{}.onError({})", mock, thrown.getMessage());
                 return i.callRealMethod();
             }).when(spy).onError(any());
             doAnswer(i -> {
