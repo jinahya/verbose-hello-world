@@ -278,8 +278,8 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             @Override public void onComplete() { }
         });
         // ------------------------------------------------------------------------------------ when
-        applyPublisher(publisher -> {
-            publisher.subscribe(subscriber);                  // returns normally
+        applyPublisher(p -> {
+            p.subscribe(subscriber);                  // returns normally
             verify(subscriber, timeout(TIMEOUT).times(1)).onError(notNull());
             return null;
         });

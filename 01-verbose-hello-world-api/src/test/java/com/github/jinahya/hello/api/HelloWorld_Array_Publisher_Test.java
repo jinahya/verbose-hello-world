@@ -71,6 +71,45 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     }
 
     /**
+     * Verifies that the publisher emits exactly {@code 1} element when a single subscriber calls
+     * {@code request(1)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving it.
+     * No {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
+     *
+     * @throws Exception if an error occurs.
+     */
+    @DisplayName("""
+            should emit exactly <1> element with no <onComplete>
+            when the subscriber calls <request(1)> and <cancel>s after receiving it""")
+    @Test
+    void __exactly1() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
+            private Flow.Subscription subscription;
+            @Override public void onSubscribe(final Flow.Subscription s) {
+                subscription = s;
+                s.request(1L);
+            }
+            @Override public void onNext(final byte[] item) { subscription.cancel(); }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
+            verify(subscriber, timeout(TIMEOUT).times(1)).onNext(any());
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        final var inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
+        final var elementCaptor = forClass(byte[].class);
+        inOrder.verify(subscriber, times(1)).onNext(elementCaptor.capture());
+        verify(subscriber, after(500L).never()).onComplete();
+        verify(subscriber, never()).onError(any());
+        assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue()); // @formatter:on
+    }
+
+    /**
      * Verifies that the publisher emits exactly {@code 2} elements when a single subscriber calls
      * {@code request(2)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving them.
      * No {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
@@ -229,8 +268,8 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
             @Override public void onComplete() { }
         }); // @formatter:on
         // ------------------------------------------------------------------------------------ when
-        applyPublisher(publisher -> {
-            publisher.subscribe(subscriber);
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
             verify(subscriber, timeout(TIMEOUT).times(1)).onError(notNull());
             return null;
         });
