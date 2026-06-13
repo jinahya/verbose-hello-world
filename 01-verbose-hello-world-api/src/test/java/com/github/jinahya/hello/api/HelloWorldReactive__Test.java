@@ -24,7 +24,6 @@ import lombok.*;
 import lombok.experimental.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.mockito.Mockito.*;
@@ -33,8 +32,8 @@ import static org.mockito.Mockito.*;
  * An abstract base for tests demonstrating a reactive library's own publisher-creation idioms
  * against {@link HelloWorld} / {@link AsynchronousHelloWorld} — the library defines its own
  * publisher and fetches the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>
- * directly from the service (no intermediate {@code org.reactivestreams.Publisher}). Subclasses
- * are named {@code HelloWorldReactive_<Library>_Test}.
+ * directly from the service (no intermediate {@code org.reactivestreams.Publisher}). Subclasses are
+ * named {@code HelloWorldReactive_<Library>_Test}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -43,7 +42,7 @@ abstract class HelloWorldReactive__Test {
 
     HelloWorldReactive__Test() {
         super();
-        this.synchronousService = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        this.synchronousService = mock(HelloWorld.class, CALLS_REAL_METHODS);
         this.asynchronousService = spy(new ExecutorHelloWorld<>(synchronousService, Runnable::run));
     }
 

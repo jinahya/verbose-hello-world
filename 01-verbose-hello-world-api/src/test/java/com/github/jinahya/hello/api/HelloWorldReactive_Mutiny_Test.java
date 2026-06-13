@@ -71,7 +71,8 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Uni.createFrom().item(Supplier)} emits the {@code hello-world-bytes}.
+         * Asserts that {@code Uni.createFrom().item(Supplier)} emits the
+         * {@code hello-world-bytes}.
          */
         @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(Supplier)>")
         @Test

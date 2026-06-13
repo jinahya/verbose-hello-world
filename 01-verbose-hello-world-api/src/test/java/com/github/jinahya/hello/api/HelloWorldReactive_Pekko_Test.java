@@ -109,8 +109,9 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Source.completionStage(asynchronousService.applyAsync(...))
-         * .runWith(Sink.head())} emits the {@code hello-world-bytes}.
+         * Asserts that
+         * {@code Source.completionStage(asynchronousService.applyAsync(...)) .runWith(Sink.head())}
+         * emits the {@code hello-world-bytes}.
          */
         @DisplayName("""
                 should emit <hello-world-bytes>

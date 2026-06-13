@@ -62,7 +62,7 @@ class HelloWorld_Write_DataOutput_Test
     /**
      * Asserts {@link HelloWorld#write(DataOutput) write(output)} method invokes
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
-     * bytes, writes the array to specified data output, and returns the {@code output}.
+     * bytes, writes the array to the specified data output, and returns the {@code output}.
      *
      * @throws IOException if an I/O error occurs.
      */

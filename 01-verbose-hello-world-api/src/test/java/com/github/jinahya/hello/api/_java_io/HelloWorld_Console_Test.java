@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 
 import java.io.*;
 import java.util.*;
@@ -59,6 +58,7 @@ class HelloWorld_Console_Test
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the method throws a {@link NullPointerException} when the {@code console}
      * argument is {@code null}.
@@ -90,7 +90,7 @@ class HelloWorld_Console_Test
                 .write(any(Writer.class));
         final var console = Optional
                 .ofNullable(System.console())
-                .orElseGet(() -> mock(Console.class, Mockito.RETURNS_DEEP_STUBS));
+                .orElseGet(() -> mock(Console.class, RETURNS_DEEP_STUBS));
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(console);
         // ------------------------------------------------------------------------------------ then

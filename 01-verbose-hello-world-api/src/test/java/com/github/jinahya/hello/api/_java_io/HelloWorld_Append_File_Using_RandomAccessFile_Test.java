@@ -50,7 +50,8 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
 
     /**
      * Verifies that {@link HelloWorld#write(DataOutput)} writes the {@code hello-world-bytes} to a
-     * real {@link File} when driven through a {@link RandomAccessFile} positioned at a random offset.
+     * real {@link File} when driven through a {@link RandomAccessFile} positioned at a random
+     * offset.
      *
      * @param dir the {@link TempDir} that holds the temp file.
      * @throws IOException if an I/O error occurs.

@@ -35,7 +35,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests <a href="https://doc.akka.io/docs/akka/current/stream/">Akka Streams</a>'s own
- * publisher-creation idioms — each test creates a {@link Source Source&lt;byte[],?&gt;} pulling the
+ * publisher-creation idioms — each test creates a {@link Source Source&lt;byte[],?&gt;} pulling
+ * the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
  * asynchronous service. Akka has a single source type, so the nested split is by terminal sink:
  * single-value ({@link Sink#head()}) versus multi-value ({@link Sink#seq()}).
@@ -112,8 +113,9 @@ class HelloWorldReactive_Akka_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Source.completionStage(asynchronousService.applyAsync(...))
-         * .runWith(Sink.head())} emits the {@code hello-world-bytes}.
+         * Asserts that
+         * {@code Source.completionStage(asynchronousService.applyAsync(...)) .runWith(Sink.head())}
+         * emits the {@code hello-world-bytes}.
          */
         @DisplayName("""
                 should emit <hello-world-bytes>

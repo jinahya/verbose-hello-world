@@ -21,8 +21,9 @@ package com.github.jinahya.hello.api;
  */
 
 /**
- * A class for testing {@link ExecutorHelloWorld#applyAsync(java.util.function.Function)
- * applyAsync(mapper)} with a same-thread ({@code Runnable::run}) executor.
+ * A class for testing
+ * {@link ExecutorHelloWorld#applyAsync(java.util.function.Function) applyAsync(mapper)} with a
+ * same-thread ({@code Runnable::run}) executor.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

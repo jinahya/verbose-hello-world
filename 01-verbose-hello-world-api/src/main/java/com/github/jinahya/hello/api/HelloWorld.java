@@ -627,7 +627,7 @@ public interface HelloWorld {
     }
 
     /**
-     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified url
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> through the specified URL
      * connection's output stream.
      * <p>
      * The default implementation would be as follows.
@@ -639,8 +639,8 @@ public interface HelloWorld {
      * return connection;
      *}
      *
-     * @param <T>        url connection type parameter
-     * @param connection the url connection through which bytes are sent.
+     * @param <T>        URL connection type parameter
+     * @param connection the URL connection through which bytes are sent.
      * @return the given {@code connection}.
      * @throws NullPointerException if {@code connection} is {@code null}.
      * @throws IOException          if an I/O error occurs.

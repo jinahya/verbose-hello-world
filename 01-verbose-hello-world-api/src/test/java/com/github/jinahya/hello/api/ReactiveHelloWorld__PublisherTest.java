@@ -59,16 +59,15 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorld_Byte_PublisherTest
  * @see ReactiveHelloWorld_Array_PublisherTest
- * @see ReactiveHelloWorld_String_PublisherTest
  */
 @Slf4j
 abstract class ReactiveHelloWorld__PublisherTest<U> {
 
     ReactiveHelloWorld__PublisherTest(
             final Function<? super HelloWorld, ? extends Publisher<U>> initializer) {
-        super();
         requireNonNull(initializer, "initializer is null");
-        service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        super();
+        service = mock(HelloWorld.class, CALLS_REAL_METHODS);
         publisher = requireNonNull(initializer.apply(service), "null initialized");
     }
 

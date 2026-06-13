@@ -31,8 +31,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * A class for testing
- * {@link AsynchronousHelloWorld#applyAsync(Function, Object, CompletionHandler)
- * applyAsync(mapper, attachment, handler)} method.
+ * {@link AsynchronousHelloWorld#applyAsync(Function, Object, CompletionHandler) applyAsync(mapper,
+ * attachment, handler)} method.
  *
  * @param <T> the {@link AsynchronousHelloWorld} subtype under test.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -85,8 +85,9 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
 
     /**
      * Verifies that the method invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)} with
-     * the value returned by {@code mapper.apply(service)} and the supplied {@code attachment}.
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)}
+     * with the value returned by {@code mapper.apply(service)} and the supplied
+     * {@code attachment}.
      */
     @DisplayName(
             "should invoke <handler.completed> with the <mapper.apply> result and the <attachment>")

@@ -65,9 +65,9 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     private static File tempDir;
 
     /**
-     * 파라미터화 테스트에 넘길 {@link MessageDigest} 알고리즘 이름 목록을 돌려준다.
+     * Returns a list of {@link MessageDigest} algorithm names to feed to parameterized tests.
      *
-     * @return {@link _Java_Security_TestUtils#MESSAGE_DIGEST_ALGORITHMS} 와 같은 목록.
+     * @return the same list as {@link _Java_Security_TestUtils#MESSAGE_DIGEST_ALGORITHMS}.
      */
     static List<String> algorithms() {
         return _Java_Security_TestUtils.MESSAGE_DIGEST_ALGORITHMS;
@@ -76,8 +76,10 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * 각 테스트 직전에 {@link #service()} 의 {@code set(byte[])} 가 실제 {@code "hello, world"} 바이트로 배열을 채우도록
-     * 스텁한다. 통합 테스트에서는 mock 동작이 아닌 진짜 12바이트가 다이제스트에 흘러 들어가야 의미 있는 해시 값이 나오기 때문이다.
+     * Stubs {@link #service()} so that {@code set(byte[])} fills the given array with the real
+     * {@code "hello, world"} bytes before each test. The integration tests need the real 12 bytes
+     * flowing into the digest — not the mock's default behavior — for the hash values to be
+     * meaningful.
      */
     @BeforeEach
     void __stubService() throws IOException {

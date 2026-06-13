@@ -51,6 +51,7 @@ class HelloWorld_Send_MulticastSocket_Test
     // "239.0.0.1"   administratively scoped, local scope (RFC 2365)
     // "239.192.1.1" administratively scoped, organization-local (RFC 2365)
     // "239.255.1.1" administratively scoped, site-local (RFC 2365)
+
     /**
      * The site-local administratively scoped IPv4 multicast address used by the IPv4 test.
      */
@@ -61,6 +62,7 @@ class HelloWorld_Send_MulticastSocket_Test
     // "ff05::1"       site-local scope (RFC 4291)
     // "ff08::1"       organization-local scope (RFC 4291)
     // "ff0e::1"       global scope (RFC 4291)
+
     /**
      * The link-local IPv6 multicast group address used by the IPv6 test.
      */

@@ -254,8 +254,8 @@ public final class HelloWorld__TestUtils {
     // ----------------------------------------------------------------------------------- java.lang
 
     /**
-     * Stubs given mock object's {@link HelloWorld#set(byte[]) set(array)} method to just return the
-     * {@code array}.
+     * Stubs the given mock object's {@link HelloWorld#set(byte[]) set(array)} method to just return
+     * the {@code array}.
      *
      * @param service the mock object whose {@link HelloWorld#set(byte[]) set(array)} method needs
      *                to be stubbed.
@@ -301,7 +301,7 @@ public final class HelloWorld__TestUtils {
      *
      * @param service the mock service.
      * @param <T>     service type parameter
-     * @return given {@code service}.
+     * @return the given {@code service}.
      * @see #set_array_returns_the_array(HelloWorld)
      * @see #set_array12_invoked_once(HelloWorld)
      */
@@ -484,7 +484,7 @@ public final class HelloWorld__TestUtils {
      *
      * @param service the service mock to stub.
      * @param <T>     service type parameter
-     * @return given {@code service}.
+     * @return the given {@code service}.
      * @throws IOException if an I/O error occurs.
      */
     public static <T extends HelloWorld>
@@ -648,13 +648,13 @@ public final class HelloWorld__TestUtils {
     }
 
     /**
-     * Stubs given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when the
-     * {@code buffer} is not {@code null} and has remaining greater than or equal to
+     * Stubs the given mock service's {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when
+     * the {@code buffer} is not {@code null} and has remaining greater than or equal to
      * {@value HelloWorld#BYTES}, to just return the {@code buffer} whose
      * {@link ByteBuffer#position() position} increased by {@value HelloWorld#BYTES}.
      *
      * @param service the mock service.
-     * @return given {@code service} whose {@link HelloWorld#put(ByteBuffer)} method stubbed as
+     * @return the given {@code service} whose {@link HelloWorld#put(ByteBuffer)} method stubbed as
      * above.
      * @see #put_buffer12_invoked_once(HelloWorld)
      */
@@ -833,7 +833,7 @@ public final class HelloWorld__TestUtils {
      * @param service the service whose {@link HelloWorld#write(WritableByteChannel)} method is
      *                stubbed.
      * @param <T>     service type parameter
-     * @return given {@code service}.
+     * @return the given {@code service}.
      * @throws IOException if an I/O error occurs.
      */
     public static <T extends HelloWorld>

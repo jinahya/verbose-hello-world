@@ -65,6 +65,7 @@ class ReactiveHelloWorld_Array_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the publisher emits exactly one element and no {@code onComplete} signal when
      * the subscriber calls {@code request(1)}.

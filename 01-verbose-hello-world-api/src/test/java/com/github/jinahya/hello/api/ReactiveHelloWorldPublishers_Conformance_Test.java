@@ -123,8 +123,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
     class Reactor_Test {
 
         /**
-         * Verifies that Reactor's {@code Flux.from(ofBytes).collectList()} collects all twelve bytes
-         * and completes.
+         * Verifies that Reactor's {@code Flux.from(ofBytes).collectList()} collects all twelve
+         * bytes and completes.
          */
         @DisplayName(
                 "should collect <12 bytes> and <onComplete> via <Flux.from(ofBytes).collectList()>")
@@ -170,8 +170,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         }
 
         /**
-         * Verifies that RxJava 3's {@code Flowable.fromPublisher(ofArrays).take(N).toList()} collects
-         * {@value #N} arrays.
+         * Verifies that RxJava 3's {@code Flowable.fromPublisher(ofArrays).take(N).toList()}
+         * collects {@value #N} arrays.
          */
         @DisplayName(
                 "should collect <N byte[]> via <Flowable.fromPublisher(ofArrays).take(N).toList()>")
@@ -303,8 +303,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         }
 
         /**
-         * Verifies that Akka's {@code Source.fromPublisher(ofBytes).runWith(Sink.seq())} collects all
-         * twelve bytes.
+         * Verifies that Akka's {@code Source.fromPublisher(ofBytes).runWith(Sink.seq())} collects
+         * all twelve bytes.
          *
          * @throws Exception if an error occurs.
          */

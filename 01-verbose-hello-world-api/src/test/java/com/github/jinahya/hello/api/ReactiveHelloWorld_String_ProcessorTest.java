@@ -22,7 +22,6 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
 import org.reactivestreams.*;
 
 import java.time.*;
@@ -51,7 +50,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
     // ---------------------------------------------------------------------------------------------
     ReactiveHelloWorld_String_ProcessorTest() {
         super();
-        service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        service = mock(HelloWorld.class, CALLS_REAL_METHODS);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -66,6 +65,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the processor closes cleanly when no subscriber is ever attached.
      */

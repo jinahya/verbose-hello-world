@@ -48,8 +48,8 @@ import static org.mockito.Mockito.*;
 class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
 
     /**
-     * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
-     * {@link NullPointerException} when {@code channel} argument is {@code null}.
+     * Verifies that the {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws
+     * a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
     @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
     @Test

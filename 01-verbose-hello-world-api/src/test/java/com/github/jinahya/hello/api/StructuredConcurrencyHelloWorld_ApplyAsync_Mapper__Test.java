@@ -29,8 +29,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A class exercising
- * {@link StructuredConcurrencyHelloWorld#applyAsync(java.util.function.Function) applyAsync(mapper)}
- * on each {@link HelloWorld} method, organized as one {@link Nested} class per target method.
+ * {@link StructuredConcurrencyHelloWorld#applyAsync(java.util.function.Function)
+ * applyAsync(mapper)} on each {@link HelloWorld} method, organized as one {@link Nested} class per
+ * target method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

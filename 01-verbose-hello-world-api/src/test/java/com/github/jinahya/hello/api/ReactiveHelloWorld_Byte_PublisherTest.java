@@ -70,6 +70,7 @@ class ReactiveHelloWorld_Byte_PublisherTest
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Verifies that the publisher emits exactly {@value HelloWorld#BYTES} elements followed by
      * {@code onComplete} when the subscriber calls {@code request(12)}.

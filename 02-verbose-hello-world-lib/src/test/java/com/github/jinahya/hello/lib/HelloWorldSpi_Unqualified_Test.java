@@ -29,7 +29,7 @@ import java.util.stream.*;
 /**
  * Runs the {@link HelloWorld#set(byte[], int) set(array, index)} contract inherited from
  * {@link HelloWorld__Test} against every <em>unqualified</em> {@link HelloWorld} — i.e. services
- * supplied by providers whose {@link HelloWorldServiceProvider#isQualified() isServiceQualified()}
+ * supplied by providers whose {@link HelloWorldServiceProvider#isQualified() isQualified()}
  * returns {@code false} ({@link HelloWorldDemo}) — filtering the stream returned by the base
  * class's {@link HelloWorldSpi__Test#providers() providers()}.
  *

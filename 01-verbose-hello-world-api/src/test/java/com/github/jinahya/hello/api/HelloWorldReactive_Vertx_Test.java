@@ -34,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests <a href="https://vertx.io/docs/">Vert.x</a>'s publisher-creation idioms — each test builds
  * a {@link Future Future&lt;byte[]&gt;} pulling the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
- * asynchronous service. Vert.x's core reactive-value type is {@link Future Future&lt;T&gt;} —
- * a 0/1-value primitive analogous to Reactor's {@code Mono} or RxJava's {@code Single}; core has no
+ * asynchronous service. Vert.x's core reactive-value type is {@link Future Future&lt;T&gt;} — a
+ * 0/1-value primitive analogous to Reactor's {@code Mono} or RxJava's {@code Single}; core has no
  * first-party multi-value publisher, so only the single-value section is exposed.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -90,8 +90,8 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Future.fromCompletionStage(asynchronousService.applyAsync(...))} emits
-         * the {@code hello-world-bytes}.
+         * Asserts that {@code Future.fromCompletionStage(asynchronousService.applyAsync(...))}
+         * emits the {@code hello-world-bytes}.
          *
          * @throws Exception if an error occurs.
          */

@@ -114,6 +114,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+
     /**
      * Asserts that a {@link SubmissionPublisher} emits one {@code hello-world-bytes} item submitted
      * from the synchronous service to a collecting subscriber.

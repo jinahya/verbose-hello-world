@@ -44,7 +44,8 @@ class HelloWorld_Constants_Test {
 
         /**
          * Verifies that {@link HelloWorld#BYTES} equals {@code 12} — the byte length of the
-         * {@code hello-world-string} in {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII}.
+         * {@code hello-world-string} in
+         * {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII}.
          */
         @DisplayName(
                 "should equal <12> (the byte length of the <hello-world-string> in <US_ASCII>)")

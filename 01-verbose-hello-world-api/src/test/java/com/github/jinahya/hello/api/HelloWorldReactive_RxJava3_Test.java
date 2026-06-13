@@ -76,8 +76,8 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Single.fromCompletionStage(asynchronousService.applyAsync(...))} emits
-         * the {@code hello-world-bytes}.
+         * Asserts that {@code Single.fromCompletionStage(asynchronousService.applyAsync(...))}
+         * emits the {@code hello-world-bytes}.
          */
         @DisplayName("""
                 should emit <hello-world-bytes>
@@ -181,7 +181,8 @@ class HelloWorldReactive_RxJava3_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Flowable.just(byte[]...)} emits each {@code hello-world-bytes} element.
+         * Asserts that {@code Flowable.just(byte[]...)} emits each {@code hello-world-bytes}
+         * element.
          */
         @DisplayName("should emit <hello-world-bytes> via <Flowable.just(byte[]...)>")
         @Test

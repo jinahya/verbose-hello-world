@@ -24,8 +24,8 @@ import java.lang.invoke.*;
 import java.util.*;
 
 /**
- * A class providing test utilities for {@link java.lang.invoke.MethodHandles
- * java.lang.invoke.MethodHandles}.
+ * A class providing test utilities for
+ * {@link java.lang.invoke.MethodHandles java.lang.invoke.MethodHandles}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
@@ -39,8 +39,9 @@ public final class _Java_Lang_Invoke_MethodHandles_TestUtils {
      * enabled so the returned handle works regardless of whether the specified
      * {@link MethodHandles.Lookup lookup} has direct access to the constructor's declaring class.
      *
-     * @param lookup the lookup to use when {@linkplain MethodHandles.Lookup#unreflectConstructor
-     *               unreflecting} the located constructor; must not be {@code null}.
+     * @param lookup the lookup to use when
+     *               {@linkplain MethodHandles.Lookup#unreflectConstructor unreflecting} the located
+     *               constructor; must not be {@code null}.
      * @param clazz  the class whose constructors are searched; must not be {@code null}.
      * @param args   the actual arguments (may contain {@code null}); must not be {@code null}.
      * @param <T>    the type of {@code clazz}.

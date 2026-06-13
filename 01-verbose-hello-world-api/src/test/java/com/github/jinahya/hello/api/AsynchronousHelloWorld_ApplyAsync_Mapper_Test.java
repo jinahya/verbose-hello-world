@@ -28,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * A class for testing {@link AsynchronousHelloWorld#applyAsync(Function) applyAsync(mapper)} method.
+ * A class for testing {@link AsynchronousHelloWorld#applyAsync(Function) applyAsync(mapper)}
+ * method.
  *
  * @param <T> the {@link AsynchronousHelloWorld} subtype under test.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -61,8 +62,9 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
     }
 
     /**
-     * Verifies that the method returns a {@link java.util.concurrent.CompletionStage CompletionStage}
-     * that completes normally with the value returned by {@code mapper.apply(service)}.
+     * Verifies that the method returns a
+     * {@link java.util.concurrent.CompletionStage CompletionStage} that completes normally with the
+     * value returned by {@code mapper.apply(service)}.
      *
      * @throws Exception if an error occurs.
      */

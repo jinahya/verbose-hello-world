@@ -28,9 +28,10 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * A class exercising {@link ExecutorHelloWorld#applyAsync(java.util.function.Function)
- * applyAsync(mapper)} on each {@link HelloWorld} method through a same-thread
- * ({@code Runnable::run}) executor, organized as one {@link Nested} class per target method.
+ * A class exercising
+ * {@link ExecutorHelloWorld#applyAsync(java.util.function.Function) applyAsync(mapper)} on each
+ * {@link HelloWorld} method through a same-thread ({@code Runnable::run}) executor, organized as
+ * one {@link Nested} class per target method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */

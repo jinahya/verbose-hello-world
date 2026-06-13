@@ -85,7 +85,8 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Single.just(byte[]).map(byte[]::length)} emits {@link HelloWorld#BYTES}.
+         * Asserts that {@code Single.just(byte[]).map(byte[]::length)} emits
+         * {@link HelloWorld#BYTES}.
          *
          * @throws Exception if an error occurs.
          */
@@ -107,7 +108,8 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
     class Multi_Test {
 
         /**
-         * Asserts that {@code Multi.just(byte[]...)} emits all elements as {@code hello-world-bytes}.
+         * Asserts that {@code Multi.just(byte[]...)} emits all elements as
+         * {@code hello-world-bytes}.
          *
          * @throws Exception if an error occurs.
          */
@@ -131,7 +133,8 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Multi.create(Iterable)} emits all elements as {@code hello-world-bytes}.
+         * Asserts that {@code Multi.create(Iterable)} emits all elements as
+         * {@code hello-world-bytes}.
          *
          * @throws Exception if an error occurs.
          */
@@ -154,7 +157,8 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Multi.create(Stream)} emits all elements as {@code hello-world-bytes}.
+         * Asserts that {@code Multi.create(Stream)} emits all elements as
+         * {@code hello-world-bytes}.
          *
          * @throws Exception if an error occurs.
          */
@@ -177,7 +181,8 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Multi.singleton(byte[])} emits one element as {@code hello-world-bytes}.
+         * Asserts that {@code Multi.singleton(byte[])} emits one element as
+         * {@code hello-world-bytes}.
          *
          * @throws Exception if an error occurs.
          */
