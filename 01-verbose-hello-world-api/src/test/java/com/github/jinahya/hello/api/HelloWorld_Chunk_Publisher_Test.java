@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Lang_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,9 +63,48 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     // ---------------------------------------------------------------------------------------------
     private static MockedConstruction<SubmissionPublisher> SUBMISSION_PUBLISHER_CONSTRUCTION;
 
+    /**
+     * A test-only subclass of {@link HelloWorldBytePublisher} that logs its
+     * {@link #subscribe(Flow.Subscriber) subscribe} invocation and wraps the incoming subscriber
+     * with {@link
+     * com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow#loggingByteSubscriber
+     * loggingByteSubscriber(...)} before delegating to {@code super.subscribe(...)} — so the
+     * upstream byte-publisher's full signal exchange surfaces in logs without touching the SUT's
+     * own body.
+     */
+    private static final class LoggingByteFixture extends HelloWorldBytePublisher {
+
+        LoggingByteFixture(final HelloWorld service) {
+            super(service);
+        }
+
+        @Override
+        public void subscribe(final Flow.Subscriber<? super Byte> s) {
+            log.debug("{}.subscribe({})", toSimplifedString(this), toSimplifedString(s));
+            super.subscribe(loggingByteSubscriber(s));
+        }
+    }
+
+    /**
+     * Builds a {@link HelloWorldChunkPublisher} and reflectively swaps its private {@code upstream}
+     * field with a {@link LoggingByteFixture} — yields full inner byte-stream logging without
+     * modifying the SUT.
+     */
+    private static HelloWorldChunkPublisher withLoggingUpstream(final HelloWorld service) {
+        final var publisher = new HelloWorldChunkPublisher(service);
+        try {
+            final var field = HelloWorldChunkPublisher.class.getDeclaredField("upstream");
+            field.setAccessible(true);
+            field.set(publisher, new LoggingByteFixture(service));
+        } catch (final ReflectiveOperationException roe) {
+            throw new AssertionError("failed to swap upstream", roe);
+        }
+        return publisher;
+    }
+
     // ---------------------------------------------------------------------------------------------
     HelloWorld_Chunk_Publisher_Test() {
-        super(s -> loggingPublisher(new HelloWorldChunkPublisher(s)));
+        super(s -> loggingPublisher(withLoggingUpstream(s)));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -91,9 +131,9 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
             should emit exactly <1> array with no <onComplete>
             when the subscriber calls <request(1)> and <cancel>s after receiving it""")
     @Test
-    void __exactly1() throws Exception { // @formatter:off
+    void __exactly1() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() { // @formatter:off
             private Flow.Subscription subscription;
             @Override public void onSubscribe(final Flow.Subscription s) {
                 subscription = s;
@@ -102,7 +142,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
             @Override public void onNext(final byte[] item) { subscription.cancel(); }
             @Override public void onError(final Throwable throwable) { }
             @Override public void onComplete() { }
-        });
+        });  // @formatter:on
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             p.subscribe(subscriber);
@@ -116,7 +156,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         inOrder.verify(subscriber, times(1)).onNext(elementCaptor.capture());
         verify(subscriber, after(500L).never()).onComplete();
         verify(subscriber, never()).onError(any());
-        assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue()); // @formatter:on
+        assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue());
     }
 
     /**
