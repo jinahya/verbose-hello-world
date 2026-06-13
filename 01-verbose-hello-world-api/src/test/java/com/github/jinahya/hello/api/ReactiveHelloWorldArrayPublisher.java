@@ -62,8 +62,8 @@ import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfR
  * <p>
  * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive
  * Streams workflow, not to be a hardened implementation. Exceptions thrown by the downstream
- * subscriber are <em>not</em> caught — they propagate out of the producer thread. A production-grade
- * publisher would handle them as a terminal {@code onError} signal.
+ * subscriber are <em>not</em> caught — they propagate out of the producer thread. A
+ * production-grade publisher would handle them as a terminal {@code onError} signal.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldBytePublisher
@@ -71,15 +71,15 @@ import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfR
 class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
 
     /**
-     * Creates a new instance wrapping the specified upstream byte publisher.
+     * Creates a new instance wrapping the specified upstream byte upstream.
      *
-     * @param publisher the upstream {@link Publisher} of {@link Byte} that supplies the individual
+     * @param upstream the upstream {@link Publisher} of {@link Byte} that supplies the individual
      *                  bytes for each assembled array.
-     * @throws NullPointerException if the {@code publisher} is {@code null}.
+     * @throws NullPointerException if the {@code upstream} is {@code null}.
      */
-    ReactiveHelloWorldArrayPublisher(final ReactiveHelloWorldBytePublisher publisher) {
+    ReactiveHelloWorldArrayPublisher(final ReactiveHelloWorldBytePublisher upstream) {
         super();
-        this.publisher = Objects.requireNonNull(publisher, "publisher is null");
+        this.upstream = Objects.requireNonNull(upstream, "upstream is null");
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -163,7 +163,7 @@ class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                 final var index = new AtomicInteger();
                 final var upstreamError = new AtomicReference<Throwable>();
                 final var latch = new CountDownLatch(1);
-                publisher.subscribe(new Subscriber<>() {
+                upstream.subscribe(new Subscriber<>() {
                     @Override public void onSubscribe(final Subscription s) {
                         s.request(HelloWorld.BYTES);
                     }
@@ -199,5 +199,5 @@ class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private final ReactiveHelloWorldBytePublisher publisher;
+    private final ReactiveHelloWorldBytePublisher upstream;
 }

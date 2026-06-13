@@ -74,7 +74,7 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
      */
     public HelloWorldChunkPublisher(final HelloWorld service) {
         super();
-        this.bytes = new HelloWorldBytePublisher(
+        upstream = new HelloWorldBytePublisher(
                 Objects.requireNonNull(service, "service is null")
         );
     }
@@ -90,8 +90,8 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
      * subscriber with it (firing {@link Flow.Subscriber#onSubscribe(Flow.Subscription) onSubscribe}
      * synchronously on the caller's thread), and starts a dedicated virtual thread that loops while
      * the outer publisher has the subscriber attached. Each iteration subscribes a non-blocking
-     * sink to {@link #bytes} which {@code request}s {@value HelloWorld#BYTES} bytes up front, fills
-     * a fresh {@code byte[HelloWorld.BYTES]} on {@code onNext}, and completes a
+     * sink to {@link #upstream} which {@code request}s {@value HelloWorld#BYTES} bytes up front,
+     * fills a fresh {@code byte[HelloWorld.BYTES]} on {@code onNext}, and completes a
      * {@link CompletableFuture} on {@code onComplete}/{@code onError}; the producer thread then
      * {@link CompletableFuture#join() join}s the future and
      * {@link SubmissionPublisher#submit(Object) submits} the array, parking on backpressure as
@@ -107,7 +107,7 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
         Thread.ofVirtual().name("hello-world-chunk-producer").start(() -> {
             while (publisher.hasSubscribers()) {
                 final var done = new CompletableFuture<byte[]>();
-                bytes.subscribe(new Flow.Subscriber<>() { // @formatter:off
+                upstream.subscribe(new Flow.Subscriber<>() { // @formatter:off
                     private final byte[] array = new byte[HelloWorld.BYTES];
                     private int index;
                     @Override
@@ -145,5 +145,5 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private final HelloWorldBytePublisher bytes;
+    private final HelloWorldBytePublisher upstream;
 }
