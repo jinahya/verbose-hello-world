@@ -82,7 +82,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
             should emit exactly <12> elements and <onComplete>
             when the subscriber calls <request(12)>""")
     @Test
-    void __singleExactly12() throws Exception {
+    void __exactly12() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var subscriber = loggingByteSubscriber(new Flow.Subscriber<>() { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
@@ -175,6 +175,46 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
                 assertEquals(expected[j], elements.get(j));
             }
         } // @formatter:on
+    }
+
+    /**
+     * Verifies that the publisher stops emission after the subscriber {@linkplain
+     * Flow.Subscription#cancel() cancels} mid-stream — at most {@value HelloWorld#BYTES} elements
+     * arrive, with neither {@code onComplete} nor {@code onError}.
+     *
+     * @throws Exception if an error occurs.
+     */
+    @DisplayName("""
+            should stop emitting and signal neither <onComplete> nor <onError>
+            after the subscriber <cancel>s mid-stream""")
+    @Test
+    void __cancelMidStream() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var cancelAt = 6;
+        final var subscriber = loggingByteSubscriber(new Flow.Subscriber<>() {
+            private Flow.Subscription subscription;
+            private int received;
+            @Override public void onSubscribe(final Flow.Subscription s) {
+                subscription = s;
+                s.request(Long.MAX_VALUE);
+            }
+            @Override public void onNext(final Byte item) {
+                if (++received == cancelAt) subscription.cancel();
+            }
+            @Override public void onError(final Throwable t) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
+            verify(subscriber, timeout(TIMEOUT).atLeast(cancelAt)).onNext(any());
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        verify(subscriber, after(500L).never()).onComplete();
+        verify(subscriber, times(1)).onSubscribe(notNull());
+        verify(subscriber, never()).onError(any());
+        verify(subscriber, atMost(HelloWorld.BYTES)).onNext(any()); // @formatter:on
     }
 
     /**
