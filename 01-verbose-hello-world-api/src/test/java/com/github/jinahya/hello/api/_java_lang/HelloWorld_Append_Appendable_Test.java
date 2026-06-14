@@ -47,7 +47,7 @@ class HelloWorld_Append_Appendable_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(Appendable) append(appendable)} method throws a
      * {@link NullPointerException} when the {@code appendable} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <appendable> argument is <null>")
+    @DisplayName("throws NPE / appendable is null")
     @Test
     void _ThrowNullPointerException_AppendableNull() {
         // ----------------------------------------------------------------------------------- given
@@ -65,9 +65,7 @@ class HelloWorld_Append_Appendable_Test extends HelloWorld__Test {
      * @see ArgumentCaptor#getValue()
      * @see ArgumentCaptor#getAllValues()
      */
-    @DisplayName("""
-            should invoke <set(array[12])>, append each byte in <array> to the <appendable>,
-            and return the <appendable>""")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

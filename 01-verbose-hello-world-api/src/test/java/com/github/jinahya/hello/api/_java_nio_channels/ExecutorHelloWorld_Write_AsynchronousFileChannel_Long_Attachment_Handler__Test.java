@@ -33,7 +33,9 @@ import java.nio.channels.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, position, attachment, handler)")
+@DisplayName(
+        "ExecutorHelloWorld.write(AsynchronousFileChannel, position, attachment, handler) / extras"
+)
 class ExecutorHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handler__Test
         extends AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Handler__Test<
         ExecutorHelloWorld<HelloWorld>

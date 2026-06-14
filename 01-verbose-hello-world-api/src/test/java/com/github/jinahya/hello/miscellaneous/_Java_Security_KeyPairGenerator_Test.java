@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
  * (Java 26)
  */
-@DisplayName("KeyPairGenerator")
+@DisplayName("java.security.KeyPairGenerator")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class _Java_Security_KeyPairGenerator_Test {

@@ -21,6 +21,7 @@ package com.github.jinahya.hello.lib;
  */
 
 import lombok.*;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * An abstract base for tests that wire {@link HelloWorldDi__Test}'s injection points through a
@@ -29,6 +30,7 @@ import lombok.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("HelloWorldCdiSe")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class HelloWorldCdiSe__Test extends HelloWorldDi__Test {
 

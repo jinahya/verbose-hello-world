@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(connection)")
+@DisplayName("HelloWorld.write(URLConnection)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -65,7 +65,7 @@ class HelloWorld_Write_URLConnection__Test extends HelloWorld__Test {
      * Verifies that the method sends {@code hello-world-bytes} through a real
      * {@link HttpURLConnection}.
      */
-    @DisplayName("should send <hello-world-bytes> through a real <HttpURLConnection>")
+    @DisplayName("happy path")
     @Test
     void __() {
         executeWithHttpEchoStarted(p -> () -> {

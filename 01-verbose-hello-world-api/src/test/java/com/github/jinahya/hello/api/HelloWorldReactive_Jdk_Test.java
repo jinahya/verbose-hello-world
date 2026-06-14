@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("reactive — JDK")
+@DisplayName("HelloWorldReactive / JDK")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
@@ -121,9 +121,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit a single <hello-world-bytes> from <HelloWorld>
-            through a <SubmissionPublisher>""")
+    @DisplayName("sync / single")
     @Test
     void __sync_single() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
@@ -144,9 +142,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit <N> copies of <hello-world-bytes> from <HelloWorld>
-            through a <SubmissionPublisher>""")
+    @DisplayName("sync / multiple")
     @Test
     void __sync_multiple() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
@@ -169,9 +165,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit a single <hello-world-bytes> from <AsynchronousHelloWorld>
-            through a <SubmissionPublisher>""")
+    @DisplayName("async / single")
     @Test
     void __async_single() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();
@@ -195,9 +189,7 @@ class HelloWorldReactive_Jdk_Test extends HelloWorldReactive__Test {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit <N> copies of <hello-world-bytes> from <AsynchronousHelloWorld>
-            through a <SubmissionPublisher>""")
+    @DisplayName("async / multiple")
     @Test
     void __async_multiple() throws Exception { // @formatter:off
         final var items = new ArrayList<byte[]>();

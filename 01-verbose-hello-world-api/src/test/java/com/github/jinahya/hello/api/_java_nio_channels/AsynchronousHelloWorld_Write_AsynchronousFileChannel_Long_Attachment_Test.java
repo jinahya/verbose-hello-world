@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, position, attachment)")
+@DisplayName("AsynchronousHelloWorld.write(AsynchronousFileChannel, position, attachment)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -55,7 +55,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -70,8 +70,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
      * Verifies that the method throws an {@link IllegalArgumentException} when the {@code position}
      * argument is negative.
      */
-    @DisplayName(
-            "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
+    @DisplayName("throws IAE / position is negative")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
@@ -88,9 +87,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should complete the returned stage with the <attachment>
-            once all <hello-world-bytes> have been written""")
+    @DisplayName("completed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
@@ -116,9 +113,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
      * exceptionally when the {@code channel} fails — possibly synchronously on the first
      * invocation, or asynchronously after one or more partial writes.
      */
-    @DisplayName("""
-            should complete the returned stage exceptionally
-            when the <channel> fails on or after partial writes""")
+    @DisplayName("failed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

@@ -28,10 +28,11 @@ import java.security.*;
 /**
  * A class for testing {@link java.security.Security}.
  */
-@DisplayName("Security")
+@DisplayName("java.security.Security")
 @Slf4j
 class _Java_Security_Security_Test {
 
+    @DisplayName("happy path")
     @Test
     void __() {
         for (final var provider : Security.getProviders()) {

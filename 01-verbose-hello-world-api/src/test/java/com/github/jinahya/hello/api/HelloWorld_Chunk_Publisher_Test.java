@@ -50,7 +50,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("chunk publisher")
+@DisplayName("HelloWorld / chunk Publisher")
 @Slf4j
 @SuppressWarnings({"rawtypes"})
 class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]> {
@@ -127,9 +127,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit exactly <1> array with no <onComplete>
-            when the subscriber calls <request(1)> and <cancel>s after receiving it""")
+    @DisplayName("exactly 1 / request(1) + cancel")
     @Test
     void __exactly1() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -166,9 +164,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit exactly <2> arrays with no <onComplete>
-            when the subscriber calls <request(2)> and <cancel>s after receiving them""")
+    @DisplayName("exactly 2 / request(2) + cancel")
     @Test
     void __exactly2() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -213,9 +209,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should signal no <onNext>/<onError>/<onComplete>
-            when the subscriber <cancel>s from inside <onSubscribe>""")
+    @DisplayName("no further signals / cancel in onSubscribe")
     @Test
     void __cancelInOnSubscribe() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -243,9 +237,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should give each subscriber its own <n> arrays
-            when multiple subscribers each call <request(n)>""")
+    @DisplayName("multiple subscribers / independent demand")
     @Test
     void __multiRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -305,7 +297,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("should signal <onError> with no further signals when <service.set> throws")
+    @DisplayName("onError / service.set throws")
     @Test
     void __serviceThrows() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -341,10 +333,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should deliver <onError> via <SubmissionPublisher>
-            and let <subscribe> return normally
-            when <subscriber.onSubscribe> throws""")
+    @DisplayName("onError via SubmissionPublisher / onSubscribe throws")
     @Test
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given

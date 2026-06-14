@@ -105,18 +105,18 @@ final class _Java_Util_Concurrent_Flow__Test {
      * {@code min(request, DayOfWeek.values().length)} {@link DayOfWeek} values in declaration order
      * from {@link DayOfWeek#MONDAY MONDAY}.
      */
-    @DisplayName(
-            "back-pressure — each subscriber receives <min(request, 7)> <DayOfWeek> values from <MONDAY>")
+    @DisplayName("back-pressure / DayOfWeek")
     @Test
     void __DayOfWeek() {
         try (final var publisher = new EnumPublisher<>(DayOfWeek.class)) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 publisher.subscribe(
                         loggingSubscriberRequestsOnSubscribe(
                                 ThreadLocalRandom.current().nextInt(publisher.values.size()) + 1
                         )
                 );
             }
+            publisher.subscribe(loggingSubscriberRequestsOnSubscribe(publisher.values.size()));
             publisher.submitAll();
         }
     }
@@ -130,8 +130,7 @@ final class _Java_Util_Concurrent_Flow__Test {
      * subscribed. The publisher runs for approximately five seconds before being
      * {@link ClockPublisher#close() closed}.
      */
-    @DisplayName(
-            "multicast — scheduled-tick producer streams <LocalTime> values for ~5s; late subscriber gets only later ones")
+    @DisplayName("multicast / LocalTime")
     @Test
     void __LocalTime() {
         try (final var publisher = new ClockPublisher<>(Clock.systemDefaultZone(), LocalTime::now,

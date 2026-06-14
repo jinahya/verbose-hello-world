@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, attachment)")
+@DisplayName("AsynchronousHelloWorld.write(AsynchronousByteChannel, attachment) / extras")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -96,9 +96,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> to an <echo server>
-                with a real <AsynchronousChannelGroup>""")
+        @DisplayName("echo server / AsynchronousChannelGroup")
         @Test
         void __() throws Exception { // @formatter:on
             final var group = AsynchronousChannelGroup.withCachedThreadPool(

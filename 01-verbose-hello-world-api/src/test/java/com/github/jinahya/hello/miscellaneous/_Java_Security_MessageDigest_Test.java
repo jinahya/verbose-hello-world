@@ -38,7 +38,7 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_Tes
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("MessageDigest")
+@DisplayName("java.security.MessageDigest")
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class _Java_Security_MessageDigest_Test {
@@ -57,7 +57,7 @@ class _Java_Security_MessageDigest_Test {
      * Verifies that every {@link MessageDigest} algorithm registered with {@link Security} can be
      * printed to {@link System#out}.
      */
-    @DisplayName("should print every <MessageDigest> algorithm registered with <Security>")
+    @DisplayName("algorithms by providers")
     @Test
     void algorithmsByProviders__() {
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
@@ -77,6 +77,7 @@ class _Java_Security_MessageDigest_Test {
      * Verifies that every {@link MessageDigest} algorithm registered with each provider can be
      * printed to {@link System#out}.
      */
+    @DisplayName("algorithms")
     @Test
     void algorithms__() {
         securityProviders().forEach(p -> {
@@ -95,6 +96,7 @@ class _Java_Security_MessageDigest_Test {
      * Verifies that each {@link MessageDigest} algorithm in the latest-LTS set can be obtained from
      * every available provider.
      */
+    @DisplayName("latest-LTS / all providers")
     @Test
     void __() {
         final var input = new byte[ThreadLocalRandom.current().nextInt(1024)];
@@ -114,6 +116,7 @@ class _Java_Security_MessageDigest_Test {
      * Verifies that every {@code (provider, algorithm)} pair registered for the
      * {@link MessageDigest} service can be enumerated.
      */
+    @DisplayName("providers and algorithms")
     @Test
     void __providersAndAlgorithms() {
         final var plain = new byte[ThreadLocalRandom.current().nextInt(1024)];
@@ -126,6 +129,7 @@ class _Java_Security_MessageDigest_Test {
     /**
      * Verifies that every {@code (provider, algorithm)} pair can digest a random input plaintext.
      */
+    @DisplayName("random")
     @Test
     void __random() {
         final var plain = new byte[ThreadLocalRandom.current().nextInt(1024)];

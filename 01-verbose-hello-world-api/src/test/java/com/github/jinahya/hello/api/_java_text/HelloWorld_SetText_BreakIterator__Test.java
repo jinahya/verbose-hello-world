@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setText(iterator)")
+@DisplayName("HelloWorld.setText(BreakIterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
@@ -63,7 +63,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
      * method iterates the {@code "hello, world"} string with a real character
      * {@link BreakIterator}.
      */
-    @DisplayName("should iterate the hello-world string with a <real character> <BreakIterator>")
+    @DisplayName("character instance")
     @Test
     void __CharacterInstance() {
         final var iterator = service().setText(BreakIterator.getCharacterInstance(Locale.ROOT));
@@ -79,7 +79,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
      * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
      * method iterates the {@code "hello, world"} string with a real word {@link BreakIterator}.
      */
-    @DisplayName("should iterate the hello-world string with a <real word> <BreakIterator>")
+    @DisplayName("word instance")
     @Test
     void __WordInstance() {
         final var iterator = service().setText(BreakIterator.getWordInstance(Locale.ROOT));
@@ -95,7 +95,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
      * {@link com.github.jinahya.hello.api.HelloWorld#setText(BreakIterator) setText(iterator)}
      * method iterates the {@code "hello, world"} string with a real line {@link BreakIterator}.
      */
-    @DisplayName("should iterate the hello-world string with a <real line> <BreakIterator>")
+    @DisplayName("line instance")
     @Test
     void __LineInstance() {
         final var iterator = service().setText(BreakIterator.getLineInstance(Locale.ROOT));
@@ -112,7 +112,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
      * method iterates the {@code "hello, world"} string with a real sentence
      * {@link BreakIterator}.
      */
-    @DisplayName("should iterate the hello-world string with a <real sentence> <BreakIterator>")
+    @DisplayName("sentence instance")
     @Test
     void __SentenceInstance() {
         final var iterator = service().setText(BreakIterator.getSentenceInstance(Locale.ROOT));
@@ -140,7 +140,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
      *
      * @param string a multilingual string supplied by {@link #strings()}.
      */
-    @DisplayName("should iterate a <multilingual string> with every kind of <BreakIterator>")
+    @DisplayName("iterators / multilingual string")
     @MethodSource("strings")
     @ParameterizedTest
     void __Iterators(final String string) {
@@ -219,9 +219,7 @@ class HelloWorld_SetText_BreakIterator__Test extends HelloWorld__Test {
      *
      * @param string a multilingual string supplied by {@link #strings()}.
      */
-    @DisplayName("""
-            should truncate a <multilingual string>
-            to at most <20> UTF-8 bytes via <BreakIterator>""")
+    @DisplayName("chop at most 20 bytes / multilingual string")
     @MethodSource("strings")
     @ParameterizedTest
     void __ChopAtMost20Bytes(final String string) {

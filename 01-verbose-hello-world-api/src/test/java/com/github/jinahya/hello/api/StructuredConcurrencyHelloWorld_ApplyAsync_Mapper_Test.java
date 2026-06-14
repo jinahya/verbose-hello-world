@@ -20,6 +20,8 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import org.junit.jupiter.api.DisplayName;
+
 import java.util.function.*;
 
 /**
@@ -28,6 +30,7 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("StructuredConcurrencyHelloWorld.applyAsync(mapper)")
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper_Test
         extends
         AsynchronousHelloWorld_ApplyAsync_Mapper_Test<StructuredConcurrencyHelloWorld<HelloWorld>> {

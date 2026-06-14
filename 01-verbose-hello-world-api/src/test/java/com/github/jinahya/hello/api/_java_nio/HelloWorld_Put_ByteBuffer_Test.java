@@ -48,7 +48,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("put(buffer)")
+@DisplayName("HelloWorld.put(ByteBuffer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -123,7 +123,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("byte buffer")
+    @DisplayName("ByteBuffer")
     @Nested
     class ByteBufferTest {
 
@@ -160,7 +160,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
          *
          * @param array the array to wrap.
          */
-        @DisplayName("should produce a backed <buffer> from <ByteBuffer.wrap(array)>")
+        @DisplayName("wrap(array) / backed buffer")
         @MethodSource({"getArrayArgumentsStream"})
         @ParameterizedTest
         void _wrap_array(final byte[] array) {
@@ -193,8 +193,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
          *
          * @param accessor the arguments accessor.
          */
-        @DisplayName(
-                "should produce a backed <buffer> from <ByteBuffer.wrap(array, offset, length)>")
+        @DisplayName("wrap(array, offset, length) / backed buffer")
         @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
         @ParameterizedTest
         void _wrap_arrayOffsetAndLength(final ArgumentsAccessor accessor) {
@@ -228,7 +227,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
          *
          * @param capacity the capacity to allocate.
          */
-        @DisplayName("should allocate a backed <buffer> via <ByteBuffer.allocate(capacity)>")
+        @DisplayName("allocate(capacity) / backed buffer")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocate(final int capacity) {
@@ -256,7 +255,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
          *
          * @param capacity the capacity to allocate.
          */
-        @DisplayName("should allocate a direct <buffer> via <ByteBuffer.allocateDirect(capacity)>")
+        @DisplayName("allocateDirect(capacity) / direct buffer")
         @MethodSource({"getCapacityStream"})
         @ParameterizedTest
         void __allocateDirect(final int capacity) {
@@ -286,7 +285,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
      * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <buffer> argument is <null>")
+    @DisplayName("throws NPE / buffer is null")
     @Test
     void _ThrowNullPointerException_BufferIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -302,8 +301,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * {@link ByteBuffer#remaining() remaining} is less than
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName(
-            "should throw a <BufferOverflowException> when <buffer.remaining()> is less than <12>")
+    @DisplayName("throws BOE / buffer.remaining() < 12")
     @TestFactory
     Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
@@ -328,9 +326,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * {@link ByteBuffer#position() position} increased by
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName("""
-            should invoke <set(buffer.array(), buffer.arrayOffset() + buffer.position())>
-            when the <buffer> has a backing array""")
+    @DisplayName("happy path / buffer has backing array")
     @Test
     void __BufferHasBackingArray() {
         // ----------------------------------------------------------------------------------- given
@@ -355,9 +351,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
      * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
      * bytes, puts the {@code array} to {@code buffer}, and returns the {@code buffer}.
      */
-    @DisplayName("""
-            should invoke <set(array[12])>, put the <array> to the <buffer>,
-            and return the <buffer>""")
+    @DisplayName("happy path / buffer has no backing array")
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * A class for testing {@link ForkJoinPool} with fork/join workloads of varying shapes.
  */
-@DisplayName("ForkJoinPool")
+@DisplayName("java.util.concurrent.ForkJoinPool")
 @Slf4j
 class _Java_Util_Concurrent_ForkJoinPool_Test {
 
@@ -67,7 +67,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
          * Verifies that {@code fib(25) = 75025} can be computed via {@link RecursiveTask} on the
          * common pool.
          */
-        @DisplayName("should compute <fib(25) = 75025> via <RecursiveTask> on the common pool")
+        @DisplayName("fib(25)")
         @Test
         void __() {
             // ------------------------------------------------------------------------------- given
@@ -140,7 +140,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
         /**
          * Verifies that the 8-queens problem has 92 solutions, computed via {@link RecursiveTask}.
          */
-        @DisplayName("should count <92> solutions to the <8>-queens problem via <RecursiveTask>")
+        @DisplayName("8-queens")
         @Test
         void __() {
             // ------------------------------------------------------------------------------- given
@@ -214,7 +214,7 @@ class _Java_Util_Concurrent_ForkJoinPool_Test {
          * Verifies that an {@code int[100_000]} array can be sorted via {@link RecursiveAction}
          * divide-and-conquer.
          */
-        @DisplayName("should sort an <int[100_000]> array via <RecursiveAction> divide-and-conquer")
+        @DisplayName("int[100_000]")
         @Test
         void __() {
             // ------------------------------------------------------------------------------- given

@@ -39,6 +39,7 @@ class _Java_Security_Provider_Test {
     /**
      * Verifies that every registered {@link Provider} can be enumerated and its info printed.
      */
+    @DisplayName("providers")
     @Test
     void providers__() {
         securityProviders().forEach(p -> {
@@ -52,6 +53,7 @@ class _Java_Security_Provider_Test {
      * Verifies that providers, services, and algorithms can be enumerated together in grouped
      * form.
      */
+    @DisplayName("providers / services / algorithms")
     @Test
     void providersServicesAndAlgorithms__() {
         securityProviders().limit(4L).forEach(p -> {

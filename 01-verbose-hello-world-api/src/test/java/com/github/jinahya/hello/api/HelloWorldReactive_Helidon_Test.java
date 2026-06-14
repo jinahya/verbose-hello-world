@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("reactive — Helidon")
+@DisplayName("HelloWorldReactive / Helidon")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
@@ -55,7 +55,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Single.just(byte[])>")
+        @DisplayName("Single.just")
         @Test
         void __just() throws Exception {
             // -------------------------------------------------------------------------- given/when

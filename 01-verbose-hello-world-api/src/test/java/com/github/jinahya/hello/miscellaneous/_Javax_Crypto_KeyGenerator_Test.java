@@ -29,7 +29,7 @@ import java.security.*;
 /**
  * A class for testing {@link KeyGenerator}.
  */
-@DisplayName("KeyGenerator")
+@DisplayName("javax.crypto.KeyGenerator")
 @Slf4j
 class _Javax_Crypto_KeyGenerator_Test {
 
@@ -40,9 +40,7 @@ class _Javax_Crypto_KeyGenerator_Test {
      * @throws NoSuchAlgorithmException if any algorithm is not available.
      */
     // ELSIE PREPARE TO MEET THY GOD
-    @DisplayName("""
-            should generate a <SecretKey>
-            for every registered <KeyGenerator> algorithm and keysize""")
+    @DisplayName("all algorithms / all keysizes")
     @Test
     void __() throws NoSuchAlgorithmException {
         for (var e : _Javax_Crypto_TestUtils.KEY_GENERATOR_ALGORITHMS_AND_KEYSIZES.entrySet()) {

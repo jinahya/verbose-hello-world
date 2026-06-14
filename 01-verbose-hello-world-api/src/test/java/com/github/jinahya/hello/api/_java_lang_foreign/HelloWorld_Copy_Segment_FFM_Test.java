@@ -119,7 +119,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code int puts(const char *s)} writes the string {@code s} and a trailing newline to
          * {@code stdout}. Requires null-terminated string.
          */
-        @DisplayName("should verify the <segment> content through C <puts>")
+        @DisplayName("puts")
         @Test
         void _puts__()
                 throws Throwable {
@@ -150,7 +150,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code size_t strlen(const char *s)} returns the number of bytes in string {@code s}, not
          * counting the terminating null character.
          */
-        @DisplayName("should verify the <segment> length through C <strlen>")
+        @DisplayName("strlen")
         @Test
         void _strlen__()
                 throws Throwable {
@@ -178,7 +178,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * {@code int memcmp(const void *s1, const void *s2, size_t n)} compares the first {@code n}
          * bytes of memory areas {@code s1} and {@code s2}. Returns 0 if they are equal.
          */
-        @DisplayName("should verify the <segment> content through C <memcmp>")
+        @DisplayName("memcmp")
         @Test
         void _memcmp__()
                 throws Throwable {
@@ -268,7 +268,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * This test embeds the Python interpreter, builds a Python script dynamically, and executes
          * it to print the "hello, world" content.
          */
-        @DisplayName("should verify the <segment> content through Python <print>")
+        @DisplayName("print")
         @Disabled
         @Test
         void _print_()
@@ -350,7 +350,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * <p>
          * Writes directly to file descriptor 1 (stdout) bypassing buffered I/O.
          */
-        @DisplayName("should verify the <segment> content through POSIX <write> on macOS")
+        @DisplayName("write")
         @Test
         void _write_()
                 throws Throwable {
@@ -398,7 +398,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
          */
-        @DisplayName("should verify the <segment> content through POSIX <write> on Linux")
+        @DisplayName("write")
         @Test
         void _write_()
                 throws Throwable {
@@ -461,7 +461,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
          * Gets the stdout handle via {@code GetStdHandle(STD_OUTPUT_HANDLE)} and writes the segment
          * content to the console.
          */
-        @DisplayName("should verify the <segment> content through Windows <WriteConsoleA>")
+        @DisplayName("WriteConsoleA")
         @Test
         void _WriteConsoleA_()
                 throws Throwable {

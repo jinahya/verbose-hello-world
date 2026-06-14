@@ -20,6 +20,8 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import org.junit.jupiter.api.DisplayName;
+
 import java.util.function.*;
 
 /**
@@ -29,6 +31,7 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("StructuredConcurrencyHelloWorld.applyAsync(mapper, attachment, handler)")
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test
         extends AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

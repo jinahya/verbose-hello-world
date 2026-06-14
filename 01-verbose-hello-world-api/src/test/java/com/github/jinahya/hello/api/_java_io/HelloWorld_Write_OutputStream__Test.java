@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(stream)")
+@DisplayName("HelloWorld.write(OutputStream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -77,7 +77,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <ByteArrayOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES)) {
@@ -153,7 +153,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -179,7 +179,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <FileOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             final var file = File.createTempFile("tmp", null, tempDir);
@@ -205,9 +205,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> through a
-                <PipedOutputStream> with sufficient pipe size""")
+        @DisplayName("enough pipe size")
         @Test
         void __EnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -230,9 +228,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> through a
-                <PipedOutputStream> with insufficient pipe size""")
+        @DisplayName("not enough pipe size")
         @Test
         void __NotEnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -267,7 +263,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <DeflaterOutputStream>")
+        @DisplayName("DeflaterOutputStream")
         @Test
         void __DeflaterOutputStream() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -289,7 +285,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <GZIPOutputStream>")
+        @DisplayName("GZIPOutputStream")
         @Test
         void __GZIPOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -318,7 +314,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <ZipOutputStream>")
+        @DisplayName("ZipOutputStream")
         @Test
         void __ZipOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given

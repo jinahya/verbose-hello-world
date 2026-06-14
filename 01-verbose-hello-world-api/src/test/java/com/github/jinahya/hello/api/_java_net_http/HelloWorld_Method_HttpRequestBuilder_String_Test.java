@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("method(builder, method)")
+@DisplayName("HelloWorld.method(HttpRequest.Builder, String)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test {
@@ -53,7 +53,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
      * Verifies that the method throws a {@link NullPointerException} when the {@code builder}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <builder> argument is <null>")
+    @DisplayName("throws NPE / builder is null")
     @Test
     void _ThrowNullPointerException_BuilderIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,7 +68,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
      * Verifies that the method throws a {@link NullPointerException} when the {@code method}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <method> argument is <null>")
+    @DisplayName("throws NPE / method is null")
     @Test
     void _ThrowNullPointerException_MethodIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -85,7 +85,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
      * Verifies that the method invokes {@code builder.method(method, publisher)}, and returns the
      * {@code builder}.
      */
-    @DisplayName("should invoke <builder.method(method, publisher)>, and return the <builder>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

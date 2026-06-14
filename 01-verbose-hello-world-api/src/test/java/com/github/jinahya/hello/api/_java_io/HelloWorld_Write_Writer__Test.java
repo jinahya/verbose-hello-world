@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(writer)")
+@DisplayName("HelloWorld.write(Writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -98,9 +98,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          * @param charset the {@link Charset} under test.
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-string> through an
-                <OutputStreamWriter> with the <charset>""")
+        @DisplayName("charset")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -123,7 +121,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should round-trip <hello-world-string> through an <OutputStreamWriter>")
+        @DisplayName("round-trip")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -155,7 +153,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          * @param charset the {@link Charset} under test.
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-string> through a <FileWriter> with the <charset>")
+        @DisplayName("charset")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -176,7 +174,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should round-trip <hello-world-string> through a <FileWriter>")
+        @DisplayName("round-trip")
         @Test
         void __() throws IOException {
             final var file = createTempFile("tmp", null, tempDir);
@@ -188,6 +186,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             assertEquals(HELLO_WORLD_STRING, Files.readString(file.toPath()));
         }
 
+        @DisplayName("append")
         @Nested
         class Append_Test {
 

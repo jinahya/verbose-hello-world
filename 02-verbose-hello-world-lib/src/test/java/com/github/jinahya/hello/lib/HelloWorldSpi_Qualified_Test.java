@@ -23,6 +23,7 @@ package com.github.jinahya.hello.lib;
 import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.DisplayName;
 
 import java.util.stream.*;
 
@@ -36,6 +37,7 @@ import java.util.stream.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("HelloWorldSpi / qualified")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldSpi_Qualified_Test extends HelloWorldSpi__Test {

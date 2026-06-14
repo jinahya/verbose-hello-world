@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("byte publisher")
+@DisplayName("HelloWorld / byte Publisher")
 @Slf4j
 @SuppressWarnings({"rawtypes"})
 class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
@@ -78,9 +78,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should emit exactly <12> elements and <onComplete>
-            when the subscriber calls <request(12)>""")
+    @DisplayName("exactly 12 + onComplete / request(12)")
     @Test
     void __exactly12() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -120,9 +118,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should give each subscriber <min(n, 12)> elements and <onComplete>
-            when <n >= 12>, given multiple subscribers each requesting <n> in <[1, 24)>""")
+    @DisplayName("multiple subscribers / min(n, 12) + onComplete when n >= 12")
     @Test
     void __multiRandom1To24() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -184,9 +180,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should stop emitting and signal neither <onComplete> nor <onError>
-            after the subscriber <cancel>s mid-stream""")
+    @DisplayName("stop emitting / cancel mid-stream")
     @Test
     void __cancelMidStream() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -223,9 +217,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should signal <onError> with no <onNext> and no <onComplete>
-            when <service.set> throws""")
+    @DisplayName("onError / service.set throws")
     @Test
     void __serviceThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -261,10 +253,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should deliver <onError> via <SubmissionPublisher>
-            and let <subscribe> return normally
-            when <subscriber.onSubscribe> throws""")
+    @DisplayName("onError via SubmissionPublisher / onSubscribe throws")
     @Test
     void __onSubscribeThrows() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given

@@ -50,7 +50,7 @@ class HelloWorld_Update_MessageDigest_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method
      * throws a {@link NullPointerException} when the {@code digest} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <digest> argument is <null>")
+    @DisplayName("throws NPE / digest is null")
     @Test
     void _ThrowNullPointerException_DigestIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -67,7 +67,7 @@ class HelloWorld_Update_MessageDigest_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and returns the
      * {@code digest}.
      */
-    @DisplayName("should invoke <digest.update(buffer)>, and return the <digest>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

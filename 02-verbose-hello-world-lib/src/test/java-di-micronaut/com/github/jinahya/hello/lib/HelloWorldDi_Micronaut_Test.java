@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * A test class which injects {@link HelloWorld} instances using Micronaut Inject.
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://micronaut.io/">Micronaut</a>
  */
+@DisplayName("HelloWorldDi / Micronaut")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @io.micronaut.context.annotation.Prototype
 @Slf4j

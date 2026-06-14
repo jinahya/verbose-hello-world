@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf">NIST FIPS 203 &mdash;
  * Module-Lattice-Based Key-Encapsulation Mechanism Standard</a>
  */
-@DisplayName("KEM")
+@DisplayName("javax.crypto.KEM")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KEM__Test {
 
@@ -127,7 +127,7 @@ class _Javax_Crypto_KEM__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "secp256r1"}).
          */
-        @DisplayName("should round-trip a <DHKEM> shared key over the given <EC> curve")
+        @DisplayName("EC")
         @ValueSource(strings = {
                 "secp256r1",
                 "secp384r1",
@@ -149,7 +149,7 @@ class _Javax_Crypto_KEM__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "X25519"}).
          */
-        @DisplayName("should round-trip a <DHKEM> shared key over the given <XDH> curve")
+        @DisplayName("XDH")
         @ValueSource(strings = {
                 "X25519",
                 "X448"
@@ -183,7 +183,7 @@ class _Javax_Crypto_KEM__Test {
          *
          * @param algorithm the standard algorithm name (e.g., {@code "ML-KEM-768"}).
          */
-        @DisplayName("should round-trip an <ML-KEM> shared key for the given <parameter set>")
+        @DisplayName("parameter set")
         @ValueSource(strings = {
                 "ML-KEM-512",
                 "ML-KEM-768",

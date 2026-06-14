@@ -23,6 +23,7 @@ package com.github.jinahya.hello.api._java_nio;
 import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
 import java.nio.*;
 
@@ -32,6 +33,7 @@ import java.nio.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("HelloWorld.put(ByteBuffer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})

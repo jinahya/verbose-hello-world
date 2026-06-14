@@ -64,7 +64,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should append <hello-world-string> to a real <StringBuilder>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given

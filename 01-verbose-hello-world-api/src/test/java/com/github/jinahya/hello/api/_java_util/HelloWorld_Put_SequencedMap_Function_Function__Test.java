@@ -102,7 +102,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         @Nested
         class SequencedMap_Test {
 
-            @DisplayName("should put through <LinkedHashMap>")
+            @DisplayName("LinkedHashMap")
             @Test
             void __LinkedHashMap() {
                 // --------------------------------------------------------------------------- given
@@ -127,7 +127,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         @Nested
         class SortedMap_Test {
 
-            @DisplayName("should put through <TreeMap>")
+            @DisplayName("TreeMap")
             @Test
             void __TreeMap() {
                 // --------------------------------------------------------------------------- given
@@ -171,7 +171,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
 //            assertEquals(expected, map.keySet());
 //        }
 
-            @DisplayName("should put through <ConcurrentSkipListMap>")
+            @DisplayName("ConcurrentSkipListMap")
             @Test
             void __ConcurrentSkipListMap() {
                 // --------------------------------------------------------------------------- given
@@ -201,7 +201,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         @Nested
         class LinkedHashMap_Test {
 
-            @DisplayName("should put through <LinkedHashMap#put>")
+            @DisplayName("happy path")
             @Test
             void __() {
                 // --------------------------------------------------------------------------- given
@@ -225,7 +225,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
     @Nested
     class LinkedHashMap_Trace_Test {
 
-        @DisplayName("should trace <putLast> over <LinkedHashMap>")
+        @DisplayName("putLast")
         @Test
         void __putLast() {
             final var map = new LinkedHashMap<String, String>();
@@ -236,7 +236,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
             }
         }
 
-        @DisplayName("should trace <put> over <LinkedHashMap>")
+        @DisplayName("put")
         @Test
         void __put() {
             final var map = new LinkedHashMap<String, String>();

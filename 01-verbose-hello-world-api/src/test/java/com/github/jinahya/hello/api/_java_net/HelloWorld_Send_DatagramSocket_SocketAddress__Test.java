@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket, target)")
+@DisplayName("HelloWorld.send(DatagramSocket, SocketAddress)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -72,7 +72,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorld__Tes
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should send <hello-world-bytes> through a real <DatagramSocket> to the <target>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         try (var server = new DatagramSocket(
@@ -112,9 +112,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress__Test extends HelloWorld__Tes
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                client should <send(socket, target)> to the server;
-                server should echo the bytes back to the sender""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var server = new DatagramSocket(null)) {

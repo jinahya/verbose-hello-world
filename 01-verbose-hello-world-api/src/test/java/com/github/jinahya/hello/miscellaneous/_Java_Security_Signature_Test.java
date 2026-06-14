@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
  * (Java 26)
  */
+@DisplayName("java.security.Signature")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Java_Security_Signature_Test {
 
@@ -53,6 +54,7 @@ class _Java_Security_Signature_Test {
      * Verifies that every {@link Signature} algorithm registered with each provider can be
      * printed.
      */
+    @DisplayName("algorithms")
     @Test
     void algorithms__() {
         securityProviders().forEach(p -> {

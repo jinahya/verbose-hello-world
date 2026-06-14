@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  * (Java 26)
  */
+@DisplayName("javax.crypto.Mac")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_Mac_Test {
 

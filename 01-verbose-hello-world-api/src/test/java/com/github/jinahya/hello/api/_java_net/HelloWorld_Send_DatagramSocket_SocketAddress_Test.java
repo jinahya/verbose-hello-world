@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket, target)")
+@DisplayName("HelloWorld.send(DatagramSocket, SocketAddress)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -50,7 +50,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test
      * method throws a {@link NullPointerException} when the {@code socket} argument is
      * {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <socket> argument is <null>")
+    @DisplayName("throws NPE / socket is null")
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,7 +66,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test
      * method throws a {@link NullPointerException} when the {@code target} argument is
      * {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <target> argument is <null>")
+    @DisplayName("throws NPE / target is null")
     @Test
     void _ThrowNullPointerException_TargetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -87,9 +87,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("""
-            should invoke <append(packet)> and <socket.send(packet)> with the same <packet>,
-            and return the <socket>""")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

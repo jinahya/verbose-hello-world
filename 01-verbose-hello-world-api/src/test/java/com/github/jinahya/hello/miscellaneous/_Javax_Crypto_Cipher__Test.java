@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#cipher-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; Cipher Algorithms</a>
  */
+@DisplayName("javax.crypto.Cipher")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_Cipher__Test {
 

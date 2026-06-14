@@ -53,9 +53,7 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
      * {@value HelloWorld#BYTES} bytes, copies the {@code array} to the {@code segment}, and returns
      * the {@code segment}.
      */
-    @DisplayName("""
-            should invoke <set(array[12])>, copy the <array> to the <segment>,
-            and return the <segment>""")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -128,7 +126,7 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
      * @param tempDir the {@link TempDir} holding the compiled binary and shared data file.
      * @throws Exception if an error occurs while compiling or invoking the native binary.
      */
-    @DisplayName("should bridge Java-to-C through a compiled <reader> reading the mapped <segment>")
+    @DisplayName("Java-to-C bridge")
     @Test
     void testJavaToCBridge(@TempDir final Path tempDir) throws Exception {
         final var windows = System.getProperty("os.name").startsWith("Win");

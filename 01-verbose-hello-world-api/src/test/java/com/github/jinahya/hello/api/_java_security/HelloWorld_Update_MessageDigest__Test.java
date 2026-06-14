@@ -88,6 +88,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("happy path")
     @Test
     void __() {
         _Java_Security_MessageDigest_TestConstants.MESSAGE_DIGEST_ALGORITHMS.forEach(algorithm -> {
@@ -123,7 +124,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("should update a <real digest> without specifying provider")
+    @DisplayName("default provider")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __(final String algorithm) throws GeneralSecurityException {
@@ -138,7 +139,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param algorithm an algorithm name supplied by {@link #algorithms()}.
      */
-    @DisplayName("should update a <real digest> through the <SUN> provider")
+    @DisplayName("SUN")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __SUN(final String algorithm) throws GeneralSecurityException {
@@ -153,7 +154,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param algorithm an algorithm name supplied by {@link #algorithms()}.
      */
-    @DisplayName("should update a <real digest> through the <BouncyCastle> provider")
+    @DisplayName("BouncyCastle")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __BC(final String algorithm) throws GeneralSecurityException {
@@ -163,6 +164,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
     }
 
+    @DisplayName("SHA3")
     @ValueSource(strings = {
             "SHA3-224",
             "SHA3-256",
@@ -177,9 +179,11 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
     }
 
+    @DisplayName("SHAKE")
     @Nested
     class SHAKE_Test {
 
+        @DisplayName("fixed length")
         @ValueSource(strings = {
                 "SHAKE128-256",
                 "SHAKE256-512"
@@ -192,6 +196,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
             __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
         }
 
+        @DisplayName("prefix")
         @ValueSource(ints = {128, 256})
         @ParameterizedTest
         void __SHAKE_prefix(final int bitStrength) throws GeneralSecurityException {
@@ -225,7 +230,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      * Verifies that {@code SHA-256} exhibits the avalanche effect by hashing two inputs that differ
      * in a single character and printing the number of flipped bits.
      */
-    @DisplayName("should demonstrate the <avalanche effect> of <SHA-256>")
+    @DisplayName("avalanche effect / SHA-256")
     @Test
     void avalanche_effect__() throws NoSuchAlgorithmException {
         final var a = "hello, world".getBytes(StandardCharsets.US_ASCII);
@@ -248,7 +253,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param password a weak password supplied by {@link ValueSource}.
      */
-    @DisplayName("should demonstrate a <rainbow attack> on <SHA-1>")
+    @DisplayName("rainbow attack / SHA-1")
     @ValueSource(strings = {
             "iloveyou",
             "iloveyou!",
@@ -262,6 +267,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         System.out.printf("%10s %s%n", password, Base64.getEncoder().encodeToString(digested));
     }
 
+    @DisplayName("DigestOutputStream")
     @Nested
     class DigestOutputStream_Test {
 
@@ -269,6 +275,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
             return HelloWorld_Update_MessageDigest__Test.algorithms();
         }
 
+        @DisplayName("happy path")
         @MethodSource({"algorithms"})
         @ParameterizedTest
         void __(final String algorithm) throws IOException, NoSuchAlgorithmException {

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, attachment, handler)")
+@DisplayName("AsynchronousHelloWorld.write(AsynchronousByteChannel, attachment, handler)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -63,7 +63,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -78,7 +78,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
      * Verifies that the method throws a {@link NullPointerException} when the {@code handler}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
+    @DisplayName("throws NPE / handler is null")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_HandlerIsNull() {
@@ -95,9 +95,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
      * across one or more partial writes, and finally invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
      */
-    @DisplayName("""
-            should write all <hello-world-bytes> across partial writes,
-            and invoke <handler.completed(channel, attachment)>""")
+    @DisplayName("completed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() {
@@ -148,9 +146,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
      * {@code channel} fails — possibly synchronously on the first invocation, or asynchronously
      * after one or more partial writes have already been acknowledged.
      */
-    @DisplayName("""
-            should invoke <handler.failed(exc, attachment)>
-            when the <channel> fails on or after partial writes""")
+    @DisplayName("failed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

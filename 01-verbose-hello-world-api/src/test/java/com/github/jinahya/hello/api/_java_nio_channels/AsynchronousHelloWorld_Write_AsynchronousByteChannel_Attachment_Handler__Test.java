@@ -46,7 +46,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, attachment, handler)")
+@DisplayName("AsynchronousHelloWorld.write(AsynchronousByteChannel, attachment, handler) / extras")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -107,9 +107,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_H
          * @param executor the executor to back the channel group.
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> to an <echo server>
-                with a real <AsynchronousChannelGroup>""")
+        @DisplayName("echo server / AsynchronousChannelGroup")
         @MethodSource({"executorStream"})
         @ParameterizedTest
         void __(final ExecutorService executor) throws Exception { // @formatter:off

@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
  * (Java 26)
  */
+@DisplayName("javax.crypto.Cipher")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_Cipher_Test {
 

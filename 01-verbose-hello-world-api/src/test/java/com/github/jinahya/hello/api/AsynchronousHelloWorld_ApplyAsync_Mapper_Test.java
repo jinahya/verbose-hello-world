@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the {@link AsynchronousHelloWorld} subtype under test.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("applyAsync(mapper)")
+@DisplayName("AsynchronousHelloWorld.applyAsync(mapper)")
 abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
         >
@@ -50,7 +50,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
      * Verifies that the method throws a {@link NullPointerException} when the {@code mapper}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
+    @DisplayName("throws NPE / mapper is null")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
@@ -68,7 +68,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Test<
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("should return a <CompletionStage> that completes with <mapper.apply> result")
+    @DisplayName("happy path")
     @Test
     @SuppressWarnings({"unchecked"})
     void __() throws Exception {

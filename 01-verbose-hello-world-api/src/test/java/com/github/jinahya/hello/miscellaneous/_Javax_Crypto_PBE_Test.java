@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc9106">RFC 9106 &mdash; Argon2 Memory-Hard
  * Function for Password Hashing and Proof-of-Work Applications</a>
  */
-@DisplayName("PBE")
+@DisplayName("javax.crypto.PBE")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_PBE_Test {
 
@@ -126,7 +126,7 @@ class _Javax_Crypto_PBE_Test {
          *
          * @param password the password to register and verify.
          */
-        @DisplayName("should round-trip the <password> column via <PBKDF2WithHmacSHA256>")
+        @DisplayName("password column")
         @ValueSource(strings = {
                 "iloveyou",
                 "letmein"
@@ -223,8 +223,7 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
-            @DisplayName(
-                    "should round-trip the <password> column via <scrypt> through <Password4j>")
+            @DisplayName("password column")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"
@@ -284,9 +283,7 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
-            @DisplayName("""
-                    should round-trip the <password> column
-                    via <SCRYPT> through <BouncyCastle> JCE""")
+            @DisplayName("password column")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"

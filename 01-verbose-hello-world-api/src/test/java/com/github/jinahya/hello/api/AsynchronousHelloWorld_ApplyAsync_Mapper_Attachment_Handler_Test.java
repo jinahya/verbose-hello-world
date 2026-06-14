@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the {@link AsynchronousHelloWorld} subtype under test.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("applyAsync(mapper, attachment, handler)")
+@DisplayName("AsynchronousHelloWorld.applyAsync(mapper, attachment, handler)")
 abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
         >
@@ -53,7 +53,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
      * Verifies that the method throws a {@link NullPointerException} when the {@code mapper}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
+    @DisplayName("throws NPE / mapper is null")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
@@ -70,7 +70,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
      * Verifies that the method throws a {@link NullPointerException} when the {@code handler}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
+    @DisplayName("throws NPE / handler is null")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_HandlerIsNull() {
@@ -89,8 +89,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
      * with the value returned by {@code mapper.apply(service)} and the supplied
      * {@code attachment}.
      */
-    @DisplayName(
-            "should invoke <handler.completed> with the <mapper.apply> result and the <attachment>")
+    @DisplayName("handler.completed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() {
@@ -116,7 +115,7 @@ abstract class AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} with the
      * exception thrown by {@code mapper.apply(service)} and the supplied {@code attachment}.
      */
-    @DisplayName("should invoke <handler.failed> with the thrown exception and the <attachment>")
+    @DisplayName("handler.failed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(file)")
+@DisplayName("HelloWorld.append(File)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Append_File__Test extends HelloWorld__Test {
@@ -66,7 +66,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
      * Verifies that {@link HelloWorld#append(File) append(file)} throws a
      * {@link FileNotFoundException} when the {@code file} is a directory.
      */
-    @DisplayName("should throw a <FileNotFoundException> when the <file> is a <directory>")
+    @DisplayName("directory")
     @Test
     void __Directory() {
         // ----------------------------------------------------------------------------------- given
@@ -87,7 +87,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
+    @DisplayName("existing")
     @Test
     void __Existing() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -110,7 +110,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should create the <file> with <12> bytes when the <file> does not exist")
+    @DisplayName("not existing")
     @Test
     void __NotExisting() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -134,7 +134,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should increase the <file>'s length by <12> when the <file> exists")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

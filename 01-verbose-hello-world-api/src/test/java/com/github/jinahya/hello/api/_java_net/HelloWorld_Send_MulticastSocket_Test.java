@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assumptions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket)")
+@DisplayName("HelloWorld.send(MulticastSocket)")
 @Disabled
 @Slf4j
 class HelloWorld_Send_MulticastSocket_Test
@@ -82,7 +82,7 @@ class HelloWorld_Send_MulticastSocket_Test
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv4>")
+    @DisplayName("happy path / IPv4")
     @Test
     void __IPv4() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -170,7 +170,7 @@ class HelloWorld_Send_MulticastSocket_Test
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("should send <hello-world-bytes> through a real <MulticastSocket> over <IPv6>")
+    @DisplayName("happy path / IPv6")
     @Test
     void __IPv6() throws Exception {
         // ----------------------------------------------------------------------------------- given

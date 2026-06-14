@@ -97,7 +97,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
         @Nested
         class List_Test {
 
-            @DisplayName("should add through <ArrayList>")
+            @DisplayName("ArrayList")
             @Test
             void __ArrayList() {
                 final var collection = new ArrayList<String>();
@@ -110,7 +110,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
                 print(collection);
             }
 
-            @DisplayName("should add through <LinkedList>")
+            @DisplayName("LinkedList")
             @Test
             void __LinkedList() {
                 final var collection = new LinkedList<String>();
@@ -123,7 +123,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
                 print(collection);
             }
 
-            @DisplayName("should add through <Vector>")
+            @DisplayName("Vector")
             @Test
             void __Vector() {
                 final var collection = new Vector<String>();
@@ -136,7 +136,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
                 print(collection);
             }
 
-            @DisplayName("should add through <Stack>")
+            @DisplayName("Stack")
             @Test
             void __Stack() {
                 final var collection = new Stack<String>();
@@ -149,7 +149,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
                 print(collection);
             }
 
-            @DisplayName("should add through <CopyOnWriteArrayList>")
+            @DisplayName("CopyOnWriteArrayList")
             @Test
             void __CopyOnWriteArrayList() {
                 final var collection = new CopyOnWriteArrayList<String>();
@@ -168,7 +168,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
         @Nested
         class Deque_Test {
 
-            @DisplayName("should add through <ArrayDeque>")
+            @DisplayName("ArrayDeque")
             @Test
             void __ArrayDeque() {
                 final var collection = new ArrayDeque<String>();
@@ -191,7 +191,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
 //                              collection.stream().mapToInt(Integer::intValue).toArray());
 //        }
 
-            @DisplayName("should add through <LinkedBlockingDeque>")
+            @DisplayName("LinkedBlockingDeque")
             @Test
             void __LinkedBlockingDeque() {
                 final var collection = new LinkedBlockingDeque<String>();
@@ -204,7 +204,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
                 print(collection);
             }
 
-            @DisplayName("should add through <ConcurrentLinkedDeque>")
+            @DisplayName("ConcurrentLinkedDeque")
             @Test
             void __ConcurrentLinkedDeque() {
                 final var collection = new ConcurrentLinkedDeque<String>();
@@ -222,7 +222,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
         @Nested
         class SequencedSet_Test {
 
-            @DisplayName("should add through <LinkedHashSet>")
+            @DisplayName("LinkedHashSet")
             @Test
             void __LinkedHashSet() {
                 final var collection = new LinkedHashSet<String>();
@@ -244,7 +244,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
         @Nested
         class SortedSet_Test {
 
-            @DisplayName("should add through <TreeSet>")
+            @DisplayName("TreeSet")
             @Test
             void __TreeSet() {
                 final SortedSet<String> collection = new TreeSet<>();
@@ -262,7 +262,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
         @Nested
         class NavigableSet_Test {
 
-            @DisplayName("should add through <ConcurrentSkipListSet>")
+            @DisplayName("ConcurrentSkipListSet")
             @Test
             void __ConcurrentSkipListSet() {
                 final NavigableSet<String> collection = new ConcurrentSkipListSet<>();
@@ -288,7 +288,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
         @Nested
         class LinkedHashSet_Test {
 
-            @DisplayName("should add through <LinkedHashSet#add>")
+            @DisplayName("happy path")
             @Test
             void __() {
                 final var collection = new LinkedHashSet<String>();
@@ -303,7 +303,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
     @Nested
     class LinkedHashSet_Trace_Test {
 
-        @DisplayName("should trace <addLast> over <LinkedHashSet>")
+        @DisplayName("addLast")
         @Test
         void __addLast() {
             final var collection = new LinkedHashSet<String>();
@@ -314,7 +314,7 @@ class HelloWorld_Add_SequencedCollection_Function__Test extends HelloWorld__Test
             }
         }
 
-        @DisplayName("should trace <add> over <LinkedHashSet>")
+        @DisplayName("add")
         @Test
         void __add() {
             final var collection = new LinkedHashSet<String>();

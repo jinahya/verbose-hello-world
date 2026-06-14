@@ -53,7 +53,7 @@ class HelloWorld_Update_Signature_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#update(Signature) update(signature)} method
      * throws a {@link NullPointerException} when the {@code signature} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <signature> argument is <null>")
+    @DisplayName("throws NPE / signature is null")
     @Test
     void _ThrowNullPointerException_SignatureIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -70,7 +70,7 @@ class HelloWorld_Update_Signature_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and returns the
      * {@code signature}.
      */
-    @DisplayName("should invoke <signature.update(buffer)>, and return the <signature>")
+    @DisplayName("happy path")
     @Test
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given

@@ -47,7 +47,7 @@ class _Java_Io_File__Test {
      * Verifies that opening a {@link FileOutputStream} on a {@code directory} throws a
      * {@link FileNotFoundException}.
      */
-    @DisplayName("opening a <FileOutputStream> on a <directory> throws <FileNotFoundException>")
+    @DisplayName("directory / FileNotFoundException")
     @Test
     void __Directory() {
         // ----------------------------------------------------------------------------------- given
@@ -73,7 +73,7 @@ class _Java_Io_File__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("appending <N> bytes to an existing <file> increases its length by <N>")
+    @DisplayName("append / existing")
     @Test
     void __Existing() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -100,7 +100,7 @@ class _Java_Io_File__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("writing <N> bytes to a non-existing <file> creates it with length <N>")
+    @DisplayName("write / not existing")
     @Test
     void __NotExisting() throws IOException {
         // ----------------------------------------------------------------------------------- given

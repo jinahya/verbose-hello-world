@@ -62,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc5649">RFC 5649 &mdash; Advanced
  * Encryption Standard (AES) Key Wrap with Padding Algorithm</a>
  */
-@DisplayName("Key")
+@DisplayName("java.security.Key")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Java_Security_Key__Test {
 
@@ -218,7 +218,7 @@ class _Java_Security_Key__Test {
      * matching private key. Parameterised over every RSA padding listed on the JDK 25 standard
      * names page (the only asymmetric {@link Cipher} algorithms registered by SunJCE).
      */
-    @DisplayName("Key Transport (RSA)")
+    @DisplayName("key transport / RSA")
     @Nested
     class KeyTransport_Test {
 
@@ -238,8 +238,7 @@ class _Java_Security_Key__Test {
          * @param transformation a JCE {@link Cipher} transformation for RSA key transport (e.g.,
          *                       {@code "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"}).
          */
-        @DisplayName(
-                "should round-trip an <AES> data key wrapped under the given <RSA> transformation")
+        @DisplayName("RSA / AES")
         @ValueSource(strings = {
                 "RSA/ECB/PKCS1Padding",
                 "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
@@ -290,7 +289,7 @@ class _Java_Security_Key__Test {
          *
          * @param keySize Alice's DH modulus size in bits.
          */
-        @DisplayName("should produce a matching shared secret via <DiffieHellman>")
+        @DisplayName("DiffieHellman")
         @ValueSource(ints = {
                 2048,
                 3072
@@ -321,7 +320,7 @@ class _Java_Security_Key__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "secp256r1"}).
          */
-        @DisplayName("should produce a matching shared secret via <ECDH> over the given <EC> curve")
+        @DisplayName("ECDH")
         @ValueSource(strings = {
                 "secp256r1",
                 "secp384r1",
@@ -344,7 +343,7 @@ class _Java_Security_Key__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "X25519"}).
          */
-        @DisplayName("should produce a matching shared secret via the given <XDH> curve")
+        @DisplayName("XDH")
         @ValueSource(strings = {
                 "X25519",
                 "X448"
@@ -368,7 +367,7 @@ class _Java_Security_Key__Test {
      * {@code AESWrap} / {@code AESWrapPad} legacy aliases plus the {@code AES/KW/*} /
      * {@code AES/KWP/*} JDK 17+ forms).
      */
-    @DisplayName("Key Wrapping (AES KW/KWP)")
+    @DisplayName("key wrapping / AES KW/KWP")
     @Nested
     class KeyWrapper_Test {
 
@@ -389,8 +388,7 @@ class _Java_Security_Key__Test {
          * @param transformation a JCE {@link Cipher} transformation for symmetric key wrapping
          *                       (e.g., {@code "AES/KW/NoPadding"}).
          */
-        @DisplayName(
-                "should round-trip an <AES> data key wrapped under an <AES> KEK with the given <transformation>")
+        @DisplayName("AES / AES KEK")
         @ValueSource(strings = {
                 "AESWrap",
                 "AESWrapPad",
@@ -424,14 +422,14 @@ class _Java_Security_Key__Test {
      * and one post-quantum {@code ML-KEM-768} round-trip. The full sweep over DHKEM curves and the
      * three ML-KEM parameter sets lives in {@link _Javax_Crypto_KEM__Test}.
      */
-    @DisplayName("Key Encapsulation (KEM)")
+    @DisplayName("key encapsulation / KEM")
     @Nested
     class KeyEncapsulation_Test {
 
         /**
          * Verifies a single classical {@code DHKEM} round-trip with an X25519 receiver key pair.
          */
-        @DisplayName("should round-trip a shared key via <DHKEM> over <X25519>")
+        @DisplayName("DHKEM / X25519")
         @Test
         void __DHKEM_X25519() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -444,7 +442,7 @@ class _Java_Security_Key__Test {
         /**
          * Verifies a single post-quantum {@code ML-KEM-768} round-trip.
          */
-        @DisplayName("should round-trip a shared key via <ML-KEM-768>")
+        @DisplayName("ML-KEM-768")
         @Test
         void __ML_KEM_768() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -462,7 +460,7 @@ class _Java_Security_Key__Test {
      * {@link SecretKeyFactory}). The full sweeps live in {@link _Javax_Crypto_KDF_Test} and
      * {@link _Javax_Crypto_PBE_Test}.
      */
-    @DisplayName("Key Derivation")
+    @DisplayName("key derivation")
     @Nested
     class KeyDerivation_Test {
 
@@ -471,7 +469,7 @@ class _Java_Security_Key__Test {
          * uniformly-random IKM, salt, and info: invoking {@link KDF#deriveKey} twice with the same
          * {@link HKDFParameterSpec} yields byte-identical keys.
          */
-        @DisplayName("should derive a deterministic <AES> key via <HKDF-SHA256>")
+        @DisplayName("HKDF-SHA256 / AES")
         @Test
         void __HKDF() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -505,7 +503,7 @@ class _Java_Security_Key__Test {
          * same passphrase + salt + iteration count: invoking
          * {@link SecretKeyFactory#generateSecret} twice yields byte-identical keys.
          */
-        @DisplayName("should derive a deterministic 256-bit key via <PBKDF2WithHmacSHA256>")
+        @DisplayName("PBKDF2WithHmacSHA256")
         @Test
         void __PBKDF2() throws Exception {
             // ------------------------------------------------------------------------------- given

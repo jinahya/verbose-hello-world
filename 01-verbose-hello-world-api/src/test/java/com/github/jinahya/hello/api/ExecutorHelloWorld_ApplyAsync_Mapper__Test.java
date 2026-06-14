@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("applyAsync(mapper)")
+@DisplayName("ExecutorHelloWorld.applyAsync(mapper)")
 class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {
 
@@ -75,7 +75,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should apply <mapper> via the <executor> and return the <hello-world-bytes>")
+        @DisplayName("via executor / hello-world-bytes")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -97,7 +97,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -110,7 +110,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -123,7 +123,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -137,7 +137,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -151,7 +151,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -164,7 +164,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -177,7 +177,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -190,7 +190,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -203,7 +203,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -216,7 +216,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -229,7 +229,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -242,7 +242,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -256,7 +256,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -269,7 +269,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -282,7 +282,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -295,7 +295,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -308,7 +308,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -322,7 +322,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -338,7 +338,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -351,7 +351,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -364,7 +364,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -377,7 +377,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -391,7 +391,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -404,7 +404,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -417,7 +417,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -430,7 +430,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -443,7 +443,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -457,7 +457,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -471,7 +471,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -484,7 +484,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -498,7 +498,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -511,7 +511,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -524,7 +524,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -537,7 +537,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -550,7 +550,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -563,7 +563,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -576,7 +576,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -589,7 +589,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -602,7 +602,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -616,7 +616,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -629,7 +629,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -642,7 +642,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -655,7 +655,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -669,7 +669,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -682,7 +682,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -695,7 +695,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -711,7 +711,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -724,7 +724,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -740,7 +740,7 @@ class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         /**
          * Asserts that the method applies the {@code mapper} via the {@code executor}.
          */
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }

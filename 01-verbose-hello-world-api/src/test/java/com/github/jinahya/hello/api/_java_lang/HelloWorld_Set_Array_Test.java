@@ -50,7 +50,7 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <array> argument is <null>")
+    @DisplayName("throws NPE / array is null")
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,9 +68,7 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
      * {@link IndexOutOfBoundsException} when {@code array.length} is less than
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName("""
-            should throw an <IndexOutOfBoundsException>
-            when <array.length> is less than <HelloWorld.BYTES>""")
+    @DisplayName("throws IOBE / array.length < BYTES")
     @Test
     void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
@@ -92,7 +90,7 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
      * @see Mockito#verify(Object, VerificationMode)
      * @see org.junit.jupiter.api.Assertions#assertSame(Object, Object)
      */
-    @DisplayName("should invoke <set(array, 0)>, and return the <array>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

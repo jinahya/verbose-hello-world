@@ -26,7 +26,7 @@ import org.junit.jupiter.api.*;
 /**
  * A class for testing {@link java.security.KeyPair}.
  */
-@DisplayName("KeyPair")
+@DisplayName("java.security.KeyPair")
 @Slf4j
 class _Java_Security_KeyPair_Test {
 

@@ -33,7 +33,7 @@ import java.net.http.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Disabled
-@DisplayName("sendBinary(socket, last)")
+@DisplayName("AsynchronousHelloWorld.sendBinary(WebSocket, boolean)")
 @Slf4j
 class AsynchronousHelloWorld_SendBinary_WebSocket_Test
         extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {

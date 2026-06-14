@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setAsciiStream(clob, pos)")
+@DisplayName("HelloWorld.setAsciiStream(Clob, long)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetAsciiStream_Clob_Long__Test
@@ -76,7 +76,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
          * setAsciiStream(clob, pos)} method populates a real H2 {@link Clob} with the
          * {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real H2 Clob> through <setAsciiStream(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -105,7 +105,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
          * setAsciiStream(clob, pos)} method populates a real HSQLDB {@link Clob} with the
          * {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real HSQLDB Clob> through <setAsciiStream(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

@@ -65,7 +65,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method sets the
      * {@code "hello, world"} bits into a fresh {@link BitSet} starting at index {@code 0}.
      */
-    @DisplayName("should set <hello, world> bits into a fresh <BitSet>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 
 import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._DEMO;
 import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
@@ -37,6 +38,7 @@ import static com.github.jinahya.hello.lib.HelloWorldDi_Constants._IMPL;
  * @see <a href="https://avaje.io/inject/">Avaje Inject</a>
  */
 //@io.avaje.inject.test.InjectTest
+@DisplayName("HelloWorldDi / Avaje")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDi_Avaje_Test extends HelloWorldDi__Test {

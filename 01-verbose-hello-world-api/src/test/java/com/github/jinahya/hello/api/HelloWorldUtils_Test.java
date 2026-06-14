@@ -72,7 +72,7 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
          * Asserts that {@code HelloWorldUtils.array(service)} returns the
          * {@code hello-world-bytes}.
          */
-        @DisplayName("should return the <hello-world-bytes>")
+        @DisplayName("hello-world-bytes")
         @Test
         void __() {
             final var result = HelloWorldUtils.array(service());
@@ -94,7 +94,7 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
          *
          * @param supplier the {@link ByteBuffer} supplier under test.
          */
-        @DisplayName("should return a <ByteBuffer> containing the <hello-world-bytes>")
+        @DisplayName("ByteBuffer / hello-world-bytes")
         @MethodSource({"byteBufferSupplierStream"})
         @ParameterizedTest
         void __(final Supplier<ByteBuffer> supplier) {
@@ -111,7 +111,7 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
          * Asserts that {@code HelloWorldUtils.string(service)} returns the
          * {@code hello-world-string}.
          */
-        @DisplayName("should return the <hello-world-string>")
+        @DisplayName("hello-world-string")
         @Test
         void __() {
             final var result = HelloWorldUtils.string(service());
@@ -134,7 +134,7 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
          * @param supplier the {@link ByteBuffer} supplier under test.
          * @throws CharacterCodingException if a decoding error occurs.
          */
-        @DisplayName("should return a <CharBuffer> containing the <hello-world-string>")
+        @DisplayName("CharBuffer / hello-world-string")
         @MethodSource({"byteBufferSupplierStream"})
         @ParameterizedTest
         void __(final Supplier<ByteBuffer> supplier) throws CharacterCodingException {

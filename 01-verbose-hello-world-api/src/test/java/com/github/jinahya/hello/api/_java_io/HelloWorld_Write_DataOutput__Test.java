@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(output)")
+@DisplayName("HelloWorld.write(DataOutput)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
@@ -82,7 +82,7 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -109,7 +109,7 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <RandomAccessFile>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -143,7 +143,7 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
          * @param expected the input {@code string} to round-trip.
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should round-trip the <string> through <writeUTF>/<readUTF>")
+        @DisplayName("round-trip writeUTF / readUTF")
         @ValueSource(strings = {
                 HELLO_WORLD_STRING,
                 "홍길동",

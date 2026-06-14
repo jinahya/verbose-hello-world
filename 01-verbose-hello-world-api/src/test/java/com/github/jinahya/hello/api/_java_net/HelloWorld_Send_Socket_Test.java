@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket)")
+@DisplayName("HelloWorld.send(Socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,7 +48,7 @@ class HelloWorld_Send_Socket_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#send(Socket) send(socket)} method throws a
      * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <socket> argument is <null>")
+    @DisplayName("throws NPE / socket is null")
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -65,7 +65,7 @@ class HelloWorld_Send_Socket_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <write(socket.outputStream)>, and return the <socket>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

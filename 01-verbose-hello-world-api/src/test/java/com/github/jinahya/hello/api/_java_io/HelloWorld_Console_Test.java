@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(console)")
+@DisplayName("HelloWorld.write(Console)")
 class HelloWorld_Console_Test
         extends HelloWorld__Test {
 
@@ -63,7 +63,7 @@ class HelloWorld_Console_Test
      * Verifies that the method throws a {@link NullPointerException} when the {@code console}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <console> argument is <null>")
+    @DisplayName("throws NPE / console is null")
     @Test
     void _ThrowNullPointerException_ConsoleIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -79,7 +79,7 @@ class HelloWorld_Console_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <write(console.writer)>, and return the <console>")
+    @DisplayName("happy path")
     @Test
     void __()
             throws IOException {

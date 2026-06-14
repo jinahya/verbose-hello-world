@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, position, attachment)")
+@DisplayName("AsynchronousHelloWorld.write(AsynchronousFileChannel, position, attachment) / extras")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -91,8 +91,7 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
      * @param dir the temporary directory.
      * @throws Exception if an error occurs.
      */
-    @DisplayName(
-            "should write <hello-world-bytes> to a real <AsynchronousFileChannel> at a <position>")
+    @DisplayName("real AsynchronousFileChannel")
     @Test
     void __(@TempDir final Path dir) throws Exception {
         var file = Files.createTempFile(dir, null, null);

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  * @see <a href="https://github.com/jinahya/verbose-hello-world/issues/1">Implement
  * HelloWorld#write(Writer)</a> (GitHub Issues)
  */
-@DisplayName("write(writer)")
+@DisplayName("HelloWorld.write(Writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -49,7 +49,7 @@ class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method throws a
      * {@link NullPointerException} when the {@code writer} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <writer> argument is <null>")
+    @DisplayName("throws NPE / writer is null")
     @Test
     void _ThrowNullPointerException_WriterIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,7 +66,7 @@ class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <append(writer)>, and return the <writer>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

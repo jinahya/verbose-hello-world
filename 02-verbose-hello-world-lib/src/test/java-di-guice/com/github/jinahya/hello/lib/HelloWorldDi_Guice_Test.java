@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * A test class injects using Guice.
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://github.com/google/guice">Guice</a>
  */
+@DisplayName("HelloWorldDi / Guice")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDi_Guice_Test extends HelloWorldDi__Test {

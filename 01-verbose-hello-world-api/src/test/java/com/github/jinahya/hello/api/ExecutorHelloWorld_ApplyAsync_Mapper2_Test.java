@@ -20,6 +20,8 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import org.junit.jupiter.api.DisplayName;
+
 /**
  * A class for testing
  * {@link ExecutorHelloWorld#applyAsync(java.util.function.Function) applyAsync(mapper)} with a
@@ -27,6 +29,7 @@ package com.github.jinahya.hello.api;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("ExecutorHelloWorld.applyAsync(mapper)2")
 class ExecutorHelloWorld_ApplyAsync_Mapper2_Test
         extends AsynchronousHelloWorld_ApplyAsync_Mapper_Test<ExecutorHelloWorld<HelloWorld>> {
 

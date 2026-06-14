@@ -34,6 +34,7 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_Provider_Tes
 @Slf4j
 class _Java_Security__Test {
 
+    @DisplayName("happy path")
     @Test
     void __() {
         for (final var provider : Security.getProviders()) {

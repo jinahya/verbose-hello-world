@@ -20,6 +20,8 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import org.junit.jupiter.api.DisplayName;
+
 /**
  * A class for testing
  * {@link ExecutorHelloWorld#applyAsync(java.util.function.Function, Object,
@@ -28,6 +30,7 @@ package com.github.jinahya.hello.api;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("ExecutorHelloWorld.applyAsync(mapper, attachment, handler)")
 class ExecutorHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test
         extends AsynchronousHelloWorld_ApplyAsync_Mapper_Attachment_Handler_Test<
         ExecutorHelloWorld<HelloWorld>
