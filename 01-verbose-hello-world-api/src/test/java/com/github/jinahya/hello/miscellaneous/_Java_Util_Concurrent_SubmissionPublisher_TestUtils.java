@@ -35,7 +35,7 @@ public final class _Java_Util_Concurrent_SubmissionPublisher_TestUtils {
      * @return a {@link MockedConstruction} of {@link SubmissionPublisher}; close it when done.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static MockedConstruction<SubmissionPublisher> loggingMockConstruction() {
+    public static MockedConstruction<SubmissionPublisher> loggingSubmissionPublisherConstruction() {
         // mock -> its logging-spy sibling; populated by the initializer, read by the default answer
         // (which fires for every unstubbed method call on the mock — submit/close/hasSubscribers/…).
         final Map<Object, SubmissionPublisher<Object>> siblings = new IdentityHashMap<>();

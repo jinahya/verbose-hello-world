@@ -62,7 +62,7 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     // ---------------------------------------------------------------------------------------------
     @BeforeAll
     static void __stubSubmissionPublisherMockConstruct() {
-        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingMockConstruction();
+        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingSubmissionPublisherConstruction();
     }
 
     @AfterAll

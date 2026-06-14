@@ -130,6 +130,7 @@ public final class _Org_Mockito__TestUtils {
                 .defaultAnswer(CALLS_REAL_METHODS));
     }
 
+    // ai: should be analogues to OfReactiveStream
     public static final class OfFlow {
 
         @SuppressWarnings({"unchecked", "rawtypes"})
@@ -156,6 +157,31 @@ public final class _Org_Mockito__TestUtils {
                 return i.callRealMethod();
             }).when(spy).cancel();
             return spy;
+        }
+
+        public static <T> Flow.Subscriber<T> loggingSubscriber(
+                final Flow.Subscriber<? super T> realInstance) {
+            return loggingSubscriber(realInstance, Objects::toString);
+        }
+
+        public static <T> Flow.Subscriber<T> loggingSubscriber(
+                final Consumer<? super Flow.Subscription> consumer) {
+            Objects.requireNonNull(consumer, "consumer is null");
+            return loggingSubscriber(new Flow.Subscriber<T>() { // @formatter:off
+                @Override public void onSubscribe(final Flow.Subscription subscription) {
+                    consumer.accept(subscription);
+                }
+                @Override public void onNext(final T item) { }
+                @Override public void onError(final Throwable throwable) { }
+                @Override public void onComplete() { } // @formatter:on
+            });
+        }
+
+        public static <T> Flow.Subscriber<T> loggingSubscriberRequestsOnSubscribe(final long n) {
+            if (n <= 0L) {
+                throw new IllegalArgumentException("n(" + n + ") <= 0L");
+            }
+            return loggingSubscriber(s -> s.request(n));
         }
 
         @SuppressWarnings("unchecked")
@@ -241,6 +267,7 @@ public final class _Org_Mockito__TestUtils {
         }
     }
 
+    // ai: should be analogues to OfFlow
     public static final class OfReactiveStream {
 
         @SuppressWarnings("rawtypes")
@@ -268,6 +295,32 @@ public final class _Org_Mockito__TestUtils {
                 return i.callRealMethod();
             }).when(spy).cancel();
             return spy;
+        }
+
+        public static <T> org.reactivestreams.Subscriber<T> loggingSubscriber(
+                final org.reactivestreams.Subscriber<? super T> realInstance) {
+            return loggingSubscriber(realInstance, Objects::toString);
+        }
+
+        public static <T> org.reactivestreams.Subscriber<T> loggingSubscriber(
+                final Consumer<? super org.reactivestreams.Subscription> consumer) {
+            Objects.requireNonNull(consumer, "consumer is null");
+            return loggingSubscriber(new org.reactivestreams.Subscriber<T>() { // @formatter:off
+                @Override public void onSubscribe(final org.reactivestreams.Subscription subscription) {
+                    consumer.accept(subscription);
+                }
+                @Override public void onNext(final T item) { }
+                @Override public void onError(final Throwable throwable) { }
+                @Override public void onComplete() { } // @formatter:on
+            });
+        }
+
+        public static <T> org.reactivestreams.Subscriber<T> loggingSubscriberRequestsOnSubscribe(
+                final long n) {
+            if (n <= 0L) {
+                throw new IllegalArgumentException("n(" + n + ") <= 0L");
+            }
+            return loggingSubscriber(s -> s.request(n));
         }
 
         @SuppressWarnings("unchecked")

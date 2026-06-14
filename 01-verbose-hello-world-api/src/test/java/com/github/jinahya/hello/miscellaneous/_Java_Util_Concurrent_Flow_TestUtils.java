@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 import java.util.function.*;
 
 @Slf4j
-public final class _Java_Util_Concurrent_Flow_TsetUtils {
+public final class _Java_Util_Concurrent_Flow_TestUtils {
 
     // ---------------------------------------------------------------------------------------------
     @SuppressWarnings({"unchecked"})
@@ -60,7 +60,8 @@ public final class _Java_Util_Concurrent_Flow_TsetUtils {
         return null;
     }
 
-    private _Java_Util_Concurrent_Flow_TsetUtils() {
+    // ---------------------------------------------------------------------------------------------
+    private _Java_Util_Concurrent_Flow_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

@@ -344,7 +344,7 @@ class ReactiveHelloWorld_Array_PublisherTest
         verify(subscriber, never()).onComplete();
     }
 
-    // ------------------------------------------------------------------------- multi-subscriber (Rule 1.11)
+    // ---------------------------------------------------------------- multi-subscriber (Rule 1.11)
 
     /**
      * Verifies that the publisher serves two sequential subscribers independently — each one

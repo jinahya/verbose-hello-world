@@ -110,7 +110,7 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     // ---------------------------------------------------------------------------------------------
     @BeforeAll
     static void __stubSubmissionPublisherMockConstruct() {
-        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingMockConstruction();
+        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingSubmissionPublisherConstruction();
     }
 
     @AfterAll
