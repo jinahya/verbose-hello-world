@@ -91,8 +91,8 @@ public final class _Org_Mockito__TestUtils {
      * Like {@link _Java_Lang_TestUtils#toSimplifedString(Object)}, but if {@code object} is a
      * Mockito spy (or a spy of a spy …) the chain is walked down to the innermost
      * {@linkplain MockCreationSettings#getSpiedInstance() spied instance}, and that instance's
-     * identity hash is rendered. Every wrapper layer of the same logical entity therefore prints
-     * as the same {@code @<hex>}. For non-mocks and for mocks with no {@code spiedInstance} (e.g.
+     * identity hash is rendered. Every wrapper layer of the same logical entity therefore prints as
+     * the same {@code @<hex>}. For non-mocks and for mocks with no {@code spiedInstance} (e.g.
      * those created by {@link Mockito#mockConstruction(Class) mockConstruction}), the object's own
      * identity hash is used.
      *
@@ -103,7 +103,7 @@ public final class _Org_Mockito__TestUtils {
         if (object == null) {
             return "null";
         }
-        Object target = object;
+        var target = object;
         while (mockingDetails(target).isMock()) {
             final Object spied = mockingDetails(target)
                     .getMockCreationSettings()
@@ -165,7 +165,7 @@ public final class _Org_Mockito__TestUtils {
         @SuppressWarnings({"unchecked", "rawtypes"})
         public static <P extends Flow.Publisher<?>> P loggingPublisher(final P realInstance) {
             final P spy = loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
@@ -176,7 +176,7 @@ public final class _Org_Mockito__TestUtils {
         public static Flow.Subscription loggingSubscription(
                 final Flow.Subscription realInstance) {
             final var spy = loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.request({})", mock, i.<Long>getArgument(0));
                 return i.callRealMethod();
@@ -202,7 +202,9 @@ public final class _Org_Mockito__TestUtils {
                 }
                 @Override public void onNext(final T item) { }
                 @Override public void onError(final Throwable throwable) { }
-                @Override public void onComplete() { } // @formatter:on
+                @Override
+                public void onComplete() {
+                } // @formatter:on
             });
         }
 
@@ -218,7 +220,7 @@ public final class _Org_Mockito__TestUtils {
                 final Flow.Subscriber<? super T> realInstance,
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
             final Flow.Subscriber<T> spy = (Flow.Subscriber<T>) loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.onSubscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
@@ -245,7 +247,7 @@ public final class _Org_Mockito__TestUtils {
                 final Flow.Processor<? super T, ? extends R> realInstance,
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
             final Flow.Processor<T, R> spy = (Flow.Processor<T, R>) loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
@@ -303,7 +305,7 @@ public final class _Org_Mockito__TestUtils {
         public static <P extends org.reactivestreams.Publisher<?>> P loggingPublisher(
                 final P realInstance) {
             final P spy = loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
@@ -314,7 +316,7 @@ public final class _Org_Mockito__TestUtils {
         public static org.reactivestreams.Subscription loggingSubscription(
                 final org.reactivestreams.Subscription realInstance) {
             final var spy = loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.request({})", mock, i.<Long>getArgument(0));
                 return i.callRealMethod();
@@ -340,7 +342,9 @@ public final class _Org_Mockito__TestUtils {
                 }
                 @Override public void onNext(final T item) { }
                 @Override public void onError(final Throwable throwable) { }
-                @Override public void onComplete() { } // @formatter:on
+                @Override
+                public void onComplete() {
+                } // @formatter:on
             });
         }
 
@@ -358,7 +362,7 @@ public final class _Org_Mockito__TestUtils {
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
             final org.reactivestreams.Subscriber<T> spy =
                     (org.reactivestreams.Subscriber<T>) loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.onSubscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
@@ -386,7 +390,7 @@ public final class _Org_Mockito__TestUtils {
                 final Function<? super T, ? extends CharSequence> itemFormatter) {
             final org.reactivestreams.Processor<T, R> spy =
                     (org.reactivestreams.Processor<T, R>) loggingSpyOf(realInstance);
-            final var mock = toSimplifedString(spy);
+            final var mock = toSimplifedString(realInstance);
             doAnswer(i -> {
                 log.debug("{}.subscribe({})", mock, toSimplifedString(i.getArgument(0)));
                 return i.callRealMethod();
