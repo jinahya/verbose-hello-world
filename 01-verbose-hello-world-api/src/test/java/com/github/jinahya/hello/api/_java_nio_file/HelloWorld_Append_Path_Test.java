@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(path)")
+@DisplayName("HelloWorld.append(Path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -50,7 +50,7 @@ class HelloWorld_Append_Path_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
+    @DisplayName("throws NPE / path is null")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -65,7 +65,7 @@ class HelloWorld_Append_Path_Test extends HelloWorld__Test {
      * {@link HelloWorld#write(WritableByteChannel) write(channel)} with the channel opened on the
      * given path, and returns the {@code path}.
      */
-    @DisplayName("should invoke <write(FileChannel.open(path, CREATE, WRITE, APPEND))>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

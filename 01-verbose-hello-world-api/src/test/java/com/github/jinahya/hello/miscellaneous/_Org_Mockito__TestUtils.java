@@ -23,13 +23,13 @@ package com.github.jinahya.hello.miscellaneous;
 import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.mockito.*;
+import org.mockito.mock.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import static com.github.jinahya.hello.miscellaneous._Java_Lang_TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -85,6 +85,35 @@ public final class _Org_Mockito__TestUtils {
             throw new IllegalArgumentException("is a mock: " + object);
         }
         return object;
+    }
+
+    /**
+     * Like {@link _Java_Lang_TestUtils#toSimplifedString(Object)}, but if {@code object} is a
+     * Mockito spy (or a spy of a spy …) the chain is walked down to the innermost
+     * {@linkplain MockCreationSettings#getSpiedInstance() spied instance}, and that instance's
+     * identity hash is rendered. Every wrapper layer of the same logical entity therefore prints
+     * as the same {@code @<hex>}. For non-mocks and for mocks with no {@code spiedInstance} (e.g.
+     * those created by {@link Mockito#mockConstruction(Class) mockConstruction}), the object's own
+     * identity hash is used.
+     *
+     * @param object the object to render; may be {@code null}.
+     * @return {@code "null"} if {@code object} is {@code null}; otherwise an {@code @<hex>} string.
+     */
+    public static String toSimplifedString(final Object object) {
+        if (object == null) {
+            return "null";
+        }
+        Object target = object;
+        while (mockingDetails(target).isMock()) {
+            final Object spied = mockingDetails(target)
+                    .getMockCreationSettings()
+                    .getSpiedInstance();
+            if (spied == null || spied == target) {
+                break;
+            }
+            target = spied;
+        }
+        return String.format("@%08x", System.identityHashCode(target));
     }
 
     private static String formatByte(final byte v) {

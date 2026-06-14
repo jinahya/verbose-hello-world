@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * A class for exploring "Producer Extends, Consumer Super" (PECS) wildcards from Effective Java
  * Item 31.
  */
-@DisplayName("PECS")
+@DisplayName("Effective Java: PECS")
 @Slf4j
 class _Effective_Java_PECS_Test {
 
@@ -380,7 +380,7 @@ class _Effective_Java_PECS_Test {
          * Verifies that {@code roundUpMammal1} accepts only an invariant
          * {@code Collection<Mammal>}.
          */
-        @DisplayName("should accept only an invariant <Collection<Mammal>> in <roundUpMammal1>")
+        @DisplayName("roundUpMammal1 / invariant")
         @Test
         void roundUpMammal1__() {
             {
@@ -410,7 +410,7 @@ class _Effective_Java_PECS_Test {
          * Verifies that {@code roundUpMammal2} accepts any {@code Collection<? super Mammal>} via
          * PECS.
          */
-        @DisplayName("should accept any <Collection<? super Mammal>> via PECS in <roundUpMammal2>")
+        @DisplayName("roundUpMammal2 / PECS")
         @Test
         void roundUpMammal2__() {
             {
@@ -438,7 +438,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code roundUp1} accepts only an invariant {@code Collection<T>}.
          */
-        @DisplayName("should accept only an invariant <Collection<T>> in <roundUp1>")
+        @DisplayName("roundUp1 / invariant")
         @Test
         void roundUp1__() {
             {
@@ -473,7 +473,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code roundUp2} accepts any {@code Collection<? super T>} via PECS.
          */
-        @DisplayName("should accept any <Collection<? super T>> via PECS in <roundUp2>")
+        @DisplayName("roundUp2 / PECS")
         @Test
         void roundUp2__() {
             // T = Mammal
@@ -515,7 +515,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code inspect1} accepts only an invariant {@code Consumer<T>}.
          */
-        @DisplayName("should accept only an invariant <Consumer<T>> in <inspect1>")
+        @DisplayName("inspect1 / invariant")
         @Test
         void inspect1__() {
             {
@@ -545,7 +545,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code inspect2} accepts any {@code Consumer<? super T>} via PECS.
          */
-        @DisplayName("should accept any <Consumer<? super T>> via PECS in <inspect2>")
+        @DisplayName("inspect2 / PECS")
         @Test
         void inspect2__() {
             // T = Mammal
@@ -594,7 +594,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code capture1} accepts only an invariant {@code Collection<Animal>}.
          */
-        @DisplayName("should accept only an invariant <Collection<Animal>> in <capture1>")
+        @DisplayName("capture1 / invariant")
         @Test
         void capture1__() {
             {
@@ -630,7 +630,7 @@ class _Effective_Java_PECS_Test {
          * Verifies that {@code capture2} accepts any {@code Collection<? extends Animal>} via
          * PECS.
          */
-        @DisplayName("should accept any <Collection<? extends Animal>> via PECS in <capture2>")
+        @DisplayName("capture2 / PECS")
         @Test
         void capture2__() {
             {
@@ -670,7 +670,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code breed1} accepts only an invariant {@code Supplier<T>}.
          */
-        @DisplayName("should accept only an invariant <Supplier<T>> in <breed1>")
+        @DisplayName("breed1 / invariant")
         @Test
         void breed1__() {
             {
@@ -706,7 +706,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code breed2} accepts any {@code Supplier<? extends T>} via PECS.
          */
-        @DisplayName("should accept any <Supplier<? extends T>> via PECS in <breed2>")
+        @DisplayName("breed2 / PECS")
         @Test
         void breed2__() {
             {
@@ -745,7 +745,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code release1} accepts only an invariant {@code Collection<Animal>}.
          */
-        @DisplayName("should accept only an invariant <Collection<Animal>> in <release1>")
+        @DisplayName("release1 / invariant")
         @Test
         void release1__() {
             {
@@ -769,7 +769,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code release2} accepts any {@code Collection<? super Animal>} via PECS.
          */
-        @DisplayName("should accept any <Collection<? super Animal>> via PECS in <release2>")
+        @DisplayName("release2 / PECS")
         @Test
         void release2__() {
             {
@@ -794,7 +794,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that {@code tag1} accepts only an invariant {@code Function<T, R>}.
          */
-        @DisplayName("should accept only an invariant <Function<T, R>> in <tag1>")
+        @DisplayName("tag1 / invariant")
         @Test
         void tag1__() {
             // T = Cat, R = Animal
@@ -827,7 +827,7 @@ class _Effective_Java_PECS_Test {
          * Verifies that {@code tag2} accepts any {@code Function<? super T, ? extends R>} via full
          * PECS.
          */
-        @DisplayName("should accept any <Function<? super T, ? extends R>> via full PECS in <tag2>")
+        @DisplayName("tag2 / PECS")
         @Test
         void tag2__() {
             // T = Cat, R = Animal
@@ -870,8 +870,7 @@ class _Effective_Java_PECS_Test {
          * Verifies that {@code swap} requires an invariant {@code List<T>} when both reading and
          * writing.
          */
-        @DisplayName(
-                "should require an invariant <List<T>> in <swap> when both reading and writing")
+        @DisplayName("swap / invariant required")
         @Test
         void swap__() {
             // T = Cat
@@ -909,7 +908,7 @@ class _Effective_Java_PECS_Test {
         /**
          * Verifies that an invariant return type is preferable over a wildcard return type.
          */
-        @DisplayName("should prefer an invariant return type over a wildcard return in <roster>")
+        @DisplayName("roster / invariant return")
         @Test
         void roster__() {
             final var zoo = new Zoo();
@@ -945,9 +944,7 @@ class _Effective_Java_PECS_Test {
          * Verifies that {@code heaviest} binds any {@code T} via the recursive
          * {@code <T extends Comparable<? super T>>} bound.
          */
-        @DisplayName("""
-                should bind any <T>
-                via the recursive <T extends Comparable<? super T>> bound in <heaviest>""")
+        @DisplayName("heaviest / recursive bound")
         @Test
         void heaviest__() {
             // T = Cat

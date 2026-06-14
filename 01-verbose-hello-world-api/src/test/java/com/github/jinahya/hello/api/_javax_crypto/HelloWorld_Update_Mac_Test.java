@@ -48,7 +48,7 @@ class HelloWorld_Update_Mac_Test
      * Verifies that the method throws a {@link NullPointerException} when the {@code mac} argument
      * is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <mac> argument is <null>")
+    @DisplayName("throws NPE / mac is null")
     @Test
     void _ThrowNullPointerException_MacIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -61,7 +61,7 @@ class HelloWorld_Update_Mac_Test
     /**
      * Verifies that the method invokes {@code mac.update(buffer)}, and returns the {@code mac}.
      */
-    @DisplayName("should invoke <mac.update(buffer)>, and return the <mac>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

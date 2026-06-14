@@ -196,7 +196,7 @@ class _Flow_DayOfWeek_Example__Test {
      * Verifies that the {@link Flow.Publisher} delivers {@link DayOfWeek} items to a single
      * {@link Flow.Subscriber} as requested.
      */
-    @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
+    @DisplayName("single subscriber")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
@@ -234,7 +234,7 @@ class _Flow_DayOfWeek_Example__Test {
      * Verifies that the {@link Flow.Publisher} delivers {@link DayOfWeek} items to multiple
      * {@link Flow.Subscriber}s in parallel as each requests.
      */
-    @DisplayName("should deliver items to multiple <subscribers> from the <publisher>")
+    @DisplayName("multiple subscribers")
     @Test
     void __multipleSubscribers() {
         // ----------------------------------------------------------------------------------- given

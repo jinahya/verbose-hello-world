@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("string processor")
+@DisplayName("ReactiveHelloWorld / string Processor")
 @Slf4j
 class ReactiveHelloWorld_String_ProcessorTest {
 
@@ -69,7 +69,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
     /**
      * Verifies that the processor closes cleanly when no subscriber is ever attached.
      */
-    @DisplayName("should close cleanly without any subscriber")
+    @DisplayName("no subscribers")
     @Test
     void __immediateClose() {
         final var publisher = new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service));
@@ -81,9 +81,7 @@ class ReactiveHelloWorld_String_ProcessorTest {
      * Verifies that the processor delivers {@code d} elements to each subscriber with no
      * {@code onComplete} signal, given two subscribers requesting {@code 3} and {@code 5}.
      */
-    @DisplayName("""
-            should deliver <d> elements to each subscriber with no <onComplete>,
-            given two subscribers requesting <3> and <5>""")
+    @DisplayName("happy path")
     @Test
     void __() { // @formatter:off
         // ----------------------------------------------------------------------------------- given

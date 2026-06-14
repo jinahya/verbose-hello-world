@@ -25,7 +25,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.function.*;
 
-@DisplayName("append(path, attachment)")
+@DisplayName("StructuredConcurrencyHelloWorld.append(Path, Attachment)")
 class StructuredConcurrencyHelloWorld_Append_Path_Attachment_Test
         extends AsynchronousHelloWorld_Append_Path_Attachment_Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

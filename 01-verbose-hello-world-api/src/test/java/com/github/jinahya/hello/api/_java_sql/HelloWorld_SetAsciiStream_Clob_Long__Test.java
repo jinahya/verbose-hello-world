@@ -138,7 +138,7 @@ class HelloWorld_SetAsciiStream_Clob_Long__Test
          * setAsciiStream(clob, pos)} method populates a real SQLite {@link Clob} with the
          * {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real SQLite Clob> through <setAsciiStream(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

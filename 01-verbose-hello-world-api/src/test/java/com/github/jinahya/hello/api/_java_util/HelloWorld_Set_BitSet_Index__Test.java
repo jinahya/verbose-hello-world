@@ -91,7 +91,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the Jaccard similarity equals {@code 1.0} when two {@link BitSet}s set by
          * {@link HelloWorld#set(BitSet, int) set(bitset, index)} have identical placements.
          */
-        @DisplayName("should compute <Jaccard = 1.0> when placements are identical")
+        @DisplayName("identical")
         @Test
         void __identical() {
             final var a = new BitSet();
@@ -111,7 +111,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * {@link HelloWorld#set(BitSet, int) set(bitset, index)} at non-overlapping offsets are
          * compared.
          */
-        @DisplayName("should compute <Jaccard = 0.0> when placements are non-overlapping")
+        @DisplayName("disjoint")
         @Test
         void __disjoint() {
             final var a = new BitSet();
@@ -141,7 +141,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the Dice coefficient equals {@code 1.0} when two {@link BitSet}s set by
          * {@link HelloWorld#set(BitSet, int) set(bitset, index)} have identical placements.
          */
-        @DisplayName("should compute <Dice = 1.0> when placements are identical")
+        @DisplayName("identical")
         @Test
         void __identical() {
             final var a = new BitSet();
@@ -160,7 +160,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * {@link HelloWorld#set(BitSet, int) set(bitset, index)} at non-overlapping offsets are
          * compared.
          */
-        @DisplayName("should compute <Dice = 0.0> when placements are non-overlapping")
+        @DisplayName("disjoint")
         @Test
         void __disjoint() {
             final var a = new BitSet();
@@ -188,7 +188,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the Hamming distance equals {@code 0} when two {@link BitSet}s set by
          * {@link HelloWorld#set(BitSet, int) set(bitset, index)} have identical placements.
          */
-        @DisplayName("should compute <distance = 0> when placements are identical")
+        @DisplayName("identical")
         @Test
         void __identical() {
             final var a = new BitSet();
@@ -205,7 +205,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * by {@link HelloWorld#set(BitSet, int) set(bitset, index)} at disjoint offsets are
          * compared.
          */
-        @DisplayName("should compute <distance = |A| + |B|> when placements are disjoint")
+        @DisplayName("disjoint")
         @Test
         void __disjoint() {
             final var a = new BitSet();
@@ -230,7 +230,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the Sieve of Eratosthenes implemented over a {@link BitSet} counts
          * {@code 10} primes when sieving up to {@code 30}.
          */
-        @DisplayName("should count <10> primes when sieving up to <30>")
+        @DisplayName("primes up to 30")
         @Test
         void __primesUpTo30() {
             final int N = 30;
@@ -264,7 +264,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the membership test reports {@code mightContain = true} for an item whose
          * fingerprint was inserted via {@link HelloWorld#set(BitSet, int) set(bitset, index)}.
          */
-        @DisplayName("should report <mightContain = true> for an inserted item")
+        @DisplayName("present")
         @Test
         void __present() {
             final var filter = new BitSet();
@@ -280,7 +280,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the membership test reports {@code mightContain = false} when at least one
          * bit of the queried fingerprint is missing from the filter.
          */
-        @DisplayName("should report <mightContain = false> for an item not inserted")
+        @DisplayName("absent")
         @Test
         void __absent() {
             final var filter = new BitSet();
@@ -309,7 +309,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the Bitap algorithm finds {@code "world"} in {@code "hello, world"} ending
          * at index {@code 11} (start index {@code 7}).
          */
-        @DisplayName("should find <world> in <hello, world> ending at <11>")
+        @DisplayName("found")
         @Test
         void __found() {
             final var text = hello_world_byte_array();
@@ -341,7 +341,7 @@ class HelloWorld_Set_BitSet_Index__Test extends HelloWorld__Test {
          * Verifies that the Bitap algorithm reports no match when the pattern {@code "xyz"} is
          * searched in {@code "hello, world"}.
          */
-        @DisplayName("should not find <xyz> in <hello, world>")
+        @DisplayName("not found")
         @Test
         void __notFound() {
             final var text = hello_world_byte_array();

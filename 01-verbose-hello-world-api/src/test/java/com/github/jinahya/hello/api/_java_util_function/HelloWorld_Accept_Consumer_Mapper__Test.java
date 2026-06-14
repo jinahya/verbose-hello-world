@@ -59,8 +59,7 @@ class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorld__Test {
      * method writes the {@code "hello, world"} bytes through a
      * {@link ByteArrayOutputStream#write(int) ByteArrayOutputStream::write} consumer.
      */
-    @DisplayName(
-            "should write <hello, world> bytes through a <ByteArrayOutputStream::write> consumer")
+    @DisplayName("ByteArrayOutputStream::write")
     @Test
     void __() throws IOException {
         try (var baos = new ByteArrayOutputStream()) {

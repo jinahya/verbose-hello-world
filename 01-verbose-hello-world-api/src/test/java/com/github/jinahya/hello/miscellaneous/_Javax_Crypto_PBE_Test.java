@@ -386,8 +386,7 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
-            @DisplayName(
-                    "should round-trip the <password> column via <Argon2id> through <Password4j>")
+            @DisplayName("password column")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"
@@ -478,9 +477,7 @@ class _Javax_Crypto_PBE_Test {
              *
              * @param password the password to register and verify.
              */
-            @DisplayName("""
-                    should round-trip the <password> column
-                    via <Argon2id> through <BouncyCastle> low-level""")
+            @DisplayName("password column")
             @ValueSource(strings = {
                     "iloveyou",
                     "letmein"

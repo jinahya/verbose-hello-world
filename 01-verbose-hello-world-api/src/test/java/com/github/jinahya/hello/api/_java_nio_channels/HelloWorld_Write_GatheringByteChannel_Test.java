@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel)")
+@DisplayName("HelloWorld.write(GatheringByteChannel)")
 @Slf4j
 class HelloWorld_Write_GatheringByteChannel_Test
         extends HelloWorld__Test {
@@ -49,7 +49,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * Verifies that the {@link HelloWorld#write(GatheringByteChannel) write(channel)} method throws
      * a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -65,7 +65,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <write((WritableByteChannel) channel)>")
+    @DisplayName("delegates to write((WritableByteChannel) channel)")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -88,7 +88,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should write <hello-world-bytes> as <split buffers> through a real <Pipe>")
+    @DisplayName("添足 / 畵蛇")
     @Test
     void _添足_畵蛇() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given
@@ -263,7 +263,7 @@ class HelloWorld_Write_GatheringByteChannel_Test
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the current thread is interrupted while waiting.
      */
-    @DisplayName("should write a <calculator instruction binary> through a real <Pipe>")
+    @DisplayName("calc")
     @Test
     void __Calc() throws IOException, InterruptedException {
         // ----------------------------------------------------------------------------------- given

@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("reactive — Vert.x")
+@DisplayName("HelloWorldReactive / Vert.x")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
@@ -55,7 +55,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Future.succeededFuture(byte[])>")
+        @DisplayName("Future.succeededFuture")
         @Test
         void __succeededFuture() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -74,8 +74,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName(
-                "should emit <hello-world-bytes> via <Promise.promise()> then <complete(byte[])>")
+        @DisplayName("Promise.promise + complete")
         @Test
         void __promise() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -95,9 +94,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Future.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
+        @DisplayName("Future.fromCompletionStage")
         @Test
         void __fromCompletionStage() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -116,7 +113,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should return <BYTES> via <Future.succeededFuture(...).map(byte[]::length)>")
+        @DisplayName("Future.map")
         @Test
         void __map() throws Exception {
             // -------------------------------------------------------------------------- given/when

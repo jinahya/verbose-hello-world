@@ -44,6 +44,7 @@ import static org.mockito.Mockito.*;
  * {@link HelloWorld#update(Cipher, ByteBuffer, IntConsumer) update(cipher, output,
  * outputLengthConsumer)} method with real {@link Cipher} transformations.
  */
+@DisplayName("update(cipher, output, outputLengthConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {

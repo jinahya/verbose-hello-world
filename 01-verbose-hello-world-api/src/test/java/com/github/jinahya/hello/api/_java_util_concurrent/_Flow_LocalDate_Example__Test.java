@@ -201,7 +201,7 @@ class _Flow_LocalDate_Example__Test {
      * Verifies that the {@link Flow.Publisher} delivers {@link LocalDate} items to a single
      * {@link Flow.Subscriber} as requested.
      */
-    @DisplayName("should deliver items to a single <subscriber> from the <publisher>")
+    @DisplayName("single subscriber")
     @Test
     void __() {
         final var reference = new AtomicReference<Flow.Subscription>();

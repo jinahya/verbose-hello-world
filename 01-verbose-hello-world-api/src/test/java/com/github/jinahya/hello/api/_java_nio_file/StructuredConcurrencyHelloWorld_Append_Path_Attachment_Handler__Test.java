@@ -26,7 +26,7 @@ import org.junit.jupiter.api.*;
 import java.util.function.*;
 
 @SuppressWarnings({"java:S101"})
-@DisplayName("append(path, attachment, handler)")
+@DisplayName("StructuredConcurrencyHelloWorld.append(Path, Attachment, Handler)")
 class StructuredConcurrencyHelloWorld_Append_Path_Attachment_Handler__Test
         extends AsynchronousHelloWorld_Append_Path_Attachment_Handler__Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

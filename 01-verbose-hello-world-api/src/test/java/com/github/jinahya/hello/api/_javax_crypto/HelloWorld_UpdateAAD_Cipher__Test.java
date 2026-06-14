@@ -126,7 +126,7 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
          *
          * @param keysize the AES key size to test &mdash; {@code 128} or {@code 256} bits.
          */
-        @DisplayName("should round-trip plaintext through a <real AES/GCM/NoPadding> cipher")
+        @DisplayName("round-trip")
         @ValueSource(ints = {128, 256})
         @ParameterizedTest
         void __(final int keysize) throws Exception {
@@ -189,7 +189,7 @@ class HelloWorld_UpdateAAD_Cipher__Test extends HelloWorld__Test {
          * cipher, with the hello-world bytes fed as AAD on both encryption and decryption sides,
          * recovers the original plaintext.
          */
-        @DisplayName("should round-trip plaintext through a <real ChaCha20-Poly1305> cipher")
+        @DisplayName("round-trip")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given

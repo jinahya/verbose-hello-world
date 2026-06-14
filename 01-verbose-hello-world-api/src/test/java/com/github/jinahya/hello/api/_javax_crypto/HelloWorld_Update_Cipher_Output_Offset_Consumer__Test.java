@@ -43,6 +43,7 @@ import static org.mockito.Mockito.*;
  * {@link HelloWorld#update(Cipher, byte[], int, IntConsumer) update(cipher, output, outputOffset,
  * outputLengthConsumer)} method with real {@link Cipher} transformations.
  */
+@DisplayName("update(cipher, output, outputOffset, outputLengthConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Output_Offset_Consumer__Test extends HelloWorld__Test {

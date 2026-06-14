@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("method(builder, method)")
+@DisplayName("HelloWorld.method(HttpRequest.Builder, String)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorld__Test {
@@ -67,7 +67,7 @@ class HelloWorld_Method_HttpRequestBuilder_String__Test extends HelloWorld__Test
      * Verifies that the method sends {@code hello-world-bytes} through a real {@link HttpClient}
      * request.
      */
-    @DisplayName("should send <hello-world-bytes> through a real <HttpClient> request")
+    @DisplayName("happy path")
     @Test
     void __() {
         executeWithHttpEchoStarted(p -> () -> {

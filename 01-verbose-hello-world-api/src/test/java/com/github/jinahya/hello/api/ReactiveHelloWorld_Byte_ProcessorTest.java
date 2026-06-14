@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("byte processor")
+@DisplayName("ReactiveHelloWorld / byte Processor")
 @Slf4j
 class ReactiveHelloWorld_Byte_ProcessorTest {
 
@@ -69,7 +69,7 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
     /**
      * Verifies that the processor closes cleanly when no subscriber is ever attached.
      */
-    @DisplayName("should close cleanly without any subscriber")
+    @DisplayName("no subscribers")
     @Test
     void __immediateClose() {
         try (final var processor = new ReactiveHelloWorldByteProcessor(service)) {
@@ -81,9 +81,7 @@ class ReactiveHelloWorld_Byte_ProcessorTest {
      * {@code onComplete} signal when {@code d >= 12}, given two subscribers requesting
      * {@code BYTES - 1} and {@code BYTES + 1}.
      */
-    @DisplayName("""
-            should deliver <min(d, 12)> elements to each subscriber and <onComplete>
-            when <d >= 12>, given two subscribers requesting <BYTES - 1> and <BYTES + 1>""")
+    @DisplayName("happy path")
     @Test
     void __() { // @formatter:on
         // ----------------------------------------------------------------------------------- given

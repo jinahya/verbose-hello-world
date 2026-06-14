@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(path, attachment, handler)")
+@DisplayName("AsynchronousHelloWorld.append(Path, Attachment, Handler)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -69,7 +69,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
      * Verifies that the method throws a {@link NullPointerException} when the {@code path} argument
      * is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
+    @DisplayName("throws NPE / path is null")
     @Test
     @SuppressWarnings({"unchecked"})
     void _ThrowNullPointerException_PathIsNull() {
@@ -88,7 +88,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
      * Verifies that the method throws a {@link NullPointerException} when the {@code handler}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <handler> argument is <null>")
+    @DisplayName("throws NPE / handler is null")
     @Test
     void _ThrowNullPointerException_HandlerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -108,8 +108,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
      * {@link AsynchronousFileChannel#size() channel.size()}, closes the channel, and invokes
      * {@link CompletionHandler#completed(Object, Object) handler.completed(path, attachment)}.
      */
-    @DisplayName(
-            "should open <path>, write at <channel.size()>, close, and invoke <handler.completed(path, attachment)>")
+    @DisplayName("happy path / completed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
@@ -150,8 +149,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
      * AsynchronousFileChannel.open(path, ...)} throws an {@link IOException}, the method invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)}.
      */
-    @DisplayName(
-            "should invoke <handler.failed(exc, attachment)> when <AsynchronousFileChannel.open(path, ...)> throws")
+    @DisplayName("failed / open throws")
     @Test
     @SuppressWarnings({"unchecked"})
     void __failed() {

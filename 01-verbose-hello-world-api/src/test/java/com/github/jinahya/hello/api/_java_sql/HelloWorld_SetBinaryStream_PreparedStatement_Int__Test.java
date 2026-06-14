@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setBinaryStream(statement, index)")
+@DisplayName("HelloWorld.setBinaryStream(PreparedStatement, int)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
@@ -85,9 +85,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
          * setBinaryStream(statement, index)} method inserts and reads back the
          * {@code "hello, world"} bytes through a real H2 {@link PreparedStatement}.
          */
-        @DisplayName("""
-                should insert and read back the hello-world bytes
-                through a <real H2 PreparedStatement>""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -149,9 +147,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
          * setBinaryStream(statement, index)} method inserts and reads back the
          * {@code "hello, world"} bytes through a real HSQLDB {@link PreparedStatement}.
          */
-        @DisplayName("""
-                should insert and read back the hello-world bytes
-                through a <real HSQLDB PreparedStatement>""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -212,9 +208,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
          * setBinaryStream(statement, index)} method inserts and reads back the
          * {@code "hello, world"} bytes through a real SQLite {@link PreparedStatement}.
          */
-        @DisplayName("""
-                should insert and read back the hello-world bytes
-                through a <real SQLite PreparedStatement>""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setCharacterStream(clob, pos)")
+@DisplayName("HelloWorld.setCharacterStream(Clob, long)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetCharacterStream_Clob_Long__Test
@@ -75,7 +75,7 @@ class HelloWorld_SetCharacterStream_Clob_Long__Test
          * setCharacterStream(clob, pos)} method populates a real H2 {@link Clob} with the
          * {@code "hello, world"} characters.
          */
-        @DisplayName("should populate a <real H2 Clob> through <setCharacterStream(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -107,7 +107,7 @@ class HelloWorld_SetCharacterStream_Clob_Long__Test
          * setCharacterStream(clob, pos)} method populates a real HSQLDB {@link Clob} with the
          * {@code "hello, world"} characters.
          */
-        @DisplayName("should populate a <real HSQLDB Clob> through <setCharacterStream(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -140,7 +140,7 @@ class HelloWorld_SetCharacterStream_Clob_Long__Test
          * setCharacterStream(clob, pos)} method populates a real SQLite {@link Clob} with the
          * {@code "hello, world"} characters.
          */
-        @DisplayName("should populate a <real SQLite Clob> through <setCharacterStream(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

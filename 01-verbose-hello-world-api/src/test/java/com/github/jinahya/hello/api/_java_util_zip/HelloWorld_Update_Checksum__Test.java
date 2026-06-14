@@ -82,7 +82,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
      *
      * @param checksum a real {@link Checksum} instance.
      */
-    @DisplayName("should update <hello, world> through every real <Checksum> subtype")
+    @DisplayName("real Checksum")
     @MethodSource("checksumStream")
     @ParameterizedTest
     void __(final Checksum checksum) {
@@ -107,7 +107,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
              * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates
              * the {@code "hello, world"} bytes through Apache Commons Codec's {@link XXHash32}.
              */
-            @DisplayName("xxHash32 / Commons-Codec")
+            @DisplayName("Commons-Codec")
             @Test
             void xxHash32_CommonsCodec__() {
                 final var checksum = new XXHash32(SEED);
@@ -120,7 +120,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
              * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates
              * the {@code "hello, world"} bytes through lz4-java's streaming {@code xxHash32}.
              */
-            @DisplayName("xxHash32 / Lz4")
+            @DisplayName("Lz4")
             @Test
             void xxHash32_Lz4__() {
                 try (final var hash = XXHashFactory.fastestInstance().newStreamingHash32(SEED)) {
@@ -140,7 +140,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
              * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method updates
              * the {@code "hello, world"} bytes through lz4-java's streaming {@code xxHash64}.
              */
-            @DisplayName("xxHash64 / Lz4")
+            @DisplayName("Lz4")
             @Test
             void xxHash64_Lz4__() {
                 try (final var hash = XXHashFactory.fastestInstance().newStreamingHash64(SEED)) {
@@ -159,6 +159,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("CheckedOutputStream")
     @Nested
     class CheckedOutputStream_Test {
 
@@ -173,6 +174,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
          *
          * @param checksum a real {@link Checksum} instance.
          */
+        @DisplayName("happy path")
         @MethodSource({"checksumStream"})
         @ParameterizedTest
         void __(final Checksum checksum) throws IOException {

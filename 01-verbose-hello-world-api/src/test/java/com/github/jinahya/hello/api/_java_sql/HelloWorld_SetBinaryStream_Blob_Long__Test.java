@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setBinaryStream(blob, pos)")
+@DisplayName("HelloWorld.setBinaryStream(Blob, long)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBinaryStream_Blob_Long__Test
@@ -76,7 +76,7 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
          * setBinaryStream(blob, pos)} method populates a real H2 {@link Blob} with the
          * {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real H2 Blob> through <setBinaryStream(blob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -105,7 +105,7 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
          * setBinaryStream(blob, pos)} method populates a real HSQLDB {@link Blob} with the
          * {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real HSQLDB Blob> through <setBinaryStream(blob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -138,7 +138,7 @@ class HelloWorld_SetBinaryStream_Blob_Long__Test
          * setBinaryStream(blob, pos)} method populates a real SQLite {@link Blob} with the
          * {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real SQLite Blob> through <setBinaryStream(blob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

@@ -65,7 +65,7 @@ import static org.mockito.Mockito.*;
  * @see ReactiveHelloWorldBytePublisher
  * @see ReactiveHelloWorldArrayPublisher
  */
-@DisplayName("publishers — TCK conformance")
+@DisplayName("ReactiveHelloWorld publishers / conformance")
 class ReactiveHelloWorldPublishers_Conformance_Test {
 
     /**
@@ -126,8 +126,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that Reactor's {@code Flux.from(ofBytes).collectList()} collects all twelve
          * bytes and completes.
          */
-        @DisplayName(
-                "should collect <12 bytes> and <onComplete> via <Flux.from(ofBytes).collectList()>")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() {
             final var list = Flux.from(new ReactiveHelloWorldBytePublisher(service))
@@ -140,7 +139,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that Reactor's {@code Flux.from(ofArrays).take(N).collectList()} collects
          * {@value #N} arrays.
          */
-        @DisplayName("should collect <N byte[]> via <Flux.from(ofArrays).take(N).collectList()>")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() {
             final var list = Flux.from(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
@@ -160,7 +159,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that RxJava 3's {@code Flowable.fromPublisher(ofBytes).toList()} collects all
          * twelve bytes.
          */
-        @DisplayName("should collect <12 bytes> via <Flowable.fromPublisher(ofBytes).toList()>")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() {
             final var list = Flowable.fromPublisher(new ReactiveHelloWorldBytePublisher(service))
@@ -173,8 +172,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that RxJava 3's {@code Flowable.fromPublisher(ofArrays).take(N).toList()}
          * collects {@value #N} arrays.
          */
-        @DisplayName(
-                "should collect <N byte[]> via <Flowable.fromPublisher(ofArrays).take(N).toList()>")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() {
             final var list = Flowable.fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
@@ -199,9 +197,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that Mutiny's {@code Multi.createFrom().publisher(...).collect().asList()}
          * collects all twelve bytes.
          */
-        @DisplayName("""
-                should collect <12 bytes> via
-                <Multi.createFrom().publisher(Flow.Publisher).collect().asList()>""")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() {
             final var list = io.smallrye.mutiny.Multi.createFrom()
@@ -216,9 +212,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that Mutiny's {@code Multi.createFrom().publisher(...).select().first(N)}
          * collects {@value #N} arrays.
          */
-        @DisplayName("""
-                should collect <N byte[]> via
-                <Multi.createFrom().publisher(...).select().first(N)>""")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() {
             final var list = io.smallrye.mutiny.Multi.createFrom()
@@ -245,7 +239,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that Helidon's {@code Multi.create(Flow.Publisher).collectList()} collects all
          * twelve bytes.
          */
-        @DisplayName("should collect <12 bytes> via <Multi.create(Flow.Publisher).collectList()>")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() {
             final var list = Multi.create(FlowAdapters.toFlowPublisher(
@@ -259,9 +253,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          * Verifies that Helidon's {@code Multi.create(Flow.Publisher).limit(N).collectList()}
          * collects {@value #N} arrays.
          */
-        @DisplayName("""
-                should collect <N byte[]> via
-                <Multi.create(Flow.Publisher).limit(N).collectList()>""")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() {
             final var list = Multi.create(FlowAdapters.toFlowPublisher(
@@ -308,8 +300,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName(
-                "should collect <12 bytes> via <Source.fromPublisher(ofBytes).runWith(Sink.seq())>")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() throws Exception {
             final var list = akka.stream.javadsl.Source
@@ -326,9 +317,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should collect <N byte[]> via
-                <Source.fromPublisher(ofArrays).take(N).runWith(Sink.seq())>""")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() throws Exception {
             final var list = akka.stream.javadsl.Source
@@ -378,8 +367,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName(
-                "should collect <12 bytes> via <Source.fromPublisher(ofBytes).runWith(Sink.seq())>")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() throws Exception {
             final var list = org.apache.pekko.stream.javadsl.Source
@@ -396,9 +384,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should collect <N byte[]> via
-                <Source.fromPublisher(ofArrays).take(N).runWith(Sink.seq())>""")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() throws Exception {
             final var list = org.apache.pekko.stream.javadsl.Source
@@ -448,7 +434,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should collect <12 bytes> and <end> via <ReactiveReadStream> over <ofBytes>")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() throws Exception {
             assertBytes(collect(new ReactiveHelloWorldBytePublisher(service), 0));
@@ -460,7 +446,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should collect the first <N byte[]> via <ReactiveReadStream> over <ofArrays>")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() throws Exception {
             assertArrays(collect(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)), N));
@@ -521,9 +507,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should collect <12 bytes> and <onComplete>
-                when the <Flow.Subscriber> requests <Long.MAX_VALUE>""")
+        @DisplayName("ofBytes")
         @Test
         void ofBytes__() throws Exception {
             assertBytes(collect(new ReactiveHelloWorldBytePublisher(service), 0));
@@ -535,7 +519,7 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should collect <N byte[]> when the <Flow.Subscriber> cancels after <N> items")
+        @DisplayName("ofArrays")
         @Test
         void ofArrays__() throws Exception {
             assertArrays(collect(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)), N));

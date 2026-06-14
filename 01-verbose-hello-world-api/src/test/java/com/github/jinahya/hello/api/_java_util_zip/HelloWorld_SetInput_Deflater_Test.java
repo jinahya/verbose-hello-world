@@ -45,7 +45,7 @@ class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#setInput(Deflater) setInput(deflater)} method throws a
      * {@link NullPointerException} when the {@code deflater} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <deflater> argument is <null>")
+    @DisplayName("throws NPE / deflater is null")
     @Test
     void _ThrowNullPointerException_DeflaterIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -61,7 +61,7 @@ class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
      * {@link Deflater#setInput(byte[]) deflater.setInput(array)}, and returns the
      * {@code deflater}.
      */
-    @DisplayName("should invoke <set(byte[12])> and pass the array to <deflater.setInput>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

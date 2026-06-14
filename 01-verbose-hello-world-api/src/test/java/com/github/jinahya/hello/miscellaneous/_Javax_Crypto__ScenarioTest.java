@@ -26,12 +26,15 @@ import org.junit.jupiter.api.*;
 /**
  * A class for exploring {@code javax.crypto} integration scenarios.
  */
+@DisplayName("javax.crypto / scenario")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto__ScenarioTest {
 
+    @DisplayName("scenario 1")
     @Nested
     class Scenario1_Test {
 
+        @DisplayName("happy path")
         @Test
         void __() {
             // Alice and Bob both have their keypairs
@@ -41,9 +44,11 @@ class _Javax_Crypto__ScenarioTest {
         }
     }
 
+    @DisplayName("scenario 2")
     @Nested
     class Scenario2_Test {
 
+        @DisplayName("happy path")
         @Test
         void __() {
             // Alice and Bob both have their keypairs

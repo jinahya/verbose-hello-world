@@ -7,8 +7,8 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.miscellaneous._Java_Lang_Reflect_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Lang_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
+import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.toSimplifedString;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -36,8 +36,8 @@ public final class _Java_Util_Concurrent_SubmissionPublisher_TestUtils {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static MockedConstruction<SubmissionPublisher> loggingSubmissionPublisherConstruction() {
-        // mock -> its logging-spy sibling; populated by the initializer, read by the default answer
-        // (which fires for every unstubbed method call on the mock — submit/close/hasSubscribers/…).
+        // mock -> its off-thread real sibling; populated by the initializer, read by the default
+        // answer (which fires for every unstubbed call — submit/close/hasSubscribers/...).
         final Map<Object, SubmissionPublisher<Object>> siblings = new IdentityHashMap<>();
         return mockConstruction(
                 SubmissionPublisher.class,
@@ -59,40 +59,32 @@ public final class _Java_Util_Concurrent_SubmissionPublisher_TestUtils {
                                     throw new AssertionError(roe);
                                 }
                             }).join();
-                    // route subscribe through loggingPublisher so the inner subscribe is logged
-                    // by the shared helper. NOTE: Mockito's spiedInstance creates a *sibling* of
-                    // `real` with copied state — operations on the spy use the spy's own state,
-                    // not `real`'s — so every method call on the mock must hit this same spy.
-                    final var logging = loggingPublisher(real);
-                    siblings.put(mock, logging);
-                    // subscribe is the only call that needs custom handling: wrap the incoming
-                    // subscriber so its subscription's request(n)/cancel() are logged. Every other
-                    // method (submit/close/closeExceptionally/hasSubscribers/...) falls through to
-                    // the default answer above and is forwarded to `logging` unchanged.
+                    siblings.put(mock, real);
+                    final String mockId = toSimplifedString(mock);
+                    // subscribe(...) is the only call that needs custom handling: log with the
+                    // mock's own identity (so reads consistent with the test's `publisher`), then
+                    // register a sub-wrapping forwarder with the real publisher so the subscriber
+                    // sees a logging Subscription. Every other method (submit/close/...) falls
+                    // through to the default answer and is forwarded to `real` unchanged.
                     doAnswer(i -> { // @formatter:off
                         final Flow.Subscriber<Object> subscriber = i.getArgument(0);
-                        logging.subscribe(new Flow.Subscriber<>() {
+                        log.debug("{}.subscribe({})", mockId, toSimplifedString(subscriber));
+                        real.subscribe(new Flow.Subscriber<>() {
                             @Override public void onSubscribe(final Flow.Subscription s) {
                                 subscriber.onSubscribe(new Flow.Subscription() {
                                     @Override public void request(final long n) {
-                                        log.debug("{}.request({})", toSimplifedString(s), n);
+                                        log.debug("{}.request({})", toSimplifedString(this), n);
                                         s.request(n);
                                     }
                                     @Override public void cancel() {
-                                        log.debug("{}.cancel()", toSimplifedString(s));
+                                        log.debug("{}.cancel()", toSimplifedString(this));
                                         s.cancel();
                                     }
                                 });
                             }
-                            @Override public void onNext(final Object item)  {
-                                subscriber.onNext(item);
-                            }
-                            @Override public void onError(final Throwable t) {
-                                subscriber.onError(t);
-                            }
-                            @Override public void onComplete() {
-                                subscriber.onComplete();
-                            }
+                            @Override public void onNext(final Object item)  { subscriber.onNext(item); }
+                            @Override public void onError(final Throwable t) { subscriber.onError(t); }
+                            @Override public void onComplete() { subscriber.onComplete(); }
                         });
                         return null;
                     }).when(mock).subscribe(any()); // @formatter:on

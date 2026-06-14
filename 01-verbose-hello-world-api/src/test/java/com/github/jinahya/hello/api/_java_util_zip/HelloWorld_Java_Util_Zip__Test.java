@@ -63,9 +63,7 @@ class HelloWorld_Java_Util_Zip__Test extends HelloWorld__Test {
          * {@link HelloWorld#write(OutputStream) write(stream)} into a {@link ZipOutputStream}
          * round-trips through {@link ZipInputStream}.
          */
-        @DisplayName("""
-                should round-trip a <hello, world> entry
-                through <ZipOutputStream> and <ZipInputStream>""")
+        @DisplayName("ZipInputStream")
         @Test
         void __ZipInputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -94,8 +92,7 @@ class HelloWorld_Java_Util_Zip__Test extends HelloWorld__Test {
          * {@link HelloWorld#write(OutputStream) write(stream)} into a file-backed
          * {@link ZipOutputStream} round-trips through {@link ZipFile}.
          */
-        @DisplayName(
-                "should round-trip a <hello, world> entry through <ZipOutputStream> and <ZipFile>")
+        @DisplayName("ZipFile")
         @Test
         void __ZipFile() throws IOException {
             // ----------------------------------------------------------------------------- given

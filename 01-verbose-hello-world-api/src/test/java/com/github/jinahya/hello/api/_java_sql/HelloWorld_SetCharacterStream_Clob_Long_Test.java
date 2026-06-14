@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Clob#setCharacterStream(long)
  */
-@DisplayName("setCharacterStream(clob, pos)")
+@DisplayName("HelloWorld.setCharacterStream(Clob, long)")
 @Slf4j
 class HelloWorld_SetCharacterStream_Clob_Long_Test
         extends HelloWorld__Test {
@@ -50,7 +50,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
      * setCharacterStream(clob, pos)} method throws a {@link NullPointerException} when the
      * {@code clob} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
+    @DisplayName("throws NPE / clob is null")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -67,7 +67,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
      * setCharacterStream(clob, pos)} method throws an {@link IllegalArgumentException} when the
      * {@code pos} argument is not positive.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
+    @DisplayName("throws IAE / pos is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -89,7 +89,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
      * obtained from {@link Clob#setCharacterStream(long) clob.setCharacterStream(pos)}, and returns
      * the {@code clob}.
      */
-    @DisplayName("should invoke <write(clob.setCharacterStream(pos))>, and return the <clob>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given

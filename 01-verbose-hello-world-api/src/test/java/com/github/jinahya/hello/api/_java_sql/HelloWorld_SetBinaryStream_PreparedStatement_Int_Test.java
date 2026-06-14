@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
  */
-@DisplayName("setBinaryStream(statement, index)")
+@DisplayName("HelloWorld.setBinaryStream(PreparedStatement, int)")
 @Slf4j
 class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
         extends HelloWorld__Test {
@@ -53,7 +53,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
      * setBinaryStream(statement, index)} method throws a {@link NullPointerException} when the
      * {@code statement} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
+    @DisplayName("throws NPE / statement is null")
     @Test
     void _ThrowNullPointerException_PreparedStatementIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -73,7 +73,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
      * setBinaryStream(statement, index)} method throws an {@link IllegalArgumentException} when the
      * {@code index} argument is not positive.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
+    @DisplayName("throws IAE / index is not positive")
     @Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -95,8 +95,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
      * stream)} with a stream that yields the {@value HelloWorld#BYTES} bytes, and returns the
      * {@code statement}.
      */
-    @DisplayName(
-            "should invoke <statement.setBinaryStream(index, stream)>, and return the <statement>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given

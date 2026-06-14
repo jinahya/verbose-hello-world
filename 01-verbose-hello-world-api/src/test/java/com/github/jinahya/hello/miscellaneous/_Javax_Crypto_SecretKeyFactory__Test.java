@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#secretkeyfactory-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; SecretKeyFactory Algorithms</a>
  */
-@DisplayName("SecretKeyFactory")
+@DisplayName("javax.crypto.SecretKeyFactory")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_SecretKeyFactory__Test {
 
@@ -79,7 +79,7 @@ class _Javax_Crypto_SecretKeyFactory__Test {
      * the JDK 26 standard names page ({@code AES}, {@code ARCFOUR}, {@code ChaCha20}, {@code DES},
      * {@code DESede}). {@code Generic} (PKCS#11-only) is omitted.
      */
-    @DisplayName("Symmetric direct")
+    @DisplayName("symmetric direct")
     @Nested
     class Symmetric_Test {
 
@@ -232,7 +232,7 @@ class _Javax_Crypto_SecretKeyFactory__Test {
              * @param algorithm the JCE algorithm name.
              * @throws Exception if any error occurs.
              */
-            @DisplayName("should generate a deterministic key via the given <legacy PBE>")
+            @DisplayName("legacy PBE")
             @ValueSource(strings = {
                     "PBEWithMD5AndDES",
                     "PBEWithMD5AndTripleDES",
@@ -278,7 +278,7 @@ class _Javax_Crypto_SecretKeyFactory__Test {
              * @param algorithm the JCE algorithm name.
              * @throws Exception if any error occurs.
              */
-            @DisplayName("should generate a deterministic key via the given <PBE+Hmac+AES>")
+            @DisplayName("PBE+Hmac+AES")
             @ValueSource(strings = {
                     "PBEWithHmacSHA1AndAES_128",
                     "PBEWithHmacSHA1AndAES_256",
@@ -336,7 +336,7 @@ class _Javax_Crypto_SecretKeyFactory__Test {
          * @param algorithm the JCE algorithm name.
          * @throws Exception if any error occurs.
          */
-        @DisplayName("should derive a deterministic hash via the given <PBKDF2WithHmac*>")
+        @DisplayName("PBKDF2WithHmac*")
         @ValueSource(strings = {
                 "PBKDF2WithHmacSHA1",
                 "PBKDF2WithHmacSHA224",

@@ -40,7 +40,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel)")
+@DisplayName("HelloWorld.write(AsynchronousByteChannel) / extras")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
@@ -71,7 +71,7 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> to an <echo server> over an <IPv4> address")
+        @DisplayName("INET")
         @Test
         void __INET() throws Exception {
             try (final var server = AsynchronousServerSocketChannel.open()) {
@@ -119,7 +119,7 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> to an <echo server> over an <IPv6> address")
+        @DisplayName("INET6")
         @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
                                   disabledReason = "IPv6 disabled by preferIPv4Stack=true")
         @Test
@@ -167,8 +167,7 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
          * Verifies that the method writes {@code hello-world-bytes} to an echo server over a UNIX
          * domain address.
          */
-        @DisplayName(
-                "should write <hello-world-bytes> to an <echo server> over a <UNIX domain> address")
+        @DisplayName("UNIX")
         @Disabled("AsynchronousServerSocketChannel does not support UNIX domain")
         @Test
         void __UNIX() {

@@ -71,9 +71,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes> via <Single.create(CompletionStage)>
-                from <AsynchronousHelloWorld.applyAsync>""")
+        @DisplayName("Single.create(CompletionStage)")
         @Test
         void __create_completionStage() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -90,7 +88,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should return <BYTES> via <Single.just(...).map(byte[]::length)>")
+        @DisplayName("Single.just + map")
         @Test
         void __map() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -113,7 +111,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.just(byte[]...)>")
+        @DisplayName("Multi.just(varargs)")
         @Test
         void __just_varargs() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -138,7 +136,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.create(Iterable)>")
+        @DisplayName("Multi.create(Iterable)")
         @Test
         void __from_iterable() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -162,7 +160,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.create(Stream)>")
+        @DisplayName("Multi.create(Stream)")
         @Test
         void __from_stream() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -186,7 +184,7 @@ class HelloWorldReactive_Helidon_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.singleton(byte[])>")
+        @DisplayName("Multi.singleton")
         @Test
         void __singleton() throws Exception {
             // -------------------------------------------------------------------------- given/when

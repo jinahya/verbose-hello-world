@@ -23,7 +23,7 @@ package com.github.jinahya.hello.api._java_nio_file;
 import com.github.jinahya.hello.api.*;
 import org.junit.jupiter.api.*;
 
-@DisplayName("append(path, attachment)")
+@DisplayName("ExecutorHelloWorld.append(Path, Attachment)")
 class ExecutorHelloWorld_Append_Path_Attachment_Test
         extends AsynchronousHelloWorld_Append_Path_Attachment_Test<
         ExecutorHelloWorld<HelloWorld>

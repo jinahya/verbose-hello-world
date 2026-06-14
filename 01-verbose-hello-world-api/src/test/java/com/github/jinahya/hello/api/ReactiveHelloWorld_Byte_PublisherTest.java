@@ -60,7 +60,7 @@ import static org.mockito.Mockito.*;
  * @see ReactiveHelloWorld__PublisherTest
  * @see ReactiveHelloWorldBytePublisher
  */
-@DisplayName("byte publisher")
+@DisplayName("ReactiveHelloWorld / byte Publisher")
 @Slf4j
 class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__PublisherTest<Byte> {
 
@@ -86,8 +86,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * Verifies that the publisher emits exactly {@value HelloWorld#BYTES} elements followed by
      * {@code onComplete} when the subscriber calls {@code request(12)}.
      */
-    @DisplayName(
-            "should emit <12> elements and <onComplete> when the subscriber calls <request(12)>")
+    @DisplayName("exactly 12 + onComplete / request(12)")
     @Test
     void __exactly12() {
         // ----------------------------------------------------------------------------------- given
@@ -121,9 +120,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * Verifies that the publisher emits {@code n} elements with no {@code onComplete} signal when
      * the subscriber calls {@code request(n)} with {@code n} in {@code [1, 12)}.
      */
-    @DisplayName("""
-            should emit <n> elements with no <onComplete>
-            when the subscriber calls <request(n)> with <n> in <[1, 12)>""")
+    @DisplayName("exactly n / request(n in [1, 12))")
     @Test
     void __randomLessThan12() { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -157,9 +154,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * Rule 1.2 (a publisher MUST NOT signal more {@code onNext} signals than the cumulative
      * demand).
      */
-    @DisplayName("""
-            should emit <12> elements and <onComplete>
-            when the subscriber calls <request(n)> with <n > 12>""")
+    @DisplayName("exactly 12 + onComplete / request(n > 12)")
     @Test
     void __requestMoreThan12() {
         // ----------------------------------------------------------------------------------- given
@@ -193,9 +188,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * {@code request(5)} and {@code request(7)} from {@code onSubscribe} together unlock all
      * {@value HelloWorld#BYTES} elements followed by {@code onComplete}.
      */
-    @DisplayName("""
-            should accumulate demand across multiple <request(n)> calls
-            (request(5) + request(7) → 12 elements and <onComplete>)""")
+    @DisplayName("cumulative demand")
     @Test
     void __cumulativeDemand() {
         // ----------------------------------------------------------------------------------- given
@@ -225,9 +218,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * one byte at a time and ultimately receives all {@value HelloWorld#BYTES} bytes followed by
      * {@code onComplete}.
      */
-    @DisplayName("""
-            should accept reentrant <request(1)> calls from inside <onNext>
-            (Rules 3.2 / 3.3) and emit all <12> elements and <onComplete>""")
+    @DisplayName("reentrant request / one-at-a-time")
     @Test
     void __oneAtATime() {
         // ----------------------------------------------------------------------------------- given
@@ -258,9 +249,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * Verifies that {@code cancel} called from inside {@code onSubscribe} (Rule 3.7) suppresses
      * every subsequent signal — no {@code onNext}, {@code onError}, or {@code onComplete} fires.
      */
-    @DisplayName("""
-            should signal no <onNext>/<onError>/<onComplete>
-            when <cancel> is called from inside <onSubscribe> (Rule 3.7)""")
+    @DisplayName("cancel in onSubscribe")
     @Test
     void __cancelInOnSubscribe() {
         // ----------------------------------------------------------------------------------- given
@@ -284,7 +273,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * {@code onSubscribe} cause no exceptions and yield no subscriber signals beyond
      * {@code onSubscribe}.
      */
-    @DisplayName("should treat repeated <cancel> calls idempotently (Rule 3.5)")
+    @DisplayName("cancel idempotent")
     @Test
     void __cancelIdempotent() {
         // ----------------------------------------------------------------------------------- given
@@ -313,7 +302,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * {@value HelloWorld#BYTES} elements followed by exactly one {@code onComplete} and no extra
      * signals.
      */
-    @DisplayName("should ignore a <cancel> issued from inside <onComplete> (Rule 3.6)")
+    @DisplayName("cancel after onComplete")
     @Test
     void __cancelAfterComplete() {
         // ----------------------------------------------------------------------------------- given
@@ -343,9 +332,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      *
      * @throws InterruptedException if the joining threads are interrupted.
      */
-    @DisplayName("""
-            should signal neither <onError> nor <onComplete>
-            when <request(1)> is called repeatedly with concurrent <cancel>""")
+    @DisplayName("concurrent request + cancel")
     @Test
     void __cancel() throws InterruptedException {
         // ----------------------------------------------------------------------------------- given
@@ -391,7 +378,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * receives its own fresh {@value HelloWorld#BYTES}-element stream followed by
      * {@code onComplete}, satisfying Rule 1.11 (a publisher MAY support multi-subscription).
      */
-    @DisplayName("should serve sequential subscribers independently (Rule 1.11)")
+    @DisplayName("sequential subscribers")
     @Test
     void __multipleSubscribers() {
         // ----------------------------------------------------------------------------------- given
@@ -427,7 +414,7 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
      * Verifies that {@link Publisher#subscribe(Subscriber)} throws a {@link NullPointerException}
      * when invoked with a {@code null} subscriber.
      */
-    @DisplayName("should throw <NullPointerException> when <subscribe> is invoked with <null>")
+    @DisplayName("throws NPE / subscriber is null")
     @Test
     void __subscriberIsNull() {
         // ----------------------------------------------------------------------------------- given

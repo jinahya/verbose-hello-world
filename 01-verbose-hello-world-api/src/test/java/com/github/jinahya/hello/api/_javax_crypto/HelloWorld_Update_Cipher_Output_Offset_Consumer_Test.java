@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  * {@link HelloWorld#update(Cipher, byte[], int, IntConsumer) update(cipher, output, outputOffset,
  * outputLengthConsumer)} method.
  */
-@DisplayName("update(Cipher, byte[], int, IntConsumer)")
+@DisplayName("update(cipher, output, outputOffset, outputLengthConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__Test {
@@ -48,7 +48,7 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
      * Verifies that the method throws a {@link NullPointerException} when the {@code cipher}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <cipher> argument is <null>")
+    @DisplayName("throws NPE / cipher is null")
     @Test
     void _ThrowNullPointerException_CipherIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,9 +66,7 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
      * Verifies that the method throws a {@link NullPointerException} when the {@code consumer}
      * argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <consumer> argument is <null>""")
+    @DisplayName("throws NPE / consumer is null")
     @Test
     void _ThrowNullPointerException_ConsumerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -87,9 +85,7 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
      * {@code cipher.update(array, 0, BYTES, output, outputOffset)}, forwards the result to the
      * {@code outputLengthConsumer}, and returns the {@code cipher}.
      */
-    @DisplayName("""
-            should invoke <cipher.update(array, 0, BYTES, output, outputOffset)>,
-            forward the result to the <outputLengthConsumer>, and return the <cipher>""")
+    @DisplayName("happy path")
     @Test
     void __() throws ShortBufferException {
         // ----------------------------------------------------------------------------------- given

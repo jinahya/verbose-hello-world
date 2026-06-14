@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
  * (Java 26)
  */
+@DisplayName("javax.crypto.SecretKeyFactory")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_SecretKeyFactory_Test {
 

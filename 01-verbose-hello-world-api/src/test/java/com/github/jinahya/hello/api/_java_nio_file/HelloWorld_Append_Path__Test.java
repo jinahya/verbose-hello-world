@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(path)")
+@DisplayName("HelloWorld.append(Path)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -61,7 +61,7 @@ class HelloWorld_Append_Path__Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method appends
      * {@value HelloWorld#BYTES} bytes to the end of a real {@link Path}.
      */
-    @DisplayName("should append <hello-world-bytes> to a real <Path>")
+    @DisplayName("happy path")
     @Test
     void __() throws Exception {
         final var path = Files.createTempFile(tempDir, null, null);

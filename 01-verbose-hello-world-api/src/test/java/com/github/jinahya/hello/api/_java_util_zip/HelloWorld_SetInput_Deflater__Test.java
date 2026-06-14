@@ -145,6 +145,7 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("Deflater")
     @Nested
     class Deflater_Test {
 
@@ -199,6 +200,7 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("DeflaterOutputStream")
     @Nested
     class DeflaterOutputStream_Test {
 
@@ -275,6 +277,7 @@ class HelloWorld_SetInput_Deflater__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("GZIPOutputStream")
     @Nested
     class GZIPOutputStream_Test {
 

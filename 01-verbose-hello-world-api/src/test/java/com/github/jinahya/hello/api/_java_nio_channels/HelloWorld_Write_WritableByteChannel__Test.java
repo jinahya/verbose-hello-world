@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel)")
+@DisplayName("HelloWorld.write(WritableByteChannel) / extras")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -80,7 +80,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <pipe>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             final var pipe = Pipe.open();
@@ -112,9 +112,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> through a <SocketChannel>
-                over a <loopback> address""")
+        @DisplayName("loopback")
         @Test
         void __() throws IOException {
             try (var server = ServerSocketChannel.open()) {
@@ -150,8 +148,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName(
-                "should write <hello-world-bytes> to an <echo server> over an <InetSocketAddress>")
+        @DisplayName("INET")
         @Test
         void __INET() throws IOException {
             try (var server = ServerSocketChannel.open(StandardProtocolFamily.INET)) {
@@ -184,8 +181,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName(
-                "should write <hello-world-bytes> to an <echo server> over an <Inet6Address>")
+        @DisplayName("INET6")
         @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
                                   disabledReason = "IPv6 disabled by preferIPv4Stack=true")
         @Test
@@ -220,9 +216,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> to an <echo server>
-                over a <UnixDomainSocketAddress>""")
+        @DisplayName("UNIX")
         @Test
         void __UNIX() throws IOException {
             try (var server = ServerSocketChannel.open(StandardProtocolFamily.UNIX)) {
