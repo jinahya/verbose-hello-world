@@ -138,9 +138,7 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
                 }
                 publisher.submit(array);
             }
-            if (!publisher.isClosed()) {
-                publisher.close();
-            }
+            publisher.close();
         });
     }
 
