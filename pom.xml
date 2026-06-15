@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -148,14 +149,14 @@
         <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-<!--        <version>1.5.34</version>-->
+        <!--        <version>1.5.34</version>-->
         <version>${version.ch.logback.classic}</version>
       </dependency>
-<!--      <dependency>&lt;!&ndash; pinned to match logback-classic above; the 1.5.34 POM transitively references 1.5.32 &ndash;&gt;-->
-<!--        <groupId>ch.qos.logback</groupId>-->
-<!--        <artifactId>logback-core</artifactId>-->
-<!--        <version>1.5.34</version>-->
-<!--      </dependency>-->
+      <!--      <dependency>&lt;!&ndash; pinned to match logback-classic above; the 1.5.34 POM transitively references 1.5.32 &ndash;&gt;-->
+      <!--        <groupId>ch.qos.logback</groupId>-->
+      <!--        <artifactId>logback-core</artifactId>-->
+      <!--        <version>1.5.34</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>com.dynatrace.hash4j</groupId>
         <artifactId>hash4j</artifactId>
@@ -250,6 +251,16 @@
         <version>${version.io.avaje}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.github.jinahya</groupId>
+        <artifactId>reactive-streams-tck-junit-jupiter</artifactId>
+        <version>0.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.jinahya</groupId>
+        <artifactId>reactive-streams-tck-flow-junit-jupiter</artifactId>
+        <version>0.0.4</version>
       </dependency>
       <dependency>
         <groupId>io.helidon</groupId>
@@ -394,6 +405,16 @@
         <artifactId>reactive-streams</artifactId>
         <version>${version.org.reactivestreams}</version>
       </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.reactivestreams</groupId>-->
+      <!--        <artifactId>reactive-streams-tck</artifactId>-->
+      <!--        <version>${version.org.reactivestreams}</version>-->
+      <!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>org.reactivestreams</groupId>-->
+      <!--        <artifactId>reactive-streams-tck-flow</artifactId>-->
+      <!--        <version>${version.org.reactivestreams}</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.reactivestreams</groupId>
         <artifactId>reactive-streams-flow-adapters</artifactId>

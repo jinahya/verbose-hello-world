@@ -77,6 +77,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>io.github.jinahya</groupId>
+      <artifactId>reactive-streams-tck-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.jinahya</groupId>
+      <artifactId>reactive-streams-tck-flow-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.helidon.common</groupId>
       <artifactId>helidon-common-reactive</artifactId>
       <scope>test</scope>
@@ -171,6 +181,16 @@
       <artifactId>reactive-streams-flow-adapters</artifactId>
       <scope>test</scope>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.reactivestreams</groupId>-->
+<!--      <artifactId>reactive-streams-tck</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.reactivestreams</groupId>-->
+<!--      <artifactId>reactive-streams-tck-flow</artifactId>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
