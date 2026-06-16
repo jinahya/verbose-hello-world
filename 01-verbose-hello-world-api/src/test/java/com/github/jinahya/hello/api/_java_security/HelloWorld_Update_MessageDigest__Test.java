@@ -22,7 +22,7 @@ package com.github.jinahya.hello.api._java_security;
 
 import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.miscellaneous._java_security.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.apache.commons.io.*;
@@ -40,9 +40,9 @@ import java.security.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestConstants.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_MessageDigest_TestConstants.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_MessageDigest_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_Security_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

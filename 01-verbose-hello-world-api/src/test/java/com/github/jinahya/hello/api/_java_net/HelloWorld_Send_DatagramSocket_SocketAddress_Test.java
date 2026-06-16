@@ -49,8 +49,8 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test
     static {
         try { // pin for imports
             Class.forName("org.mockito.ArgumentCaptor");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (final ClassNotFoundException cnfe) {
+            throw new RuntimeException(cnfe);
         }
     }
 

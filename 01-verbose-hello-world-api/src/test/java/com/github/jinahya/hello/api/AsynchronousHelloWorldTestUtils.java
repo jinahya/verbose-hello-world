@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.miscellaneous._org_mockito.*;
 import org.mockito.*;
 import org.mockito.stubbing.*;
 

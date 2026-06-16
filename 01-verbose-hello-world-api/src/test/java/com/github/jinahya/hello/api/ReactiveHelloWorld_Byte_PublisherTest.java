@@ -32,7 +32,7 @@ import java.util.concurrent.locks.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.api.ReactiveHelloWorld__PublisherTestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfReactiveStream.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfReactiveStream.*;
 import static java.util.Arrays.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;

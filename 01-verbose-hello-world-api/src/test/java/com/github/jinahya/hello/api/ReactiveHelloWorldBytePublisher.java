@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfReactiveStream.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfReactiveStream.*;
 
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the

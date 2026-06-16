@@ -35,7 +35,7 @@ import java.util.*;
 import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Cipher_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_Cipher_TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
