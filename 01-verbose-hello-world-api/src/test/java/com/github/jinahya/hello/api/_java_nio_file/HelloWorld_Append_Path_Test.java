@@ -46,6 +46,15 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_Path_Test extends HelloWorld__Test {
 
+    static {
+        try {
+            Class.forName("java.util.Arrays");
+            Class.forName("java.util.HashSet");
+        } catch (final ClassNotFoundException cnfe) {
+            throw new RuntimeException(cnfe);
+        }
+    }
+
     /**
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method throws a
      * {@link NullPointerException} when the {@code path} argument is {@code null}.
