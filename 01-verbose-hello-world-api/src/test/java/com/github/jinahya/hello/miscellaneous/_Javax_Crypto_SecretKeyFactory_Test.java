@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 
@@ -48,7 +48,7 @@ class _Javax_Crypto_SecretKeyFactory_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
+    @_LatestLTS
     @DisplayName("DESede")
     @Test
     void __DESede() throws Exception {
@@ -69,7 +69,7 @@ class _Javax_Crypto_SecretKeyFactory_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestJDK
+    @_LatestJDK
     @DisplayName("PBEWithHmacSHA256AndAES_128")
     @Test
     void __PBEWithHmacSHA256AndAES_128() throws Exception {
@@ -90,7 +90,7 @@ class _Javax_Crypto_SecretKeyFactory_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestJDK
+    @_LatestJDK
     @DisplayName("PBEWithHmacSHA256AndAES_256")
     @Test
     void __PBEWithHmacSHA256AndAES_256() throws Exception {
@@ -111,7 +111,7 @@ class _Javax_Crypto_SecretKeyFactory_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestJDK
+    @_LatestJDK
     @DisplayName("PBKDF2WithHmacSHA256")
     @Test
     void __PBKDF2WithHmacSHA256() throws Exception {

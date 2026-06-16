@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import org.jspecify.annotations.*;
 
 import javax.crypto.*;
@@ -102,15 +102,15 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Symmetric(key, cipher, params, null);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Symmetric AES_CBC_NoPadding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return AES_CBC_(keysize, "NoPadding");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Symmetric AES_CBC_PKCS5Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return AES_CBC_(keysize, "PKCS5Padding");
@@ -123,22 +123,22 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Symmetric(key, cipher, null, null);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Symmetric AES_ECB_NoPadding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return AES_ECB_(keysize, "NoPadding");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Symmetric AES_ECB_PKCS5Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return AES_ECB_(keysize, "PKCS5Padding");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Symmetric AES_GCM_NoPadding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         final var key = _Javax_Crypto_SecretKey_TestUtils.generateSecretKey("AES", keysize);
@@ -156,8 +156,8 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Symmetric(key, cipher, params, aad);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Symmetric ChaCha20_Poly1305()
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         final var key = _Javax_Crypto_SecretKey_TestUtils.generateSecretKey("ChaCha20", null);
@@ -185,13 +185,13 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Symmetric(key, cipher, params, null);
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Symmetric DESede_CBC_NoPadding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return DESede_CBC_(keysize, "NoPadding");
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Symmetric DESede_CBC_PKCS5Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return DESede_CBC_(keysize, "PKCS5Padding");
@@ -204,13 +204,13 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Symmetric(key, cipher, null, null);
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Symmetric DESede_ECB_NoPadding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return DESede_ECB_(keysize, "NoPadding");
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Symmetric DESede_ECB_PKCS5Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return DESede_ECB_(keysize, "PKCS5Padding");
@@ -235,14 +235,14 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Symmetric(key, cipher, params, null);
     }
 
-    @LatestJDK
+    @_LatestJDK
     public static Symmetric PBEWithHmacSHA256AndAES_128()
             throws NoSuchAlgorithmException, NoSuchPaddingException,
                    InvalidKeySpecException {
         return PBEWithHmacSHA256AndAES_(128);
     }
 
-    @LatestJDK
+    @_LatestJDK
     public static Symmetric PBEWithHmacSHA256AndAES_256()
             throws NoSuchAlgorithmException, NoSuchPaddingException,
                    InvalidKeySpecException {
@@ -256,21 +256,21 @@ public final class _Javax_Crypto_Cipher_TestUtils {
         return new Asymmetric(keyPair, cipher, null);
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Asymmetric RSA_ECB_PKCS1Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return RSA_ECB_(keysize, "PKCS1Padding");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Asymmetric RSA_ECB_OAEPWithSHA_1AndMGF1Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return RSA_ECB_(keysize, "OAEPWithSHA-1AndMGF1Padding");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Asymmetric RSA_ECB_OAEPWithSHA_256AndMGF1Padding(final int keysize)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         return RSA_ECB_(keysize, "OAEPWithSHA-256AndMGF1Padding");

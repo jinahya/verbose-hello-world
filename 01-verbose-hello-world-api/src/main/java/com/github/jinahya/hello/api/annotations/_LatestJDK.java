@@ -1,10 +1,10 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
  * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * Copyright (C) 2018 - 2023 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,22 @@ package com.github.jinahya.hello.api;
 import java.lang.annotation.*;
 
 /**
- * The {@link Repeatable} container annotation that holds multiple {@link LatestJDK} markers on the
- * same element.
+ * A source-only marker for declarations whose value, list, or shape reflects the latest (current)
+ * release of the Java platform, including non-LTS feature releases. Used on constants such as
+ * algorithm/transformation tables to flag which entries are mandated by the current JDK's API
+ * documentation.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see LatestJDK
+ * @see _LatestLTS
  */
 @Documented
-public @interface LatestJDKContainer {
+@Retention(RetentionPolicy.SOURCE)
+public @interface _LatestJDK {
 
     /**
-     * Returns the contained {@link LatestJDK} markers.
+     * An optional note (e.g., the JDK version number or a free-text qualifier).
      *
-     * @return the contained {@link LatestJDK} markers; never {@code null}.
+     * @return the note; defaults to an empty string.
      */
-    LatestJDK[] value();
+    String value() default "";
 }

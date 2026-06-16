@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 
 import java.security.*;
@@ -57,93 +57,93 @@ public final class _Java_Security_KeyPairGenerator_TestUtils {
         return generator.generateKeyPair();
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair DiffieHellman(final int keysize) throws NoSuchAlgorithmException {
         return generate("DiffieHellman", keysize);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair DSA(final int keysize) throws NoSuchAlgorithmException {
         return generate("DSA", keysize);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair RSA(final int keysize) throws NoSuchAlgorithmException {
         return generate("RSA", keysize);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair RSASSA_PSS(final int keysize) throws NoSuchAlgorithmException {
         return generate("RSASSA-PSS", keysize);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair EC(final String stdName)
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return generate("EC", new ECGenParameterSpec(stdName));
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair X25519() throws NoSuchAlgorithmException {
         return generate("X25519");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair X448() throws NoSuchAlgorithmException {
         return generate("X448");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair Ed25519() throws NoSuchAlgorithmException {
         return generate("Ed25519");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair Ed448() throws NoSuchAlgorithmException {
         return generate("Ed448");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair ML_DSA_44() throws NoSuchAlgorithmException {
         return generate("ML-DSA-44");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair ML_DSA_65() throws NoSuchAlgorithmException {
         return generate("ML-DSA-65");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair ML_DSA_87() throws NoSuchAlgorithmException {
         return generate("ML-DSA-87");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair ML_KEM_512() throws NoSuchAlgorithmException {
         return generate("ML-KEM-512");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair ML_KEM_768() throws NoSuchAlgorithmException {
         return generate("ML-KEM-768");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static KeyPair ML_KEM_1024() throws NoSuchAlgorithmException {
         return generate("ML-KEM-1024");
     }

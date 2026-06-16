@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import java.util.*;
 
@@ -50,7 +50,7 @@ public final class _Javax_Crypto_Cipher_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
      * (Java 25)
      */
-    @LatestLTS
+    @_LatestLTS
     public static final Map<String, List<Object>> REQUIRED_TRANSFORMATIONS_AND_KEYSIZES_LATEST_LTS =
             Map.ofEntries(
                     Map.entry("AES/CBC/NoPadding", List.of(128)),
@@ -105,7 +105,7 @@ public final class _Javax_Crypto_Cipher_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
      * (Java 26)
      */
-    @LatestJDK
+    @_LatestJDK
     public static final Map<String, List<Object>> REQUIRED_TRANSFORMATIONS_AND_KEYSIZES_LATEST_JDK =
             Map.ofEntries(
                     Map.entry("AES/CBC/NoPadding", List.of(128)),

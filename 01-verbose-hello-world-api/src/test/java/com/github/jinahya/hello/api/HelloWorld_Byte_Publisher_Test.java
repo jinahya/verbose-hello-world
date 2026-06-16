@@ -174,9 +174,10 @@ class HelloWorld_Byte_Publisher_Test extends HelloWorld__Publisher_Test<Byte> {
     }
 
     /**
-     * Verifies that the publisher stops emission after the subscriber {@linkplain
-     * Flow.Subscription#cancel() cancels} mid-stream — at most {@value HelloWorld#BYTES} elements
-     * arrive, with neither {@code onComplete} nor {@code onError}.
+     * Verifies that the publisher stops emission after the subscriber
+     * {@linkplain Flow.Subscription#cancel() cancels} mid-stream — at most
+     * {@value HelloWorld#BYTES} elements arrive, with neither {@code onComplete} nor
+     * {@code onError}.
      *
      * @throws Exception if an error occurs.
      */

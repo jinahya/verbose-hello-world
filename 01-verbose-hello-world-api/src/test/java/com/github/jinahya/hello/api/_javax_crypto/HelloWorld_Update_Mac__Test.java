@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._javax_crypto;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018">RFC 8018 &mdash; PKCS #5:
  * Password-Based Cryptography Specification Version 2.1 (PBE)</a>
  */
+@_NotForPublishing
 @DisplayName("update(mac)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -100,8 +102,8 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("HmacSHA1")
     @Test
     void __HmacSHA1() throws Exception {
@@ -134,8 +136,8 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("HmacSHA224")
     @Test
     void __HmacSHA224() throws Exception {
@@ -168,8 +170,8 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("HmacSHA256")
     @Test
     void __HmacSHA256() throws Exception {
@@ -202,8 +204,8 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("HmacSHA384")
     @Test
     void __HmacSHA384() throws Exception {
@@ -236,8 +238,8 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("HmacSHA512")
     @Test
     void __HmacSHA512() throws Exception {

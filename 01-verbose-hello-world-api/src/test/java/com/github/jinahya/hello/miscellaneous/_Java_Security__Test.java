@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
@@ -30,6 +31,7 @@ import static com.github.jinahya.hello.miscellaneous._Java_Security_Provider_Tes
 /**
  * A class for testing {@link Security}.
  */
+@_NotForPublishing
 @DisplayName("java.security")
 @Slf4j
 class _Java_Security__Test {

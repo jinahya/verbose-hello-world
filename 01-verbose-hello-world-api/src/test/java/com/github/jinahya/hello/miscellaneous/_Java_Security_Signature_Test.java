@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -77,8 +77,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the DSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA1withDSA")
     @ValueSource(ints = {1024})
     @ParameterizedTest
@@ -114,8 +114,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the DSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA256withDSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -150,8 +150,8 @@ class _Java_Security_Signature_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA256withECDSA")
     @Test
     void __SHA256withECDSA() throws Exception {
@@ -185,8 +185,8 @@ class _Java_Security_Signature_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA384withECDSA")
     @Test
     void __SHA384withECDSA() throws Exception {
@@ -221,8 +221,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the RSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA1withRSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -258,8 +258,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the RSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA256withRSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -295,8 +295,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the RSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA384withRSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -332,8 +332,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the RSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("RSASSA-PSS with SHA-256")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -369,8 +369,8 @@ class _Java_Security_Signature_Test {
      * @param keysize the RSA key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("RSASSA-PSS with SHA-384")
     @ValueSource(ints = {2048})
     @ParameterizedTest

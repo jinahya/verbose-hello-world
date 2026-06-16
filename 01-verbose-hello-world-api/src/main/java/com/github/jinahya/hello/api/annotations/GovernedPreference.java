@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
@@ -35,7 +35,7 @@ import java.lang.annotation.*;
  * <p>Typical use is on test methods, constants, or factory members that enumerate competing ways
  * of reaching the same end (DH group sources, ECDH curve families, XDH API entry points, cipher
  * transformation variants, &hellip;) to flag which one is the modern default versus legacy / niche
- * alternatives. Unlike {@link LatestLTS} and {@link LatestJDK} &mdash; which document
+ * alternatives. Unlike {@link _LatestLTS} and {@link _LatestJDK} &mdash; which document
  * <em>what the JDK platform itself requires</em> &mdash; this marker carries the author's
  * <em>editorial</em> recommendation among options that are all already valid.
  *
@@ -62,10 +62,8 @@ import java.lang.annotation.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see GovernedPreferenceContainer
- * @see LatestLTS
- * @see LatestLTSContainer
- * @see LatestJDK
- * @see LatestJDKContainer
+ * @see _LatestLTS
+ * @see _LatestJDK
  */
 @Documented
 @Repeatable(GovernedPreferenceContainer.class)

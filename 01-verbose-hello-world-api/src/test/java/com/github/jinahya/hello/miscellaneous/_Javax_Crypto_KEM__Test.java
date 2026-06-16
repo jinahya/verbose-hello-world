@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -52,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf">NIST FIPS 203 &mdash;
  * Module-Lattice-Based Key-Encapsulation Mechanism Standard</a>
  */
+@_NotForPublishing
 @DisplayName("javax.crypto.KEM")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KEM__Test {

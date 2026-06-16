@@ -93,8 +93,8 @@ class ReactiveHelloWorld_Byte_Publisher_TckTest extends PublisherVerification<By
 
     private static final String REASON_FIXED_12 =
             "ReactiveHelloWorldBytePublisher always emits exactly " + HelloWorld.BYTES
-                    + " bytes then onComplete; createPublisher(N) cannot truncate to N != "
-                    + HelloWorld.BYTES + " without wrapping.";
+            + " bytes then onComplete; createPublisher(N) cannot truncate to N != "
+            + HelloWorld.BYTES + " without wrapping.";
 
     @Override
     @Test
@@ -160,7 +160,7 @@ class ReactiveHelloWorld_Byte_Publisher_TckTest extends PublisherVerification<By
 
     private static final String REASON_TRUSTS_REQUEST =
             "ReactiveHelloWorldBytePublisher's class javadoc documents that it trusts well-behaved "
-                    + "externals and does not defend against request(n <= 0) (Rule 3.9).";
+            + "externals and does not defend against request(n <= 0) (Rule 3.9).";
 
     @Override
     @Test

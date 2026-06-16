@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#secretkeyfactory-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; SecretKeyFactory Algorithms</a>
  */
+@_NotForPublishing
 @DisplayName("javax.crypto.SecretKeyFactory")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_SecretKeyFactory__Test {

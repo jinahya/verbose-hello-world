@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -56,7 +56,7 @@ public final class _Javax_Crypto_SecretKeyFactory_TestUtils {
         return password;
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Raw DES()
             throws NoSuchAlgorithmException, InvalidKeyException {
         final var factory = SecretKeyFactory.getInstance("DES");
@@ -66,7 +66,7 @@ public final class _Javax_Crypto_SecretKeyFactory_TestUtils {
         return new Raw(factory, spec);
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Raw DESede()
             throws NoSuchAlgorithmException, InvalidKeyException {
         final var factory = SecretKeyFactory.getInstance("DESede");
@@ -76,7 +76,7 @@ public final class _Javax_Crypto_SecretKeyFactory_TestUtils {
         return new Raw(factory, spec);
     }
 
-    @LatestLTS
+    @_LatestLTS
     public static Pbe PBEWithMD5AndDES()
             throws NoSuchAlgorithmException {
         final var factory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
@@ -84,7 +84,7 @@ public final class _Javax_Crypto_SecretKeyFactory_TestUtils {
         return new Pbe(factory, spec);
     }
 
-    @LatestJDK
+    @_LatestJDK
     public static Pbe PBEWithHmacSHA256AndAES_128()
             throws NoSuchAlgorithmException {
         final var factory = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
@@ -92,7 +92,7 @@ public final class _Javax_Crypto_SecretKeyFactory_TestUtils {
         return new Pbe(factory, spec);
     }
 
-    @LatestJDK
+    @_LatestJDK
     public static Pbe PBEWithHmacSHA256AndAES_256()
             throws NoSuchAlgorithmException {
         final var factory = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_256");
@@ -109,36 +109,36 @@ public final class _Javax_Crypto_SecretKeyFactory_TestUtils {
         return new Pbe(factory, spec);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Pbe PBKDF2WithHmacSHA1(final int keylen)
             throws NoSuchAlgorithmException {
         return PBKDF2WithHmacSHA_("SHA1", keylen);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Pbe PBKDF2WithHmacSHA224(final int keylen)
             throws NoSuchAlgorithmException {
         return PBKDF2WithHmacSHA_("SHA224", keylen);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Pbe PBKDF2WithHmacSHA256(final int keylen)
             throws NoSuchAlgorithmException {
         return PBKDF2WithHmacSHA_("SHA256", keylen);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Pbe PBKDF2WithHmacSHA384(final int keylen)
             throws NoSuchAlgorithmException {
         return PBKDF2WithHmacSHA_("SHA384", keylen);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Pbe PBKDF2WithHmacSHA512(final int keylen)
             throws NoSuchAlgorithmException {
         return PBKDF2WithHmacSHA_("SHA512", keylen);

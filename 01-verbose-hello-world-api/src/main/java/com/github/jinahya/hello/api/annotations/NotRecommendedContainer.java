@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
@@ -26,15 +26,13 @@ import java.lang.annotation.*;
  * The {@link Repeatable} container annotation that holds multiple {@link NotRecommended} markers on
  * the same element. Each contained marker records one standards-body verdict; stacking is useful
  * when more than one authority discourages the same algorithm / parameter (e.g., both NIST and IETF
- * flag the same DH group). Parallel to {@link LatestLTSContainer}, {@link LatestJDKContainer}, and
- * {@link GovernedPreferenceContainer}, which serve the same role for their respective markers.
+ * flag the same DH group). Parallel to {@link GovernedPreferenceContainer}, which serves the same
+ * role for its respective marker.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see NotRecommended
- * @see LatestLTS
- * @see LatestLTSContainer
- * @see LatestJDK
- * @see LatestJDKContainer
+ * @see _LatestLTS
+ * @see _LatestJDK
  * @see GovernedPreference
  * @see GovernedPreferenceContainer
  */

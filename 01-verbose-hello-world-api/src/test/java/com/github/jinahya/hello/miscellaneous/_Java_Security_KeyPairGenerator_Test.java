@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -63,8 +63,8 @@ class _Java_Security_KeyPairGenerator_Test {
      * @param keysize the key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("DiffieHellman")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -80,8 +80,8 @@ class _Java_Security_KeyPairGenerator_Test {
      * @param keysize the key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("DSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -97,8 +97,8 @@ class _Java_Security_KeyPairGenerator_Test {
      * @param keysize the key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("RSA")
     @ValueSource(ints = {2048, 4096})
     @ParameterizedTest
@@ -114,8 +114,8 @@ class _Java_Security_KeyPairGenerator_Test {
      * @param keysize the key size, in bits.
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("RSASSA-PSS")
     @ValueSource(ints = {2048, 4096})
     @ParameterizedTest
@@ -131,8 +131,8 @@ class _Java_Security_KeyPairGenerator_Test {
      * @param stdName the standard curve name (e.g., {@code "secp256r1"}).
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("EC")
     @ValueSource(strings = {"secp256r1", "secp384r1", "secp521r1"})
     @ParameterizedTest
@@ -147,8 +147,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("X25519")
     @Test
     void __X25519() throws Exception {
@@ -162,8 +162,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("X448")
     @Test
     void __X448() throws Exception {
@@ -177,8 +177,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("Ed25519")
     @Test
     void __Ed25519() throws Exception {
@@ -192,8 +192,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("Ed448")
     @Test
     void __Ed448() throws Exception {
@@ -207,8 +207,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("ML-DSA-44")
     @Test
     void __ML_DSA_44() throws Exception {
@@ -222,8 +222,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("ML-DSA-65")
     @Test
     void __ML_DSA_65() throws Exception {
@@ -237,8 +237,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("ML-DSA-87")
     @Test
     void __ML_DSA_87() throws Exception {
@@ -252,8 +252,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("ML-KEM-512")
     @Test
     void __ML_KEM_512() throws Exception {
@@ -267,8 +267,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("ML-KEM-768")
     @Test
     void __ML_KEM_768() throws Exception {
@@ -282,8 +282,8 @@ class _Java_Security_KeyPairGenerator_Test {
      *
      * @throws Exception if any error occurs.
      */
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("ML-KEM-1024")
     @Test
     void __ML_KEM_1024() throws Exception {

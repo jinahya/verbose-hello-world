@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
@@ -45,8 +45,8 @@ import java.lang.annotation.*;
  * <p>Typical use is on test methods or constants that exercise a JDK-documented algorithm /
  * parameter, to flag at a glance whether the chosen name is the spec example, a standard JCA
  * name, or only a provider-specific name. Unlike {@link GovernedPreference} (which records the
- * author's <em>editorial</em> ranking among valid alternatives) and {@link LatestLTS} /
- * {@link LatestJDK} (which document which release the JDK platform provides the algorithm in),
+ * author's <em>editorial</em> ranking among valid alternatives) and {@link _LatestLTS} /
+ * {@link _LatestJDK} (which document which release the JDK platform provides the algorithm in),
  * this marker reports the <em>documentation tier</em> of the algorithm / parameter as published
  * by the JDK.
  *
@@ -54,10 +54,8 @@ import java.lang.annotation.*;
  * @see DocumentedPreferenceContainer
  * @see GovernedPreference
  * @see GovernedPreferenceContainer
- * @see LatestLTS
- * @see LatestLTSContainer
- * @see LatestJDK
- * @see LatestJDKContainer
+ * @see _LatestLTS
+ * @see _LatestJDK
  */
 @Documented
 @Repeatable(DocumentedPreferenceContainer.class)

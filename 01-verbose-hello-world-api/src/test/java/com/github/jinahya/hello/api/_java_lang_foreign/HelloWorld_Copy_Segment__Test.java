@@ -28,10 +28,10 @@ import java.lang.foreign.*;
 import java.nio.charset.*;
 import java.util.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Tests {@link HelloWorld#copy(MemorySegment)} with various native libraries via FFM API. Tests are
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @DisplayName("copy(segment) via FFM")
-class HelloWorld_Copy_Segment_FFM_Test {
+class HelloWorld_Copy_Segment__Test {
 
     // ----------------------------------------------------------------------------------- Utilities
 
@@ -75,15 +75,6 @@ class HelloWorld_Copy_Segment_FFM_Test {
         return new String(bytes, StandardCharsets.US_ASCII);
     }
 
-    private static void stubSetArrayWillCopyHelloWorldBytes(final HelloWorld service) {
-        doAnswer(i -> {
-            final var array = i.getArgument(0, byte[].class);
-            final var bytes = "hello, world".getBytes(StandardCharsets.US_ASCII);
-            System.arraycopy(bytes, 0, array, 0, bytes.length);
-            return array;
-        }).when(service).set(any(byte[].class));
-    }
-
     // -------------------------------------------------------------------------------------- C/libc
 
     /**
@@ -110,8 +101,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @DisplayName("libc")
     @Nested
-    class Libc_Test
-            extends HelloWorld__Test {
+    class Libc_Test extends HelloWorld__Test {
 
         /**
          * Verifies segment content using C {@code puts()}.
@@ -121,20 +111,18 @@ class HelloWorld_Copy_Segment_FFM_Test {
          */
         @DisplayName("puts")
         @Test
-        void _puts__()
-                throws Throwable {
+        void _puts__() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 // +1 for null terminator (puts requires null-terminated string)
                 final var segment = arena.allocate(HelloWorld.BYTES + 1);
                 // ----------------------------------------------------------------------------when
                 service.copy(segment);
                 // ---------------------------------------------------------------------------- then
-                final var array = HelloWorld__TestUtils.set_array12_invoked_once(service);
+                final var array = set_array12_invoked_once(service);
                 final var content = readSegmentAsString(segment);
-                assertEquals("hello, world", content);
+                assertEquals(HELLO_WORLD_STRING, content);
                 final var linker = Linker.nativeLinker();
                 final var puts = linker.downcallHandle(
                         linker.defaultLookup().find("puts").orElseThrow(),
@@ -152,11 +140,9 @@ class HelloWorld_Copy_Segment_FFM_Test {
          */
         @DisplayName("strlen")
         @Test
-        void _strlen__()
-                throws Throwable {
+        void _strlen__() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES + 1);
                 // ---------------------------------------------------------------------------- when
@@ -180,11 +166,9 @@ class HelloWorld_Copy_Segment_FFM_Test {
          */
         @DisplayName("memcmp")
         @Test
-        void _memcmp__()
-                throws Throwable {
+        void _memcmp__() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 // ---------------------------------------------------------------------------- when
@@ -232,8 +216,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
      */
     @DisplayName("python")
     @Nested
-    class Python_Test
-            extends HelloWorld__Test {
+    class Python_Test extends HelloWorld__Test {
 
         private static final List<String> PYTHON_LIBS_MACOS = List.of(
                 // Homebrew Cellar paths (versioned)
@@ -271,15 +254,13 @@ class HelloWorld_Copy_Segment_FFM_Test {
         @DisplayName("print")
         @Disabled
         @Test
-        void _print_()
-                throws Throwable {
+        void _print_() throws Throwable {
             // ------------------------------------------------------------------------------- given
             assumeTrue(
                     isLibraryAvailable(getPythonLibs().toArray(String[]::new)),
                     "Python library not found - skipping test"
             );
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             final var linker = Linker.nativeLinker();
             try (var arena = Arena.ofConfined()) {
                 final var python = findLibrary(arena,
@@ -342,8 +323,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
     @DisplayName("macOS")
     @Nested
     @EnabledOnOs(OS.MAC)
-    class MacOS_Test
-            extends HelloWorld__Test {
+    class MacOS_Test extends HelloWorld__Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
@@ -355,8 +335,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
         void _write_()
                 throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 final var linker = Linker.nativeLinker();
@@ -392,19 +371,16 @@ class HelloWorld_Copy_Segment_FFM_Test {
     @DisplayName("Linux")
     @Nested
     @EnabledOnOs(OS.LINUX)
-    class Linux_Test
-            extends HelloWorld__Test {
+    class Linux_Test extends HelloWorld__Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
          */
         @DisplayName("write")
         @Test
-        void _write_()
-                throws Throwable {
+        void _write_() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 final var linker = Linker.nativeLinker();
@@ -452,8 +428,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
     @DisplayName("Windows")
     @Nested
     @EnabledOnOs(OS.WINDOWS)
-    class Windows_Test
-            extends HelloWorld__Test {
+    class Windows_Test extends HelloWorld__Test {
 
         /**
          * Verifies segment content using Windows {@code WriteConsoleA()}.
@@ -470,8 +445,7 @@ class HelloWorld_Copy_Segment_FFM_Test {
                     isLibraryAvailable("kernel32", "kernel32.dll"),
                     "kernel32.dll not found"
             );
-            final var service = service();
-            stubSetArrayWillCopyHelloWorldBytes(service);
+            final var service = set_array_sets_hello_world_bytes(service());
             final var linker = Linker.nativeLinker();
             try (var arena = Arena.ofConfined()) {
                 final var kernel32 = findLibrary(arena, "kernel32", "kernel32.dll").orElseThrow();

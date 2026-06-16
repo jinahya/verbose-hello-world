@@ -42,8 +42,8 @@ import static org.mockito.Mockito.*;
 /**
  * Subscription-level tests for {@link ReactiveHelloWorldArrayPublisher} — verifies the Reactive
  * Streams 1.0 contract that this didactic publisher actively upholds (demand, cancellation, the
- * single-terminal-signal rule (1.7), reentrant-{@code request} rules (3.2 / 3.3), multi-subscription
- * (1.11), …) using a {@link Mockito#spy(Object) spied} {@link Subscriber}.
+ * single-terminal-signal rule (1.7), reentrant-{@code request} rules (3.2 / 3.3),
+ * multi-subscription (1.11), …) using a {@link Mockito#spy(Object) spied} {@link Subscriber}.
  * <p>
  * The publisher trusts well-behaved externals and does <em>not</em> defend against
  * {@code request(n ≤ 0)} (Rule 3.9), subscriber-thrown signals (Rule 1.4 surface), or duplicate

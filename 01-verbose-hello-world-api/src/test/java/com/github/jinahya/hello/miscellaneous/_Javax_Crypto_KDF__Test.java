@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 
@@ -35,6 +36,7 @@ import javax.crypto.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#kdf-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; KDF Algorithms</a>
  */
+@_NotForPublishing
 @DisplayName("javax.crypto.KDF")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KDF__Test {

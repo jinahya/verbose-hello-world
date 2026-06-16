@@ -142,7 +142,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("ofArrays")
         @Test
         void ofArrays__() {
-            final var list = Flux.from(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
+            final var list = Flux.from(new ReactiveHelloWorldArrayPublisher(
+                            new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .collectList()
                     .block(TIMEOUT);
@@ -175,7 +176,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("ofArrays")
         @Test
         void ofArrays__() {
-            final var list = Flowable.fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
+            final var list = Flowable.fromPublisher(new ReactiveHelloWorldArrayPublisher(
+                            new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .toList()
                     .blockingGet();
@@ -217,7 +219,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         void ofArrays__() {
             final var list = io.smallrye.mutiny.Multi.createFrom()
                     .publisher(FlowAdapters.toFlowPublisher(
-                            new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service))))
+                            new ReactiveHelloWorldArrayPublisher(
+                                    new ReactiveHelloWorldBytePublisher(service))))
                     .select().first(N)
                     .collect().asList()
                     .await().atMost(TIMEOUT);
@@ -257,7 +260,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @Test
         void ofArrays__() {
             final var list = Multi.create(FlowAdapters.toFlowPublisher(
-                            new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service))))
+                            new ReactiveHelloWorldArrayPublisher(
+                                    new ReactiveHelloWorldBytePublisher(service))))
                     .limit(N)
                     .collectList()
                     .await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -321,7 +325,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @Test
         void ofArrays__() throws Exception {
             final var list = akka.stream.javadsl.Source
-                    .fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
+                    .fromPublisher(new ReactiveHelloWorldArrayPublisher(
+                            new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .runWith(akka.stream.javadsl.Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
@@ -388,7 +393,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @Test
         void ofArrays__() throws Exception {
             final var list = org.apache.pekko.stream.javadsl.Source
-                    .fromPublisher(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)))
+                    .fromPublisher(new ReactiveHelloWorldArrayPublisher(
+                            new ReactiveHelloWorldBytePublisher(service)))
                     .take(N)
                     .runWith(org.apache.pekko.stream.javadsl.Sink.<byte[]>seq(), system)
                     .toCompletableFuture()
@@ -449,7 +455,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("ofArrays")
         @Test
         void ofArrays__() throws Exception {
-            assertArrays(collect(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)), N));
+            assertArrays(collect(new ReactiveHelloWorldArrayPublisher(
+                    new ReactiveHelloWorldBytePublisher(service)), N));
         }
     }
 
@@ -522,7 +529,8 @@ class ReactiveHelloWorldPublishers_Conformance_Test {
         @DisplayName("ofArrays")
         @Test
         void ofArrays__() throws Exception {
-            assertArrays(collect(new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service)), N));
+            assertArrays(collect(new ReactiveHelloWorldArrayPublisher(
+                    new ReactiveHelloWorldBytePublisher(service)), N));
         }
     }
 }

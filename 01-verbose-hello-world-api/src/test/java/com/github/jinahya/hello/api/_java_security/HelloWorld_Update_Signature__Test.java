@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_security;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.jspecify.annotations.*;
@@ -52,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#signature-algorithms">Signature
  * Algorithms</a>
  */
+@_NotForPublishing
 @DisplayName("update(signature)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -99,8 +101,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA1withDSA")
     @ValueSource(ints = {1024})
     @ParameterizedTest
@@ -127,8 +129,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA256withDSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -155,8 +157,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA256withECDSA")
     @Test
     void __SHA256withECDSA() throws Exception {
@@ -182,8 +184,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA384withECDSA")
     @Test
     void __SHA384withECDSA() throws Exception {
@@ -209,8 +211,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA1withRSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -237,8 +239,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA256withRSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -265,8 +267,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("SHA384withRSA")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -293,8 +295,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("RSASSA-PSS with SHA-256")
     @ValueSource(ints = {2048})
     @ParameterizedTest
@@ -321,8 +323,8 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     @DisplayName("RSASSA-PSS with SHA-384")
     @ValueSource(ints = {2048})
     @ParameterizedTest

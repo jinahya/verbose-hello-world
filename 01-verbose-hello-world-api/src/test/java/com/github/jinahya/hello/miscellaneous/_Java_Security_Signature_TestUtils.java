@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 
 import java.io.*;
@@ -58,14 +58,14 @@ public final class _Java_Security_Signature_TestUtils {
         return new Signing(keyPair, signature, null);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA1withDSA(final int keysize) throws NoSuchAlgorithmException {
         return withDSA_(keysize, "SHA1withDSA");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA256withDSA(final int keysize) throws NoSuchAlgorithmException {
         return withDSA_(keysize, "SHA256withDSA");
     }
@@ -78,15 +78,15 @@ public final class _Java_Security_Signature_TestUtils {
         return new Signing(keyPair, signature, null);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA256withECDSA()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return withECDSA_("secp256r1", "SHA256withECDSA");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA384withECDSA()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return withECDSA_("secp384r1", "SHA384withECDSA");
@@ -99,20 +99,20 @@ public final class _Java_Security_Signature_TestUtils {
         return new Signing(keyPair, signature, null);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA1withRSA(final int keysize) throws NoSuchAlgorithmException {
         return withRSA_(keysize, "SHA1withRSA");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA256withRSA(final int keysize) throws NoSuchAlgorithmException {
         return withRSA_(keysize, "SHA256withRSA");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing SHA384withRSA(final int keysize) throws NoSuchAlgorithmException {
         return withRSA_(keysize, "SHA384withRSA");
     }
@@ -127,14 +127,14 @@ public final class _Java_Security_Signature_TestUtils {
         return new Signing(keyPair, signature, params);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing RSASSA_PSS_SHA_256(final int keysize) throws NoSuchAlgorithmException {
         return RSASSA_PSS_(keysize, "SHA-256");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Signing RSASSA_PSS_SHA_384(final int keysize) throws NoSuchAlgorithmException {
         return RSASSA_PSS_(keysize, "SHA-384");
     }

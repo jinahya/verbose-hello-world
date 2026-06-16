@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_security;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import com.github.jinahya.hello.miscellaneous.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
@@ -56,6 +57,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest
  * Algorithms</a>
  */
+@_NotForPublishing
 @DisplayName("update(digest)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

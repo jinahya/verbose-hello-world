@@ -37,8 +37,8 @@ import static org.mockito.Mockito.*;
  * length-coercing wrapper.
  * <p>
  * {@link HelloWorldBytePublisher} always emits exactly {@value HelloWorld#BYTES} {@link Byte}
- * elements followed by {@code onComplete} regardless of the {@code elements} argument, so TCK
- * tests that demand {@code createPublisher(N)} produce exactly {@code N} elements (for
+ * elements followed by {@code onComplete} regardless of the {@code elements} argument, so TCK tests
+ * that demand {@code createPublisher(N)} produce exactly {@code N} elements (for
  * {@code N != }{@value HelloWorld#BYTES}) are overridden here and marked {@link Disabled}.
  * <p>
  * {@link #createFailedFlowPublisher()} returns {@code null}; the additional "failed publisher"
@@ -96,8 +96,8 @@ class HelloWorld_Byte_Publisher_TckTest extends FlowPublisherVerification<Byte> 
 
     private static final String REASON_FIXED_12 =
             "HelloWorldBytePublisher always emits exactly " + HelloWorld.BYTES
-                    + " bytes then onComplete; createPublisher(N) cannot truncate to N != "
-                    + HelloWorld.BYTES + " without wrapping.";
+            + " bytes then onComplete; createPublisher(N) cannot truncate to N != "
+            + HelloWorld.BYTES + " without wrapping.";
 
     @Override
     @Test

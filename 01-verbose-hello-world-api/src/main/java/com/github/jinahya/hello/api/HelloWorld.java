@@ -212,8 +212,9 @@ public interface HelloWorld {
      * <p>
      * The memory segment must have at least {@value #BYTES} bytes available.
      * <pre>
-     *  0                       12    &lt;=   segment.byteSize()
-     *  ↓                       ↓         ↓
+     *  0                   1
+     *  0                       2    &lt;= segment.byteSize()
+     *  ↓                       ↓       ↓
      * |h|e|l|l|o|,| |w|o|r|l|d| |...| |
      * </pre>
      * <p>
@@ -263,7 +264,7 @@ public interface HelloWorld {
                 segment,
                 ValueLayout.JAVA_BYTE,
                 0,
-                array.length
+                BYTES
         );
         return segment;
     }

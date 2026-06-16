@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_nio_file;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_NotForPublishing
 @DisplayName("AsynchronousHelloWorld.append(Path, Attachment, Handler)")
 @Slf4j
 @SuppressWarnings({"java:S101"})

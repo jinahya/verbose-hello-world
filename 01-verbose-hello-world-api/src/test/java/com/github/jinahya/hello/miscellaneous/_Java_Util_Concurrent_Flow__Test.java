@@ -1,5 +1,6 @@
 package com.github.jinahya.hello.miscellaneous;
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -15,6 +16,7 @@ import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_Submi
 import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
 import static org.awaitility.Awaitility.*;
 
+@_NotForPublishing
 @DisplayName("java.util.concurrent.Flow")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

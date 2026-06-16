@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 
 import java.util.*;
@@ -58,7 +58,7 @@ public final class _Java_Security_MessageDigest_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
      * (Java 25)
      */
-    @LatestLTS
+    @_LatestLTS
     public static final List<String> ALGORITHMS_LATEST_LTS = List.of(
             "SHA-1",
             "SHA-256",
@@ -72,7 +72,7 @@ public final class _Java_Security_MessageDigest_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
      * (Java 26)
      */
-    @LatestJDK
+    @_LatestJDK
     public static final List<String> ALGORITHMS_LATEST_JDK = List.of(
             "SHA-1",
             "SHA-256",

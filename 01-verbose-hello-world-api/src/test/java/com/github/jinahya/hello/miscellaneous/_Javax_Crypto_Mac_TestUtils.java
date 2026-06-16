@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import javax.crypto.*;
 import java.security.*;
@@ -49,32 +49,32 @@ public final class _Javax_Crypto_Mac_TestUtils {
         return new Maccing(secretKey, mac, null);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Maccing HmacSHA1() throws NoSuchAlgorithmException {
         return Hmac_("HmacSHA1");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Maccing HmacSHA224() throws NoSuchAlgorithmException {
         return Hmac_("HmacSHA224");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Maccing HmacSHA256() throws NoSuchAlgorithmException {
         return Hmac_("HmacSHA256");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Maccing HmacSHA384() throws NoSuchAlgorithmException {
         return Hmac_("HmacSHA384");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Maccing HmacSHA512() throws NoSuchAlgorithmException {
         return Hmac_("HmacSHA512");
     }

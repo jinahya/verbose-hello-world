@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._javax_crypto;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -41,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_NotForPublishing
 @DisplayName("javax.crypto.Cipher")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

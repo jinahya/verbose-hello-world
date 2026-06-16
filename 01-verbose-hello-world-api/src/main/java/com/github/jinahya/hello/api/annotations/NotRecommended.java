@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
@@ -36,16 +36,14 @@ import java.lang.annotation.*;
  * legacy / non-mainstream option (e.g., RFC 2409 Oakley DH groups, {@code ECMQV}, sub-floor
  * Brainpool / Koblitz curves) so readers see at a glance that the case is retained for
  * <em>historical or interoperability reference</em>, not as a present-day recommendation. Unlike
- * {@link LatestLTS} / {@link LatestJDK} (which document <em>what the JDK platform provides</em>)
+ * {@link _LatestLTS} / {@link _LatestJDK} (which document <em>what the JDK platform provides</em>)
  * and {@link GovernedPreference} (which records the author's <em>editorial preference among valid
  * alternatives</em>), this marker reports an <em>external standards-body verdict</em>.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see NotRecommendedContainer
- * @see LatestLTS
- * @see LatestLTSContainer
- * @see LatestJDK
- * @see LatestJDKContainer
+ * @see _LatestLTS
+ * @see _LatestJDK
  * @see GovernedPreference
  * @see GovernedPreferenceContainer
  */

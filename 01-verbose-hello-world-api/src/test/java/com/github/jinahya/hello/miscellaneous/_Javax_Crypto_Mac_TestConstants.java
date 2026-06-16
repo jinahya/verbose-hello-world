@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import java.util.*;
 
@@ -52,7 +52,7 @@ public final class _Javax_Crypto_Mac_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      * (Java 25)
      */
-    @LatestLTS
+    @_LatestLTS
     public static final List<String> REQUIRED_ALGORITHMS_LATEST_LTS = List.of(
             "HmacSHA1",
             "HmacSHA256"
@@ -66,7 +66,7 @@ public final class _Javax_Crypto_Mac_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
      * (Java 26)
      */
-    @LatestJDK
+    @_LatestJDK
     public static final List<String> REQUIRED_ALGORITHMS_LATEST_JDK = List.of(
             "HmacSHA1",
             "HmacSHA256",

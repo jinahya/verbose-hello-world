@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.bouncycastle.crypto.agreement.*;
 import org.bouncycastle.jcajce.spec.*;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>Provider policy: every algorithm is bound to {@link BouncyCastleProvider BouncyCastle}
  * explicitly so the assertions don't depend on which JDK distribution provides them. The
- * {@link LatestLTS @LatestLTS} / {@link LatestJDK @LatestJDK} markers on individual tests (and the
+ * {@link _LatestLTS @LatestLTS} / {@link _LatestJDK @LatestJDK} markers on individual tests (and the
  * matching constants in {@link _Javax_Crypto_KeyAgreement_TestConstants}) merely document which
  * algorithms are JCA-mandatory in Java 25 (latest LTS) and Java 26 (latest JDK).
  *
@@ -64,6 +64,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc7919">RFC 7919 &mdash; Negotiated
  * Finite Field Diffie-Hellman Ephemeral Parameters for TLS</a>
  */
+@_NotForPublishing
 @DisplayName("javax.crypto.KeyAgreement")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KeyAgreement__Test {
@@ -171,8 +172,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          * @param groupName the BouncyCastle {@code DHStandardGroups} constant name (e.g.,
          *                  {@code "rfc7919_ffdhe2048"}).
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(1)
         @GovernedPreference(1)
         @DisplayName("RFC 7919 FFDHE group")
@@ -211,8 +212,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          * @param groupName the BouncyCastle {@code DHStandardGroups} constant name (e.g.,
          *                  {@code "rfc3526_2048"}).
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(1)
         @GovernedPreference(2)
         @DisplayName("RFC 3526 MODP group")
@@ -252,8 +253,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          *
          * @param keySize Alice's DH modulus size in bits.
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(1)
         @GovernedPreference(3)
         @DisplayName("basic — Alice→Bob parameter transfer")
@@ -293,8 +294,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          *
          * @param keySize the DH modulus size in bits.
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(1)
         @GovernedPreference(4)
         @Disabled(
@@ -397,8 +398,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "secp256r1"}).
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(2)
         @GovernedPreference(1)
         @DisplayName("NIST P-curve")
@@ -614,8 +615,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          * {@link NamedParameterSpec#X25519} / {@link NamedParameterSpec#X448} constants (as opposed
          * to the string-constructed instances used in {@code __XDH1}).
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(1)
         @GovernedPreference(1)
         @DisplayName("XDH + NamedParameterSpec static constants")
@@ -642,8 +643,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "X25519"}).
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(2)
         @GovernedPreference(2)
         @DisplayName("XDH + NamedParameterSpec(String)")
@@ -669,8 +670,8 @@ class _Javax_Crypto_KeyAgreement__Test {
          *
          * @param stdName the standard curve name (e.g., {@code "X25519"}).
          */
-        @LatestLTS
-        @LatestJDK
+        @_LatestLTS
+        @_LatestJDK
         @DocumentedPreference(2)
         @GovernedPreference(3)
         @DisplayName("by curve name (X25519 / X448)")

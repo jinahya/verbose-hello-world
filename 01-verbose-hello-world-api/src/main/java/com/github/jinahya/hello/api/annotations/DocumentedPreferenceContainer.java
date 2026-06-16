@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
@@ -26,17 +26,14 @@ import java.lang.annotation.*;
  * The {@link Repeatable} container annotation that holds multiple {@link DocumentedPreference}
  * markers on the same element. Each contained marker records an API-style rank under an independent
  * criterion (for example, one rank for type-safety and another for migration cost). Parallel to
- * {@link GovernedPreferenceContainer}, {@link LatestLTSContainer}, and {@link LatestJDKContainer},
- * which serve the same role for their respective markers.
+ * {@link GovernedPreferenceContainer}, which serves the same role for its respective marker.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see DocumentedPreference
  * @see GovernedPreference
  * @see GovernedPreferenceContainer
- * @see LatestLTS
- * @see LatestLTSContainer
- * @see LatestJDK
- * @see LatestJDKContainer
+ * @see _LatestLTS
+ * @see _LatestJDK
  */
 @Documented
 public @interface DocumentedPreferenceContainer {

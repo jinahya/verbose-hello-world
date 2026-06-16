@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -62,6 +63,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc5649">RFC 5649 &mdash; Advanced
  * Encryption Standard (AES) Key Wrap with Padding Algorithm</a>
  */
+@_NotForPublishing
 @DisplayName("java.security.Key")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Java_Security_Key__Test {

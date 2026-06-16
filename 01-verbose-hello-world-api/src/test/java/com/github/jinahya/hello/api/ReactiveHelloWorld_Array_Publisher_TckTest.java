@@ -92,7 +92,7 @@ class ReactiveHelloWorld_Array_Publisher_TckTest extends PublisherVerification<b
 
     private static final String REASON_TRUSTS_REQUEST =
             "ReactiveHelloWorldArrayPublisher's class javadoc documents that it trusts well-behaved "
-                    + "externals and does not defend against request(n <= 0) (Rule 3.9).";
+            + "externals and does not defend against request(n <= 0) (Rule 3.9).";
 
     @Override
     @Test

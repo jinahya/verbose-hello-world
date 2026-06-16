@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -61,22 +61,22 @@ public final class _Javax_Crypto_KDF_TestUtils {
         return new Hkdf(kdf, spec);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Hkdf HKDF_SHA256(final int outputLength)
             throws NoSuchAlgorithmException {
         return HKDF_("SHA256", outputLength);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Hkdf HKDF_SHA384(final int outputLength)
             throws NoSuchAlgorithmException {
         return HKDF_("SHA384", outputLength);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Hkdf HKDF_SHA512(final int outputLength)
             throws NoSuchAlgorithmException {
         return HKDF_("SHA512", outputLength);

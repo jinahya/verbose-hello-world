@@ -20,6 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * A class for exploring {@link java.io.File} behavior with {@link FileOutputStream}.
  */
+@_NotForPublishing
 @DisplayName("java.io.File")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

@@ -72,8 +72,8 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
 
     /**
      * Verifies that the publisher emits exactly {@code 1} element when a single subscriber calls
-     * {@code request(1)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving it.
-     * No {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
+     * {@code request(1)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving it. No
+     * {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
      *
      * @throws Exception if an error occurs.
      */

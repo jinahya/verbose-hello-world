@@ -20,7 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 
 import java.util.function.*;
 

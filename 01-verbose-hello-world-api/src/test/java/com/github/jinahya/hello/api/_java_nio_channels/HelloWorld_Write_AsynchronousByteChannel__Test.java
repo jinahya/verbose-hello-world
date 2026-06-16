@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_NotForPublishing
 @DisplayName("HelloWorld.write(AsynchronousByteChannel) / extras")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -183,8 +185,9 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
 
     /**
      * Drives an <a href="https://www.rfc-editor.org/rfc/rfc862">RFC&nbsp;862</a>-style asynchronous
-     * echo server, sourced through {@link HelloWorld#write(AsynchronousByteChannel) write(channel)},
-     * end-to-end on the loopback interface.
+     * echo server, sourced through
+     * {@link HelloWorld#write(AsynchronousByteChannel) write(channel)}, end-to-end on the loopback
+     * interface.
      * <p>
      * The server runs on an {@link AsynchronousServerSocketChannel} bound to
      * <em>{@code IPv6}-loopback unless {@code java.net.preferIPv4Stack=true}</em>, on the
@@ -285,8 +288,9 @@ class HelloWorld_Write_AsynchronousByteChannel__Test extends HelloWorld__Test {
         /**
          * Verifies that the method writes {@code hello-world-bytes} through an asynchronous echo
          * server when driven concurrently by {@value #CLIENT_COUNT} clients, each sending
-         * {@value #ECHOES_PER_CLIENT} copies of {@value HelloWorld__TestConstants#HELLO_WORLD_STRING}
-         * and reading the echoed bytes back intact.
+         * {@value #ECHOES_PER_CLIENT} copies of
+         * {@value HelloWorld__TestConstants#HELLO_WORLD_STRING} and reading the echoed bytes back
+         * intact.
          *
          * @throws Exception if an error occurs.
          */

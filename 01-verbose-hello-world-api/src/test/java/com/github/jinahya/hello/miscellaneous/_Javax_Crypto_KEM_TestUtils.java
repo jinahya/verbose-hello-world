@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import javax.crypto.*;
 import java.security.*;
@@ -51,22 +51,22 @@ public final class _Javax_Crypto_KEM_TestUtils {
         return new Kem(kem, keyPair);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem DHKEM_EC_secp256r1()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return DHKEM_EC_("secp256r1");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem DHKEM_EC_secp384r1()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return DHKEM_EC_("secp384r1");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem DHKEM_EC_secp521r1()
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return DHKEM_EC_("secp521r1");
@@ -80,15 +80,15 @@ public final class _Javax_Crypto_KEM_TestUtils {
         return new Kem(kem, keyPair);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem DHKEM_X25519()
             throws NoSuchAlgorithmException {
         return DHKEM_XDH_("X25519");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem DHKEM_X448()
             throws NoSuchAlgorithmException {
         return DHKEM_XDH_("X448");
@@ -102,22 +102,22 @@ public final class _Javax_Crypto_KEM_TestUtils {
         return new Kem(kem, keyPair);
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem ML_KEM_512()
             throws NoSuchAlgorithmException {
         return ML_KEM_("ML-KEM-512");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem ML_KEM_768()
             throws NoSuchAlgorithmException {
         return ML_KEM_("ML-KEM-768");
     }
 
-    @LatestLTS
-    @LatestJDK
+    @_LatestLTS
+    @_LatestJDK
     public static Kem ML_KEM_1024()
             throws NoSuchAlgorithmException {
         return ML_KEM_("ML-KEM-1024");

@@ -74,7 +74,7 @@ class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
      * Creates a new instance wrapping the specified upstream byte upstream.
      *
      * @param upstream the upstream {@link Publisher} of {@link Byte} that supplies the individual
-     *                  bytes for each assembled array.
+     *                 bytes for each assembled array.
      * @throws NullPointerException if the {@code upstream} is {@code null}.
      */
     ReactiveHelloWorldArrayPublisher(final ReactiveHelloWorldBytePublisher upstream) {

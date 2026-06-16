@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import java.util.*;
 
@@ -45,7 +45,7 @@ public final class _Java_Security_Signature_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
      * (Java 25)
      */
-    @LatestLTS
+    @_LatestLTS
     public static final Map<String, List<Object>> ALGORITHMS_AND_PARAMETERS_LATEST_LTS =
             Map.ofEntries(
                     Map.entry("RSASSA-PSS", List.of("SHA-256", "SHA-384")),
@@ -65,7 +65,7 @@ public final class _Java_Security_Signature_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
      * (Java 26)
      */
-    @LatestJDK
+    @_LatestJDK
     public static final Map<String, List<Object>> ALGORITHMS_AND_PARAMETERS_LATEST_JDK =
             Map.ofEntries(
                     Map.entry("RSASSA-PSS", List.of("SHA-256", "SHA-384")),

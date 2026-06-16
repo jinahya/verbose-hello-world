@@ -1,6 +1,7 @@
 package com.github.jinahya.hello.api._javax_crypto;
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -67,6 +68,7 @@ import javax.crypto.*;
  * A class for exploring {@link com.github.jinahya.hello.api.HelloWorld HelloWorld}'s
  * {@code update(cipher, consumer)} method with real {@link Cipher} transformations.
  */
+@_NotForPublishing
 @DisplayName("update(cipher, consumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

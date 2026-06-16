@@ -20,7 +20,7 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 
 import java.util.*;
 
@@ -45,7 +45,7 @@ final class _Javax_Crypto_KeyAgreement_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/KeyAgreement.html">javax.crypto.KeyAgreement</a>
      * (Java 25)
      */
-    @LatestLTS
+    @_LatestLTS
     static final Map<String, List<Object>> ALGORITHMS_AND_KEYSIZES_LATEST_LTS =
             Map.ofEntries(
                     Map.entry("DiffieHellman", List.of(1024, 2048))
@@ -58,7 +58,7 @@ final class _Javax_Crypto_KeyAgreement_TestConstants {
      * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/KeyAgreement.html">javax.crypto.KeyAgreement</a>
      * (Java 26)
      */
-    @LatestJDK
+    @_LatestJDK
     static final Map<String, List<Object>> ALGORITHMS_AND_KEYSIZES_LATEST_JDK =
             Map.ofEntries(
                     Map.entry("DiffieHellman", List.of(1024, 2048))

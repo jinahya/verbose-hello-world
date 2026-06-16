@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
@@ -35,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_NotForPublishing
 @DisplayName("ExecutorHelloWorld.applyAsync(mapper)")
 class ExecutorHelloWorld_ApplyAsync_Mapper__Test
         extends AsynchronousHelloWorld__Test<HelloWorld, ExecutorHelloWorld<HelloWorld>> {

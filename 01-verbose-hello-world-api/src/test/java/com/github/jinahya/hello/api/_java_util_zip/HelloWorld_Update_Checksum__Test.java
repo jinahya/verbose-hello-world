@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_util_zip;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import com.google.common.io.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
@@ -46,6 +47,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_NotForPublishing
 @DisplayName("update(checksum)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

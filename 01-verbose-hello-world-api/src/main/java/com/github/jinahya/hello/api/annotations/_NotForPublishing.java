@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.api;
+package com.github.jinahya.hello.api.annotations;
 
 /*-
  * #%L
@@ -23,23 +23,16 @@ package com.github.jinahya.hello.api;
 import java.lang.annotation.*;
 
 /**
- * A source-only marker for declarations whose value, list, or shape reflects the latest Long-Term
- * Support release of the Java platform. Used on constants such as algorithm/transformation tables
- * to flag which entries are mandated by the current LTS JDK's API documentation.
+ * A source-only marker for declarations that are intentionally omitted from the book's exposition.
+ * The annotated element still exists in the source tree (and may be referenced by tests or internal
+ * call chains), but the corresponding chapter, section, or listing does not surface it to the
+ * reader.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see LatestJDK
- * @see LatestLTSContainer
  */
 @Documented
-@Repeatable(LatestLTSContainer.class)
 @Retention(RetentionPolicy.SOURCE)
-public @interface LatestLTS {
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface _NotForPublishing {
 
-    /**
-     * An optional note (e.g., the LTS version number or a free-text qualifier).
-     *
-     * @return the note; defaults to an empty string.
-     */
-    String value() default "";
 }

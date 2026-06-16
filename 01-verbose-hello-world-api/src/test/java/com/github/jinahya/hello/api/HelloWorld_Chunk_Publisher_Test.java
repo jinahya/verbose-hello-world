@@ -66,7 +66,8 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     /**
      * A test-only subclass of {@link HelloWorldBytePublisher} that logs its
      * {@link #subscribe(Flow.Subscriber) subscribe} invocation and wraps the incoming subscriber
-     * with {@link
+     * with
+     * {@link
      * com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow#loggingByteSubscriber
      * loggingByteSubscriber(...)} before delegating to {@code super.subscribe(...)} — so the
      * upstream byte-publisher's full signal exchange surfaces in logs without touching the SUT's
@@ -122,8 +123,8 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
 
     /**
      * Verifies that the publisher emits exactly {@code 1} array when a single subscriber calls
-     * {@code request(1)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving it.
-     * No {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
+     * {@code request(1)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving it. No
+     * {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
      *
      * @throws Exception if an error occurs.
      */
