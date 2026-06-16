@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_Path_Test extends HelloWorld__Test {
 
-    static {
+    static { // import pinning
         final var a = new HashSet<String>();
         final var b = Arrays.stream(new Object[0])
     }
