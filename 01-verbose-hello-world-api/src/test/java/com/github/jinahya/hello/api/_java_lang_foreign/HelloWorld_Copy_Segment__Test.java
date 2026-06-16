@@ -24,9 +24,13 @@ import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.api.io.*;
 
 import java.lang.foreign.*;
+import java.nio.*;
+import java.nio.channels.*;
 import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
@@ -222,7 +226,6 @@ class HelloWorld_Copy_Segment__Test {
          * it to print the "hello, world" content.
          */
         @DisplayName("print")
-        @Disabled
         @Test
         void _print_() throws Throwable {
             // ------------------------------------------------------------------------------- given
@@ -447,6 +450,234 @@ class HelloWorld_Copy_Segment__Test {
                 );
                 System.out.println();
                 assertNotEquals(0, result, "WriteConsoleA should succeed");
+            }
+        }
+    }
+
+    // ---------------------------------------------------- java.lang.foreign.MemorySegment#ofArray
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against an on-heap segment wrapping a
+     * {@code byte[]} via {@link MemorySegment#ofArray(byte[])}. No arena, no off-heap allocation —
+     * the "first touch" example.
+     */
+    @DisplayName("ofArray (heap byte[])")
+    @Nested
+    class OfArray_Test extends HelloWorld__Test {
+
+        /**
+         * Verifies that {@code copy} populates the heap array backing the segment.
+         */
+        @DisplayName("MemorySegment.ofArray(new byte[BYTES])")
+        @Test
+        void __() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            final var array = new byte[HelloWorld.BYTES];
+            final var segment = MemorySegment.ofArray(array);
+            // -------------------------------------------------------------------------------- when
+            service.copy(segment);
+            // -------------------------------------------------------------------------------- then
+            set_array12_invoked_once(service);
+            assertEquals(HELLO_WORLD_STRING, new String(array, StandardCharsets.US_ASCII));
+        }
+    }
+
+    // --------------------------------------------------- java.lang.foreign.MemorySegment#ofBuffer
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against a segment wrapping a
+     * {@link java.nio.ByteBuffer} via {@link MemorySegment#ofBuffer(java.nio.Buffer)} — the FFM
+     * ↔ NIO bridge — for both heap and direct buffers.
+     */
+    @DisplayName("ofBuffer (NIO bridge)")
+    @Nested
+    class OfBuffer_Test extends HelloWorld__Test {
+
+        /**
+         * Verifies that {@code copy} populates a segment wrapping a {@linkplain
+         * ByteBuffer#allocate(int) heap} buffer.
+         */
+        @DisplayName("ofBuffer(ByteBuffer.allocate(BYTES))")
+        @Test
+        void _heap__() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            final var segment = MemorySegment.ofBuffer(buffer);
+            // -------------------------------------------------------------------------------- when
+            service.copy(segment);
+            // -------------------------------------------------------------------------------- then
+            set_array12_invoked_once(service);
+            assertEquals(HELLO_WORLD_STRING,
+                         StandardCharsets.US_ASCII.decode(buffer).toString());
+        }
+
+        /**
+         * Verifies that {@code copy} populates a segment wrapping a {@linkplain
+         * ByteBuffer#allocateDirect(int) direct} buffer.
+         */
+        @DisplayName("ofBuffer(ByteBuffer.allocateDirect(BYTES))")
+        @Test
+        void _direct__() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            final var buffer = ByteBuffer.allocateDirect(HelloWorld.BYTES);
+            final var segment = MemorySegment.ofBuffer(buffer);
+            // -------------------------------------------------------------------------------- when
+            service.copy(segment);
+            // -------------------------------------------------------------------------------- then
+            set_array12_invoked_once(service);
+            assertEquals(HELLO_WORLD_STRING,
+                         StandardCharsets.US_ASCII.decode(buffer).toString());
+        }
+    }
+
+    // ---------------------------------------------------------- java.nio.channels.FileChannel#map
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against a segment backed by a memory-mapped file
+     * via {@link FileChannel#map(FileChannel.MapMode, long, long, Arena)} — the FFM-meets-I/O
+     * pathway. Strictly portable.
+     */
+    @DisplayName("FileChannel.map (memory-mapped file)")
+    @Nested
+    class Mapped_Test extends HelloWorld__Test {
+
+        /**
+         * Verifies that {@code copy} writes to a memory-mapped region and the bytes land on disk.
+         *
+         * @param tempDir the per-test temp dir holding the mapped file.
+         */
+        @DisplayName("channel.map(READ_WRITE, 0, BYTES, arena)")
+        @Test
+        void __(@TempDir final Path tempDir) throws Exception {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            final var path = tempDir.resolve("hello.bin");
+            try (var channel = FileChannel.open(path, StandardOpenOption.CREATE,
+                                                StandardOpenOption.READ,
+                                                StandardOpenOption.WRITE);
+                 var arena = Arena.ofShared()) {
+                final var segment = channel.map(FileChannel.MapMode.READ_WRITE,
+                                                0L, HelloWorld.BYTES, arena);
+                // ---------------------------------------------------------------------------- when
+                service.copy(segment);
+                segment.force();
+            }
+            // ----------------------------------------------------------------------------------then
+            set_array12_invoked_once(service);
+            assertEquals(HELLO_WORLD_STRING,
+                         Files.readString(path, StandardCharsets.US_ASCII));
+        }
+    }
+
+    // ---------------------------------------------------- java.lang.foreign.MemorySegment#asSlice
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} via {@link MemorySegment#asSlice(long)} — the
+     * supported way to write at a non-zero offset, per the method's {@code @apiNote}.
+     */
+    @DisplayName("asSlice (write at offset)")
+    @Nested
+    class AsSlice_Test extends HelloWorld__Test {
+
+        /**
+         * Verifies that {@code copy(segment.asSlice(offset))} writes only into {@code [offset,
+         * offset+BYTES)} and leaves {@code [0, offset)} untouched.
+         */
+        @DisplayName("copy(segment.asSlice(5))")
+        @Test
+        void __() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            final var offset = 5;
+            try (var arena = Arena.ofConfined()) {
+                final var segment = arena.allocate(offset + HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service.copy(segment.asSlice(offset));
+                // ---------------------------------------------------------------------------- then
+                set_array12_invoked_once(service);
+                for (var i = 0L; i < offset; i++) {
+                    assertEquals((byte) 0, segment.get(ValueLayout.JAVA_BYTE, i),
+                                 "byte at " + i + " must stay zero");
+                }
+                assertEquals(HELLO_WORLD_STRING,
+                             readSegmentAsString(segment.asSlice(offset), HelloWorld.BYTES));
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------- Read-back pathways
+
+    /**
+     * Tests JDK-only read-back paths on a segment populated by
+     * {@link HelloWorld#copy(MemorySegment)} — {@link MemorySegment#getString(long, Charset)},
+     * {@link MemorySegment#toArray(java.lang.foreign.ValueLayout.OfByte)}, and
+     * {@link MemorySegment#asByteBuffer()}.
+     */
+    @DisplayName("read-back paths (JDK-only)")
+    @Nested
+    class ReadBack_Test extends HelloWorld__Test {
+
+        /**
+         * Verifies the populated segment via {@code segment.getString(0, US_ASCII)} — reads as a
+         * C-style null-terminated string.
+         */
+        @DisplayName("segment.getString(0, US_ASCII)")
+        @Test
+        void _getString__() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            try (var arena = Arena.ofConfined()) {
+                final var segment = arena.allocate(HelloWorld.BYTES + 1);
+                // ---------------------------------------------------------------------------- when
+                service.copy(segment);
+                // ---------------------------------------------------------------------------- then
+                set_array12_invoked_once(service);
+                assertEquals(HELLO_WORLD_STRING,
+                             segment.getString(0L, StandardCharsets.US_ASCII));
+            }
+        }
+
+        /**
+         * Verifies the populated segment via {@code segment.toArray(JAVA_BYTE)} — bulk copy back
+         * into a fresh {@code byte[]}.
+         */
+        @DisplayName("segment.toArray(JAVA_BYTE)")
+        @Test
+        void _toArray__() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            try (var arena = Arena.ofConfined()) {
+                final var segment = arena.allocate(HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service.copy(segment);
+                // ---------------------------------------------------------------------------- then
+                set_array12_invoked_once(service);
+                final var array = segment.toArray(ValueLayout.JAVA_BYTE);
+                assertEquals(HELLO_WORLD_STRING, new String(array, StandardCharsets.US_ASCII));
+            }
+        }
+
+        /**
+         * Verifies the populated segment via {@code segment.asByteBuffer()} — the reverse bridge
+         * back to NIO.
+         */
+        @DisplayName("segment.asByteBuffer()")
+        @Test
+        void _asByteBuffer__() {
+            // ------------------------------------------------------------------------------- given
+            final var service = set_array_sets_hello_world_bytes(service());
+            try (var arena = Arena.ofConfined()) {
+                final var segment = arena.allocate(HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service.copy(segment);
+                // ---------------------------------------------------------------------------- then
+                set_array12_invoked_once(service);
+                final var buffer = segment.asByteBuffer();
+                assertEquals(HELLO_WORLD_STRING,
+                             StandardCharsets.US_ASCII.decode(buffer).toString());
             }
         }
     }
