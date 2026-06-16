@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_lang_foreign;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
 
@@ -30,6 +31,7 @@ import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._Java_Lang_Foreign_Arena_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
@@ -39,41 +41,9 @@ import static org.junit.jupiter.api.Assumptions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_NotForPublishing
 @DisplayName("copy(segment) via FFM")
 class HelloWorld_Copy_Segment__Test {
-
-    // ----------------------------------------------------------------------------------- Utilities
-
-    private static boolean isLibraryAvailable(final String... names) {
-        try (var arena = Arena.ofConfined()) {
-            return findLibrary(arena, names).isPresent();
-        }
-    }
-
-    private static Optional<SymbolLookup> findLibrary(final Arena arena, final String... names) {
-        for (final var name : names) {
-            try {
-                return Optional.of(SymbolLookup.libraryLookup(name, arena));
-            } catch (final Exception e) {
-                // Try next
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Reads the first {@value HelloWorld#BYTES} bytes from the segment as a US-ASCII string.
-     *
-     * @param segment the segment to read from.
-     * @return the string content.
-     */
-    private static String readSegmentAsString(final MemorySegment segment) {
-        final var bytes = new byte[HelloWorld.BYTES];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = segment.get(ValueLayout.JAVA_BYTE, i);
-        }
-        return new String(bytes, StandardCharsets.US_ASCII);
-    }
 
     // -------------------------------------------------------------------------------------- C/libc
 
@@ -121,7 +91,7 @@ class HelloWorld_Copy_Segment__Test {
                 service.copy(segment);
                 // ---------------------------------------------------------------------------- then
                 final var array = set_array12_invoked_once(service);
-                final var content = readSegmentAsString(segment);
+                final var content = readSegmentAsString(segment, HelloWorld.BYTES);
                 assertEquals(HELLO_WORLD_STRING, content);
                 final var linker = Linker.nativeLinker();
                 final var puts = linker.downcallHandle(
@@ -279,7 +249,7 @@ class HelloWorld_Copy_Segment__Test {
                         FunctionDescriptor.ofVoid()
                 );
                 final var segment = arena.allocate(HelloWorld.BYTES + 1);
-                final var content = readSegmentAsString(segment);
+                final var content = readSegmentAsString(segment, HelloWorld.BYTES);
                 final var script = arena.allocateFrom(
                         "print('Python says: " + content + "')",
                         StandardCharsets.UTF_8
