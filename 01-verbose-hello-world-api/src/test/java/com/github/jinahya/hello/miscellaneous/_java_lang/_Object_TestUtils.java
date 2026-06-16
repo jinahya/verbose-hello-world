@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_lang;
 
 /*-
  * #%L
@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class _Java_Lang_Object_TestUtils {
+public final class _Object_TestUtils {
 
     /**
      * Returns a short, log-friendly string for the given {@code obj} of the form
@@ -70,7 +70,7 @@ public final class _Java_Lang_Object_TestUtils {
         return toSimpleStringHelper(obj.getClass(), obj);
     }
 
-    private _Java_Lang_Object_TestUtils() {
+    private _Object_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

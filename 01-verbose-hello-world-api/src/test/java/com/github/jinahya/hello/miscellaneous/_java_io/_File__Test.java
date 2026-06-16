@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_io;
 
 /*-
  * #%L
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("java.io.File")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-class _Java_Io_File__Test {
+class _File__Test {
 
     @TempDir
     private static File tempDir;

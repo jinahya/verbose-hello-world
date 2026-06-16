@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_lang_invoke;
 
 /*-
  * #%L
@@ -26,9 +26,9 @@ package com.github.jinahya.hello.miscellaneous;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class _Java_Lang_Invoke_TestUtils {
+public final class __Java_Lang_Invoke_TestUtils {
 
-    private _Java_Lang_Invoke_TestUtils() {
+    private __Java_Lang_Invoke_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

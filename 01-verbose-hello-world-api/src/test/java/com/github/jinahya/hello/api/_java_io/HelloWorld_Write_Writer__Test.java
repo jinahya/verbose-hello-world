@@ -22,7 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.miscellaneous._java_nio_channels.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -62,7 +62,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
     private static File tempDir;
 
     private static Stream<Charset> charsetStream() {
-        return _Java_Nio_Charset_TestUtils.charsetStream();
+        return __Java_Nio_Charset_TestUtils.charsetStream();
     }
 
     private static void print(final Charset charset, final byte[] bytes) {

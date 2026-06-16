@@ -21,6 +21,7 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.miscellaneous._java_lang.*;
 import lombok.extern.slf4j.*;
 import org.mockito.*;
 import org.mockito.mock.*;
@@ -88,7 +89,7 @@ public final class _Org_Mockito__TestUtils {
     }
 
     /**
-     * Like {@link _Java_Lang_TestUtils#toSimplifedString(Object)}, but if {@code object} is a
+     * Like {@link __Java_Lang_TestUtils#toSimplifedString(Object)}, but if {@code object} is a
      * Mockito spy (or a spy of a spy …) the chain is walked down to the innermost
      * {@linkplain MockCreationSettings#getSpiedInstance() spied instance}, and that instance's
      * identity hash is rendered. Every wrapper layer of the same logical entity therefore prints as

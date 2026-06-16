@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_lang_invoke;
 
 /*-
  * #%L
@@ -20,6 +20,8 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
+import com.github.jinahya.hello.miscellaneous._java_lang_reflect.*;
+
 import java.lang.invoke.*;
 import java.util.*;
 
@@ -29,12 +31,12 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-public final class _Java_Lang_Invoke_MethodHandles_TestUtils {
+public final class _MethodHandles_TestUtils {
 
     /**
      * Returns a {@link MethodHandle} bound to the constructor of the specified class that is
      * invocable with the specified actual arguments. The underlying constructor is located by
-     * {@link _Java_Lang_Reflect_TestUtils#findConstructor(Class, Object...)}, then
+     * {@link __Java_Lang_Reflect_TestUtils#findConstructor(Class, Object...)}, then
      * {@linkplain java.lang.reflect.AccessibleObject#setAccessible(boolean) suppressed-access} is
      * enabled so the returned handle works regardless of whether the specified
      * {@link MethodHandles.Lookup lookup} has direct access to the constructor's declaring class.
@@ -54,13 +56,13 @@ public final class _Java_Lang_Invoke_MethodHandles_TestUtils {
      *                                  most specific.
      * @throws IllegalAccessException   if the located constructor cannot be unreflected through the
      *                                  given {@code lookup}.
-     * @see _Java_Lang_Reflect_TestUtils#findConstructor(Class, Object...)
+     * @see __Java_Lang_Reflect_TestUtils#findConstructor(Class, Object...)
      */
     public static <T> MethodHandle findConstructor(
             final MethodHandles.Lookup lookup, final Class<T> clazz, final Object... args)
             throws IllegalAccessException {
         Objects.requireNonNull(lookup, "lookup is null");
-        final var ctor = _Java_Lang_Reflect_TestUtils.findConstructor(clazz, args);
+        final var ctor = __Java_Lang_Reflect_TestUtils.findConstructor(clazz, args);
         ctor.setAccessible(true);
         return lookup.unreflectConstructor(ctor);
     }
@@ -94,7 +96,7 @@ public final class _Java_Lang_Invoke_MethodHandles_TestUtils {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private _Java_Lang_Invoke_MethodHandles_TestUtils() {
+    private _MethodHandles_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

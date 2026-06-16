@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_nio;
 
 /*-
  * #%L
@@ -36,7 +36,7 @@ import java.util.stream.*;
  */
 @Slf4j
 @SuppressWarnings({"java:S101"})
-public final class _Java_Nio__TestUtils {
+public final class __Java_Nio_TestUtils {
 
     /**
      * Checks that the specified buffer has a non-zero capacity and returns it.
@@ -84,7 +84,7 @@ public final class _Java_Nio__TestUtils {
         );
     }
 
-    private _Java_Nio__TestUtils() {
+    private __Java_Nio_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

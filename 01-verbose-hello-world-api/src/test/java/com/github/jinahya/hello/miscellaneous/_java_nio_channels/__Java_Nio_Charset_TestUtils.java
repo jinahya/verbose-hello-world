@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_nio_channels;
 
 /*-
  * #%L
@@ -34,7 +34,7 @@ import java.util.stream.*;
  */
 @Slf4j
 @SuppressWarnings({"java:S101"})
-public final class _Java_Nio_Charset_TestUtils {
+public final class __Java_Nio_Charset_TestUtils {
 
     /**
      * Returns a stream of {@link Charset}s consisting of every {@link StandardCharsets} constant
@@ -85,7 +85,7 @@ public final class _Java_Nio_Charset_TestUtils {
                 .map(Charset::newDecoder);
     }
 
-    private _Java_Nio_Charset_TestUtils() {
+    private __Java_Nio_Charset_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

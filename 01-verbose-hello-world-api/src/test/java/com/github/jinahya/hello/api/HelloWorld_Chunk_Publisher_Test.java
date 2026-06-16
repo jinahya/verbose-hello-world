@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Lang_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_lang.__Java_Lang_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
 import static org.junit.jupiter.api.Assertions.*;

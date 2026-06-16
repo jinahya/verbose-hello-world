@@ -6,7 +6,7 @@ import org.mockito.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.github.jinahya.hello.miscellaneous._Java_Lang_Reflect_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_lang_reflect.__Java_Lang_Reflect_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;

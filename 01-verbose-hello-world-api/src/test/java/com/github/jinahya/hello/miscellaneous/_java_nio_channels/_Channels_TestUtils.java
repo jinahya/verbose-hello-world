@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_nio_channels;
 
 /*-
  * #%L
@@ -28,7 +28,7 @@ import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import static com.github.jinahya.hello.miscellaneous._Java_Nio__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_nio.__Java_Nio_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java__TestUtils.*;
 
 /**
@@ -37,7 +37,7 @@ import static com.github.jinahya.hello.miscellaneous._Java__TestUtils.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
-public final class _Java_Nio_Channels_TestUtils {
+public final class _Channels_TestUtils {
 
     // ---------------------------------------------------------------------------------------------
     public static long copy1(final ByteBuffer b, final ReadableByteChannel in,
@@ -207,7 +207,7 @@ public final class _Java_Nio_Channels_TestUtils {
         copy2(ByteBuffer.allocate(capacity), in, out, attachment, handler);
     }
 
-    private _Java_Nio_Channels_TestUtils() {
+    private _Channels_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }

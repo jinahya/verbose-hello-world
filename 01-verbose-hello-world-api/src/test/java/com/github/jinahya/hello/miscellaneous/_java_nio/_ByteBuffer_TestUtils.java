@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_nio;
 
 /*-
  * #%L
@@ -24,40 +24,36 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-/**
- * A class providing test utilities for {@link Buffer java.nio.Buffer} &mdash; currently a textual
- * visualizer that prints a buffer's {@code position} / {@code limit} / {@code capacity} state as a
- * labeled ASCII strip.
- *
- * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- */
-public final class _Java_Nio_Buffer_TestUtils {
+public final class _ByteBuffer_TestUtils {
+
+    private _ByteBuffer_TestUtils() {
+        throw new AssertionError("instantiation is not allowed");
+    }
 
     /**
      * Prints a multi-line, human-readable snapshot of {@code buffer}'s current state to
      * {@code printer}: identity hash, {@code remaining}, {@code direct}, {@code hasArray},
-     * {@code arrayOffset} (when present), and an ASCII strip marking {@code position},
-     * {@code limit}, and {@code capacity}.
+     * {@code arrayOffset} (when present), an ASCII strip marking {@code position}, {@code limit},
+     * and {@code capacity}, and (when array-backed) a second strip overlaying the buffer's view on
+     * its backing array.
      *
-     * @param buffer  the buffer to render; must not be {@code null}.
+     * @param buffer  the byte buffer to render; must not be {@code null}.
      * @param printer the destination of the rendering; must not be {@code null}.
-     * @param <T>     the concrete {@link Buffer} subtype of {@code buffer}.
+     * @param <T>     the concrete {@link ByteBuffer} subtype.
      * @return the given {@code buffer}, unchanged; never {@code null}.
      * @throws NullPointerException if either argument is {@code null}.
      */
     @SuppressWarnings({
             "java:S1192"
     })
-    public static <T extends Buffer> T print(final T buffer, final PrintStream printer) {
+    public static <T extends ByteBuffer> T print(final T buffer, final PrintStream printer) {
         Objects.requireNonNull(buffer, "buffer is null");
         var padding = 11;
         printer.println("------------------------------------------------------------------------");
         printer.printf(String.format("%%1$%ds: %%2$s 0x%%3$08x%%n", padding), "buffer", buffer,
                        System.identityHashCode(buffer));
-
         printer.printf(String.format("%%1$%ds: %%2$d%%n", padding), "remaining",
                        buffer.remaining());
-
         printer.printf(String.format("%%1$%ds: %%2$b%%n", padding), "direct", buffer.isDirect());
         printer.printf(String.format("%%1$%ds: %%2$b%%n", padding), "hasArray", buffer.hasArray());
         if (buffer.hasArray()) {
@@ -84,28 +80,42 @@ public final class _Java_Nio_Buffer_TestUtils {
         printer.printf(" %1$c cap(%2$d)%n", '←', buffer.capacity());
         var lpadding = padding + arrayOffset + buffer.limit() + 3;
         printer.printf(String.format("%%1$%dc lim(%%2$d)%%n", lpadding), '↑', buffer.limit());
+        if (buffer.hasArray()) {
+            for (int i = 0; i < (padding + buffer.arrayOffset() + 2); i++) {
+                printer.print(' ');
+            }
+            printer.printf("%1$c arrayOffset(%2$d)%n", '↓', buffer.arrayOffset());
+            printer.printf(String.format("%%1$%ds: ", padding), "array");
+            for (int i = 0; i < buffer.arrayOffset(); i++) {
+                printer.print('-');
+            }
+            var array = buffer.array();
+            for (int i = buffer.arrayOffset(); i < buffer.arrayOffset() + buffer.capacity(); i++) {
+                printer.print('+');
+            }
+            for (int i = buffer.arrayOffset() + buffer.capacity(); i < array.length; i++) {
+                printer.print('-');
+            }
+            printer.printf(" %1$c length(%2$d) 0x%3$08x%n", '←', array.length,
+                           System.identityHashCode(array));
+        }
         printer.println("------------------------------------------------------------------------");
         return buffer;
     }
 
     /**
      * The single-argument convenience of
-     * {@link _Java_Nio_Buffer_TestUtils#print(Buffer, PrintStream) print(buffer, System.out)}.
+     * {@link #print(ByteBuffer, PrintStream) print(buffer, System.out)}.
      *
-     * @param buffer the buffer to render; must not be {@code null}.
-     * @param <T>    the concrete {@link Buffer} subtype of {@code buffer}.
+     * @param buffer the byte buffer to render; must not be {@code null}.
+     * @param <T>    the concrete {@link ByteBuffer} subtype.
      * @return the given {@code buffer}, unchanged; never {@code null}.
      * @throws NullPointerException if {@code buffer} is {@code null}.
      */
     @SuppressWarnings({
             "java:S106"
     })
-    public static <T extends Buffer> T print(final T buffer) {
-        return _Java_Nio_Buffer_TestUtils.print(buffer, System.out);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    private _Java_Nio_Buffer_TestUtils() {
-        throw new AssertionError("instantiation is not allowed");
+    public static <T extends ByteBuffer> T print(final T buffer) {
+        return print(buffer, System.out);
     }
 }

@@ -1,4 +1,4 @@
-package com.github.jinahya.hello.miscellaneous;
+package com.github.jinahya.hello.miscellaneous._java_lang_foreign;
 
 /*-
  * #%L
@@ -23,6 +23,7 @@ package com.github.jinahya.hello.miscellaneous;
 import java.lang.foreign.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.function.*;
 
 /**
  * A class providing test utilities for {@link Arena} usages.
@@ -30,7 +31,7 @@ import java.util.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @SuppressWarnings({"java:S101"})
-public final class _Java_Lang_Foreign_Arena_TestUtils {
+public final class _Arena_TestUtils {
 
     /**
      * Checks whether any of the libraries identified by the given {@code names} can be opened
@@ -81,7 +82,20 @@ public final class _Java_Lang_Foreign_Arena_TestUtils {
         return new String(bytes, StandardCharsets.US_ASCII);
     }
 
-    private _Java_Lang_Foreign_Arena_TestUtils() {
+    public static <R> R appyConfinedArena(final Function<? super Arena, ? extends R> function) {
+        try (var arena = Arena.ofConfined()) {
+            return function.apply(arena);
+        }
+    }
+
+    public static void acceptConfinedArena(final Consumer<? super Arena> consumer) {
+        appyConfinedArena(a -> {
+            consumer.accept(a);
+            return null;
+        });
+    }
+
+    private _Arena_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }
 }
