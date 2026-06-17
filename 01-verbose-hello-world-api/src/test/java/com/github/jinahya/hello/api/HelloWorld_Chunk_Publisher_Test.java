@@ -67,12 +67,9 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     /**
      * A test-only subclass of {@link HelloWorldBytePublisher} that logs its
      * {@link #subscribe(Flow.Subscriber) subscribe} invocation and wraps the incoming subscriber
-     * with
-     * {@link
-     * _Org_Mockito__TestUtils.OfFlow#loggingByteSubscriber
-     * loggingByteSubscriber(...)} before delegating to {@code super.subscribe(...)} — so the
-     * upstream byte-publisher's full signal exchange surfaces in logs without touching the SUT's
-     * own body.
+     * with {@link _Org_Mockito__TestUtils.OfFlow#loggingByteSubscriber loggingByteSubscriber(...)}
+     * before delegating to {@code super.subscribe(...)} — so the upstream byte-publisher's full
+     * signal exchange surfaces in logs without touching the SUT's own body.
      */
     private static final class LoggingByteFixture extends HelloWorldBytePublisher {
 

@@ -28,8 +28,8 @@ import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
-import static com.github.jinahya.hello.miscellaneous._java_nio.__Java_Nio_TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._Java__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_nio.__Java_Nio_TestUtils.*;
 
 /**
  * A class providing test utilities for {@link java.nio.channels} usages.

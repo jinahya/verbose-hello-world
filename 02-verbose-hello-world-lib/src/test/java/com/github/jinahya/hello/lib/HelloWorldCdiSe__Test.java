@@ -21,7 +21,7 @@ package com.github.jinahya.hello.lib;
  */
 
 import lombok.*;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 
 /**
  * An abstract base for tests that wire {@link HelloWorldDi__Test}'s injection points through a

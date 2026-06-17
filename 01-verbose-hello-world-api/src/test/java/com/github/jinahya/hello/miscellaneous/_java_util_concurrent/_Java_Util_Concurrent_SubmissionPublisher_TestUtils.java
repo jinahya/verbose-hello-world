@@ -1,5 +1,25 @@
 package com.github.jinahya.hello.miscellaneous._java_util_concurrent;
 
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import lombok.extern.slf4j.*;
 import org.mockito.*;
 
@@ -19,10 +39,9 @@ public final class _Java_Util_Concurrent_SubmissionPublisher_TestUtils {
      * {@code new SubmissionPublisher(...)} on the current thread and replaces it with a Mockito
      * mock whose {@code subscribe} / {@code submit} / {@code close} / {@code closeExceptionally}
      * calls are routed through a
-     * {@linkplain
-     * OfFlow#loggingPublisher(java.util.concurrent.Flow.Publisher) logging
-     * spy} of a real, sibling {@link SubmissionPublisher} — so the inner subscribe is logged and
-     * every subscription's {@code request(n)} / {@code cancel()} are logged too.
+     * {@linkplain OfFlow#loggingPublisher(java.util.concurrent.Flow.Publisher) logging spy} of a
+     * real, sibling {@link SubmissionPublisher} — so the inner subscribe is logged and every
+     * subscription's {@code request(n)} / {@code cancel()} are logged too.
      * <p>
      * Use in {@code @BeforeAll} / {@code @AfterAll}:
      * <pre>{@code

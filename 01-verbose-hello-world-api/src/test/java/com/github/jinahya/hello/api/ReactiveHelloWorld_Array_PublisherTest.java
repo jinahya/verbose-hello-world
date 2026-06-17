@@ -84,8 +84,7 @@ class ReactiveHelloWorld_Array_PublisherTest
     /**
      * A test-only subclass of {@link ReactiveHelloWorldBytePublisher} that logs its
      * {@link #subscribe(Subscriber) subscribe} invocation and wraps the incoming subscriber with
-     * {@link
-     * _Org_Mockito__TestUtils.OfReactiveStream#loggingByteSubscriber
+     * {@link _Org_Mockito__TestUtils.OfReactiveStream#loggingByteSubscriber
      * loggingByteSubscriber(...)} before delegating to {@code super.subscribe(...)} — so the
      * upstream byte-publisher's full signal exchange surfaces in logs without touching the SUT's
      * own body.

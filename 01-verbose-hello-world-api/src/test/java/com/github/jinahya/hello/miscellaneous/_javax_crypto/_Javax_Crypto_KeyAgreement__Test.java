@@ -48,8 +48,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>Provider policy: every algorithm is bound to {@link BouncyCastleProvider BouncyCastle}
  * explicitly so the assertions don't depend on which JDK distribution provides them. The
- * {@link _LatestLTS @LatestLTS} / {@link _LatestJDK @LatestJDK} markers on individual tests (and the
- * matching constants in {@link _Javax_Crypto_KeyAgreement_TestConstants}) merely document which
+ * {@link _LatestLTS @LatestLTS} / {@link _LatestJDK @LatestJDK} markers on individual tests (and
+ * the matching constants in {@link _Javax_Crypto_KeyAgreement_TestConstants}) merely document which
  * algorithms are JCA-mandatory in Java 25 (latest LTS) and Java 26 (latest JDK).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

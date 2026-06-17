@@ -23,7 +23,7 @@ package com.github.jinahya.hello.lib;
 import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 
 import java.util.stream.*;
 

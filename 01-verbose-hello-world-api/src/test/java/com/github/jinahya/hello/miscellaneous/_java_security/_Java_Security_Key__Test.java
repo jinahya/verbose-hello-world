@@ -21,7 +21,7 @@ package com.github.jinahya.hello.miscellaneous._java_security;
  */
 
 import com.github.jinahya.hello.api.annotations.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.miscellaneous._javax_crypto.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
