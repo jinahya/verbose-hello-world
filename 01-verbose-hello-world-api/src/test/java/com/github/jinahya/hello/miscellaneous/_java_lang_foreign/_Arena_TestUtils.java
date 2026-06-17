@@ -66,30 +66,47 @@ public final class _Arena_TestUtils {
         return Optional.empty();
     }
 
-    /**
-     * Reads {@code length} bytes from the start of the given {@code segment} and decodes them as a
-     * {@link StandardCharsets#US_ASCII US-ASCII} string.
-     *
-     * @param segment the segment to read from.
-     * @param length  the number of bytes to read.
-     * @return the decoded string.
-     */
-    public static String readSegmentAsString(final MemorySegment segment, final int length) {
-        final var bytes = new byte[length];
-        for (int i = 0; i < length; i++) {
-            bytes[i] = segment.get(ValueLayout.JAVA_BYTE, i);
-        }
-        return new String(bytes, StandardCharsets.US_ASCII);
-    }
+//    /**
+//     * Reads {@code length} bytes from the start of the given {@code segment} and decodes them as a
+//     * {@link StandardCharsets#US_ASCII US-ASCII} string.
+//     *
+//     * @param segment the segment to read from.
+//     * @param length  the number of bytes to read.
+//     * @return the decoded string.
+//     */
+//    public static String readSegmentAsString(final MemorySegment segment, final int length) {
+//        final var bytes = new byte[length];
+//        for (int i = 0; i < length; i++) {
+//            bytes[i] = segment.get(ValueLayout.JAVA_BYTE, i);
+//        }
+//        return new String(bytes, StandardCharsets.US_ASCII);
+//    }
 
     public static <R> R appyConfinedArena(final Function<? super Arena, ? extends R> function) {
+        Objects.requireNonNull(function, "function is null");
         try (var arena = Arena.ofConfined()) {
             return function.apply(arena);
         }
     }
 
     public static void acceptConfinedArena(final Consumer<? super Arena> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
         appyConfinedArena(a -> {
+            consumer.accept(a);
+            return null;
+        });
+    }
+
+    public static <R> R appySharedArena(final Function<? super Arena, ? extends R> function) {
+        Objects.requireNonNull(function, "function is null");
+        try (var arena = Arena.ofShared()) {
+            return function.apply(arena);
+        }
+    }
+
+    public static void acceptSharedArena(final Consumer<? super Arena> consumer) {
+        Objects.requireNonNull(consumer, "consumer is null");
+        appySharedArena(a -> {
             consumer.accept(a);
             return null;
         });

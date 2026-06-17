@@ -253,7 +253,7 @@ public interface HelloWorld {
         Objects.requireNonNull(segment, "segment is null");
         if (segment.byteSize() < BYTES) {
             throw new IndexOutOfBoundsException(
-                    "byteSize(" + segment.byteSize() + ") < BYTES(" + BYTES + ")"
+                    "segment.byteSize(" + segment.byteSize() + ") < BYTES(" + BYTES + ")"
             );
         }
         final var array = new byte[BYTES];

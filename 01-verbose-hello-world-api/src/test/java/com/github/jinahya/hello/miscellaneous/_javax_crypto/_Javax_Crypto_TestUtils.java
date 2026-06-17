@@ -31,7 +31,7 @@ import java.util.*;
  * A class providing test utilities for {@link javax.crypto} usages.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see com.github.jinahya.hello._Javax_Crypto_KeyGenerator_Test
+ * @see com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_KeyGenerator_Test
  */
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -41,7 +41,7 @@ public final class _Javax_Crypto_TestUtils {
      * A map of {@link KeyGenerator} algorithm names to their representative key sizes (empty list
      * indicates the algorithm uses a fixed default size).
      *
-     * @see com.github.jinahya.hello._Javax_Crypto_KeyGenerator_Test
+     * @see com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_KeyGenerator_Test
      */
     public static final Map<String, List<Integer>> KEY_GENERATOR_ALGORITHMS_AND_KEYSIZES = Map.of(
             "AES", List.of(128, 256),

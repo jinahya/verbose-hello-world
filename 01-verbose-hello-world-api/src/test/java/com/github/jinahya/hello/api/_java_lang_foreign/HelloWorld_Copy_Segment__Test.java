@@ -93,19 +93,18 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         void _puts__() throws Throwable {
             // ------------------------------------------------------------------------------- given
             try (var arena = Arena.ofConfined()) {
-                // +1 for null terminator (puts requires null-terminated string)
                 final var segment = arena.allocate(HelloWorld.BYTES + 1);
-                // ----------------------------------------------------------------------------when
+                // -----------------------------------------------------------------------------when
                 service().copy(segment);
                 // ---------------------------------------------------------------------------- then
-                final var content = readSegmentAsString(segment, HelloWorld.BYTES);
+                final var content = segment.getString(0, StandardCharsets.US_ASCII);
                 assertEquals(HELLO_WORLD_STRING, content);
                 final var linker = Linker.nativeLinker();
-                final var puts = linker.downcallHandle(
+                final var handle = linker.downcallHandle(
                         linker.defaultLookup().find("puts").orElseThrow(),
                         FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
                 );
-                puts.invoke(segment);  // prints "hello, world\n"
+                handle.invoke(segment);  // prints "hello, world\n"
             }
         }
 
@@ -125,11 +124,11 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
                 service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 final var linker = Linker.nativeLinker();
-                final var strlen = linker.downcallHandle(
+                final var handle = linker.downcallHandle(
                         linker.defaultLookup().find("strlen").orElseThrow(),
                         FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)
                 );
-                final var len = (long) strlen.invoke(segment);
+                final var len = (long) handle.invoke(segment);
                 assertEquals(HelloWorld.BYTES, len);
             }
         }
@@ -150,7 +149,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
                 service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 final var linker = Linker.nativeLinker();
-                final var memcmp = linker.downcallHandle(
+                final var handle = linker.downcallHandle(
                         linker.defaultLookup().find("memcmp").orElseThrow(),
                         FunctionDescriptor.of(
                                 ValueLayout.JAVA_INT,
@@ -160,7 +159,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
                         )
                 );
                 final var expected = arena.allocateFrom("hello, world", StandardCharsets.US_ASCII);
-                final var result = (int) memcmp.invoke(segment, expected, (long) HelloWorld.BYTES);
+                final var result = (int) handle.invoke(segment, expected, (long) HelloWorld.BYTES);
                 assertEquals(0, result, "Memory content should match 'hello, world'");
             }
         }
@@ -344,7 +343,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         }
     }
 
-    // --------------------------------------------------------------------------------------- zlib
+    // ---------------------------------------------------------------------------------------- zlib
 
     /**
      * Tests {@link HelloWorld#copy(MemorySegment)} with zlib's {@code crc32} function — a
@@ -414,7 +413,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         }
     }
 
-    // ---------------------------------------------------- java.lang.foreign.MemorySegment#ofArray
+    // ----------------------------------------------------- java.lang.foreign.MemorySegment#ofArray
 
     /**
      * Tests {@link HelloWorld#copy(MemorySegment)} against an on-heap segment wrapping a
@@ -441,7 +440,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         }
     }
 
-    // --------------------------------------------------- java.lang.foreign.MemorySegment#ofBuffer
+    // ---------------------------------------------------- java.lang.foreign.MemorySegment#ofBuffer
 
     /**
      * Tests {@link HelloWorld#copy(MemorySegment)} against a segment wrapping a
@@ -487,7 +486,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         }
     }
 
-    // ---------------------------------------------------------- java.nio.channels.FileChannel#map
+    // ----------------------------------------------------------- java.nio.channels.FileChannel#map
 
     /**
      * Tests {@link HelloWorld#copy(MemorySegment)} against a segment backed by a memory-mapped file
@@ -524,7 +523,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         }
     }
 
-    // ---------------------------------------------------- java.lang.foreign.MemorySegment#asSlice
+    // ----------------------------------------------------- java.lang.foreign.MemorySegment#asSlice
 
     /**
      * Tests {@link HelloWorld#copy(MemorySegment)} via {@link MemorySegment#asSlice(long)} — the
@@ -553,12 +552,14 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
                                  "byte at " + i + " must stay zero");
                 }
                 assertEquals(HELLO_WORLD_STRING,
-                             readSegmentAsString(segment.asSlice(offset), HelloWorld.BYTES));
+                             new String(segment.asSlice(offset, HelloWorld.BYTES)
+                                                .toArray(ValueLayout.JAVA_BYTE),
+                                        StandardCharsets.US_ASCII));
             });
         }
     }
 
-    // ---------------------------------------------------------------- java.lang.foreign.Arena#of*
+    // ----------------------------------------------------------------- java.lang.foreign.Arena#of*
 
     /**
      * Tests {@link HelloWorld#copy(MemorySegment)} against off-heap segments allocated by each
@@ -580,7 +581,9 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
                 // -------------------------------------------------------------------------- when
                 service().copy(segment);
                 // -------------------------------------------------------------------------- then
-                assertEquals(HELLO_WORLD_STRING, readSegmentAsString(segment, HelloWorld.BYTES));
+                assertEquals(HELLO_WORLD_STRING,
+                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                    StandardCharsets.US_ASCII));
             });
         }
 
@@ -591,14 +594,15 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         @DisplayName("Arena.ofShared()")
         @Test
         void _shared__() {
-            // ------------------------------------------------------------------------------- given
-            try (var arena = Arena.ofShared()) {
+            acceptSharedArena(arena -> {
                 final var segment = arena.allocate(HelloWorld.BYTES);
-                // ---------------------------------------------------------------------------- when
+                // -------------------------------------------------------------------------- when
                 service().copy(segment);
-                // ---------------------------------------------------------------------------- then
-                assertEquals(HELLO_WORLD_STRING, readSegmentAsString(segment, HelloWorld.BYTES));
-            }
+                // -------------------------------------------------------------------------- then
+                assertEquals(HELLO_WORLD_STRING,
+                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                    StandardCharsets.US_ASCII));
+            });
         }
 
         /**
@@ -615,7 +619,9 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
             // -------------------------------------------------------------------------------- when
             service().copy(segment);
             // -------------------------------------------------------------------------------- then
-            assertEquals(HELLO_WORLD_STRING, readSegmentAsString(segment, HelloWorld.BYTES));
+            assertEquals(HELLO_WORLD_STRING,
+                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                    StandardCharsets.US_ASCII));
         }
 
         /**
@@ -632,7 +638,9 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
             // -------------------------------------------------------------------------------- when
             service().copy(segment);
             // -------------------------------------------------------------------------------- then
-            assertEquals(HELLO_WORLD_STRING, readSegmentAsString(segment, HelloWorld.BYTES));
+            assertEquals(HELLO_WORLD_STRING,
+                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                    StandardCharsets.US_ASCII));
         }
     }
 }

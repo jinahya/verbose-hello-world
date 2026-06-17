@@ -61,8 +61,8 @@ class HelloWorld_Write_Writer_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#write(Writer) write(writer)} method invokes
-     * {@link HelloWorld#append(Appendable) append(appendable)} method with given {@code writer},
-     * and returns the {@code writer}.
+     * {@link HelloWorld#append(Appendable) append(appendable)} method with the given
+     * {@code writer}, and returns the {@code writer}.
      *
      * @throws IOException if an I/O error occurs.
      */

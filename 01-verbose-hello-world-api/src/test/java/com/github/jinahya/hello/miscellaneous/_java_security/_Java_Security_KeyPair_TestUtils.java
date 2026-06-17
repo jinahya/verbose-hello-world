@@ -31,7 +31,7 @@ import java.security.spec.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
- * (Java® Platform, Standard Edition & Java Development Kit Version 25 API Specification)
+ * (Java® Platform, Standard Edition &amp; Java Development Kit Version 25 API Specification)
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#keypairgenerator-algorithms">{@code
  * KeyPairGenerator} Algorithms</a> (Java Security Standard Algorithm Names)

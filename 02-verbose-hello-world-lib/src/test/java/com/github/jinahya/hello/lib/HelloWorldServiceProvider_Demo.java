@@ -34,7 +34,7 @@ import com.github.jinahya.hello.api.*;
 public class HelloWorldServiceProvider_Demo implements HelloWorldServiceProvider {
 
     /**
-     * {@inheritDoc}
+     * Classifies the supplied service as <em>unqualified</em>; always returns {@code false}.
      *
      * @return {@code false}.
      */
@@ -44,7 +44,7 @@ public class HelloWorldServiceProvider_Demo implements HelloWorldServiceProvider
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a fresh {@link HelloWorldDemo} instance on every invocation.
      *
      * @return a new {@link HelloWorldDemo} instance.
      */
