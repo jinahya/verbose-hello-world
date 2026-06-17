@@ -28,7 +28,6 @@ import java.lang.foreign.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -59,14 +58,12 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
             // -------------------------------------------------------------------------------- then
             assertSame(segment, result);
             final var array = set_array12_invoked_once(service);
-            mockedStatic.verify(() -> MemorySegment.copy(
-                    same(array),
-                    eq(0),
-                    same(segment),
-                    eq(ValueLayout.JAVA_BYTE),
-                    eq(0L),
-                    eq(array.length)
-            ));
+            mockedStatic.verify(
+                    () -> MemorySegment.copy(
+                            array, 0, segment, ValueLayout.JAVA_BYTE, 0L, array.length),
+                    times(1)
+            );
+            mockedStatic.verifyNoMoreInteractions();
         }
     }
 }
