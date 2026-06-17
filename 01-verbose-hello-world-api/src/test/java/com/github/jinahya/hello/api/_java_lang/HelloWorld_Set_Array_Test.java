@@ -89,8 +89,8 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method invokes
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method with the given {@code array}
-     * and {@code 0}, and returns the {@code array}.
+     * {@link HelloWorld#set(byte[], int) set(array, index)} method with the given {@code array} and
+     * {@code 0}, and returns the {@code array}.
      *
      * @see Mockito#verify(Object, VerificationMode)
      * @see org.junit.jupiter.api.Assertions#assertSame(Object, Object)

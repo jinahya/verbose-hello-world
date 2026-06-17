@@ -576,14 +576,14 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         @DisplayName("Arena.ofConfined()")
         @Test
         void _confined__() {
-            acceptConfinedArena(arena -> {
-                final var segment = arena.allocate(HelloWorld.BYTES);
+            acceptConfinedArena(a -> {
+                final var segment = a.allocate(HelloWorld.BYTES);
                 // -------------------------------------------------------------------------- when
                 service().copy(segment);
                 // -------------------------------------------------------------------------- then
                 assertEquals(HELLO_WORLD_STRING,
-                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
-                                    StandardCharsets.US_ASCII));
+                             new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                        StandardCharsets.US_ASCII));
             });
         }
 
@@ -594,14 +594,14 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         @DisplayName("Arena.ofShared()")
         @Test
         void _shared__() {
-            acceptSharedArena(arena -> {
-                final var segment = arena.allocate(HelloWorld.BYTES);
+            acceptSharedArena(a -> {
+                final var segment = a.allocate(HelloWorld.BYTES);
                 // -------------------------------------------------------------------------- when
                 service().copy(segment);
                 // -------------------------------------------------------------------------- then
                 assertEquals(HELLO_WORLD_STRING,
-                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
-                                    StandardCharsets.US_ASCII));
+                             new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                        StandardCharsets.US_ASCII));
             });
         }
 

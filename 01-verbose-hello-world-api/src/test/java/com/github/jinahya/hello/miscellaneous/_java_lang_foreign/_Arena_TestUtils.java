@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous._java_lang_foreign;
  */
 
 import java.lang.foreign.*;
-import java.nio.charset.*;
 import java.util.*;
 import java.util.function.*;
 
