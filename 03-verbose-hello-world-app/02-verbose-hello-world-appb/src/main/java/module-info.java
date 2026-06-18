@@ -26,5 +26,6 @@
  */
 module com.github.jinahya.hello.appb {
     requires com.github.jinahya.hello.api;
-    uses com.github.jinahya.hello.api.HelloWorld;
+    // no `uses` directive: this module discovers its HelloWorld provider through the
+    // classpath SPI mechanism (META-INF/services), not the module-path one.
 }
