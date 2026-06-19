@@ -1,0 +1,7 @@
+<float.h>  FLT_EPSILON        macro:     +1.19209289550781250000e-07 fixed
+<float.h>  FLT_EPSILON        computed:  +1.19209289550781250000e-07 fixed
+<float.h>  DBL_EPSILON        macro:     +2.22044604925031308085e-16 fixed
+<float.h>  DBL_EPSILON        computed:  +2.22044604925031308085e-16 fixed
+<float.h>  LDBL_EPSILON       macro:     +2.22044604925031308085e-16 impl
+<float.h>  LDBL_EPSILON       computed:  +2.22044604925031308085e-16 impl
+<float.h>  FLT16_EPSILON      macro:     +9.76562500000000000000e-04 fixed
