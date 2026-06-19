@@ -110,20 +110,16 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
                 upstream.subscribe(new Flow.Subscriber<>() { // @formatter:off
                     private final byte[] array = new byte[HelloWorld.BYTES];
                     private int index;
-                    @Override
-                    public void onSubscribe(final Flow.Subscription s) {
+                    @Override public void onSubscribe(final Flow.Subscription s) {
                         s.request(HelloWorld.BYTES);
                     }
-                    @Override
-                    public void onNext(final Byte b) {
+                    @Override public void onNext(final Byte b) {
                         array[index++] = b;
                     }
-                    @Override
-                    public void onError(final Throwable t) {
+                    @Override public void onError(final Throwable t) {
                         done.completeExceptionally(t);
                     }
-                    @Override
-                    public void onComplete() {
+                    @Override public void onComplete() {
                         done.complete(array);
                     }
                 }); // @formatter:on
