@@ -40,6 +40,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.io.File.*;
 import static java.nio.charset.StandardCharsets.*;
+import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -163,7 +164,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             try (var writer = new FileWriter(file, charset)) {
                 service().write(writer).flush();
             }
-            print(charset, Files.readAllBytes(file.toPath()));
+            print(charset, readAllBytes(file.toPath()));
             try (var reader = new FileReader(file, charset)) {
                 final var string = reader.readAllAsString();
                 assertEquals(HELLO_WORLD_STRING, string);
