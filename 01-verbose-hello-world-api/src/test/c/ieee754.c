@@ -8,8 +8,10 @@
  *   <defining header>  <constant>  <type>  <value>  <fixed|impl>
  *
  * The type column is the C type of the constant (int / float / double / long
- * double). The last column flags whether the value is fixed by definition
- * (identical on every common IEEE-754 platform) or implementation-defined.
+ * double). The last column flags whether the value is mandated by the C standard
+ * (fixed) or implementation-defined (impl). The C standard does NOT mandate the
+ * IEEE 754 binary formats nor the FP_* / FE_* code values, so every value here is
+ * impl (they would be pinned only under the optional IEC 60559 / Annex F binding).
  *
  * Deliberately omitted (C-library / decimal-convenience / error-handling, not
  * IEEE 754): FLT_ROUNDS, FLT_EVAL_METHOD, *_DIG, *_DECIMAL_DIG, DECIMAL_DIG,
@@ -48,31 +50,31 @@ int main(void) {
     MI("<float.h>", FLT_RADIX, "impl");
 
     /* float (binary32) */
-    MI("<float.h>", FLT_MANT_DIG, "fixed");
-    MI("<float.h>", FLT_MIN_EXP, "fixed");
-    MI("<float.h>", FLT_MAX_EXP, "fixed");
+    MI("<float.h>", FLT_MANT_DIG, "impl");
+    MI("<float.h>", FLT_MIN_EXP, "impl");
+    MI("<float.h>", FLT_MAX_EXP, "impl");
 #ifdef FLT_HAS_SUBNORM
-    MI("<float.h>", FLT_HAS_SUBNORM, "fixed");
+    MI("<float.h>", FLT_HAS_SUBNORM, "impl");
 #endif
-    MFLT("<float.h>", FLT_EPSILON, "fixed");
-    MFLT("<float.h>", FLT_MIN, "fixed");
-    MFLT("<float.h>", FLT_MAX, "fixed");
+    MFLT("<float.h>", FLT_EPSILON, "impl");
+    MFLT("<float.h>", FLT_MIN, "impl");
+    MFLT("<float.h>", FLT_MAX, "impl");
 #ifdef FLT_TRUE_MIN
-    MFLT("<float.h>", FLT_TRUE_MIN, "fixed");
+    MFLT("<float.h>", FLT_TRUE_MIN, "impl");
 #endif
 
     /* double (binary64) */
-    MI("<float.h>", DBL_MANT_DIG, "fixed");
-    MI("<float.h>", DBL_MIN_EXP, "fixed");
-    MI("<float.h>", DBL_MAX_EXP, "fixed");
+    MI("<float.h>", DBL_MANT_DIG, "impl");
+    MI("<float.h>", DBL_MIN_EXP, "impl");
+    MI("<float.h>", DBL_MAX_EXP, "impl");
 #ifdef DBL_HAS_SUBNORM
-    MI("<float.h>", DBL_HAS_SUBNORM, "fixed");
+    MI("<float.h>", DBL_HAS_SUBNORM, "impl");
 #endif
-    MDBL("<float.h>", DBL_EPSILON, "fixed");
-    MDBL("<float.h>", DBL_MIN, "fixed");
-    MDBL("<float.h>", DBL_MAX, "fixed");
+    MDBL("<float.h>", DBL_EPSILON, "impl");
+    MDBL("<float.h>", DBL_MIN, "impl");
+    MDBL("<float.h>", DBL_MAX, "impl");
 #ifdef DBL_TRUE_MIN
-    MDBL("<float.h>", DBL_TRUE_MIN, "fixed");
+    MDBL("<float.h>", DBL_TRUE_MIN, "impl");
 #endif
 
     /* long double (format varies by platform) */
@@ -90,11 +92,11 @@ int main(void) {
 #endif
 
     /* -------------------------------------- <math.h> : special values/classes */
-    MFLT("<math.h>", INFINITY, "fixed");
-    MDBL("<math.h>", HUGE_VAL, "fixed");
-    MFLT("<math.h>", HUGE_VALF, "fixed");
-    ML("<math.h>", HUGE_VALL, "fixed");
-    MFLT("<math.h>", NAN, "fixed");
+    MFLT("<math.h>", INFINITY, "impl");
+    MDBL("<math.h>", HUGE_VAL, "impl");
+    MFLT("<math.h>", HUGE_VALF, "impl");
+    ML("<math.h>", HUGE_VALL, "impl");
+    MFLT("<math.h>", NAN, "impl");
     MI("<math.h>", FP_NAN, "impl");
     MI("<math.h>", FP_INFINITE, "impl");
     MI("<math.h>", FP_ZERO, "impl");

@@ -4,11 +4,11 @@
  *   <defining header>  <constant>  <type>  <value>  <fixed|impl>
  *
  * The type column is the C type of the constant. The last column flags whether
- * the value is fixed by definition (identical on every common IEEE-754 platform)
- * or implementation-defined: float (binary32), double (binary64), and the C23
- * interchange types _Float16/32/64/128 are "fixed"; long double (80-bit /
- * binary64 / binary128 vary by platform) and the extended _Float32x/_Float64x
- * are "impl".
+ * the value is mandated by the C standard (fixed) or implementation-defined
+ * (impl). The C standard does NOT mandate the float / double / long double
+ * formats, so FLT_ / DBL_ / LDBL_EPSILON are impl; only the C23 interchange types
+ * _Float16/32/64/128 (required to be IEC 60559 binary16/32/64/128) are fixed,
+ * while the extended _Float32x/_Float64x are impl.
  *
  * The C23 _FloatN / _FloatNx rows are guarded: the standard FLTn_EPSILON macros
  * need C23 + libc support; where absent the compiler builtin __FLTn_EPSILON__ is
@@ -30,8 +30,8 @@ static void row(const char *hdr, const char *name, const char *type,
 }
 
 int main(void) {
-    row("<float.h>", "FLT_EPSILON", "float", "fixed", "%+.20e", (double) FLT_EPSILON);
-    row("<float.h>", "DBL_EPSILON", "double", "fixed", "%+.20e", DBL_EPSILON);
+    row("<float.h>", "FLT_EPSILON", "float", "impl", "%+.20e", (double) FLT_EPSILON);
+    row("<float.h>", "DBL_EPSILON", "double", "impl", "%+.20e", DBL_EPSILON);
     row("<float.h>", "LDBL_EPSILON", "long double", "impl", "%+.20Le", LDBL_EPSILON);
 
     /* C23 _FloatN / _FloatNx (binary16/32/64/128 + extended) */

@@ -1,8 +1,8 @@
 /*
- * Prints only the fixed-by-definition integral constants -- those whose value is
- * identical on every conforming platform: the exact-width <stdint.h> types
- * (INTn / UINTn min/max, and their C23 widths) and <limits.h>'s bool. Each line
- * uses fixed column widths:
+ * Prints only the integral constants mandated by the C standard to an exact value
+ * (identical on every conforming implementation): the exact-width <stdint.h>
+ * types (INTn / UINTn min/max -- two's-complement, exactly N bits -- and their
+ * C23 widths) and <limits.h>'s bool. Each line uses fixed column widths:
  *
  *   <defining header>  <constant>  <type>  <value>  fixed
  *

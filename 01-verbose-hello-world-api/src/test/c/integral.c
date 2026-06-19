@@ -5,9 +5,10 @@
  *   <defining header>  <constant>  <type>  <value>  <fixed|impl>
  *
  * The type column is the C type the constant describes. The last column flags
- * whether the value is fixed by definition (identical on every conforming
- * platform) or implementation-defined. Only the exact-width types (INTn / UINTn)
- * and a few standard-mandated constants are "fixed".
+ * whether the value is mandated by the C standard (fixed) or implementation-
+ * defined (impl). Only the exact-width types (INTn / UINTn -- two's-complement,
+ * exactly N bits) and bool are fixed; the classic / least / fast / pointer / size
+ * / wchar limits are all implementation-defined.
  *
  * Signed values are printed via intmax_t (%+jd), unsigned via uintmax_t (%ju),
  * widths as int (%+d). Optional macros (exact-width <stdint.h> types, C23 *_WIDTH
