@@ -92,7 +92,7 @@ verbose-hello-world (root POM aggregator)
 └── 03-verbose-hello-world-app    # Application modules (POM aggregator)
     ├── 01-...-appa               # Direct instantiation of HelloWorldImpl
     ├── 02-...-appb               # SPI via ServiceLoader
-    ├── 03-...-appc               # DI (Guice)
+    ├── 03-...-appc               # DI (Spring)
     └── 04-...-appd               # CDI (Jakarta CDI)
 ```
 

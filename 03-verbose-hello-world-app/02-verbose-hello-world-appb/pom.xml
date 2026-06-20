@@ -14,6 +14,10 @@
   <name>${project.artifactId}</name>
   <description>Verbose Hello World Appb</description>
 
+  <properties>
+    <mainClass>com.github.jinahya.hello.appb.HelloWorldMain</mainClass>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.github.jinahya</groupId>
