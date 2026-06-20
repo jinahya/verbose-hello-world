@@ -46,6 +46,10 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test {
 
+    static { // pinning
+        ArgumentCaptor.forClass(Object.class);
+    }
+
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)}
      * method throws a {@link NullPointerException} when the {@code socket} argument is
@@ -99,7 +103,7 @@ class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.send(socket, target);
         // ------------------------------------------------------------------------------------ then
-        final var packetCaptor = ArgumentCaptor.forClass(DatagramPacket.class);
+//        final var packetCaptor = ArgumentCaptor.forClass(DatagramPacket.class);
 //        verify(service, times(1)).append(packetCaptor.capture());
 //        final var packet = packetCaptor.getValue();
 //        assertNotNull(packet);
