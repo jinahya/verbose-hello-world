@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.zip.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,8 +88,9 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 assertEquals(HelloWorld.BYTES, baos.size());
                 try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
                     final var bytes = bais.readAllBytes();
-                    final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertArrayEquals(hello_world_byte_array(), bytes);
+                    final var decoded = new String(bytes, StandardCharsets.US_ASCII);
+                    assertEquals(HELLO_WORLD_STRING, decoded);
                 }
             }
         }
@@ -165,7 +167,20 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                      var dis = new DataInputStream(bais)) {
                     final var bytes = dis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HELLO_WORLD_STRING, string);
+                }
+            }
+        }
+
+        @Test
+        void __UTF() throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 var dos = new DataOutputStream(baos)) {
+                dos.writeUTF(HELLO_WORLD_STRING);
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     var dis = new DataInputStream(bais)) {
+                    final var string = dis.readUTF();
+                    assertEquals(HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -191,8 +206,9 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             assertEquals(HelloWorld.BYTES, file.length());
             try (var stream = new FileInputStream(file)) {
                 final var bytes = stream.readNBytes(HelloWorld.BYTES);
-                final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertArrayEquals(hello_world_byte_array(), bytes);
+                final var decoded = new String(bytes, StandardCharsets.US_ASCII);
+                assertEquals(HELLO_WORLD_STRING, decoded);
             }
         }
     }
@@ -219,7 +235,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HELLO_WORLD_STRING, string);
             }
         }
 
@@ -249,7 +265,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HELLO_WORLD_STRING, string);
             }
         }
     }
@@ -276,7 +292,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                      var iis = new InflaterInputStream(bais)) {
                     final var bytes = iis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HELLO_WORLD_STRING, string);
                 }
             }
         }
