@@ -624,7 +624,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-//        final var stream = socket.getOutputStream();
+        final var stream = socket.getOutputStream();
 //        write(stream);
         return socket;
     }
