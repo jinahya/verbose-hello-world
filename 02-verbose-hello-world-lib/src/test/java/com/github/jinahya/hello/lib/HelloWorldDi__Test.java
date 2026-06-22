@@ -22,8 +22,10 @@ package com.github.jinahya.hello.lib;
 
 import com.github.jinahya.hello.api.*;
 import jakarta.inject.*;
+import jakarta.inject.Named;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
 
 import java.util.stream.*;
 
@@ -35,6 +37,7 @@ import static com.github.jinahya.hello.lib.HelloWorldDi_Constants.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://jcp.org/en/jsr/detail?id=330">JSR 330: Dependency Injection for Java</a>
  */
+@DisplayName("HelloWorldDi")
 @Getter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

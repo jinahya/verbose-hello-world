@@ -38,14 +38,13 @@ import static org.mockito.Mockito.*;
  */
 @DisplayName("set(bitset, index)")
 @Slf4j
-class HelloWorld_Set_BitSet_Index_Test
-        extends HelloWorld__Test {
+class HelloWorld_Set_BitSet_Index_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method throws a
      * {@link NullPointerException} when the {@code bitset} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <bitset> argument is <null>")
+    @DisplayName("throws NPE / bitset is null")
     @Test
     void _ThrowNullPointerException_BitSetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -60,7 +59,7 @@ class HelloWorld_Set_BitSet_Index_Test
      * Verifies that the {@link HelloWorld#set(BitSet, int) set(bitset, index)} method throws an
      * {@link IllegalArgumentException} when the {@code index} argument is negative.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <index> argument is negative")
+    @DisplayName("throws IAE / index is negative")
     @Test
     void _ThrowIllegalArgumentException_IndexIsNegative() {
         // ----------------------------------------------------------------------------------- given
@@ -76,7 +75,7 @@ class HelloWorld_Set_BitSet_Index_Test
      * {@link HelloWorld#set(byte[]) set(array)} once and sets the bits of the given {@link BitSet}
      * in little-endian order from the array bytes, and returns the {@code bitset}.
      */
-    @DisplayName("should invoke <set(byte[])> and set bits in little-endian order")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

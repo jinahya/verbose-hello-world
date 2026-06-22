@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_util_function;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_HideFromPublishing
 @DisplayName("accept(consumer, mapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -59,8 +61,7 @@ class HelloWorld_Accept_Consumer_Mapper__Test extends HelloWorld__Test {
      * method writes the {@code "hello, world"} bytes through a
      * {@link ByteArrayOutputStream#write(int) ByteArrayOutputStream::write} consumer.
      */
-    @DisplayName(
-            "should write <hello, world> bytes through a <ByteArrayOutputStream::write> consumer")
+    @DisplayName("ByteArrayOutputStream::write")
     @Test
     void __() throws IOException {
         try (var baos = new ByteArrayOutputStream()) {

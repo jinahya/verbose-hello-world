@@ -30,4 +30,5 @@ module com.github.jinahya.hello.api {
     requires java.sql;
     requires java.desktop;
     exports com.github.jinahya.hello.api;
+//    exports com.github.jinahya.hello.api.annotations;
 }

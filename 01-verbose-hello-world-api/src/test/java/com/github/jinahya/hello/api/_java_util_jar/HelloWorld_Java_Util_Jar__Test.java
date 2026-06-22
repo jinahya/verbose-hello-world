@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_util_jar;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -38,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_HideFromPublishing
 @DisplayName("java.util.jar")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -62,7 +64,7 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
          * {@code "hello, world"} entry into an in-memory {@link JarOutputStream}, and that the
          * bytes can be read back through {@link JarInputStream}.
          */
-        @DisplayName("should write a <hello, world> entry into an in-memory <JarOutputStream>")
+        @DisplayName("in-memory")
         @Test
         void __() throws IOException {
             final var name = "hello-world.txt";
@@ -87,7 +89,7 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
          * {@code "hello, world"} entry into a file-backed {@link JarOutputStream}, and that the
          * bytes can be read back through {@link JarFile}.
          */
-        @DisplayName("should write a <hello, world> entry into a file-backed <JarOutputStream>")
+        @DisplayName("file-backed")
         @Test
         void __File() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -121,7 +123,7 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
          * {@link HelloWorld#write(OutputStream) write(stream)} can be read back through a
          * {@link JarFile}.
          */
-        @DisplayName("should read back a <hello, world> entry through <JarFile>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given

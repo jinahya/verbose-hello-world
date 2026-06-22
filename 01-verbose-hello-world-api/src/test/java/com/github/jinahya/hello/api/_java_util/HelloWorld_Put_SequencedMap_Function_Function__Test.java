@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_util;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_HideFromPublishing
 @DisplayName("put(map, keyMapper, valueMapper)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -102,7 +104,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         @Nested
         class SequencedMap_Test {
 
-            @DisplayName("should put through <LinkedHashMap>")
+            @DisplayName("LinkedHashMap")
             @Test
             void __LinkedHashMap() {
                 // --------------------------------------------------------------------------- given
@@ -127,7 +129,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         @Nested
         class SortedMap_Test {
 
-            @DisplayName("should put through <TreeMap>")
+            @DisplayName("TreeMap")
             @Test
             void __TreeMap() {
                 // --------------------------------------------------------------------------- given
@@ -171,7 +173,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
 //            assertEquals(expected, map.keySet());
 //        }
 
-            @DisplayName("should put through <ConcurrentSkipListMap>")
+            @DisplayName("ConcurrentSkipListMap")
             @Test
             void __ConcurrentSkipListMap() {
                 // --------------------------------------------------------------------------- given
@@ -201,7 +203,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
         @Nested
         class LinkedHashMap_Test {
 
-            @DisplayName("should put through <LinkedHashMap#put>")
+            @DisplayName("happy path")
             @Test
             void __() {
                 // --------------------------------------------------------------------------- given
@@ -225,7 +227,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
     @Nested
     class LinkedHashMap_Trace_Test {
 
-        @DisplayName("should trace <putLast> over <LinkedHashMap>")
+        @DisplayName("putLast")
         @Test
         void __putLast() {
             final var map = new LinkedHashMap<String, String>();
@@ -236,7 +238,7 @@ class HelloWorld_Put_SequencedMap_Function_Function__Test extends HelloWorld__Te
             }
         }
 
-        @DisplayName("should trace <put> over <LinkedHashMap>")
+        @DisplayName("put")
         @Test
         void __put() {
             final var map = new LinkedHashMap<String, String>();

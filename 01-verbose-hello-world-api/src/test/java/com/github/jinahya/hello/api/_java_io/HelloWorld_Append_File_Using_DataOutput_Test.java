@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(file) using DataOutput")
+@DisplayName("HelloWorld.append(File) using DataOutput")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,13 +48,13 @@ class HelloWorld_Append_File_Using_DataOutput_Test
         extends HelloWorld__Test {
 
     /**
-     * Verifies that {@link HelloWorld#write(DataOutput)} appends the {@code hello-world-bytes} to
-     * a real {@link File} when driven through a {@link DataOutputStream} opened in appending mode.
+     * Verifies that {@link HelloWorld#write(DataOutput)} appends the {@code hello-world-bytes} to a
+     * real {@link File} when driven through a {@link DataOutputStream} opened in appending mode.
      *
      * @param dir the {@link TempDir} that holds the temp file.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should append <hello-world-bytes> to the <file> through a <DataOutputStream>")
+    @DisplayName("happy path")
     @Test
     void __(@TempDir final File dir)
             throws IOException {

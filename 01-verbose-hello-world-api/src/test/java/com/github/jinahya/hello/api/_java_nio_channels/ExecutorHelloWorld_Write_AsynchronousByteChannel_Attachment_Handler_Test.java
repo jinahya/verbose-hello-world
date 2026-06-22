@@ -32,7 +32,7 @@ import java.nio.channels.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, attachment, handler)")
+@DisplayName("ExecutorHelloWorld.write(AsynchronousByteChannel, attachment, handler)")
 class ExecutorHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test
         extends AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler_Test<
         ExecutorHelloWorld<HelloWorld>

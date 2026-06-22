@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_net;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -39,7 +40,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.send(Socket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -64,7 +66,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("socket")
+    @DisplayName("Socket")
     @Nested
     class SocketTest {
 
@@ -74,8 +76,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName(
-                "should send <hello-world-bytes> through a real <Socket> over <InetSocketAddress>")
+        @DisplayName("InetSocketAddress")
         @Test
         void ___InetSocketAddress() throws IOException {
             try (var server = new ServerSocket()) {
@@ -102,9 +103,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should send <hello-world-bytes> through a real <Socket>
-                over <UnixDomainSocketAddress>""")
+        @DisplayName("UnixDomainSocketAddress")
         @Disabled("unsupported")
         @Test
         void ___UnixDomainSocketAddress() throws IOException {
@@ -130,7 +129,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
         }
     }
 
-    @DisplayName("should round-trip <hello-world-bytes> through a real <Socket> echo server")
+    @DisplayName("echo server")
     @Nested
     class EchoServer_Test {
 
@@ -140,9 +139,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should round-trip <hello-world-bytes> through a real <Socket> echo server
-                over <InetSocketAddress>""")
+        @DisplayName("INET")
         @Test
         void __INET() throws IOException {
             try (var server = new ServerSocket()) {
@@ -180,9 +177,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should round-trip <hello-world-bytes> through a real <Socket> echo server
-                over <Inet6Address>""")
+        @DisplayName("INET6")
         @Test
         void __INET6() throws IOException {
             try (var server = new ServerSocket()) {
@@ -220,9 +215,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should throw <UnsupportedOperationException> when invoking <socket()>
-                on a <ServerSocketChannel> opened with <StandardProtocolFamily.UNIX>""")
+        @DisplayName("UNIX / ServerSocketChannel.socket() throws UOE")
         @Test
         void __UNIX1() throws IOException {
             final var tempFile = File.createTempFile("tmp", null, tempDir);
@@ -240,9 +233,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should throw <IllegalArgumentException> when binding
-                a real <ServerSocket> to a <UnixDomainSocketAddress>""")
+        @DisplayName("UNIX / ServerSocket.bind(UnixDomainSocketAddress) throws IAE")
         @Test
         void __UNIX2() throws IOException {
             final var tempFile = File.createTempFile("tmp", null, tempDir);

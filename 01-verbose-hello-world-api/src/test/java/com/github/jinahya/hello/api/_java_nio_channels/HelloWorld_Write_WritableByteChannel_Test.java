@@ -41,17 +41,17 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel)")
+@DisplayName("HelloWorld.write(WritableByteChannel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
 
     /**
-     * Verifies {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws a
-     * {@link NullPointerException} when {@code channel} argument is {@code null}.
+     * Verifies that the {@link HelloWorld#write(WritableByteChannel) write(channel)} method throws
+     * a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,7 +68,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <put(buffer[12])> and write the <buffer> to the <channel>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

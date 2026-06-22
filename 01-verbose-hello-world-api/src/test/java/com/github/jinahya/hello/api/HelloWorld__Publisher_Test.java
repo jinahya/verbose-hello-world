@@ -48,7 +48,7 @@ abstract class HelloWorld__Publisher_Test<U> {
     HelloWorld__Publisher_Test(
             final Function<? super HelloWorld, ? extends Flow.Publisher<U>> initializer) {
         super();
-        service = mock(HelloWorld.class, Mockito.CALLS_REAL_METHODS);
+        service = mock(HelloWorld.class, CALLS_REAL_METHODS);
         this.initializer = initializer;
     }
 
@@ -76,6 +76,7 @@ abstract class HelloWorld__Publisher_Test<U> {
      * @return the value returned by the given function.
      * @throws Exception if an error occurs while closing the publisher.
      */
+
     <R> R applyPublisher(final Function<? super Flow.Publisher<U>, ? extends R> function)
             throws Exception {
         final var publisher = initializer.apply(service);

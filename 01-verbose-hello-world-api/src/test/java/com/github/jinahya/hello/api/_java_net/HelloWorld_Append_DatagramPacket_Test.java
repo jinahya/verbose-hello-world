@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(packet)")
+@DisplayName("HelloWorld.append(DatagramPacket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,7 +48,7 @@ class HelloWorld_Append_DatagramPacket_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(DatagramPacket) append(packet)} method throws a
      * {@link NullPointerException} when the {@code packet} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <packet> argument is <null>")
+    @DisplayName("throws NPE / packet is null")
     @Test
     void _ThrowNullPointerException_PacketIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,9 +66,7 @@ class HelloWorld_Append_DatagramPacket_Test extends HelloWorld__Test {
      * {@link IllegalArgumentException} when the {@code packet}'s data buffer does not have enough
      * room for {@value HelloWorld#BYTES} bytes after {@code offset + length}.
      */
-    @DisplayName("""
-            should throw an <IllegalArgumentException>
-            when the <packet>'s data buffer is not large enough""")
+    @DisplayName("throws IAE / not enough available space")
     @Test
     void _ThrowIllegalArgumentException_NotEnoughAvailableSpace() {
         // ----------------------------------------------------------------------------------- given
@@ -94,10 +92,7 @@ class HelloWorld_Append_DatagramPacket_Test extends HelloWorld__Test {
      * {@link HelloWorld#set(byte[], int) set(data, offset + length)} method, increments the
      * packet's length by {@value HelloWorld#BYTES}, and returns the packet.
      */
-    @DisplayName("""
-            should invoke <set(packet.data, offset + length)>,
-            increment the <packet.length> by <12>,
-            and return the <packet>""")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

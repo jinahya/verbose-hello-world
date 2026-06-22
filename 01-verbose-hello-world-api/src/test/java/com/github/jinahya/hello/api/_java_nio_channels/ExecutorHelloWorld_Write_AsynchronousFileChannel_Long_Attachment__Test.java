@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 
 import java.nio.channels.*;
@@ -32,7 +33,8 @@ import java.nio.channels.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, position, attachment)")
+@_HideFromPublishing
+@DisplayName("ExecutorHelloWorld.write(AsynchronousFileChannel, position, attachment) / extras")
 class ExecutorHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test
         extends AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment__Test<
         ExecutorHelloWorld<HelloWorld>

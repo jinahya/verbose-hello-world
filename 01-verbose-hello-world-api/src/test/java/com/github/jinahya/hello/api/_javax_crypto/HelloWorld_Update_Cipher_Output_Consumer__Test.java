@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._javax_crypto;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -35,7 +36,7 @@ import java.util.*;
 import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Cipher_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_Cipher_TestUtils.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -44,6 +45,8 @@ import static org.mockito.Mockito.*;
  * {@link HelloWorld#update(Cipher, ByteBuffer, IntConsumer) update(cipher, output,
  * outputLengthConsumer)} method with real {@link Cipher} transformations.
  */
+@_HideFromPublishing
+@DisplayName("update(cipher, output, outputLengthConsumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
@@ -391,7 +394,7 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
      * @throws Exception if any error occurs.
      */
     @DisplayName("PBEWithHmacSHA256AndAES_128")
-    @LatestJDK
+    @_LatestJDK
     @Test
     void __PBEWithHmacSHA256AndAES_128() throws Exception {
         // ----------------------------------------------------------------------------------- given
@@ -418,7 +421,7 @@ class HelloWorld_Update_Cipher_Output_Consumer__Test extends HelloWorld__Test {
      * @throws Exception if any error occurs.
      */
     @DisplayName("PBEWithHmacSHA256AndAES_256")
-    @LatestJDK
+    @_LatestJDK
     @Test
     void __PBEWithHmacSHA256AndAES_256() throws Exception {
         // ----------------------------------------------------------------------------------- given

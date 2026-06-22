@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_sql;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -38,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setString(clob, pos)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.setString(Clob, long)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetString_Clob_Long__Test
@@ -74,7 +76,7 @@ class HelloWorld_SetString_Clob_Long__Test
          * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob,
          * pos)} method populates a real H2 {@link Clob} with the {@code "hello, world"} string.
          */
-        @DisplayName("should populate a <real H2 Clob> through <setString(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -105,7 +107,7 @@ class HelloWorld_SetString_Clob_Long__Test
          * pos)} method populates a real HSQLDB {@link Clob} with the {@code "hello, world"}
          * string.
          */
-        @DisplayName("should populate a <real HSQLDB Clob> through <setString(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -136,7 +138,7 @@ class HelloWorld_SetString_Clob_Long__Test
          * pos)} method populates a real SQLite {@link Clob} with the {@code "hello, world"}
          * string.
          */
-        @DisplayName("should populate a <real SQLite Clob> through <setString(clob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

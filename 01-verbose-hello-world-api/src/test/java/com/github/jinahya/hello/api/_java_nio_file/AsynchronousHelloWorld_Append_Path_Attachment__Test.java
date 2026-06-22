@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_nio_file;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
@@ -39,7 +40,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(path, attachment)")
+@_HideFromPublishing
+@DisplayName("AsynchronousHelloWorld.append(Path, Attachment)")
 @Slf4j
 @SuppressWarnings({"java:S101"})
 abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
@@ -59,9 +61,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment__Test<
      * @param tempDir the temporary directory.
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should append <hello-world-bytes> to a real <Path>,
-            and complete the returned stage with the <attachment>""")
+    @DisplayName("happy path")
     @Test
     void __(@TempDir final Path tempDir) throws Exception {
         // ----------------------------------------------------------------------------------- given

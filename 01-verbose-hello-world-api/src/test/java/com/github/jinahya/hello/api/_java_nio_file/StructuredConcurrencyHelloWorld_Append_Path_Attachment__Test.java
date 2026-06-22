@@ -21,12 +21,14 @@ package com.github.jinahya.hello.api._java_nio_file;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 
 import java.util.function.*;
 
+@_HideFromPublishing
 @SuppressWarnings({"java:S101"})
-@DisplayName("append(path, attachment)")
+@DisplayName("StructuredConcurrencyHelloWorld.append(Path, Attachment)")
 class StructuredConcurrencyHelloWorld_Append_Path_Attachment__Test
         extends AsynchronousHelloWorld_Append_Path_Attachment__Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

@@ -136,6 +136,7 @@ public class HelloWorldBytePublisher implements Flow.Publisher<Byte> {
      * {@code onError(t)} (if {@link HelloWorld#set(byte[]) service.set(...)} throws). See the
      * class-level javadoc for full lifecycle and spec-compliance notes.
      */
+    @SuppressWarnings("resource")  // closed by the producer task, not by a synchronous scope
     @Override
     public void subscribe(final Flow.Subscriber<? super Byte> subscriber) {
         Objects.requireNonNull(subscriber, "subscriber is null");

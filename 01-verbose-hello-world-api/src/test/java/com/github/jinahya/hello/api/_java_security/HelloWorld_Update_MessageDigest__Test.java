@@ -21,7 +21,8 @@ package com.github.jinahya.hello.api._java_security;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.api.annotations.*;
+import com.github.jinahya.hello.miscellaneous._java_security.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.apache.commons.io.*;
@@ -39,9 +40,9 @@ import java.security.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestConstants.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_MessageDigest_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_Security_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_MessageDigest_TestConstants.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_MessageDigest_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_Security_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -56,6 +57,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest
  * Algorithms</a>
  */
+@_HideFromPublishing
 @DisplayName("update(digest)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -65,9 +67,9 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     private static File tempDir;
 
     /**
-     * 파라미터화 테스트에 넘길 {@link MessageDigest} 알고리즘 이름 목록을 돌려준다.
+     * Returns a list of {@link MessageDigest} algorithm names to feed to parameterized tests.
      *
-     * @return {@link _Java_Security_TestUtils#MESSAGE_DIGEST_ALGORITHMS} 와 같은 목록.
+     * @return the same list as {@link _Java_Security_TestUtils#MESSAGE_DIGEST_ALGORITHMS}.
      */
     static List<String> algorithms() {
         return _Java_Security_TestUtils.MESSAGE_DIGEST_ALGORITHMS;
@@ -76,8 +78,10 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * 각 테스트 직전에 {@link #service()} 의 {@code set(byte[])} 가 실제 {@code "hello, world"} 바이트로 배열을 채우도록
-     * 스텁한다. 통합 테스트에서는 mock 동작이 아닌 진짜 12바이트가 다이제스트에 흘러 들어가야 의미 있는 해시 값이 나오기 때문이다.
+     * Stubs {@link #service()} so that {@code set(byte[])} fills the given array with the real
+     * {@code "hello, world"} bytes before each test. The integration tests need the real 12 bytes
+     * flowing into the digest — not the mock's default behavior — for the hash values to be
+     * meaningful.
      */
     @BeforeEach
     void __stubService() throws IOException {
@@ -86,6 +90,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("happy path")
     @Test
     void __() {
         _Java_Security_MessageDigest_TestConstants.MESSAGE_DIGEST_ALGORITHMS.forEach(algorithm -> {
@@ -121,7 +126,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @DisplayName("should update a <real digest> without specifying provider")
+    @DisplayName("default provider")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __(final String algorithm) throws GeneralSecurityException {
@@ -136,7 +141,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param algorithm an algorithm name supplied by {@link #algorithms()}.
      */
-    @DisplayName("should update a <real digest> through the <SUN> provider")
+    @DisplayName("SUN")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __SUN(final String algorithm) throws GeneralSecurityException {
@@ -151,7 +156,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param algorithm an algorithm name supplied by {@link #algorithms()}.
      */
-    @DisplayName("should update a <real digest> through the <BouncyCastle> provider")
+    @DisplayName("BouncyCastle")
     @MethodSource({"algorithms"})
     @ParameterizedTest
     void __BC(final String algorithm) throws GeneralSecurityException {
@@ -161,6 +166,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
     }
 
+    @DisplayName("SHA3")
     @ValueSource(strings = {
             "SHA3-224",
             "SHA3-256",
@@ -175,9 +181,11 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
     }
 
+    @DisplayName("SHAKE")
     @Nested
     class SHAKE_Test {
 
+        @DisplayName("fixed length")
         @ValueSource(strings = {
                 "SHAKE128-256",
                 "SHAKE256-512"
@@ -190,6 +198,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
             __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
         }
 
+        @DisplayName("prefix")
         @ValueSource(ints = {128, 256})
         @ParameterizedTest
         void __SHAKE_prefix(final int bitStrength) throws GeneralSecurityException {
@@ -223,7 +232,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      * Verifies that {@code SHA-256} exhibits the avalanche effect by hashing two inputs that differ
      * in a single character and printing the number of flipped bits.
      */
-    @DisplayName("should demonstrate the <avalanche effect> of <SHA-256>")
+    @DisplayName("avalanche effect / SHA-256")
     @Test
     void avalanche_effect__() throws NoSuchAlgorithmException {
         final var a = "hello, world".getBytes(StandardCharsets.US_ASCII);
@@ -246,7 +255,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      *
      * @param password a weak password supplied by {@link ValueSource}.
      */
-    @DisplayName("should demonstrate a <rainbow attack> on <SHA-1>")
+    @DisplayName("rainbow attack / SHA-1")
     @ValueSource(strings = {
             "iloveyou",
             "iloveyou!",
@@ -260,6 +269,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         System.out.printf("%10s %s%n", password, Base64.getEncoder().encodeToString(digested));
     }
 
+    @DisplayName("DigestOutputStream")
     @Nested
     class DigestOutputStream_Test {
 
@@ -267,6 +277,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
             return HelloWorld_Update_MessageDigest__Test.algorithms();
         }
 
+        @DisplayName("happy path")
         @MethodSource({"algorithms"})
         @ParameterizedTest
         void __(final String algorithm) throws IOException, NoSuchAlgorithmException {

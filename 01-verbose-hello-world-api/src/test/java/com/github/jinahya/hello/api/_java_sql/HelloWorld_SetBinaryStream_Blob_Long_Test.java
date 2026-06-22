@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Blob#setBinaryStream(long)
  */
-@DisplayName("setBinaryStream(blob, pos)")
+@DisplayName("HelloWorld.setBinaryStream(Blob, long)")
 @Slf4j
 class HelloWorld_SetBinaryStream_Blob_Long_Test
         extends HelloWorld__Test {
@@ -50,7 +50,7 @@ class HelloWorld_SetBinaryStream_Blob_Long_Test
      * setBinaryStream(blob, pos)} method throws a {@link NullPointerException} when the
      * {@code blob} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <blob> argument is <null>")
+    @DisplayName("throws NPE / blob is null")
     @Test
     void _ThrowNullPointerException_BlobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -67,7 +67,7 @@ class HelloWorld_SetBinaryStream_Blob_Long_Test
      * setBinaryStream(blob, pos)} method throws an {@link IllegalArgumentException} when the
      * {@code pos} argument is not positive.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
+    @DisplayName("throws IAE / pos is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -89,7 +89,7 @@ class HelloWorld_SetBinaryStream_Blob_Long_Test
      * stream obtained from {@link Blob#setBinaryStream(long) blob.setBinaryStream(pos)}, and
      * returns the {@code blob}.
      */
-    @DisplayName("should invoke <write(blob.setBinaryStream(pos))>, and return the <blob>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given

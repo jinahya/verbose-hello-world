@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(channel, target)")
+@DisplayName("HelloWorld.send(DatagramChannel, target)")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
 
@@ -52,7 +52,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -67,7 +67,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
      * Verifies that the method throws a {@link NullPointerException} when the {@code target}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <target> argument is <null>")
+    @DisplayName("throws NPE / target is null")
     @Test
     void _ThrowNullPointerException_TargetIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -84,8 +84,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "should delegate to <send(socket, target)> when the <channel> is in <blocking> mode")
+    @DisplayName("blocking / delegates to send(socket, target)")
     @Test
     void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -110,9 +109,7 @@ class HelloWorld_Send_DatagramChannel_Target_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("""
-            should send <hello-world-bytes> via the <channel> to the <target>
-            when the <channel> is in <non-blocking> mode""")
+    @DisplayName("non-blocking")
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given

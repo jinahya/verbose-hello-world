@@ -1,0 +1,36 @@
+/**
+ * The Verbose Hello World Appb package. Hosts
+ * {@link com.github.jinahya.hello.appb.HelloWorldMain HelloWorldMain}, which obtains a
+ * {@link com.github.jinahya.hello.api.HelloWorld HelloWorld} through
+ * {@link java.util.ServiceLoader ServiceLoader} and writes {@code hello, world} to
+ * {@link java.lang.System#out System.out} via a
+ * {@link java.nio.channels.WritableByteChannel WritableByteChannel}.
+ * <p>
+ * The whole package is {@linkplain org.jspecify.annotations.NullMarked null-marked} — references
+ * default to non-null unless explicitly annotated
+ * {@link org.jspecify.annotations.Nullable &#64;Nullable}.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@org.jspecify.annotations.NullMarked
+package com.github.jinahya.hello.appb;
+
+/*-
+ * #%L
+ * verbose-hello-world-appb
+ * %%
+ * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */

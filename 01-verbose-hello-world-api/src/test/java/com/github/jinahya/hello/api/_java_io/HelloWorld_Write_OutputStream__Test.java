@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_io;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -32,6 +33,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.zip.*;
 
+import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +43,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(stream)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.write(OutputStream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -77,7 +80,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <ByteArrayOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream(HelloWorld.BYTES)) {
@@ -85,8 +88,9 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 assertEquals(HelloWorld.BYTES, baos.size());
                 try (var bais = new ByteArrayInputStream(baos.toByteArray())) {
                     final var bytes = bais.readAllBytes();
-                    final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertArrayEquals(hello_world_byte_array(), bytes);
+                    final var decoded = new String(bytes, StandardCharsets.US_ASCII);
+                    assertEquals(HELLO_WORLD_STRING, decoded);
                 }
             }
         }
@@ -153,7 +157,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <DataOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -163,7 +167,20 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                      var dis = new DataInputStream(bais)) {
                     final var bytes = dis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HELLO_WORLD_STRING, string);
+                }
+            }
+        }
+
+        @Test
+        void __UTF() throws IOException {
+            try (var baos = new ByteArrayOutputStream();
+                 var dos = new DataOutputStream(baos)) {
+                dos.writeUTF(HELLO_WORLD_STRING);
+                try (var bais = new ByteArrayInputStream(baos.toByteArray());
+                     var dis = new DataInputStream(bais)) {
+                    final var string = dis.readUTF();
+                    assertEquals(HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -179,7 +196,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a real <FileOutputStream>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             final var file = File.createTempFile("tmp", null, tempDir);
@@ -189,8 +206,9 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
             assertEquals(HelloWorld.BYTES, file.length());
             try (var stream = new FileInputStream(file)) {
                 final var bytes = stream.readNBytes(HelloWorld.BYTES);
-                final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertArrayEquals(hello_world_byte_array(), bytes);
+                final var decoded = new String(bytes, StandardCharsets.US_ASCII);
+                assertEquals(HELLO_WORLD_STRING, decoded);
             }
         }
     }
@@ -205,9 +223,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> through a
-                <PipedOutputStream> with sufficient pipe size""")
+        @DisplayName("enough pipe size")
         @Test
         void __EnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -219,7 +235,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HELLO_WORLD_STRING, string);
             }
         }
 
@@ -230,9 +246,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-bytes> through a
-                <PipedOutputStream> with insufficient pipe size""")
+        @DisplayName("not enough pipe size")
         @Test
         void __NotEnoughPipeSize() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -251,7 +265,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                 // ---------------------------------------------------------------------------- when
                 final var bytes = pis.readNBytes(HelloWorld.BYTES);
                 final var string = new String(bytes, StandardCharsets.US_ASCII);
-                assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                assertEquals(HELLO_WORLD_STRING, string);
             }
         }
     }
@@ -267,7 +281,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <DeflaterOutputStream>")
+        @DisplayName("DeflaterOutputStream")
         @Test
         void __DeflaterOutputStream() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -278,7 +292,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
                      var iis = new InflaterInputStream(bais)) {
                     final var bytes = iis.readAllBytes();
                     final var string = new String(bytes, StandardCharsets.US_ASCII);
-                    assertEquals(HelloWorld__TestConstants.HELLO_WORLD_STRING, string);
+                    assertEquals(HELLO_WORLD_STRING, string);
                 }
             }
         }
@@ -289,7 +303,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <GZIPOutputStream>")
+        @DisplayName("GZIPOutputStream")
         @Test
         void __GZIPOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -318,7 +332,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-bytes> through a <ZipOutputStream>")
+        @DisplayName("ZipOutputStream")
         @Test
         void __ZipOutputStream() throws IOException {
             // ------------------------------------------------------------------------------- given

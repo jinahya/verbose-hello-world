@@ -33,7 +33,7 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, position, attachment)")
+@DisplayName("StructuredConcurrencyHelloWorld.write(AsynchronousFileChannel, position, attachment)")
 class StructuredConcurrencyHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test
         extends AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachment_Test<
         StructuredConcurrencyHelloWorld<HelloWorld>

@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._javax_crypto;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -31,8 +32,8 @@ import java.io.*;
 import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_KeyPair_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_KeyPair_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -41,6 +42,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_HideFromPublishing
+@DisplayName("javax.crypto.Cipher")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Cipher__Test extends HelloWorld__Test {
@@ -62,6 +65,7 @@ class HelloWorld_Cipher__Test extends HelloWorld__Test {
     }
 
     // ---------------------------------------------------------------------------------------------
+    @DisplayName("CipherOutputStream")
     @Disabled
     @Nested
     class CipherOutputStream_Test {
@@ -71,6 +75,7 @@ class HelloWorld_Cipher__Test extends HelloWorld__Test {
          * {@link CipherOutputStream} / {@link CipherInputStream} under
          * {@code AES/ECB/PKCS5Padding}.
          */
+        @DisplayName("AES/ECB/PKCS5Padding")
         @Test
         void __AES_ECB_PKCS5Padding() throws Exception {
             final var key = generateSecretKey("AES", 128);
@@ -99,6 +104,7 @@ class HelloWorld_Cipher__Test extends HelloWorld__Test {
          * {@link CipherOutputStream} / {@link CipherInputStream} under
          * {@code RSA/ECB/PKCS1Padding}.
          */
+        @DisplayName("RSA/ECB/PKCS1Padding")
         @Test
         void __RSA_ECB_PKCS1Padding() throws Exception {
             final var keyPair = generateKeyPair("RSA", 1024);

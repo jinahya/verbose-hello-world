@@ -21,7 +21,8 @@ package com.github.jinahya.hello.api._java_io;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.api.annotations.*;
+import com.github.jinahya.hello.miscellaneous._java_nio_channels.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -39,6 +40,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.io.File.*;
 import static java.nio.charset.StandardCharsets.*;
+import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -47,7 +49,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(writer)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.write(Writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -60,7 +63,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
     private static File tempDir;
 
     private static Stream<Charset> charsetStream() {
-        return _Java_Nio_Charset_TestUtils.charsetStream();
+        return __Java_Nio_Charset_TestUtils.charsetStream();
     }
 
     private static void print(final Charset charset, final byte[] bytes) {
@@ -98,9 +101,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          * @param charset the {@link Charset} under test.
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                should write <hello-world-string> through an
-                <OutputStreamWriter> with the <charset>""")
+        @DisplayName("charset")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -123,7 +124,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should round-trip <hello-world-string> through an <OutputStreamWriter>")
+        @DisplayName("round-trip")
         @Test
         void __() throws IOException {
             try (var baos = new ByteArrayOutputStream();
@@ -155,7 +156,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          * @param charset the {@link Charset} under test.
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should write <hello-world-string> through a <FileWriter> with the <charset>")
+        @DisplayName("charset")
         @MethodSource({"charsetStream"})
         @ParameterizedTest
         void __(final Charset charset) throws IOException {
@@ -163,7 +164,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             try (var writer = new FileWriter(file, charset)) {
                 service().write(writer).flush();
             }
-            print(charset, Files.readAllBytes(file.toPath()));
+            print(charset, readAllBytes(file.toPath()));
             try (var reader = new FileReader(file, charset)) {
                 final var string = reader.readAllAsString();
                 assertEquals(HELLO_WORLD_STRING, string);
@@ -176,7 +177,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should round-trip <hello-world-string> through a <FileWriter>")
+        @DisplayName("round-trip")
         @Test
         void __() throws IOException {
             final var file = createTempFile("tmp", null, tempDir);
@@ -188,6 +189,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             assertEquals(HELLO_WORLD_STRING, Files.readString(file.toPath()));
         }
 
+        @DisplayName("append")
         @Nested
         class Append_Test {
 

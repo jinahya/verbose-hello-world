@@ -47,7 +47,7 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
      * method throws a {@link NullPointerException} when the {@code consumer} argument is
      * {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <consumer> argument is <null>")
+    @DisplayName("throws NPE / consumer is null")
     @Test
     void _ThrowNullPointerException_ConsumerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -63,7 +63,7 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
      * method throws a {@link NullPointerException} when the {@code mapper} argument is
      * {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
+    @DisplayName("throws NPE / mapper is null")
     @Test
     @SuppressWarnings("unchecked")
     void _ThrowNullPointerException_MapperIsNull() {
@@ -82,8 +82,7 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
      * {@link Consumer#accept(Object) consumer.accept(...)} in order, and returns the
      * {@code consumer}.
      */
-    @DisplayName(
-            "should invoke <set(byte[])>, and <consumer.accept(mapper.apply(b))> for each byte")
+    @DisplayName("happy path")
     @Test
     @SuppressWarnings("unchecked")
     void __() {

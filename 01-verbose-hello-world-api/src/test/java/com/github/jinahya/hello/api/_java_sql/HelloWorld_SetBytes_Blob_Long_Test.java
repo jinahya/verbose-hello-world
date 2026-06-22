@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see Blob#setBytes(long, byte[])
  */
-@DisplayName("setBytes(blob, pos)")
+@DisplayName("HelloWorld.setBytes(Blob, long)")
 @Slf4j
 class HelloWorld_SetBytes_Blob_Long_Test
         extends HelloWorld__Test {
@@ -47,7 +47,7 @@ class HelloWorld_SetBytes_Blob_Long_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
      * method throws a {@link NullPointerException} when the {@code blob} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <blob> argument is <null>")
+    @DisplayName("throws NPE / blob is null")
     @Test
     void _ThrowNullPointerException_BlobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -64,7 +64,7 @@ class HelloWorld_SetBytes_Blob_Long_Test
      * method throws an {@link IllegalArgumentException} when the {@code pos} argument is not
      * positive.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
+    @DisplayName("throws IAE / pos is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -85,7 +85,7 @@ class HelloWorld_SetBytes_Blob_Long_Test
      * filled by {@link com.github.jinahya.hello.api.HelloWorld#set(byte[]) set(array)}, and returns
      * the {@code blob}.
      */
-    @DisplayName("should invoke <blob.setBytes(pos, buffer)>, and return the <blob>")
+    @DisplayName("happy path")
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given

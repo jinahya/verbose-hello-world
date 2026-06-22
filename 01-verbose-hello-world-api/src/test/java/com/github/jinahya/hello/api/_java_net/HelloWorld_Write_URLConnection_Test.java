@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(connection)")
+@DisplayName("HelloWorld.write(URLConnection)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,7 +48,7 @@ class HelloWorld_Write_URLConnection_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#write(URLConnection) write(connection)} method throws a
      * {@link NullPointerException} when the {@code connection} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <connection> argument is <null>")
+    @DisplayName("throws NPE / connection is null")
     @Test
     void _ThrowNullPointerException_ConnectionIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,7 +66,7 @@ class HelloWorld_Write_URLConnection_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should invoke <write(connection.outputStream)>, and return the <connection>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

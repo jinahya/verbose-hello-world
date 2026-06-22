@@ -1,0 +1,86 @@
+= IEEE 754 constants — C vs. Java
+
+This file maps C's floating-point-related constants (from `<float.h>`, `<math.h>`, and
+`<fenv.h>`) to their nearest Java counterparts (mostly `java.lang.Float` / `java.lang.Double`,
+plus `java.math.RoundingMode` for the rounding modes).
+
+Cells are left empty where no counterpart exists on that side. C values shown are the typical
+IEEE 754 `binary32` / `binary64` values; some C macros (`FLT_ROUNDS`, `FLT_EVAL_METHOD`,
+`DECIMAL_DIG`, the `<fenv.h>` bit masks, the `FP_*` / `math_errhandling` codes) are
+implementation-defined and shown as such.
+
+[CAUTION]
+====
+Two mappings are *not* one-to-one:
+
+* `MIN_VALUE` mismatch — C `DBL_MIN` is the smallest *normal* value (≙ Java `MIN_NORMAL`),
+  whereas Java `MIN_VALUE` is the smallest *subnormal* value (≙ C `DBL_TRUE_MIN`).
+* Exponent off-by-one — C `*_MAX_EXP` / `*_MIN_EXP` and Java `MAX_EXPONENT` / `MIN_EXPONENT`
+  use different conventions and differ by 1 (e.g. `DBL_MAX_EXP` = 1024 vs.
+  `Double.MAX_EXPONENT` = 1023).
+====
+
+[%unbreakable%autowidth.stretch,frame="none",grid="rows"]
+|===
+| C header | C constant = value | Java class | Java constant = value
+
+| `<float.h>` | `FLT_RADIX` = 2 | |
+| `<float.h>` | `DECIMAL_DIG` = _(impl-defined)_ | |
+| `<float.h>` | `FLT_ROUNDS` = _(impl-defined)_ | |
+| `<float.h>` | `FLT_EVAL_METHOD` = _(impl-defined)_ | |
+
+| `<float.h>` | `FLT_MANT_DIG` = 24 | `Float` | `PRECISION` = 24
+| `<float.h>` | `FLT_DIG` = 6 | |
+| `<float.h>` | `FLT_MIN_EXP` = -125 | `Float` | `MIN_EXPONENT` = -126
+| `<float.h>` | `FLT_MAX_EXP` = 128 | `Float` | `MAX_EXPONENT` = 127
+| `<float.h>` | `FLT_MIN_10_EXP` = -37 | |
+| `<float.h>` | `FLT_MAX_10_EXP` = 38 | |
+| `<float.h>` | `FLT_EPSILON` = 1.19209290E-07 | |
+| `<float.h>` | `FLT_MIN` = 1.17549435E-38 | `Float` | `MIN_NORMAL` = 1.17549435E-38
+| `<float.h>` | `FLT_MAX` = 3.40282347E+38 | `Float` | `MAX_VALUE` = 3.4028235E38
+| `<float.h>` | `FLT_TRUE_MIN` = 1.40129846E-45 | `Float` | `MIN_VALUE` = 1.4E-45
+| `<float.h>` | `FLT_DECIMAL_DIG` = 9 | |
+| `<float.h>` | `FLT_HAS_SUBNORM` = 1 | |
+
+| `<float.h>` | `DBL_MANT_DIG` = 53 | `Double` | `PRECISION` = 53
+| `<float.h>` | `DBL_DIG` = 15 | |
+| `<float.h>` | `DBL_MIN_EXP` = -1021 | `Double` | `MIN_EXPONENT` = -1022
+| `<float.h>` | `DBL_MAX_EXP` = 1024 | `Double` | `MAX_EXPONENT` = 1023
+| `<float.h>` | `DBL_MIN_10_EXP` = -307 | |
+| `<float.h>` | `DBL_MAX_10_EXP` = 308 | |
+| `<float.h>` | `DBL_EPSILON` = 2.2204460492503131E-16 | |
+| `<float.h>` | `DBL_MIN` = 2.2250738585072014E-308 | `Double` | `MIN_NORMAL` = 2.2250738585072014E-308
+| `<float.h>` | `DBL_MAX` = 1.7976931348623157E+308 | `Double` | `MAX_VALUE` = 1.7976931348623157E308
+| `<float.h>` | `DBL_TRUE_MIN` = 4.9406564584124654E-324 | `Double` | `MIN_VALUE` = 4.9E-324
+| `<float.h>` | `DBL_DECIMAL_DIG` = 17 | |
+| `<float.h>` | `DBL_HAS_SUBNORM` = 1 | |
+
+| `<math.h>` | `INFINITY` = ∞ | `Float` | `POSITIVE_INFINITY` = Infinity
+| `<math.h>` | `HUGE_VALF` = ∞ | `Float` | `POSITIVE_INFINITY` = Infinity
+| `<math.h>` | `HUGE_VAL` = ∞ | `Double` | `POSITIVE_INFINITY` = Infinity
+| `<math.h>` | `HUGE_VALL` = ∞ | |
+| `<math.h>` | | `Float` | `NEGATIVE_INFINITY` = -Infinity
+| `<math.h>` | | `Double` | `NEGATIVE_INFINITY` = -Infinity
+| `<math.h>` | `NAN` = NaN | `Float` | `NaN` = NaN
+| `<math.h>` | | `Double` | `NaN` = NaN
+| `<math.h>` | `FP_NAN` = _(impl-defined)_ | |
+| `<math.h>` | `FP_INFINITE` = _(impl-defined)_ | |
+| `<math.h>` | `FP_ZERO` = _(impl-defined)_ | |
+| `<math.h>` | `FP_SUBNORMAL` = _(impl-defined)_ | |
+| `<math.h>` | `FP_NORMAL` = _(impl-defined)_ | |
+| `<math.h>` | `math_errhandling` = _(impl-defined)_ | |
+| `<math.h>` | `MATH_ERRNO` = 1 | |
+| `<math.h>` | `MATH_ERREXCEPT` = 2 | |
+
+| `<fenv.h>` | `FE_DIVBYZERO` = _(impl-defined)_ | |
+| `<fenv.h>` | `FE_INEXACT` = _(impl-defined)_ | |
+| `<fenv.h>` | `FE_INVALID` = _(impl-defined)_ | |
+| `<fenv.h>` | `FE_OVERFLOW` = _(impl-defined)_ | |
+| `<fenv.h>` | `FE_UNDERFLOW` = _(impl-defined)_ | |
+| `<fenv.h>` | `FE_ALL_EXCEPT` = _(impl-defined)_ | |
+| `<fenv.h>` | `FE_TONEAREST` = _(impl-defined)_ | `RoundingMode` | `HALF_EVEN`
+| `<fenv.h>` | `FE_UPWARD` = _(impl-defined)_ | `RoundingMode` | `CEILING`
+| `<fenv.h>` | `FE_DOWNWARD` = _(impl-defined)_ | `RoundingMode` | `FLOOR`
+| `<fenv.h>` | `FE_TOWARDZERO` = _(impl-defined)_ | `RoundingMode` | `DOWN`
+| `<fenv.h>` | `FE_DFL_ENV` = _(impl-defined)_ | |
+|===

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
@@ -29,12 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A class exercising
- * {@link StructuredConcurrencyHelloWorld#applyAsync(java.util.function.Function) applyAsync(mapper)}
- * on each {@link HelloWorld} method, organized as one {@link Nested} class per target method.
+ * {@link StructuredConcurrencyHelloWorld#applyAsync(java.util.function.Function)
+ * applyAsync(mapper)} on each {@link HelloWorld} method, organized as one {@link Nested} class per
+ * target method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("applyAsync(mapper)")
+@_HideFromPublishing
+@DisplayName("StructuredConcurrencyHelloWorld.applyAsync(mapper)")
 class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
         extends
         AsynchronousHelloWorld__Test<HelloWorld, StructuredConcurrencyHelloWorld<HelloWorld>> {
@@ -70,7 +73,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetArray_Test {
 
-        @DisplayName("should apply <mapper> via the <executor> and return the <hello-world-bytes>")
+        @DisplayName("via executor / hello-world-bytes")
         @Test
         void __() throws Exception {
             // ------------------------------------------------------------------------------- given
@@ -89,7 +92,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class ByteArray_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -99,7 +102,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class String_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -109,7 +112,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Appendable_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -120,7 +123,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Segment_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -131,7 +134,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class OutputStream_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -141,7 +144,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class InputStream_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -151,7 +154,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class File_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -161,7 +164,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DataOutput_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -171,7 +174,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Writer_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -181,7 +184,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Reader_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -191,7 +194,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class File_Charset_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -201,7 +204,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class AsInputStream_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -212,7 +215,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramPacket_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -222,7 +225,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramSocket_SocketAddress_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -232,7 +235,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramSocket_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -242,7 +245,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Socket_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -252,7 +255,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class URLConnection_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -263,7 +266,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class HttpRequestBuilder_String_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -276,7 +279,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class ByteBuffer_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -286,7 +289,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Supplier_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -296,7 +299,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class ByteBuffer__Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -306,7 +309,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Put_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -317,7 +320,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class WritableByteChannel_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -327,7 +330,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramChannel_SocketAddress_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -337,7 +340,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class DatagramChannel_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -347,7 +350,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class AsynchronousByteChannel_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -357,7 +360,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class AsynchronousFileChannel_Long_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -368,7 +371,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Path_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -379,7 +382,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class MessageDigest_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -389,7 +392,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Signature_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -400,7 +403,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetAsciiStream_PreparedStatement_Int_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -410,7 +413,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBinaryStream_PreparedStatement_Int_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -420,7 +423,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBytes_PreparedStatement_Int_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -430,7 +433,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetCharacterStream_PreparedStatement_Int_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -440,7 +443,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBinaryStream_Blob_Long_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -450,7 +453,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetBytes_Blob_Long_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -460,7 +463,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetAsciiStream_Clob_Long_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -470,7 +473,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetCharacterStream_Clob_Long_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -480,7 +483,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SetString_Clob_Long_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -491,7 +494,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class BitSet_Int_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -501,7 +504,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SequencedCollection_Function_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -511,7 +514,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SequencedCollection_IntFunction_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -521,7 +524,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class SequencedMap_IntFunction_Function_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -532,7 +535,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Consumer_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -542,7 +545,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Consumer_Function_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -552,7 +555,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class IntConsumer_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -565,7 +568,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Checksum_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -575,7 +578,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Deflater_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }
@@ -588,7 +591,7 @@ class StructuredConcurrencyHelloWorld_ApplyAsync_Mapper__Test
     @Nested
     class Mac_Test {
 
-        @DisplayName("should apply <mapper> via the <executor>")
+        @DisplayName("via executor")
         @Test
         void __() {
         }

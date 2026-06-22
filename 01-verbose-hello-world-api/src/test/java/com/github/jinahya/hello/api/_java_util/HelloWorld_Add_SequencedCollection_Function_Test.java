@@ -49,7 +49,7 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
      * {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)} method throws a
      * {@link NullPointerException} when the {@code collection} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <collection> argument is <null>")
+    @DisplayName("throws NPE / collection is null")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_CollectionIsNull() {
@@ -66,7 +66,7 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
      * {@link HelloWorld#add(SequencedCollection, Function) add(collection, mapper)} method throws a
      * {@link NullPointerException} when the {@code mapper} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <mapper> argument is <null>")
+    @DisplayName("throws NPE / mapper is null")
     @Test
     @SuppressWarnings({"rawtypes"})
     void _ThrowNullPointerException_MapperIsNull() {
@@ -86,7 +86,7 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
      * {@link SequencedCollection#addLast(Object) collection.addLast(...)} in order, and returns the
      * {@code collection}.
      */
-    @DisplayName("should invoke <set(byte[])>, and <collection.add(mapper.apply(b))> for each byte")
+    @DisplayName("happy path")
     @Test
     @SuppressWarnings("unchecked")
     void __() {

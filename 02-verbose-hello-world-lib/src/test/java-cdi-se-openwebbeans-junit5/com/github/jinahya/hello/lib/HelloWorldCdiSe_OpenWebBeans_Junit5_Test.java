@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
@@ -33,6 +34,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
  * @see <a href="https://openwebbeans.apache.org/">Apache OpenWebBeans</a>
  * @see <a href="https://openwebbeans.apache.org/owbsetup_se.html">OpenWebBeans and JavaSE</a>
  */
+@DisplayName("HelloWorldCdiSe / OpenWebBeans + JUnit 5")
 @org.apache.openwebbeans.junit5.Cdi(classes = {HelloWorldCdi_Producer.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

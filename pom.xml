@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -55,6 +56,10 @@
     <maven.compiler.testRelease>${maven.compiler.testTarget}</maven.compiler.testRelease>
     <sonar.organization>jinahya-github</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
+    <!-- ai: logback-classic's version should be matched to the slf4j-api's version -->
+    <!-- ai: we should check the following logback-parent's pom for the corresponding slf4j-api's version -->
+    <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent -->
     <version.ch.logback.classic>1.5.34</version.ch.logback.classic>
     <!--    <version.com.formdev>3.3</version.com.formdev>-->
     <!--    <version.com.formdev>3.5.2</version.com.formdev>-->
@@ -64,16 +69,16 @@
     <!--    <version.com.google.guava>33.3.1-jre</version.com.google.guava>-->
     <version.com.google.guava>33.6.0-jre</version.com.google.guava>
     <!-- https://central.sonatype.com/artifact/com.google.errorprone/error_prone_core/versions -->
-    <version.com.google.errorprone>2.49.0</version.com.google.errorprone>
-    <version.com.uber.nullaway>0.13.4</version.com.uber.nullaway>
+    <version.com.google.errorprone>2.50.0</version.com.google.errorprone>
+    <version.com.uber.nullaway>0.13.6</version.com.uber.nullaway>
     <version.maven-surefire>3.5.6</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
-    <version.io.avaje>12.5</version.io.avaje>
+    <version.io.avaje>12.6</version.io.avaje>
     <!-- https://central.sonatype.com/artifact/io.micronaut/micronaut-core/versions -->
     <version.io.micronaut>4.10.23</version.io.micronaut>
     <!-- https://central.sonatype.com/artifact/io.micronaut.platform/micronaut-platform/versions -->
-    <version.io.micronaut.platform>4.10.14</version.io.micronaut.platform>
+    <version.io.micronaut.platform>5.0.2</version.io.micronaut.platform>
     <!-- https://central.sonatype.com/artifact/io.quarkus.platform/quarkus-bom/versions -->
     <version.io.quarkus.platform>3.35.3</version.io.quarkus.platform>
     <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
@@ -83,10 +88,8 @@
     <!--    <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>-->
     <version.org.apache.openwebbeans>4.1.0</version.org.apache.openwebbeans>
     <version.org.aspectj>1.9.25.1</version.org.aspectj>
-    <version.org.assertj>4.0.0-M1</version.org.assertj>
     <!-- https://central.sonatype.com/artifact/org.glassfish.hk2/hk2/versions -->
     <version.org.glassfish.hk2>4.0.1</version.org.glassfish.hk2>
-    <version.org.hibernate.validator>8.0.1.Final</version.org.hibernate.validator>
     <version.org.jboss.weld>6.0.0.Alpha1</version.org.jboss.weld> <!-- weld-junit5 -->
     <!-- https://central.sonatype.com/artifact/org.jboss.weld/weld-junit5/versions -->
     <version.org.jboss.weld-junit>5.0.3.Final</version.org.jboss.weld-junit> <!-- weld-se-core -->
@@ -94,23 +97,54 @@
     <version.org.jboss.weld.se>6.0.4.Final</version.org.jboss.weld.se> <!-- weld-se-core -->
     <version.org.jspecify>1.0.0</version.org.jspecify>
     <!-- https://central.sonatype.com/artifact/org.junit/junit-bom/versions -->
-    <version.org.junit>6.0.3</version.org.junit>
+    <version.org.junit>6.1.0</version.org.junit>
     <version.org.junit.jupiter>${version.org.junit}</version.org.junit.jupiter>
     <!--    <version.org.mockito>5.21.0</version.org.mockito>-->
     <version.org.mockito>5.23.0</version.org.mockito>
     <version.org.projectlombok>1.18.46</version.org.projectlombok>
     <version.org.reactivestreams>1.0.4</version.org.reactivestreams>
     <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent/versions -->
-    <version.org.slf4j>2.0.17</version.org.slf4j>
+    <version.org.slf4j>2.0.18</version.org.slf4j>
     <!-- https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html -->
-    <version.org.springframework>7.0.7</version.org.springframework>
-    <version.org.springframework.boot>4.0.6</version.org.springframework.boot>
+    <version.org.springframework>7.0.8</version.org.springframework>
+    <version.org.springframework.boot>4.1.0</version.org.springframework.boot>
     <!-- https://central.sonatype.com/artifact/io.vertx/vertx-reactive-streams -->
-    <version.org.vertx>5.0.12</version.org.vertx>
+    <version.org.vertx>5.1.2</version.org.vertx>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.formdev</groupId>
+        <artifactId>flatlaf</artifactId>
+        <version>${version.com.formdev}</version>
+      </dependency>
+      <!--
+        Order-sensitive BOM imports: these must be declared BEFORE quarkus-bom so that
+        their pins (junit-jupiter, mockito-junit-jupiter, mutiny) win. Maven applies the
+        first matching managed version from the import order.
+      -->
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${version.org.junit}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-bom</artifactId>
+        <version>${version.org.mockito}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.smallrye.reactive</groupId>
+        <artifactId>mutiny-bom</artifactId>
+        <version>${version.io.smallrye.reactive}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>at.yawk.lz4</groupId>
         <artifactId>lz4-java</artifactId>
@@ -120,14 +154,14 @@
         <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-<!--        <version>1.5.34</version>-->
+        <!--        <version>1.5.34</version>-->
         <version>${version.ch.logback.classic}</version>
       </dependency>
-<!--      <dependency>&lt;!&ndash; pinned to match logback-classic above; the 1.5.34 POM transitively references 1.5.32 &ndash;&gt;-->
-<!--        <groupId>ch.qos.logback</groupId>-->
-<!--        <artifactId>logback-core</artifactId>-->
-<!--        <version>1.5.34</version>-->
-<!--      </dependency>-->
+      <!--      <dependency>&lt;!&ndash; pinned to match logback-classic above; the 1.5.34 POM transitively references 1.5.32 &ndash;&gt;-->
+      <!--        <groupId>ch.qos.logback</groupId>-->
+      <!--        <artifactId>logback-core</artifactId>-->
+      <!--        <version>1.5.34</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>com.dynatrace.hash4j</groupId>
         <artifactId>hash4j</artifactId>
@@ -189,7 +223,7 @@
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>mockwebserver</artifactId>
-        <version>5.3.2</version>
+        <version>5.4.0</version>
       </dependency>
       <dependency>
         <groupId>com.typesafe.akka</groupId>
@@ -224,6 +258,16 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>io.github.jinahya</groupId>
+        <artifactId>reactive-streams-tck-junit-jupiter</artifactId>
+        <version>0.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.jinahya</groupId>
+        <artifactId>reactive-streams-tck-flow-junit-jupiter</artifactId>
+        <version>0.0.4</version>
+      </dependency>
+      <dependency>
         <groupId>io.helidon</groupId>
         <artifactId>helidon-bom</artifactId>
         <!-- https://central.sonatype.com/artifact/io.helidon/helidon-bom/versions -->
@@ -235,7 +279,7 @@
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-bom</artifactId>
         <!-- https://central.sonatype.com/artifact/io.projectreactor/reactor-bom/versions -->
-        <version>2025.0.5</version>
+        <version>2025.0.6</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -250,14 +294,6 @@
         <groupId>io.reactivex.rxjava3</groupId>
         <artifactId>rxjava</artifactId>
         <version>3.1.12</version>
-      </dependency>
-      <dependency>
-        <groupId>io.smallrye.reactive</groupId>
-        <artifactId>mutiny-bom</artifactId>
-        <!-- https://central.sonatype.com/artifact/io.smallrye.reactive/mutiny-bom/versions -->
-        <version>${version.io.smallrye.reactive}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.vertx</groupId>
@@ -318,13 +354,6 @@
         <artifactId>aspectjtools</artifactId>
         <version>${version.org.aspectj}</version>
       </dependency>
-      <!--      <dependency>-->
-      <!--        <groupId>org.assertj</groupId>-->
-      <!--        <artifactId>assertj-bom</artifactId>-->
-      <!--        <version>${version.org.assertj}</version>-->
-      <!--        <type>pom</type>-->
-      <!--        <scope>import</scope>-->
-      <!--      </dependency>-->
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
@@ -367,23 +396,9 @@
         <version>${version.org.jboss.weld.se}</version>
       </dependency>
       <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${version.org.junit}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.jspecify</groupId>
         <artifactId>jspecify</artifactId>
         <version>${version.org.jspecify}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-bom</artifactId>
-        <version>${version.org.mockito}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.projectlombok</groupId>
@@ -395,6 +410,16 @@
         <artifactId>reactive-streams</artifactId>
         <version>${version.org.reactivestreams}</version>
       </dependency>
+      <!--      <dependency>-->
+      <!--        <groupId>org.reactivestreams</groupId>-->
+      <!--        <artifactId>reactive-streams-tck</artifactId>-->
+      <!--        <version>${version.org.reactivestreams}</version>-->
+      <!--      </dependency>-->
+      <!--      <dependency>-->
+      <!--        <groupId>org.reactivestreams</groupId>-->
+      <!--        <artifactId>reactive-streams-tck-flow</artifactId>-->
+      <!--        <version>${version.org.reactivestreams}</version>-->
+      <!--      </dependency>-->
       <dependency>
         <groupId>org.reactivestreams</groupId>
         <artifactId>reactive-streams-flow-adapters</artifactId>
@@ -431,7 +456,7 @@
       <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
-        <version>3.53.1.0</version>
+        <version>3.53.2.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -441,31 +466,9 @@
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>jakarta.validation</groupId>-->
-    <!--      <artifactId>jakarta.validation-api</artifactId>-->
-    <!--      <scope>provided</scope>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>org.assertj</groupId>-->
-    <!--      <artifactId>assertj-core</artifactId>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>${version.org.hibernate.validator}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator-test-utils</artifactId>
-      <version>${version.org.hibernate.validator}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -756,7 +759,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.14</version>
+          <version>0.8.15</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>

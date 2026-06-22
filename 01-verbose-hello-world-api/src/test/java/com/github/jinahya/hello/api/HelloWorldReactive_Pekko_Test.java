@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("reactive — Pekko")
+@DisplayName("HelloWorldReactive / Pekko")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
@@ -74,8 +74,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Source.single(byte[]).runWith(Sink.head())} emits the
          * {@code hello-world-bytes}.
          */
-        @DisplayName(
-                "should emit <hello-world-bytes> via <Source.single(byte[]).runWith(Sink.head())>")
+        @DisplayName("Source.single")
         @Test
         void __single() {
             // -------------------------------------------------------------------------- given/when
@@ -92,9 +91,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Source.lazySingle(Supplier).runWith(Sink.head())} emits the
          * {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Source.lazySingle(Supplier).runWith(Sink.head())>""")
+        @DisplayName("Source.lazySingle")
         @Test
         void __lazySingle() {
             // -------------------------------------------------------------------------- given/when
@@ -109,13 +106,11 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Source.completionStage(asynchronousService.applyAsync(...))
-         * .runWith(Sink.head())} emits the {@code hello-world-bytes}.
+         * Asserts that
+         * {@code Source.completionStage(asynchronousService.applyAsync(...)) .runWith(Sink.head())}
+         * emits the {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Source.completionStage(AsynchronousHelloWorld.applyAsync)
-                .runWith(Sink.head())>""")
+        @DisplayName("Source.completionStage")
         @Test
         void __completionStage() {
             // -------------------------------------------------------------------------- given/when
@@ -139,8 +134,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Source.from(Iterable).runWith(Sink.seq())} emits all elements as
          * {@code hello-world-bytes}.
          */
-        @DisplayName(
-                "should emit <hello-world-bytes> via <Source.from(Iterable).runWith(Sink.seq())>")
+        @DisplayName("Source.from(Iterable)")
         @Test
         void __from_iterable() {
             // -------------------------------------------------------------------------- given/when
@@ -164,9 +158,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Source.range(0, n-1).map(...).runWith(Sink.seq())} emits {@code n}
          * elements of {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Source.range(0, n-1).map(...).runWith(Sink.seq())>""")
+        @DisplayName("Source.range + map")
         @Test
         void __range_map() {
             // -------------------------------------------------------------------------- given/when
@@ -189,9 +181,7 @@ class HelloWorldReactive_Pekko_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Source.repeat(byte[]).take(n).runWith(Sink.seq())} emits {@code n}
          * elements of {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Source.repeat(byte[]).take(n).runWith(Sink.seq())>""")
+        @DisplayName("Source.repeat + take")
         @Test
         void __repeat_take() {
             // -------------------------------------------------------------------------- given/when

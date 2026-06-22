@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(file)")
+@DisplayName("HelloWorld.append(File)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,7 +48,7 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#append(File) append(file)} method throws a
      * {@link NullPointerException} when the {@code file} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <file> argument is <null>")
+    @DisplayName("throws NPE / file is null")
     @Test
     void _ThrowNullPointerException_FileIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,8 +66,7 @@ class HelloWorld_Append_File_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "should open the <file> as <appending mode>, write <hello-world-bytes>, and close it")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

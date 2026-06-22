@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel, position)")
+@DisplayName("HelloWorld.write(AsynchronousFileChannel, position)")
 @Slf4j
 class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
 
@@ -51,7 +51,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -67,8 +67,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * {@link HelloWorld#write(AsynchronousFileChannel, long) write(channel, position)} method
      * throws an {@link IllegalArgumentException} when the {@code position} argument is negative.
      */
-    @DisplayName(
-            "should throw an <IllegalArgumentException> when the <position> argument is <negative>")
+    @DisplayName("throws IAE / position is negative")
     @Test
     void _ThrowIllegalArgumentException_PositionIsNegative() {
         // ----------------------------------------------------------------------------------- given
@@ -87,8 +86,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if failed to execute.
      */
-    @DisplayName(
-            "should write all <hello-world-bytes> across partial writes, and return the <channel>")
+    @DisplayName("happy path")
     @Test
     @SuppressWarnings({"rawtypes"})
     void __() throws InterruptedException, ExecutionException {
@@ -143,9 +141,7 @@ class HelloWorld_Write_AsynchronousFileChannel_Test extends HelloWorld__Test {
      * {@link Future#get() future.get()} fails — possibly on the first invocation, or after one or
      * more partial writes have already succeeded.
      */
-    @DisplayName("""
-            should propagate an <ExecutionException>
-            when the <channel> fails on or after partial writes""")
+    @DisplayName("fails")
     @Test
     void __fails() {
         // ----------------------------------------------------------------------------------- given

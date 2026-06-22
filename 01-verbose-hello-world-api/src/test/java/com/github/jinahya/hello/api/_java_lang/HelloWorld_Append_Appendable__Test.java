@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_lang;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_HideFromPublishing
 @DisplayName("append(appendable)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -64,7 +66,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should append <hello-world-string> to a real <StringBuilder>")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given

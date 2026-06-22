@@ -24,12 +24,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * An extended {@link HelloWorldDi__Test} which uses {@link HelloWorldDi_Hk2_Binder} as a binder.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("HelloWorldDi / HK2")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDi_Hk2_Test extends HelloWorldDi__Test {

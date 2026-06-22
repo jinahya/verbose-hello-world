@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.DynamicTest.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("HelloWorld")
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class HelloWorld__Test {
@@ -76,7 +77,7 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("should throw a <NullPointerException> when the <array> argument is <null>")
+    @DisplayName("throws NPE / array is null")
     @TestFactory
     Stream<DynamicTest> _ThrowNullPointerException_ArrayIsNull() {
         return services().map(s -> {
@@ -100,8 +101,7 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName(
-            "should throw an <IndexOutOfBoundsException> when the <index> argument is negative")
+    @DisplayName("throws IndexOutOfBoundsException / index is negative")
     @TestFactory
     Stream<DynamicTest> _ThrowIndexOutOfBoundsException_IndexIsNegative() {
         return services().map(s -> {
@@ -126,9 +126,7 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("""
-            should throw an <IndexOutOfBoundsException>
-            when <array.length> is less than <index + HelloWorld.BYTES>""")
+    @DisplayName("throws IndexOutOfBoundsException / array.length < index + BYTES")
     @TestFactory
     Stream<DynamicTest> _ThrowIndexOutOfBoundsException_ArrayLengthLessThanIndexPlusBytes() {
         return services().map(s -> {
@@ -157,7 +155,7 @@ abstract class HelloWorld__Test {
      *
      * @return a stream of dynamic tests, one per service.
      */
-    @DisplayName("should set <hello-world-bytes> on <array> starting at <index>")
+    @DisplayName("sets hello-world-bytes on array starting at index")
     @TestFactory
     Stream<DynamicTest> _SetHelloWorldBytesOnArrayStartingAtIndex_() {
         return services().map(s -> {

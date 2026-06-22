@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * A class extends {@link HelloWorldDi__Test} for Spring Framework.
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a href="https://spring.io/projects/spring-framework">Spring Framework</a>
  */
+@DisplayName("HelloWorldDi / Spring")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldDi_Spring_Test extends HelloWorldDi__Test {

@@ -50,7 +50,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
      * {@link HelloWorld#put(SequencedMap, Function, Function) put(map, keyMapper, valueMapper)}
      * method throws a {@link NullPointerException} when the {@code map} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <map> argument is <null>")
+    @DisplayName("throws NPE / map is null")
     @Test
     void _ThrowNullPointerException_MapIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,7 +68,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
      * method throws a {@link NullPointerException} when the {@code keyMapper} argument is
      * {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <keyMapper> argument is <null>")
+    @DisplayName("throws NPE / keyMapper is null")
     @Test
     void _ThrowNullPointerException_KeyMapperIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -86,7 +86,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
      * method throws a {@link NullPointerException} when the {@code valueMapper} argument is
      * {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <valueMapper> argument is <null>")
+    @DisplayName("throws NPE / valueMapper is null")
     @Test
     void _ThrowNullPointerException_ValueMapperIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -106,9 +106,7 @@ class HelloWorld_Put_SequencedMap_Function_Function_Test extends HelloWorld__Tes
      * {@link SequencedMap#putLast(Object, Object) map.putLast(keyMapper.apply(b),
      * valueMapper.apply(b))} in order, and returns the {@code map}.
      */
-    @DisplayName("""
-            should invoke <set(byte[])>,
-            and <map.putLast(keyMapper.apply(b), valueMapper.apply(b))> for each byte b""")
+    @DisplayName("happy path")
     @Test
     @SuppressWarnings({"unchecked"})
     void __() {

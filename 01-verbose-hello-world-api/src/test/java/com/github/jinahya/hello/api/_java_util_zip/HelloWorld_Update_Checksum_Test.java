@@ -45,7 +45,7 @@ class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#update(Checksum) update(checksum)} method throws a
      * {@link NullPointerException} when the {@code checksum} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <checksum> argument is <null>")
+    @DisplayName("throws NPE / checksum is null")
     @Test
     void _ThrowNullPointerException_ChecksumIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -60,7 +60,7 @@ class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
      * {@link HelloWorld#set(byte[]) set(array)} once and passes the array to
      * {@link Checksum#update(byte[]) checksum.update(array)}, and returns the {@code checksum}.
      */
-    @DisplayName("should invoke <set(byte[12])> and pass the array to <checksum.update>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

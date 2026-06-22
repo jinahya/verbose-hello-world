@@ -14,10 +14,10 @@ Too verbose?, See [succinct-hello-world](https://github.com/jinahya/succinct-hel
 | `01-verbose-hello-world-api`     | Defines the `HelloWorld` interface                        |
 | `02-verbose-hello-world-lib`     | Implements the `HelloWorld` interface                     |
 | `03-verbose-hello-world-app`     | Prints `hello, world`                                     |
-| `\- 01-verbose-hello-world-app1` | Uses the `HelloWorldImpl`                                 |
-| `\- 02-verbose-hello-world-app2` | &nbsp;&nbsp;-&nbsp;SPI(Service Provider Interface)        |
-| `\- 03-verbose-hello-world-app3` | &nbsp;&nbsp;-&nbsp;DI(Dependency Injection)               |
-| `\- 04-verbose-hello-world-app4` | &nbsp;&nbsp;-&nbsp;CDI(Contexts and Dependency Injection) |
+| `\- 01-verbose-hello-world-appa` | Uses the `HelloWorldImpl`                                 |
+| `\- 02-verbose-hello-world-appb` | &nbsp;&nbsp;-&nbsp;SPI(Service Provider Interface)        |
+| `\- 03-verbose-hello-world-appc` | &nbsp;&nbsp;-&nbsp;DI(Dependency Injection)               |
+| `\- 04-verbose-hello-world-appd` | &nbsp;&nbsp;-&nbsp;CDI(Contexts and Dependency Injection) |
 
 ## Issues to solve
 

@@ -34,13 +34,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests <a href="https://vertx.io/docs/">Vert.x</a>'s publisher-creation idioms — each test builds
  * a {@link Future Future&lt;byte[]&gt;} pulling the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> from the synchronous or
- * asynchronous service. Vert.x's core reactive-value type is {@link Future Future&lt;T&gt;} —
- * a 0/1-value primitive analogous to Reactor's {@code Mono} or RxJava's {@code Single}; core has no
+ * asynchronous service. Vert.x's core reactive-value type is {@link Future Future&lt;T&gt;} — a
+ * 0/1-value primitive analogous to Reactor's {@code Mono} or RxJava's {@code Single}; core has no
  * first-party multi-value publisher, so only the single-value section is exposed.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("reactive — Vert.x")
+@DisplayName("HelloWorldReactive / Vert.x")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
@@ -55,7 +55,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Future.succeededFuture(byte[])>")
+        @DisplayName("Future.succeededFuture")
         @Test
         void __succeededFuture() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -74,8 +74,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName(
-                "should emit <hello-world-bytes> via <Promise.promise()> then <complete(byte[])>")
+        @DisplayName("Promise.promise + complete")
         @Test
         void __promise() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -90,14 +89,12 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Future.fromCompletionStage(asynchronousService.applyAsync(...))} emits
-         * the {@code hello-world-bytes}.
+         * Asserts that {@code Future.fromCompletionStage(asynchronousService.applyAsync(...))}
+         * emits the {@code hello-world-bytes}.
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Future.fromCompletionStage(AsynchronousHelloWorld.applyAsync)>""")
+        @DisplayName("Future.fromCompletionStage")
         @Test
         void __fromCompletionStage() throws Exception {
             // -------------------------------------------------------------------------- given/when
@@ -116,7 +113,7 @@ class HelloWorldReactive_Vertx_Test extends HelloWorldReactive__Test {
          *
          * @throws Exception if an error occurs.
          */
-        @DisplayName("should return <BYTES> via <Future.succeededFuture(...).map(byte[]::length)>")
+        @DisplayName("Future.map")
         @Test
         void __map() throws Exception {
             // -------------------------------------------------------------------------- given/when

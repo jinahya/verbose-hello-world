@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
@@ -40,7 +41,8 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(channel, target)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.send(DatagramChannel, target) / extras")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
 
@@ -71,7 +73,7 @@ class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv4> address")
+        @DisplayName("INET")
         @Test
         void __INET() throws IOException {
             try (final var server = DatagramChannel.open(StandardProtocolFamily.INET)) {
@@ -119,7 +121,7 @@ class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("should send <hello-world-bytes> to an <echo server> over an <IPv6> address")
+        @DisplayName("INET6")
         @DisabledIfSystemProperty(named = "java.net.preferIPv4Stack", matches = "true",
                                   disabledReason = "IPv6 disabled by preferIPv4Stack=true")
         @Test
@@ -169,8 +171,7 @@ class HelloWorld_Send_DatagramChannel_Target__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName(
-                "should send <hello-world-bytes> to an <echo server> over a <UNIX domain> address")
+        @DisplayName("UNIX")
         @Disabled("not supported")
         @Test
         void __UNIX() throws IOException {

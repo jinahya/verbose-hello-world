@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_sql;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -40,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setCharacterStream(statement, index)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.setCharacterStream(PreparedStatement, int)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
@@ -82,9 +84,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
          * setCharacterStream(statement, index)} method inserts and reads back the
          * {@code "hello, world"} string through a real H2 {@link PreparedStatement}.
          */
-        @DisplayName("""
-                should insert and read back the hello-world string
-                through a <real H2 PreparedStatement>""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -142,9 +142,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
          * setCharacterStream(statement, index)} method inserts and reads back the
          * {@code "hello, world"} string through a real HSQLDB {@link PreparedStatement}.
          */
-        @DisplayName("""
-                should insert and read back the hello-world string
-                through a <real HSQLDB PreparedStatement>""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -201,9 +199,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int__Test
          * setCharacterStream(statement, index)} method inserts and reads back the
          * {@code "hello, world"} string through a real SQLite {@link PreparedStatement}.
          */
-        @DisplayName("""
-                should insert and read back the hello-world string
-                through a <real SQLite PreparedStatement>""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException, SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

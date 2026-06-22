@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_sql;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -38,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("setBytes(blob, pos)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.setBytes(Blob, long)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_SetBytes_Blob_Long__Test
@@ -73,7 +75,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
          * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
          * method populates a real H2 {@link Blob} with the {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real H2 Blob> through <setBytes(blob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -101,7 +103,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
          * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
          * method populates a real HSQLDB {@link Blob} with the {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real HSQLDB Blob> through <setBytes(blob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
@@ -133,7 +135,7 @@ class HelloWorld_SetBytes_Blob_Long__Test
          * {@link com.github.jinahya.hello.api.HelloWorld#setBytes(Blob, long) setBytes(blob, pos)}
          * method populates a real SQLite {@link Blob} with the {@code "hello, world"} bytes.
          */
-        @DisplayName("should populate a <real SQLite Blob> through <setBytes(blob, 1L)>")
+        @DisplayName("happy path")
         @Test
         void __() throws SQLException {
             try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {

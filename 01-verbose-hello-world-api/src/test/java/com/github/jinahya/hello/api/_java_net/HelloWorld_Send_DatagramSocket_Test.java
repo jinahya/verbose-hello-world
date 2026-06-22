@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket)")
+@DisplayName("HelloWorld.send(DatagramSocket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,7 +48,7 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method throws a
      * {@link NullPointerException} when the {@code socket} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <socket> argument is <null>")
+    @DisplayName("throws NPE / socket is null")
     @Test
     void _ThrowNullPointerException_SocketIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -62,7 +62,7 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#send(DatagramSocket) send(socket)} method throws an
      * {@link IllegalArgumentException} when the {@code socket} is not connected.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <socket> is not connected")
+    @DisplayName("throws IAE / socket not connected")
     @Test
     void _ThrowIllegalArgumentException_SocketIsNotConnected() {
         // ----------------------------------------------------------------------------------- given
@@ -82,8 +82,7 @@ class HelloWorld_Send_DatagramSocket_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName(
-            "should invoke <send(socket, socket.remoteSocketAddress)>, and return the <socket>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

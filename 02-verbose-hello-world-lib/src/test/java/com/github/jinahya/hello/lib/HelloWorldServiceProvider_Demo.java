@@ -24,8 +24,7 @@ import com.github.jinahya.hello.api.*;
 
 /**
  * A {@link HelloWorldServiceProvider} that supplies {@link HelloWorldDemo} instances. The supplied
- * service is classified as <em>unqualified</em> ({@link #isQualified()} returns
- * {@code false}).
+ * service is classified as <em>unqualified</em> ({@link #isQualified()} returns {@code false}).
  *
  * <p>{@code public} so {@link java.util.ServiceLoader ServiceLoader}'s classpath-mode
  * reflection can invoke its implicit no-arg constructor.
@@ -35,7 +34,7 @@ import com.github.jinahya.hello.api.*;
 public class HelloWorldServiceProvider_Demo implements HelloWorldServiceProvider {
 
     /**
-     * {@inheritDoc}
+     * Classifies the supplied service as <em>unqualified</em>; always returns {@code false}.
      *
      * @return {@code false}.
      */
@@ -45,7 +44,7 @@ public class HelloWorldServiceProvider_Demo implements HelloWorldServiceProvider
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a fresh {@link HelloWorldDemo} instance on every invocation.
      *
      * @return a new {@link HelloWorldDemo} instance.
      */

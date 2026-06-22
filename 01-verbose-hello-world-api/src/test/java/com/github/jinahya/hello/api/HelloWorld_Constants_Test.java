@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("HelloWorld constants")
+@DisplayName("HelloWorld / constants")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorld_Constants_Test {
@@ -44,10 +44,10 @@ class HelloWorld_Constants_Test {
 
         /**
          * Verifies that {@link HelloWorld#BYTES} equals {@code 12} — the byte length of the
-         * {@code hello-world-string} in {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII}.
+         * {@code hello-world-string} in
+         * {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII}.
          */
-        @DisplayName(
-                "should equal <12> (the byte length of the <hello-world-string> in <US_ASCII>)")
+        @DisplayName("12")
         @Test
         void _12_BYTES() {
             final var expected = HELLO_WORLD_STRING.getBytes(US_ASCII).length;

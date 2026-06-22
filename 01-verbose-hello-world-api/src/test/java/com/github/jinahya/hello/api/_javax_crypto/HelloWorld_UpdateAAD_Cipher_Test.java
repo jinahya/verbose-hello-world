@@ -47,7 +47,7 @@ class HelloWorld_UpdateAAD_Cipher_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#updateAAD(Cipher) updateAAD(cipher)} method throws a
      * {@link NullPointerException} when the {@code cipher} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <cipher> argument is <null>")
+    @DisplayName("throws NPE / cipher is null")
     @Test
     void _ThrowNullPointerException_CipherIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -62,7 +62,7 @@ class HelloWorld_UpdateAAD_Cipher_Test extends HelloWorld__Test {
      * {@link Cipher#updateAAD(byte[]) cipher.updateAAD(array)} with the array filled by
      * {@link HelloWorld#set(byte[]) set(array)}, and returns the {@code cipher}.
      */
-    @DisplayName("should invoke <cipher.updateAAD(array)>, and return the <cipher>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

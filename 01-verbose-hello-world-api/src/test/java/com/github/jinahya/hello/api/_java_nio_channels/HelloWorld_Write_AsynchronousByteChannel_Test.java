@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(channel)")
+@DisplayName("HelloWorld.write(AsynchronousByteChannel)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({
@@ -51,10 +51,10 @@ import static org.mockito.Mockito.*;
 class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
 
     /**
-     * Verifies {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method throws a
-     * {@link NullPointerException} when the {@code channel} argument is {@code null}.
+     * Verifies that the {@link HelloWorld#write(AsynchronousByteChannel) write(channel)} method
+     * throws a {@link NullPointerException} when the {@code channel} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -71,8 +71,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
      * @throws InterruptedException if interrupted while testing.
      * @throws ExecutionException   if an I/O error occurs.
      */
-    @DisplayName(
-            "should write all <hello-world-bytes> across partial writes, and return the <channel>")
+    @DisplayName("happy path")
     @Test
     @SuppressWarnings({"rawtypes"})
     void __() throws InterruptedException, ExecutionException {
@@ -117,9 +116,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
      * {@link Future#get() future.get()} fails — possibly on the first invocation, or after one or
      * more partial writes have already succeeded.
      */
-    @DisplayName("""
-            should propagate an <ExecutionException>
-            when the <channel> fails on or after partial writes""")
+    @DisplayName("fails")
     @Test
     @SuppressWarnings({"rawtypes"})
     void __fails() {

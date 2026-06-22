@@ -28,6 +28,7 @@ import org.mockito.verification.*;
 
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -46,11 +47,15 @@ import static org.mockito.Mockito.*;
 })
 class HelloWorld_Set_Array_Test extends HelloWorld__Test {
 
+    static {
+        assertTrue(true); // pin for imports
+    }
+
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
      * {@link NullPointerException} when the {@code array} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <array> argument is <null>")
+    @DisplayName("throws NPE / array is null")
     @Test
     void _ThrowNullPointerException_ArrayIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -68,9 +73,7 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
      * {@link IndexOutOfBoundsException} when {@code array.length} is less than
      * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
      */
-    @DisplayName("""
-            should throw an <IndexOutOfBoundsException>
-            when <array.length> is less than <HelloWorld.BYTES>""")
+    @DisplayName("throws IOBE / array.length < BYTES")
     @Test
     void _ThrowIndexOutOfBoundsException_ArrayLengthIsLessThan12() {
         // ----------------------------------------------------------------------------------- given
@@ -86,13 +89,13 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method invokes
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
+     * {@link HelloWorld#set(byte[], int) set(array, index)} method with the given {@code array} and
      * {@code 0}, and returns the {@code array}.
      *
      * @see Mockito#verify(Object, VerificationMode)
      * @see org.junit.jupiter.api.Assertions#assertSame(Object, Object)
      */
-    @DisplayName("should invoke <set(array, 0)>, and return the <array>")
+    @DisplayName("happy path")
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given

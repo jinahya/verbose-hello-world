@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_util_zip;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -39,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@_HideFromPublishing
 @DisplayName("java.util.zip")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -63,9 +65,7 @@ class HelloWorld_Java_Util_Zip__Test extends HelloWorld__Test {
          * {@link HelloWorld#write(OutputStream) write(stream)} into a {@link ZipOutputStream}
          * round-trips through {@link ZipInputStream}.
          */
-        @DisplayName("""
-                should round-trip a <hello, world> entry
-                through <ZipOutputStream> and <ZipInputStream>""")
+        @DisplayName("ZipInputStream")
         @Test
         void __ZipInputStream() throws IOException {
             // ------------------------------------------------------------------------------- given
@@ -94,8 +94,7 @@ class HelloWorld_Java_Util_Zip__Test extends HelloWorld__Test {
          * {@link HelloWorld#write(OutputStream) write(stream)} into a file-backed
          * {@link ZipOutputStream} round-trips through {@link ZipFile}.
          */
-        @DisplayName(
-                "should round-trip a <hello, world> entry through <ZipOutputStream> and <ZipFile>")
+        @DisplayName("ZipFile")
         @Test
         void __ZipFile() throws IOException {
             // ----------------------------------------------------------------------------- given

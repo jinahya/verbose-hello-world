@@ -70,7 +70,7 @@ class HelloWorldCdi_Producer {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified with
+     * Disposes the specified {@link HelloWorld} instance qualified with
      * {@link HelloWorldDi_Constants#_DEMO}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
@@ -94,7 +94,7 @@ class HelloWorldCdi_Producer {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified with
+     * Disposes the specified {@link HelloWorld} instance qualified with
      * {@link HelloWorldDi_Constants#_IMPL}.
      *
      * @param bean the {@link HelloWorld} instance to dispose.
@@ -118,7 +118,7 @@ class HelloWorldCdi_Producer {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified with {@link _Demo}.
+     * Disposes the specified {@link HelloWorld} instance qualified with {@link _Demo}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */
@@ -141,7 +141,7 @@ class HelloWorldCdi_Producer {
     }
 
     /**
-     * Disposes specified {@link HelloWorld} instance qualified with {@link _Impl}.
+     * Disposes the specified {@link HelloWorld} instance qualified with {@link _Impl}.
      *
      * @param bean the {@link HelloWorld} instance to dispose
      */

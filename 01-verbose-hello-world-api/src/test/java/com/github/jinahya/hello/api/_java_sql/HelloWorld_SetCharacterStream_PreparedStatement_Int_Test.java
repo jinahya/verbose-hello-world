@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see PreparedStatement#setCharacterStream(int, Reader)
  */
-@DisplayName("setCharacterStream(statement, index)")
+@DisplayName("HelloWorld.setCharacterStream(PreparedStatement, int)")
 @Slf4j
 class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         extends HelloWorld__Test {
@@ -52,7 +52,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
      * setCharacterStream(statement, index)} method throws a {@link NullPointerException} when the
      * {@code statement} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <statement> argument is <null>")
+    @DisplayName("throws NPE / statement is null")
     @Test
     void _ThrowNullPointerException_PreparedStatementIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -72,7 +72,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
      * setCharacterStream(statement, index)} method throws an {@link IllegalArgumentException} when
      * the {@code index} argument is not positive.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <index> is not positive")
+    @DisplayName("throws IAE / index is not positive")
     @Test
     void _ThrowIllegalArgumentException_ParameterIndexIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -94,9 +94,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
      * reader)} with a reader that yields the {@code "hello, world"} characters, and returns the
      * {@code statement}.
      */
-    @DisplayName("""
-            should invoke <statement.setCharacterStream(index, reader)>,
-            and return the <statement>""")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given

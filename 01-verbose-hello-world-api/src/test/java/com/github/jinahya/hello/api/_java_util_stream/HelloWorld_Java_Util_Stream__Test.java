@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_util_stream;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import org.junit.jupiter.api.*;
 
@@ -31,6 +32,8 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@_HideFromPublishing
+@DisplayName("java.util.stream")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
 
@@ -45,9 +48,11 @@ class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
         }).when(service()).accept(any(), any());
     }
 
+    @DisplayName("Stream.Builder")
     @Nested
     class StreamBuilder__Test {
 
+        @DisplayName("happy path")
         @Test
         void __() {
             final var builder = Stream.<Byte>builder();
@@ -59,9 +64,11 @@ class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
         }
     }
 
+    @DisplayName("IntStream.Builder")
     @Nested
     class IntStreamBuilder__Test {
 
+        @DisplayName("happy path")
         @Test
         void __() {
             final var builder = IntStream.builder();

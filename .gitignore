@@ -275,6 +275,7 @@ a.out
 *.gz
 
 
+CLAUDE.md
 .claude
 
 _dependency_tree_*
@@ -283,3 +284,7 @@ reports
 
 _RAMP_DOWN.asciidoc
 _RAMP_DOWN_SEQ
+
+
+AGENTS.md
+.codex

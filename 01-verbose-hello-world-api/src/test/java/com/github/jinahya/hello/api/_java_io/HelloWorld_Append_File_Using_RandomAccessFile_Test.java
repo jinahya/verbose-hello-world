@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(file) using RandomAccessFile")
+@DisplayName("HelloWorld.append(File) using RandomAccessFile")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -50,12 +50,13 @@ class HelloWorld_Append_File_Using_RandomAccessFile_Test
 
     /**
      * Verifies that {@link HelloWorld#write(DataOutput)} writes the {@code hello-world-bytes} to a
-     * real {@link File} when driven through a {@link RandomAccessFile} positioned at a random offset.
+     * real {@link File} when driven through a {@link RandomAccessFile} positioned at a random
+     * offset.
      *
      * @param dir the {@link TempDir} that holds the temp file.
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should write <hello-world-bytes> to the <file> through a <RandomAccessFile>")
+    @DisplayName("happy path")
     @Test
     void __(@TempDir final File dir)
             throws IOException {

@@ -49,7 +49,7 @@ class HelloWorld_Update_Cipher_Output_Consumer_Test extends HelloWorld__Test {
      * Verifies that the method throws a {@link NullPointerException} when the {@code cipher}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <cipher> argument is <null>")
+    @DisplayName("throws NPE / cipher is null")
     @Test
     void _ThrowNullPointerException_CipherIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -65,9 +65,7 @@ class HelloWorld_Update_Cipher_Output_Consumer_Test extends HelloWorld__Test {
      * Verifies that the method throws a {@link NullPointerException} when the
      * {@code outputLengthConsumer} argument is {@code null}.
      */
-    @DisplayName("""
-            should throw a <NullPointerException>
-            when the <outputLengthConsumer> argument is <null>""")
+    @DisplayName("throws NPE / outputLengthConsumer is null")
     @Test
     void _ThrowNullPointerException_OutputLengthConsumerIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -83,9 +81,7 @@ class HelloWorld_Update_Cipher_Output_Consumer_Test extends HelloWorld__Test {
      * Verifies that the method invokes {@code cipher.update(buffer, output)}, forwards the result
      * to the {@code outputLengthConsumer}, and returns the {@code cipher}.
      */
-    @DisplayName("""
-            should invoke <cipher.update(buffer, output)>,
-            forward the result to the <outputLengthConsumer>, and return the <cipher>""")
+    @DisplayName("happy path")
     @Test
     void __() throws ShortBufferException {
         // ----------------------------------------------------------------------------------- given

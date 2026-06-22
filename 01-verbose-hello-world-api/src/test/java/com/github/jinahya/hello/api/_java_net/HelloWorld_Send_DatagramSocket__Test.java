@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api._java_net;
  */
 
 import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -39,7 +40,8 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(socket)")
+@_HideFromPublishing
+@DisplayName("HelloWorld.send(DatagramSocket)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -67,7 +69,7 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should send <hello-world-bytes> through a real connected <DatagramSocket>")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         try (var server = new DatagramSocket(
@@ -107,9 +109,7 @@ class HelloWorld_Send_DatagramSocket__Test extends HelloWorld__Test {
          *
          * @throws IOException if an I/O error occurs.
          */
-        @DisplayName("""
-                client should <send(socket)> to a connected server;
-                server should echo the bytes back to the sender""")
+        @DisplayName("happy path")
         @Test
         void __() throws IOException {
             try (var server = new DatagramSocket(null)) {

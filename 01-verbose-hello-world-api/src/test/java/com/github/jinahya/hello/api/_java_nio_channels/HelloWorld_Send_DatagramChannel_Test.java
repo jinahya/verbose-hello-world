@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("send(channel)")
+@DisplayName("HelloWorld.send(DatagramChannel)")
 @Slf4j
 class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
 
@@ -49,7 +49,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
      * Verifies that the method throws a {@link NullPointerException} when the {@code channel}
      * argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <channel> argument is <null>")
+    @DisplayName("throws NPE / channel is null")
     @Test
     void _ThrowNullPointerException_ChannelIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -63,7 +63,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
      * Verifies that the method throws an {@link IllegalArgumentException} when the {@code channel}
      * is not connected.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <channel> is not <connected>")
+    @DisplayName("throws IAE / channel not connected")
     @Test
     void _ThrowIllegalArgumentException_ChannelIsNotConnected() {
         // ----------------------------------------------------------------------------------- given
@@ -80,7 +80,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should delegate to <send(socket)> when the <channel> is in <blocking> mode")
+    @DisplayName("blocking / delegates to send(socket)")
     @Test
     void __ChannelIsBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
@@ -105,7 +105,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("should delegate to <write(channel)> when the <channel> is in <non-blocking> mode")
+    @DisplayName("non-blocking / delegates to write(channel)")
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given

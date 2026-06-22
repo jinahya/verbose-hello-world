@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("reactive — Mutiny")
+@DisplayName("HelloWorldReactive / Mutiny")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
@@ -59,7 +59,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
         /**
          * Asserts that {@code Uni.createFrom().item(byte[])} emits the {@code hello-world-bytes}.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(byte[])>")
+        @DisplayName("Uni.createFrom().item(byte[])")
         @Test
         void __createFrom_item() {
             // -------------------------------------------------------------------------- given/when
@@ -71,9 +71,10 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
         }
 
         /**
-         * Asserts that {@code Uni.createFrom().item(Supplier)} emits the {@code hello-world-bytes}.
+         * Asserts that {@code Uni.createFrom().item(Supplier)} emits the
+         * {@code hello-world-bytes}.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Uni.createFrom().item(Supplier)>")
+        @DisplayName("Uni.createFrom().item(Supplier)")
         @Test
         void __createFrom_item_supplier() {
             // -------------------------------------------------------------------------- given/when
@@ -88,9 +89,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Uni.createFrom().completionStage(...)} bridged to
          * {@code asynchronousService.applyAsync(...)} emits the {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Uni.createFrom().completionStage(AsynchronousHelloWorld.applyAsync)>""")
+        @DisplayName("Uni.createFrom().completionStage")
         @Test
         void __createFrom_completionStage() {
             // -------------------------------------------------------------------------- given/when
@@ -107,9 +106,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Uni.createFrom().item(...).onItem().transform(byte[]::length)} emits
          * {@link HelloWorld#BYTES}.
          */
-        @DisplayName("""
-                should return <BYTES>
-                via <Uni.createFrom().item(...).onItem().transform(byte[]::length)>""")
+        @DisplayName("Uni.onItem().transform")
         @Test
         void __onItem_transform() {
             // -------------------------------------------------------------------------- given/when
@@ -131,7 +128,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Multi.createFrom().item(byte[])} emits one element as the
          * {@code hello-world-bytes}.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().item(byte[])>")
+        @DisplayName("Multi.createFrom().item(byte[])")
         @Test
         void __createFrom_item() {
             // -------------------------------------------------------------------------- given/when
@@ -149,7 +146,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Multi.createFrom().items(byte[]...)} emits all elements as
          * {@code hello-world-bytes}.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().items(byte[]...)>")
+        @DisplayName("Multi.createFrom().items(varargs)")
         @Test
         void __createFrom_items() {
             // -------------------------------------------------------------------------- given/when
@@ -173,7 +170,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Multi.createFrom().iterable(List)} emits all elements as
          * {@code hello-world-bytes}.
          */
-        @DisplayName("should emit <hello-world-bytes> via <Multi.createFrom().iterable(List)>")
+        @DisplayName("Multi.createFrom().iterable")
         @Test
         void __createFrom_iterable() {
             // -------------------------------------------------------------------------- given/when
@@ -196,8 +193,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Multi.createFrom().<byte[]>emitter(...)} emits all pushed elements as
          * {@code hello-world-bytes}.
          */
-        @DisplayName(
-                "should emit <hello-world-bytes> via <Multi.createFrom().<byte[]>emitter(...)>")
+        @DisplayName("Multi.createFrom().emitter")
         @Test
         void __createFrom_emitter() {
             // -------------------------------------------------------------------------- given/when
@@ -220,9 +216,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Multi.createBy().repeating().supplier(...).atMost(n)} emits {@code n}
          * elements of {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Multi.createBy().repeating().supplier(...).atMost(n)>""")
+        @DisplayName("Multi.createBy().repeating()")
         @Test
         void __createBy_repeating() {
             // -------------------------------------------------------------------------- given/when
@@ -244,9 +238,7 @@ class HelloWorldReactive_Mutiny_Test extends HelloWorldReactive__Test {
          * Asserts that {@code Multi.createFrom().completionStage(...)} bridged to
          * {@code asynchronousService.applyAsync(...)} emits the {@code hello-world-bytes}.
          */
-        @DisplayName("""
-                should emit <hello-world-bytes>
-                via <Multi.createFrom().completionStage(AsynchronousHelloWorld.applyAsync)>""")
+        @DisplayName("Multi.createFrom().completionStage")
         @Test
         void __createFrom_completionStage() {
             // -------------------------------------------------------------------------- given/when

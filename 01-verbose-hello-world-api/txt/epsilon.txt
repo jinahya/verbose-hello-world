@@ -1,0 +1,4 @@
+<float.h>  FLT_EPSILON        float        +1.19209289550781250000e-07 impl
+<float.h>  DBL_EPSILON        double       +2.22044604925031308085e-16 impl
+<float.h>  LDBL_EPSILON       long double  +2.22044604925031308085e-16 impl
+<float.h>  FLT16_EPSILON      _Float16     +9.76562500000000000000e-04 fixed

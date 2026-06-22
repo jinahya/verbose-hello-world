@@ -26,6 +26,9 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
+import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfReactiveStream.*;
+
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, in order.
@@ -54,16 +57,15 @@ import java.util.concurrent.locks.*;
  * a terminal signal (Rule 3.12).
  * <p>
  * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive
- * Streams workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
- * {@code assert} rather than routed to {@code onError}, and exceptions thrown by
+ * Streams workflow, not to be a hardened implementation. Exceptions thrown by
  * {@link HelloWorld#set(byte[]) service.set(...)} are <em>not</em> caught — they propagate out of
- * the producer thread. A production-grade publisher would handle both as terminal {@code onError}
- * signals.
+ * the producer thread. A production-grade publisher would handle them as a terminal {@code onError}
+ * signal.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldArrayPublisher
  */
-final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
+class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
 
     // ---------------------------------------------------------------------------------------------
 
@@ -110,27 +112,28 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
      * 3.3</a>).
      */
     @Override
-    public void subscribe(final Subscriber<? super Byte> s) { // @formatter:off
+    public void subscribe(final Subscriber<? super Byte> s) {
         Objects.requireNonNull(s, "s is null");
         final var demand = new AtomicLong();
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        s.onSubscribe(new Subscription() {
+        s.onSubscribe(loggingSubscription(new Subscription() { // @formatter:off
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
-                ReactiveHelloWorldPublisherUtils.aggregateDemand(demand, n);
+                aggregateDemand(demand, n);
                 signal();
             }
             @Override public void cancel() {
-                terminated.set(true);
-                signal();
+                if (terminated.compareAndSet(false, true)) {
+                    signal();
+                }
             }
             private void signal() {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        });
+        })); // @formatter:on
         Thread.ofVirtual().start(() -> {
             byte[] array = null;
             int index = 0;
@@ -142,11 +145,18 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                             condition.await();
                         } catch (final InterruptedException ie) {
                             Thread.currentThread().interrupt();
+                            if (terminated.compareAndSet(false, true)) {
+                                s.onError(ie);
+                            }
                             return;
                         }
                     }
-                } finally { lock.unlock(); }
-                if (terminated.get()) { return; }
+                } finally {
+                    lock.unlock();
+                }
+                if (terminated.get()) {
+                    return;
+                }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
                 if (array == null) {
@@ -160,7 +170,7 @@ final class ReactiveHelloWorldBytePublisher implements Publisher<Byte> {
                     return;
                 }
             }
-        }); // @formatter:on
+        });
     }
 
     // ---------------------------------------------------------------------------------------------

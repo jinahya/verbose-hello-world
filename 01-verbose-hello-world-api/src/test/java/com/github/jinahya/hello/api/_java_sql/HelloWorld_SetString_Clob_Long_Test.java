@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
  */
-@DisplayName("setString(clob, pos)")
+@DisplayName("HelloWorld.setString(Clob, long)")
 @Slf4j
 class HelloWorld_SetString_Clob_Long_Test
         extends HelloWorld__Test {
@@ -50,7 +50,7 @@ class HelloWorld_SetString_Clob_Long_Test
      * {@link com.github.jinahya.hello.api.HelloWorld#setString(Clob, long) setString(clob, pos)}
      * method throws a {@link NullPointerException} when the {@code clob} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <clob> argument is <null>")
+    @DisplayName("throws NPE / clob is null")
     @Test
     void _ThrowNullPointerException_ClobIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -67,7 +67,7 @@ class HelloWorld_SetString_Clob_Long_Test
      * method throws an {@link IllegalArgumentException} when the {@code pos} argument is not
      * positive.
      */
-    @DisplayName("should throw an <IllegalArgumentException> when the <pos> is not positive")
+    @DisplayName("throws IAE / pos is not positive")
     @Test
     void _ThrowIllegalArgumentException_PosIsNotPositive() {
         // ----------------------------------------------------------------------------------- given
@@ -84,7 +84,7 @@ class HelloWorld_SetString_Clob_Long_Test
      * method invokes {@link Clob#setString(long, String) clob.setString(pos, string)} with the
      * {@code "hello, world"} string, and returns the {@code clob}.
      */
-    @DisplayName("should invoke <clob.setString(pos, string)>, and return the <clob>")
+    @DisplayName("happy path")
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given

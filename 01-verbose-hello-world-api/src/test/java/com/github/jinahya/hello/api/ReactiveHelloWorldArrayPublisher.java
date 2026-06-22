@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfReactiveStream.*;
 
 /**
  * A package-private {@link Publisher} of {@code byte[]} elements — each a freshly assembled,
@@ -60,32 +61,25 @@ import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
  * {@code cancel()} stops emission without a terminal signal (Rule 3.12).
  * <p>
  * <strong>Didactic scope.</strong> This class is written to <em>introduce</em> the Reactive
- * Streams workflow, not to be a hardened implementation. {@code request(n &le; 0)} is guarded by an
- * {@code assert} rather than routed to {@code onError}, and exceptions thrown by upstream signals
- * or by the downstream subscriber are <em>not</em> caught — they propagate out of the producer
- * thread. A production-grade publisher would handle both as terminal {@code onError} signals.
+ * Streams workflow, not to be a hardened implementation. Exceptions thrown by the downstream
+ * subscriber are <em>not</em> caught — they propagate out of the producer thread. A
+ * production-grade publisher would handle them as a terminal {@code onError} signal.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see ReactiveHelloWorldBytePublisher
  */
-final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
-
-    static ReactiveHelloWorldArrayPublisher from(final HelloWorld service) {
-        return new ReactiveHelloWorldArrayPublisher(new ReactiveHelloWorldBytePublisher(service));
-    }
-
-    // ---------------------------------------------------------------------------------------------
+class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
 
     /**
-     * Creates a new instance wrapping the specified upstream byte publisher.
+     * Creates a new instance wrapping the specified upstream byte upstream.
      *
-     * @param publisher the upstream {@link Publisher} of {@link Byte} that supplies the individual
-     *                  bytes for each assembled array.
-     * @throws NullPointerException if the {@code publisher} is {@code null}.
+     * @param upstream the upstream {@link Publisher} of {@link Byte} that supplies the individual
+     *                 bytes for each assembled array.
+     * @throws NullPointerException if the {@code upstream} is {@code null}.
      */
-    ReactiveHelloWorldArrayPublisher(final ReactiveHelloWorldBytePublisher publisher) {
+    ReactiveHelloWorldArrayPublisher(final ReactiveHelloWorldBytePublisher upstream) {
         super();
-        this.publisher = Objects.requireNonNull(publisher, "publisher is null");
+        this.upstream = Objects.requireNonNull(upstream, "upstream is null");
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -126,21 +120,22 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
         final var terminated = new AtomicBoolean();
         final var lock = new ReentrantLock();
         final var condition = lock.newCondition();
-        subscriber.onSubscribe(new Subscription() {
+        subscriber.onSubscribe(loggingSubscription(new Subscription() {
             @Override public void request(final long n) {
                 if (terminated.get()) { return; }
                 aggregateDemand(demand, n);
                 signal();
             }
             @Override public void cancel() {
-                terminated.set(true);
-                signal();
+                if (terminated.compareAndSet(false, true)) {
+                    signal();
+                }
             }
             private void signal() {
                 lock.lock();
                 try { condition.signalAll(); } finally { lock.unlock(); }
             }
-        });
+        }));
         Thread.ofVirtual().start(() -> {
             while (true) {
                 lock.lock();
@@ -150,20 +145,25 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                             condition.await();
                         } catch (final InterruptedException ie) {
                             Thread.currentThread().interrupt();
+                            if (terminated.compareAndSet(false, true)) {
+                                subscriber.onError(ie);
+                            }
                             return;
                         }
                     }
                 } finally {
                     lock.unlock();
                 }
-                if (terminated.get()) { return; }
+                if (terminated.get()) {
+                    return;
+                }
                 assert demand.get() > 0L;
                 demand.decrementAndGet();
                 final var array = new byte[HelloWorld.BYTES];
                 final var index = new AtomicInteger();
-                final var error = new AtomicReference<Throwable>();
+                final var upstreamError = new AtomicReference<Throwable>();
                 final var latch = new CountDownLatch(1);
-                publisher.subscribe(new Subscriber<>() {
+                upstream.subscribe(new Subscriber<>() {
                     @Override public void onSubscribe(final Subscription s) {
                         s.request(HelloWorld.BYTES);
                     }
@@ -171,23 +171,27 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
                         array[index.getAndIncrement()] = b;
                     }
                     @Override public void onError(final Throwable t) {
-                        error.set(t);
+                        upstreamError.set(t);
                         latch.countDown();
                     }
                     @Override public void onComplete() {
                         latch.countDown();
                     }
                 });
-                try { latch.await(); } catch (final InterruptedException _) {
+                try { latch.await(); } catch (final InterruptedException ie) {
                     Thread.currentThread().interrupt();
+                    if (terminated.compareAndSet(false, true)) {
+                        subscriber.onError(ie);
+                    }
                     return;
                 }
-                final var t = error.get();
+                final var t = upstreamError.get();
                 if (t != null) {
                     if (terminated.compareAndSet(false, true)) {
                         subscriber.onError(t);
+                        return;
                     }
-                    return;
+                    continue;
                 }
                 subscriber.onNext(array);
             }
@@ -195,5 +199,5 @@ final class ReactiveHelloWorldArrayPublisher implements Publisher<byte[]> {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private final ReactiveHelloWorldBytePublisher publisher;
+    private final ReactiveHelloWorldBytePublisher upstream;
 }

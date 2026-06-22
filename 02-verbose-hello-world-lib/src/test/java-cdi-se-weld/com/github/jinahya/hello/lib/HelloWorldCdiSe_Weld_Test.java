@@ -23,6 +23,7 @@ package com.github.jinahya.hello.lib;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@DisplayName("HelloWorldCdiSe / Weld")
 @ExtendWith({HelloWorldCdiSe_TestInstanceFactory.class})
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

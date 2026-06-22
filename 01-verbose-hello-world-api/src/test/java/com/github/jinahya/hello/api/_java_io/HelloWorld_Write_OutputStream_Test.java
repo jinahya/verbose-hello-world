@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("write(stream)")
+@DisplayName("HelloWorld.write(OutputStream)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 @SuppressWarnings({"java:S101"})
@@ -48,7 +48,7 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
      * Verifies that the {@link HelloWorld#write(OutputStream) write(stream)} method throws a
      * {@link NullPointerException} when the {@code stream} argument is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <stream> argument is <null>")
+    @DisplayName("throws NPE / stream is null")
     @Test
     void _ThrowNullPointerException_StreamIsNull() {
         // ----------------------------------------------------------------------------------- given
@@ -66,9 +66,7 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("""
-            should invoke <set(array[12])>, write the <array> to the <stream>,
-            and return the <stream>""")
+    @DisplayName("happy path")
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given

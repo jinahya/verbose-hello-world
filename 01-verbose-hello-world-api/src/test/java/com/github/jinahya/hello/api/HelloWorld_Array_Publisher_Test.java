@@ -22,12 +22,14 @@ package com.github.jinahya.hello.api;
 
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_util_concurrent._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfFlow.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -39,34 +41,85 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("array publisher")
+@DisplayName("HelloWorld / array Publisher")
 @Slf4j
+@SuppressWarnings({"rawtypes"})
 class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]> {
 
     /**
-     * Maximum time to wait for subscriber interactions.
+     * Maximum time, in milliseconds, to wait for subscriber interactions.
      */
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final long TIMEOUT = TimeUnit.SECONDS.toMillis(10L);
+
+    // ---------------------------------------------------------------------------------------------
+    private static MockedConstruction<SubmissionPublisher> SUBMISSION_PUBLISHER_CONSTRUCTION;
 
     // ---------------------------------------------------------------------------------------------
     HelloWorld_Array_Publisher_Test() {
-        super(HelloWorldArrayPublisher::new);
+        super(s -> loggingPublisher(new HelloWorldArrayPublisher(s)));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @BeforeAll
+    static void __stubSubmissionPublisherMockConstruct() {
+        SUBMISSION_PUBLISHER_CONSTRUCTION = loggingSubmissionPublisherConstruction();
+    }
+
+    @AfterAll
+    static void __closeSubmissionPublisherMockConstruct() {
+        SUBMISSION_PUBLISHER_CONSTRUCTION.close();
     }
 
     /**
-     * Verifies that the publisher emits at least {@code n} elements when a single subscriber calls
-     * {@code request(n)} with {@code n > 0}.
+     * Verifies that the publisher emits exactly {@code 1} element when a single subscriber calls
+     * {@code request(1)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving it. No
+     * {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName(
-            "should emit at least <n> elements when the subscriber calls <request(n)> with <n > 0>")
+    @DisplayName("exactly 1 / request(1) + cancel")
     @Test
-    void __singleRandom() throws Exception { // @formatter:off
+    void __exactly1() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
-        final var n = ThreadLocalRandom.current().nextInt(1, 10);
-        log.debug("n: {}", n);
-        final var subscriber = spy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
+            private Flow.Subscription subscription;
+            @Override public void onSubscribe(final Flow.Subscription s) {
+                subscription = s;
+                s.request(1L);
+            }
+            @Override public void onNext(final byte[] item) { subscription.cancel(); }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
+            verify(subscriber, timeout(TIMEOUT).times(1)).onNext(any());
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        final var inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
+        final var elementCaptor = forClass(byte[].class);
+        inOrder.verify(subscriber, times(1)).onNext(elementCaptor.capture());
+        verify(subscriber, after(500L).never()).onComplete();
+        verify(subscriber, never()).onError(any());
+        assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue()); // @formatter:on
+    }
+
+    /**
+     * Verifies that the publisher emits exactly {@code 2} elements when a single subscriber calls
+     * {@code request(2)} and {@linkplain Flow.Subscription#cancel() cancels} after receiving them.
+     * No {@code onComplete} fires because this publisher is open-ended (Rule 3.12).
+     *
+     * @throws Exception if an error occurs.
+     */
+    @DisplayName("exactly 2 / request(2) + cancel")
+    @Test
+    void __exactly2() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var n = 2;
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
             private int received;
             @Override public void onSubscribe(final Flow.Subscription s) {
@@ -82,7 +135,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         // ------------------------------------------------------------------------------------ when
         applyPublisher(p -> {
             p.subscribe(subscriber);
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(n)).onNext(any());
+            verify(subscriber, timeout(TIMEOUT).times(n)).onNext(any());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -90,6 +143,8 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         inOrder.verify(subscriber, times(1)).onSubscribe(notNull());
         final var elementCaptor = forClass(byte[].class);
         inOrder.verify(subscriber, times(n)).onNext(elementCaptor.capture());
+        verify(subscriber, after(500L).never()).onComplete();
+        verify(subscriber, never()).onError(any());
         final var expected = hello_world_byte_array();
         final var elements = elementCaptor.getAllValues();
         assertEquals(n, elements.size());
@@ -99,14 +154,40 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     }
 
     /**
+     * Verifies that the publisher delivers no signals beyond {@code onSubscribe} when the
+     * subscriber {@linkplain Flow.Subscription#cancel() cancels} from inside {@code onSubscribe}.
+     *
+     * @throws Exception if an error occurs.
+     */
+    @DisplayName("no further signals / cancel in onSubscribe")
+    @Test
+    void __cancelInOnSubscribe() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
+            @Override public void onSubscribe(final Flow.Subscription s) { s.cancel(); }
+            @Override public void onNext(final byte[] item) { }
+            @Override public void onError(final Throwable t) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
+            verify(subscriber, timeout(TIMEOUT).times(1)).onSubscribe(notNull());
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        verify(subscriber, after(500L).never()).onNext(any());
+        verify(subscriber, never()).onError(any());
+        verify(subscriber, never()).onComplete(); // @formatter:on
+    }
+
+    /**
      * Verifies that, with multiple subscribers each calling {@code request(n)}, every subscriber
      * receives its own {@code n} elements independently.
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should give each subscriber its own <n> elements
-            when multiple subscribers each call <request(n)>""")
+    @DisplayName("multiple subscribers / independent demand")
     @Test
     void __multiRandom() throws Exception { // @formatter:off
         // ----------------------------------------------------------------------------------- given
@@ -116,7 +197,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         for (int i = 0; i < count; i++) {
             final var n = ThreadLocalRandom.current().nextInt(1, 10);
             demands[i] = n;
-            subscribers.add(spy(new Flow.Subscriber<byte[]>() {
+            subscribers.add(loggingArraySubscriber(new Flow.Subscriber<>() {
                 private Flow.Subscription subscription;
                 private int received;
                 @Override public void onSubscribe(final Flow.Subscription s) {
@@ -137,7 +218,7 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
                 p.subscribe(subscriber);
             }
             for (int i = 0; i < count; i++) {
-                verify(subscribers.get(i), timeout(TIMEOUT.toMillis()).times(demands[i]))
+                verify(subscribers.get(i), timeout(TIMEOUT).times(demands[i]))
                         .onNext(any());
             }
             return null;
@@ -164,24 +245,24 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("should signal <onError> with no further signals when <service.set> throws")
+    @DisplayName("onError / service.set throws")
     @Test
-    void __serviceThrows() throws Exception { // @formatter:off
+    void __serviceThrows() throws Exception {
         // ----------------------------------------------------------------------------------- given
         final var error = new RuntimeException("simulated set(byte[]) failure");
         doThrow(error).when(service()).set(any(byte[].class));
-        final var subscriber = spy(new Flow.Subscriber<byte[]>() {
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() { // @formatter:off
             @Override public void onSubscribe(final Flow.Subscription subscription) {
                 subscription.request(Long.MAX_VALUE);
             }
             @Override public void onNext(final byte[] item) { }
             @Override public void onError(final Throwable throwable) { }
             @Override public void onComplete() { }
-        });
+        }); // @formatter:on
         // ------------------------------------------------------------------------------------ when
-        applyPublisher(publisher -> {
-            publisher.subscribe(subscriber);
-            verify(subscriber, timeout(TIMEOUT.toMillis()).times(1)).onError(notNull());
+        applyPublisher(p -> {
+            p.subscribe(subscriber);
+            verify(subscriber, timeout(TIMEOUT).times(1)).onError(notNull());
             return null;
         });
         // ------------------------------------------------------------------------------------ then
@@ -190,6 +271,36 @@ class HelloWorld_Array_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         verify(subscriber, never()).onNext(any());
         verify(subscriber, times(1)).onError(errorCaptor.capture());
         verify(subscriber, never()).onComplete();
-        assertSame(error, errorCaptor.getValue()); // @formatter:on
+        assertSame(error, errorCaptor.getValue());
+    }
+
+    /**
+     * Verifies that, when the subscriber's {@code onSubscribe} throws, the publisher delivers
+     * {@code onError} via the inner {@link SubmissionPublisher} and lets {@code subscribe} return
+     * normally.
+     *
+     * @throws Exception if an error occurs.
+     */
+    @DisplayName("onError via SubmissionPublisher / onSubscribe throws")
+    @Test
+    void __onSubscribeThrows() throws Exception { // @formatter:off
+        // ----------------------------------------------------------------------------------- given
+        final var error = new RuntimeException("simulated onSubscribe failure");
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() {
+            @Override public void onSubscribe(final Flow.Subscription s) { throw error; }
+            @Override public void onNext(final byte[] item) { }
+            @Override public void onError(final Throwable t) { }
+            @Override public void onComplete() { }
+        });
+        // ------------------------------------------------------------------------------------ when
+        applyPublisher(p -> {
+            p.subscribe(subscriber);                  // returns normally
+            verify(subscriber, timeout(TIMEOUT).times(1)).onError(notNull());
+            return null;
+        });
+        // ------------------------------------------------------------------------------------ then
+        verify(subscriber, times(1)).onSubscribe(notNull());
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete(); // @formatter:on
     }
 }

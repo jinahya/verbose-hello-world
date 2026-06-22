@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@DisplayName("append(path, attachment)")
+@DisplayName("AsynchronousHelloWorld.append(Path, Attachment)")
 @Slf4j
 abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
         T extends AsynchronousHelloWorld<HelloWorld>
@@ -60,7 +60,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
      * Verifies that the method throws a {@link NullPointerException} when the {@code path} argument
      * is {@code null}.
      */
-    @DisplayName("should throw a <NullPointerException> when the <path> argument is <null>")
+    @DisplayName("throws NPE / path is null")
     @Test
     void _ThrowNullPointerException_PathIsNull() {
         final var asynchronousService = asynchronousService();
@@ -74,9 +74,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
      *
      * @throws Exception if an error occurs.
      */
-    @DisplayName("""
-            should complete the returned stage with the <attachment>
-            once the asynchronous append succeeds""")
+    @DisplayName("happy path / completed")
     @Test
     @SuppressWarnings({"unchecked"})
     void __completed() throws Exception {
@@ -117,9 +115,7 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Test<
      *
      * @throws IOException if an I/O error occurs.
      */
-    @DisplayName("""
-            should complete the returned stage exceptionally
-            when <AsynchronousFileChannel.open(path, ...)> throws""")
+    @DisplayName("failed / open throws")
     @Test
     void __failed() throws IOException {
         // ----------------------------------------------------------------------------------- given

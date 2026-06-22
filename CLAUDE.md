@@ -90,10 +90,10 @@ verbose-hello-world (root POM aggregator)
 ├── 01-verbose-hello-world-api    # HelloWorld interface + utilities
 ├── 02-verbose-hello-world-lib    # Implementations (HelloWorldImpl, HelloWorldDemo, HelloWorldWrap)
 └── 03-verbose-hello-world-app    # Application modules (POM aggregator)
-    ├── 01-...-app1               # Direct instantiation of HelloWorldImpl
-    ├── 02-...-app2               # SPI via ServiceLoader
-    ├── 03-...-app3               # DI (Guice)
-    └── 04-...-app4               # CDI (Jakarta CDI)
+    ├── 01-...-appa               # Direct instantiation of HelloWorldImpl
+    ├── 02-...-appb               # SPI via ServiceLoader
+    ├── 03-...-appc               # DI (Spring)
+    └── 04-...-appd               # CDI (Jakarta CDI)
 ```
 
 ### API Module (`01-verbose-hello-world-api`)
