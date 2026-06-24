@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("AsynchronousHelloWorld.append(Path, Attachment, Handler)")
 @Slf4j
 @SuppressWarnings({"java:S101"})

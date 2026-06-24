@@ -65,7 +65,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc7919">RFC 7919 &mdash; Negotiated
  * Finite Field Diffie-Hellman Ephemeral Parameters for TLS</a>
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("javax.crypto.KeyAgreement")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KeyAgreement__Test {

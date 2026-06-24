@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * A class for exploring {@link java.io.File} behavior with {@link FileOutputStream}.
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("java.io.File")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

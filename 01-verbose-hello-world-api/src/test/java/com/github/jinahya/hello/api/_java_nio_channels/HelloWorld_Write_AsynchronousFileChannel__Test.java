@@ -41,7 +41,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.write(AsynchronousFileChannel, position) / extras")
 @Slf4j
 class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {

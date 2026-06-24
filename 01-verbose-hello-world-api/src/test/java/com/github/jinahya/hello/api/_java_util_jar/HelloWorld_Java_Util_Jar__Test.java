@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("java.util.jar")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

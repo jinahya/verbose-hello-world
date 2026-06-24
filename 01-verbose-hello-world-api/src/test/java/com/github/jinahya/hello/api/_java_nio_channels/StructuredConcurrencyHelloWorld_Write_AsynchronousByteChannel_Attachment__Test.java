@@ -34,7 +34,7 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("StructuredConcurrencyHelloWorld.write(AsynchronousByteChannel, attachment) / extras")
 class StructuredConcurrencyHelloWorld_Write_AsynchronousByteChannel_Attachment__Test
         extends AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment__Test<

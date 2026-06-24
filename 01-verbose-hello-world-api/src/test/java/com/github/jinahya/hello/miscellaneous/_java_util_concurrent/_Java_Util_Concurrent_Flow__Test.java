@@ -36,7 +36,7 @@ import static com.github.jinahya.hello.miscellaneous._java_util_concurrent._Java
 import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfFlow.*;
 import static org.awaitility.Awaitility.*;
 
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("java.util.concurrent.Flow")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

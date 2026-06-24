@@ -68,7 +68,7 @@ import javax.crypto.*;
  * A class for exploring {@link com.github.jinahya.hello.api.HelloWorld HelloWorld}'s
  * {@code update(cipher, consumer)} method with real {@link Cipher} transformations.
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("update(cipher, consumer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

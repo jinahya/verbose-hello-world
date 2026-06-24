@@ -44,7 +44,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.setText(BreakIterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

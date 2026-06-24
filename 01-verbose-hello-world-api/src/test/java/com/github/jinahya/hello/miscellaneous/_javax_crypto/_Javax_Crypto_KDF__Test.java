@@ -37,7 +37,7 @@ import javax.crypto.*;
  * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#kdf-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; KDF Algorithms</a>
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("javax.crypto.KDF")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KDF__Test {

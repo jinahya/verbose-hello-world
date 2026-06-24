@@ -8,7 +8,7 @@ import java.io.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
-@_HideFromPublishing
+@_HideNameFromPublishing
 class _HelloWorld_Java_Io__Test extends HelloWorld__Test {
 
     @BeforeEach

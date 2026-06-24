@@ -35,7 +35,7 @@ import java.util.function.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName(
         "StructuredConcurrencyHelloWorld.write(AsynchronousFileChannel, position, attachment) / extras"
 )

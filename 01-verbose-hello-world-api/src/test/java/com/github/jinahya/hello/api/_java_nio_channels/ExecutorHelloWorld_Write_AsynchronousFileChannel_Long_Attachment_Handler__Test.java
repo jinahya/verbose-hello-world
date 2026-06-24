@@ -34,7 +34,7 @@ import java.nio.channels.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName(
         "ExecutorHelloWorld.write(AsynchronousFileChannel, position, attachment, handler) / extras"
 )

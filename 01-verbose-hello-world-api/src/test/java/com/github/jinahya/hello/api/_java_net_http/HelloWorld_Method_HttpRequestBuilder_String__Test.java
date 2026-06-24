@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.method(HttpRequest.Builder, String)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

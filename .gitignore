@@ -1,5 +1,3 @@
-
-
 # ----------------------------------------------------------------------------------------------------------------------
 # Created by https://www.toptal.com/developers/gitignore/api/jenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=jenv
@@ -14,8 +12,6 @@
 # End of https://www.toptal.com/developers/gitignore/api/jenv
 # ----------------------------------------------------------------------------------------------------------------------
 
-
-# ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Created by https://www.toptal.com/developers/gitignore/api/maven,intellij,eclipse,nette,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=maven,intellij,eclipse,nette,visualstudiocode
@@ -246,45 +242,44 @@ buildNumber.properties
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/maven,intellij,eclipse,nette,visualstudiocode
+# ----------------------------------------------------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Project-specific
+# ----------------------------------------------------------------------------------------------------------------------
 
+# IntelliJ project files (.idea is ignored, but track shared code style settings)
 *.iml
 *.ipr
 .idea
 !.idea/codeStyles
 !.idea/codeinsightSettings.xml
 
-
+# Logs
 *.log
 
+# Python virtual environment
 venv
 
+# macOS
 .DS_Store
 *.dylib
 
-# C executables (compiled by Makefile, output to target/ which is already ignored above)
-
-
-.ai
-
-
+# C executables (a.out from Makefile; other binaries go to the ignored target/)
 a.out
 
-
-
+# Archives
 *.gz
 
-
+# AI assistant artifacts
+.ai
 CLAUDE.md
 .claude
-
-_dependency_tree_*
-
-reports
-
-_RAMP_DOWN.asciidoc
-_RAMP_DOWN_SEQ
-
-
 AGENTS.md
 .codex
+
+# Misc generated/scratch files
+_dependency_tree_*
+reports
+_RAMP_DOWN.asciidoc
+_RAMP_DOWN_SEQ

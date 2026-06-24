@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc5649">RFC 5649 &mdash; Advanced
  * Encryption Standard (AES) Key Wrap with Padding Algorithm</a>
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("java.security.Key")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Java_Security_Key__Test {

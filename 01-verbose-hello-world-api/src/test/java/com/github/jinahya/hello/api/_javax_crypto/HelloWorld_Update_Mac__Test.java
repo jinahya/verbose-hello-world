@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018">RFC 8018 &mdash; PKCS #5:
  * Password-Based Cryptography Specification Version 2.1 (PBE)</a>
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("update(mac)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

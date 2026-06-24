@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assumptions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("copy(segment) via FFM")
 class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
 

@@ -57,7 +57,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#messagedigest-algorithms">MessageDigest
  * Algorithms</a>
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("update(digest)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

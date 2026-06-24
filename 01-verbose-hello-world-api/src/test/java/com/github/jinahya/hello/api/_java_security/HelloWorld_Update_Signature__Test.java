@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#signature-algorithms">Signature
  * Algorithms</a>
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("update(signature)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

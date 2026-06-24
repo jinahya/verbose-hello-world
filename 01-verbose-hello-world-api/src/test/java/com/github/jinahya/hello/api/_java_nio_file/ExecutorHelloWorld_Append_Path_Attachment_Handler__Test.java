@@ -24,7 +24,7 @@ import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 
-@_HideFromPublishing
+@_HideNameFromPublishing
 @SuppressWarnings({"java:S101"})
 @DisplayName("ExecutorHelloWorld.append(Path, Attachment, Handler)")
 class ExecutorHelloWorld_Append_Path_Attachment_Handler__Test

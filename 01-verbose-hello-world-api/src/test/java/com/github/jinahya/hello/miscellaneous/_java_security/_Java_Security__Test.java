@@ -31,7 +31,7 @@ import static com.github.jinahya.hello.miscellaneous._java_security._Java_Securi
 /**
  * A class for testing {@link Security}.
  */
-@_HideFromPublishing
+@_HideNameFromPublishing
 @DisplayName("java.security")
 @Slf4j
 class _Java_Security__Test {
