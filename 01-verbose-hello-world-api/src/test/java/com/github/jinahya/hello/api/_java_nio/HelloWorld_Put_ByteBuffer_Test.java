@@ -1,0 +1,372 @@
+package com.github.jinahya.hello.api._java_nio;
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.miscellaneous._java_nio.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.aggregator.*;
+import org.junit.jupiter.params.provider.*;
+
+import java.nio.*;
+import java.security.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.stream.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.DynamicTest.*;
+import static org.mockito.AdditionalAnswers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * A class for testing {@link HelloWorld#put(ByteBuffer) put(buffer)} method.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@DisplayName("HelloWorld.put(ByteBuffer)")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Slf4j
+@SuppressWarnings({"java:S101"})
+class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
+
+    /**
+     * The {@link Random} source used to pick slice offsets and lengths.
+     */
+    private static final Random RANDOM;
+
+    static {
+        Random random;
+        try {
+            random = SecureRandom.getInstanceStrong();
+        } catch (final NoSuchAlgorithmException nsme) {
+            random = ThreadLocalRandom.current();
+        }
+        RANDOM = random;
+    }
+
+    private static int index(final int max, final int min) {
+        assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        assert min >= 0 : String.format("min(%1$d) should be non-negative", min);
+        return RANDOM.nextInt(0, ((max - min) >> 1) + 1);
+    }
+
+    private static int length(final int max, final int min, final int index) {
+        assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        assert min >= 0 : String.format("min(%1$d) should be non-negative", min);
+        assert index >= 0;
+        final var length = RANDOM.nextInt(min, max - index + 1);
+        assert length >= min;
+        return length;
+    }
+
+    private static <R> R slice(final int max, final int min,
+                               final IntFunction<? extends IntFunction<? extends R>> function) {
+        assert max >= min : String.format("max(%1$d) should be GE to min(%2$d)", max, min);
+        assert min >= 0 : String.format("min(%1$d) should be non-negative", min);
+        assert function != null;
+        final var index = index(max, min);
+        final var length = length(max, min, index);
+        return function.apply(index).apply(length);
+    }
+
+    private static ByteBuffer slice(final ByteBuffer buffer, final int min) {
+        if (min > Objects.requireNonNull(buffer, "buffer is null").limit()) {
+            throw new IllegalArgumentException(
+                    "min(" + min + ") > buffer.limit(" + buffer.limit() + ")"
+            );
+        }
+        return slice(
+                buffer.limit(),
+                min,
+                i -> l -> {
+                    log.debug("slicing; index: {}, length: {}", i, l);
+                    final var sliced = buffer.slice(i, l);
+                    assert sliced.capacity() >= min;
+                    // > The new buffer's position will be zero
+                    assert sliced.position() == 0;
+                    // > , its capacity and its limit will be <length>,
+                    assert sliced.capacity() == l;
+                    assert sliced.limit() == sliced.capacity();
+                    assert sliced.order() == ByteOrder.BIG_ENDIAN;
+                    // > The new buffer will be direct if, and only if, this buffer is direct
+                    assert sliced.isDirect() == buffer.isDirect();
+                    // > , and it will be read-only if, and only if, this buffer is read-only.
+                    assert sliced.isReadOnly() == buffer.isReadOnly();
+                    return sliced;
+                }
+        );
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @DisplayName("ByteBuffer")
+    @Nested
+    class ByteBufferTest {
+
+        private static IntStream getArrayLengthStream() {
+            return IntStream.of(
+                    0,
+                    ThreadLocalRandom.current().nextInt(16, 32)
+            );
+        }
+
+        private static Stream<Arguments> getArrayArgumentsStream() {
+            return getArrayLengthStream()
+                    .mapToObj(byte[]::new)
+                    .map(a -> Arguments.of(Named.of(String.format("array[%1$d]", a.length), a)));
+        }
+
+        private static Stream<Arguments> getArrayOffsetAndLengthArgumentsStream() {
+            return getArrayLengthStream()
+                    .mapToObj(byte[]::new)
+                    .map(a -> slice(a.length, 0, i -> l -> Arguments.of(
+                            Named.of(String.format("array[%1$d]", a.length), a),
+                            Named.of("offset(" + i + ")", i),
+                            Named.of("length(" + l + ")", l)
+                    )));
+        }
+
+        private static IntStream getCapacityStream() {
+            return getArrayLengthStream();
+        }
+
+        /**
+         * Verifies that {@link ByteBuffer#wrap(byte[]) ByteBuffer.wrap(array)} produces a backed
+         * buffer.
+         *
+         * @param array the array to wrap.
+         */
+        @DisplayName("wrap(array) / backed buffer")
+        @MethodSource({"getArrayArgumentsStream"})
+        @ParameterizedTest
+        void _wrap_array(final byte[] array) {
+            // ------------------------------------------------------------------------------- given
+            // empty
+            // -------------------------------------------------------------------------------- when
+            final var buffer = ByteBuffer.wrap(array);
+            _ByteBuffer_TestUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
+            assert buffer.hasArray();
+            assert buffer.capacity() == array.length;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.position() == 0;
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            assert buffer.array() == array;
+            assert buffer.arrayOffset() == 0;
+            // -------------------------------------------------------------------------------- when
+            final var sliced = slice(buffer, 0);
+            _ByteBuffer_TestUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
+            assert sliced != buffer;
+            assert sliced.hasArray();
+            assert sliced.array() == buffer.array();
+        }
+
+        /**
+         * Verifies that
+         * {@link ByteBuffer#wrap(byte[], int, int) ByteBuffer.wrap(array, offset, length)} produces
+         * a backed buffer.
+         *
+         * @param accessor the arguments accessor.
+         */
+        @DisplayName("wrap(array, offset, length) / backed buffer")
+        @MethodSource({"getArrayOffsetAndLengthArgumentsStream"})
+        @ParameterizedTest
+        void _wrap_arrayOffsetAndLength(final ArgumentsAccessor accessor) {
+            // ------------------------------------------------------------------------------- given
+            final var array = accessor.get(0, byte[].class);
+            final var offset = accessor.getInteger(1);
+            final var length = accessor.getInteger(2);
+            // -------------------------------------------------------------------------------- when
+            final var buffer = ByteBuffer.wrap(array, offset, length);
+            _ByteBuffer_TestUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
+            assert buffer.hasArray();
+            assert buffer.capacity() == array.length;
+            assert buffer.position() == offset;
+            assert buffer.limit() == offset + length;
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            assert buffer.array() == array;
+            assert buffer.arrayOffset() == 0;
+            // -------------------------------------------------------------------------------- when
+            final var sliced = slice(buffer, 0);
+            _ByteBuffer_TestUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
+            assert sliced != buffer;
+            assert sliced.hasArray();
+            assert sliced.array() == buffer.array();
+        }
+
+        /**
+         * Verifies that {@link ByteBuffer#allocate(int) ByteBuffer.allocate(capacity)} allocates a
+         * backed buffer.
+         *
+         * @param capacity the capacity to allocate.
+         */
+        @DisplayName("allocate(capacity) / backed buffer")
+        @MethodSource({"getCapacityStream"})
+        @ParameterizedTest
+        void __allocate(final int capacity) {
+            // ------------------------------------------------------------------------------- given
+            // empty
+            // -------------------------------------------------------------------------------- when
+            final var buffer = ByteBuffer.allocate(capacity);
+            _ByteBuffer_TestUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
+            assert buffer.position() == 0;
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            assert buffer.hasArray();
+            assert buffer.arrayOffset() == 0;
+            // -------------------------------------------------------------------------------- when
+            final var sliced = slice(buffer, 0);
+            _ByteBuffer_TestUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
+            assert sliced != buffer;
+            assert sliced.hasArray();
+        }
+
+        /**
+         * Verifies that {@link ByteBuffer#allocateDirect(int) ByteBuffer.allocateDirect(capacity)}
+         * allocates a direct buffer.
+         *
+         * @param capacity the capacity to allocate.
+         */
+        @DisplayName("allocateDirect(capacity) / direct buffer")
+        @MethodSource({"getCapacityStream"})
+        @ParameterizedTest
+        void __allocateDirect(final int capacity) {
+            // -------------------------------------------------------------------------------- when
+            final var buffer = ByteBuffer.allocateDirect(capacity);
+            _ByteBuffer_TestUtils.print(buffer);
+            // -------------------------------------------------------------------------------- then
+            assert buffer.isDirect();
+            assert buffer.position() == 0;
+            assert buffer.limit() == buffer.capacity();
+            assert buffer.order() == ByteOrder.BIG_ENDIAN;
+            // > Whether or not it has a backing array is unspecified
+            final var hasArray = buffer.hasArray();
+            // -------------------------------------------------------------------------------- when
+            final var sliced = slice(buffer, 0);
+            _ByteBuffer_TestUtils.print(sliced);
+            // -------------------------------------------------------------------------------- then
+            assert sliced != buffer;
+            assert sliced.isDirect();
+            assert sliced.hasArray() == hasArray;
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link NullPointerException} when the {@code buffer} argument is {@code null}.
+     */
+    @DisplayName("throws NPE / buffer is null")
+    @Test
+    void _ThrowNullPointerException_BufferIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var buffer = (ByteBuffer) null;
+        // ------------------------------------------------------------------------------- when/then
+        assertThrows(NullPointerException.class, () -> service.put(buffer));
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method throws a
+     * {@link BufferOverflowException} when {@code buffer} argument's
+     * {@link ByteBuffer#remaining() remaining} is less than
+     * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
+     */
+    @DisplayName("throws BOE / buffer.remaining() < 12")
+    @TestFactory
+    Stream<DynamicTest> _ThrowBufferOverflowException_BufferRemainingIsLessThan12() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        // ------------------------------------------------------------------------------- when/then
+        return Stream.of(
+                ByteBuffer.allocate(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES)),
+                ByteBuffer.allocateDirect(ThreadLocalRandom.current().nextInt(HelloWorld.BYTES))
+        ).map(b -> dynamicTest(
+                "should throw a <BufferOverflowException> for " + b + " (" + b.remaining() + ")",
+                () -> {
+                    assertThrows(BufferOverflowException.class, () -> service.put(b));
+                }
+        ));
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a
+     * byte buffer which {@link ByteBuffer#hasArray() has a backing array}, invokes
+     * {@link HelloWorld#set(byte[], int) set(array, index)} method with {@code buffer.array()} and
+     * ({@code buffer.arrayOffset() + buffer.position()}), and returns the {@code buffer} as its
+     * {@link ByteBuffer#position() position} increased by
+     * {@link HelloWorld#BYTES}({@value HelloWorld#BYTES}).
+     */
+    @DisplayName("happy path / buffer has backing array")
+    @Test
+    void __BufferHasBackingArray() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        doAnswer(returnsFirstArg()).when(service).set(any(byte[].class), anyInt());
+        final var buffer = spy(slice(ByteBuffer.allocate(HelloWorld.BYTES << 1), HelloWorld.BYTES));
+        _ByteBuffer_TestUtils.print(buffer);
+        assert buffer.hasArray();
+        assert buffer.remaining() >= HelloWorld.BYTES;
+        final var position = buffer.position(); // NOSONAR
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.put(buffer);
+        // ------------------------------------------------------------------------------------ then
+//        verify(service, times(1)).set(buffer.array(), buffer.arrayOffset() + position);
+//        assertEquals(position + HelloWorld.BYTES, buffer.position());
+        assertSame(buffer, result);
+    }
+
+    /**
+     * Verifies that the {@link HelloWorld#put(ByteBuffer) put(buffer)} method, when invoked with a
+     * byte buffer which does not {@link ByteBuffer#hasArray() have a backing array}, invokes
+     * {@link HelloWorld#set(byte[]) set(array)} method with an array of {@value HelloWorld#BYTES}
+     * bytes, puts the {@code array} to {@code buffer}, and returns the {@code buffer}.
+     */
+    @DisplayName("happy path / buffer has no backing array")
+    @Test
+    void __BufferDoesNotHaveBackingArray() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = set_array_returns_the_array(service());
+        final var buffer = spy(
+                slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
+        );
+        _ByteBuffer_TestUtils.print(buffer);
+        assert buffer.remaining() >= HelloWorld.BYTES;
+        assert !buffer.hasArray();
+        // ------------------------------------------------------------------------------------ when
+        final var result = service.put(buffer);
+        // ------------------------------------------------------------------------------------ then
+        final var array = set_array12_invoked_once(service);
+//        verify(buffer, times(1)).put(array);
+        assertSame(buffer, result);
+    }
+}

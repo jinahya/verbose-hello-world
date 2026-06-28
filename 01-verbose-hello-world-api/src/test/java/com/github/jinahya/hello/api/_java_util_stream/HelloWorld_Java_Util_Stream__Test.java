@@ -1,0 +1,82 @@
+package com.github.jinahya.hello.api._java_util_stream;
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
+import lombok.*;
+import org.junit.jupiter.api.*;
+
+import java.util.function.*;
+import java.util.stream.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@_HideNameFromPublishing
+@DisplayName("java.util.stream")
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
+
+    @BeforeEach
+    @SuppressWarnings({"unchecked"})
+    void __stubService() {
+        doAnswer(i -> {
+            final var consumer = i.getArgument(0, Consumer.class);
+            final var mapper = i.getArgument(1, Function.class);
+            hello_world_byte_stream().map(mapper).forEach(consumer);
+            return consumer;
+        }).when(service()).accept(any(), any());
+    }
+
+    @DisplayName("Stream.Builder")
+    @Nested
+    class StreamBuilder__Test {
+
+        @DisplayName("happy path")
+        @Test
+        void __() {
+            final var builder = Stream.<Byte>builder();
+            service().accept(builder, Function.identity());
+            assertEquals(
+                    hello_world_byte_stream().toList(),
+                    builder.build().toList()
+            );
+        }
+    }
+
+    @DisplayName("IntStream.Builder")
+    @Nested
+    class IntStreamBuilder__Test {
+
+        @DisplayName("happy path")
+        @Test
+        void __() {
+            final var builder = IntStream.builder();
+            service().accept((Consumer<Integer>) builder::add, Byte::intValue);
+            assertArrayEquals(
+                    hello_world_byte_stream().mapToInt(Byte::intValue).toArray(),
+                    builder.build().toArray()
+            );
+        }
+    }
+}

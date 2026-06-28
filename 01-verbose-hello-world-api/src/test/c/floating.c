@@ -1,0 +1,160 @@
+/*
+ * Prints (almost) all floating-point-related constants defined by the C standard
+ * library. Each line uses fixed column widths:
+ *
+ *   <defining header>  <constant>  <type>  <value>  <fixed|impl>
+ *
+ * The type column is the C type of the constant (int / float / double / long
+ * double). The last column flags whether the value is mandated by the C standard
+ * (fixed) or implementation-defined (impl). The C standard does NOT mandate the
+ * float / double / long double formats, so here only MATH_ERRNO / MATH_ERREXCEPT
+ * (defined as exactly 1 and 2) are fixed.
+ *
+ * Companion to _IEEE754.asciidoc. See ieee754.c for the IEEE-754-only subset.
+ *
+ * Build: see the repository Makefile (`make c`) or simply:
+ *     cc -Wall -Wextra -O2 floating.c -o floating -lm
+ */
+#include <stdio.h>
+#include <stdarg.h>
+#include <float.h>
+#include <math.h>
+#include <fenv.h>
+
+/* one aligned row: <header> <name> <type> <value> <flag> (value right-aligned) */
+static void row(const char *hdr, const char *name, const char *type,
+                const char *flag, const char *fmt, ...) {
+    char buf[64];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, sizeof buf, fmt, ap);
+    va_end(ap);
+    printf("%-10s %-18s %-11s %28s %s\n", hdr, name, type, buf, flag);
+}
+
+/* stringize the macro NAME, carry its C type, print value, then the flag */
+#define MI(h, m, f)   row(h, #m, "int", f, "%+d", (int) (m))
+#define MFLT(h, m, f) row(h, #m, "float", f, "%+.20e", (double) (m))
+#define MDBL(h, m, f) row(h, #m, "double", f, "%+.20e", (double) (m))
+#define ML(h, m, f)   row(h, #m, "long double", f, "%+.20Le", (long double) (m))
+#define MH(h, m, f)   row(h, #m, "int", f, "0x%x", (unsigned) (m))
+
+int main(void) {
+    /* ---------------------------------------------------------------- <float.h> */
+    MI("<float.h>", FLT_RADIX, "impl");
+    MI("<float.h>", FLT_ROUNDS, "impl");
+#ifdef FLT_EVAL_METHOD
+    MI("<float.h>", FLT_EVAL_METHOD, "impl");
+#endif
+#ifdef DECIMAL_DIG
+    MI("<float.h>", DECIMAL_DIG, "impl");
+#endif
+#ifdef FLT_HAS_SUBNORM
+    MI("<float.h>", FLT_HAS_SUBNORM, "impl");
+    MI("<float.h>", DBL_HAS_SUBNORM, "impl");
+    MI("<float.h>", LDBL_HAS_SUBNORM, "impl");
+#endif
+
+    MI("<float.h>", FLT_MANT_DIG, "impl");
+    MI("<float.h>", FLT_DIG, "impl");
+    MI("<float.h>", FLT_MIN_EXP, "impl");
+    MI("<float.h>", FLT_MAX_EXP, "impl");
+    MI("<float.h>", FLT_MIN_10_EXP, "impl");
+    MI("<float.h>", FLT_MAX_10_EXP, "impl");
+#ifdef FLT_DECIMAL_DIG
+    MI("<float.h>", FLT_DECIMAL_DIG, "impl");
+#endif
+    MFLT("<float.h>", FLT_EPSILON, "impl");
+    MFLT("<float.h>", FLT_MIN, "impl");
+    MFLT("<float.h>", FLT_MAX, "impl");
+#ifdef FLT_TRUE_MIN
+    MFLT("<float.h>", FLT_TRUE_MIN, "impl");
+#endif
+
+    MI("<float.h>", DBL_MANT_DIG, "impl");
+    MI("<float.h>", DBL_DIG, "impl");
+    MI("<float.h>", DBL_MIN_EXP, "impl");
+    MI("<float.h>", DBL_MAX_EXP, "impl");
+    MI("<float.h>", DBL_MIN_10_EXP, "impl");
+    MI("<float.h>", DBL_MAX_10_EXP, "impl");
+#ifdef DBL_DECIMAL_DIG
+    MI("<float.h>", DBL_DECIMAL_DIG, "impl");
+#endif
+    MDBL("<float.h>", DBL_EPSILON, "impl");
+    MDBL("<float.h>", DBL_MIN, "impl");
+    MDBL("<float.h>", DBL_MAX, "impl");
+#ifdef DBL_TRUE_MIN
+    MDBL("<float.h>", DBL_TRUE_MIN, "impl");
+#endif
+
+    MI("<float.h>", LDBL_MANT_DIG, "impl");
+    MI("<float.h>", LDBL_DIG, "impl");
+    MI("<float.h>", LDBL_MIN_EXP, "impl");
+    MI("<float.h>", LDBL_MAX_EXP, "impl");
+    MI("<float.h>", LDBL_MIN_10_EXP, "impl");
+    MI("<float.h>", LDBL_MAX_10_EXP, "impl");
+#ifdef LDBL_DECIMAL_DIG
+    MI("<float.h>", LDBL_DECIMAL_DIG, "impl");
+#endif
+    ML("<float.h>", LDBL_EPSILON, "impl");
+    ML("<float.h>", LDBL_MIN, "impl");
+    ML("<float.h>", LDBL_MAX, "impl");
+#ifdef LDBL_TRUE_MIN
+    ML("<float.h>", LDBL_TRUE_MIN, "impl");
+#endif
+
+    /* ----------------------------------------------------------------- <math.h> */
+    MFLT("<math.h>", INFINITY, "impl");
+    MDBL("<math.h>", HUGE_VAL, "impl");
+    MFLT("<math.h>", HUGE_VALF, "impl");
+    ML("<math.h>", HUGE_VALL, "impl");
+    MFLT("<math.h>", NAN, "impl");
+    MI("<math.h>", FP_NAN, "impl");
+    MI("<math.h>", FP_INFINITE, "impl");
+    MI("<math.h>", FP_ZERO, "impl");
+    MI("<math.h>", FP_SUBNORMAL, "impl");
+    MI("<math.h>", FP_NORMAL, "impl");
+    MI("<math.h>", FP_ILOGB0, "impl");
+    MI("<math.h>", FP_ILOGBNAN, "impl");
+#ifdef math_errhandling
+    MI("<math.h>", math_errhandling, "impl");
+#endif
+#ifdef MATH_ERRNO
+    MI("<math.h>", MATH_ERRNO, "fixed");
+    MI("<math.h>", MATH_ERREXCEPT, "fixed");
+#endif
+
+    /* ----------------------------------------------------------------- <fenv.h> */
+#ifdef FE_DIVBYZERO
+    MH("<fenv.h>", FE_DIVBYZERO, "impl");
+#endif
+#ifdef FE_INEXACT
+    MH("<fenv.h>", FE_INEXACT, "impl");
+#endif
+#ifdef FE_INVALID
+    MH("<fenv.h>", FE_INVALID, "impl");
+#endif
+#ifdef FE_OVERFLOW
+    MH("<fenv.h>", FE_OVERFLOW, "impl");
+#endif
+#ifdef FE_UNDERFLOW
+    MH("<fenv.h>", FE_UNDERFLOW, "impl");
+#endif
+#ifdef FE_ALL_EXCEPT
+    MH("<fenv.h>", FE_ALL_EXCEPT, "impl");
+#endif
+#ifdef FE_TONEAREST
+    MH("<fenv.h>", FE_TONEAREST, "impl");
+#endif
+#ifdef FE_UPWARD
+    MH("<fenv.h>", FE_UPWARD, "impl");
+#endif
+#ifdef FE_DOWNWARD
+    MH("<fenv.h>", FE_DOWNWARD, "impl");
+#endif
+#ifdef FE_TOWARDZERO
+    MH("<fenv.h>", FE_TOWARDZERO, "impl");
+#endif
+
+    return 0;
+}
