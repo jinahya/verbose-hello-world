@@ -33,7 +33,7 @@ import java.util.*;
 @SuppressWarnings({"java:S101"})
 public final class _Java__TestUtils {
 
-    static <T> void requireNotSame(final T in, final T out) {
+    public static <T> void requireNotSame(final T in, final T out) {
         Objects.requireNonNull(in, "in is null");
         Objects.requireNonNull(out, "out is null");
         if (out == in) {

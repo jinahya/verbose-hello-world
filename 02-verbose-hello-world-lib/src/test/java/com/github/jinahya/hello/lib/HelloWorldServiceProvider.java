@@ -25,8 +25,8 @@ import com.github.jinahya.hello.api.*;
 /**
  * A test-only {@link java.util.ServiceLoader ServiceLoader} SPI in which each provider supplies a
  * {@link HelloWorld} instance and classifies it as either <em>qualified</em>
- * ({@link #isQualified()} {@code == true}) or <em>unqualified</em> (the complementary set).
- * The {@code HelloWorldSpi_*_Test} family uses this partition to exercise the
+ * ({@link #isQualified()} {@code == true}) or <em>unqualified</em> (the complementary set). The
+ * {@code HelloWorldSpi_*_Test} family uses this partition to exercise the
  * {@link HelloWorld#set(byte[], int)} contract against different service subsets.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;

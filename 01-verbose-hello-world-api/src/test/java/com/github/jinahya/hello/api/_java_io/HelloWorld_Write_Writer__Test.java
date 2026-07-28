@@ -22,7 +22,7 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.miscellaneous._java_nio_channels.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -40,6 +40,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static java.io.File.*;
 import static java.nio.charset.StandardCharsets.*;
+import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -48,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.write(Writer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
@@ -62,7 +63,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
     private static File tempDir;
 
     private static Stream<Charset> charsetStream() {
-        return _Java_Nio_Charset_TestUtils.charsetStream();
+        return __Java_Nio_Charset_TestUtils.charsetStream();
     }
 
     private static void print(final Charset charset, final byte[] bytes) {
@@ -163,7 +164,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
             try (var writer = new FileWriter(file, charset)) {
                 service().write(writer).flush();
             }
-            print(charset, Files.readAllBytes(file.toPath()));
+            print(charset, readAllBytes(file.toPath()));
             try (var reader = new FileReader(file, charset)) {
                 final var string = reader.readAllAsString();
                 assertEquals(HELLO_WORLD_STRING, string);

@@ -20,6 +20,7 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
+import com.github.jinahya.hello.miscellaneous._org_mockito.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
@@ -28,9 +29,9 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Lang_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow.*;
+import static com.github.jinahya.hello.miscellaneous._java_lang.__Java_Lang_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_util_concurrent._Java_Util_Concurrent_SubmissionPublisher_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfFlow.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -66,12 +67,9 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     /**
      * A test-only subclass of {@link HelloWorldBytePublisher} that logs its
      * {@link #subscribe(Flow.Subscriber) subscribe} invocation and wraps the incoming subscriber
-     * with
-     * {@link
-     * com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfFlow#loggingByteSubscriber
-     * loggingByteSubscriber(...)} before delegating to {@code super.subscribe(...)} — so the
-     * upstream byte-publisher's full signal exchange surfaces in logs without touching the SUT's
-     * own body.
+     * with {@link _Org_Mockito__TestUtils.OfFlow#loggingByteSubscriber loggingByteSubscriber(...)}
+     * before delegating to {@code super.subscribe(...)} — so the upstream byte-publisher's full
+     * signal exchange surfaces in logs without touching the SUT's own body.
      */
     private static final class LoggingByteFixture extends HelloWorldBytePublisher {
 

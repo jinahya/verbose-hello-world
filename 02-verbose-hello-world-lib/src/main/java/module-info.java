@@ -27,4 +27,6 @@
 module com.github.jinahya.hello.lib {
     requires transitive com.github.jinahya.hello.api;
     exports com.github.jinahya.hello.lib;
+    provides com.github.jinahya.hello.api.HelloWorld
+            with com.github.jinahya.hello.lib.HelloWorldImpl;
 }

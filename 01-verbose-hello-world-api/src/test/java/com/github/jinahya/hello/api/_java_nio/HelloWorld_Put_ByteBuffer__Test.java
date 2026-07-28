@@ -34,7 +34,7 @@ import java.nio.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.put(ByteBuffer)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

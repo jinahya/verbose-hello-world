@@ -28,9 +28,9 @@ import java.util.*;
  * A class providing common test utilities for the {@code miscellaneous} package.
  */
 @Slf4j
-class __TestUtils {
+public class __TestUtils {
 
-    static String format(final byte[] result) {
+    public static String format(final byte[] result) {
         final var encoded = Base64.getEncoder().encodeToString(result);
         return encoded.length() <= 8
                ? encoded

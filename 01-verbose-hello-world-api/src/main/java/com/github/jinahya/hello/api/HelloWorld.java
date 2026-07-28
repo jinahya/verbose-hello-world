@@ -89,9 +89,11 @@ public interface HelloWorld {
      * <p>
      * The elements in the array, on successful return, will be set as follows.
      * <pre>
-     *  0  &lt;= index          index + 12  &lt;=   array.length
-     *  ↓     ↓                       ↓       ↓
-     * | |...|h|e|l|l|o|,| |w|o|r|l|d| |...| |
+     *  0  &lt;= index          index + 12
+     *  ↓     ↓                       ↓
+     * | |...|h|e|l|l|o|,| |w|o|r|l|d|...
+     *                                   ↑
+     *                                   array.length
      * </pre>
      *
      * @param array the array on which bytes are set.
@@ -119,7 +121,7 @@ public interface HelloWorld {
      *  ↓                       ↓
      * |h|e|l|l|o|,| |w|o|r|l|d|....
      *                              ↑
-     *                           &lt;= array.length
+     *                              array.length
      * </pre>
      * <p>
      * The default implementation would be as follows.
@@ -253,7 +255,7 @@ public interface HelloWorld {
         Objects.requireNonNull(segment, "segment is null");
         if (segment.byteSize() < BYTES) {
             throw new IndexOutOfBoundsException(
-                    "byteSize(" + segment.byteSize() + ") < BYTES(" + BYTES + ")"
+                    "segment.byteSize(" + segment.byteSize() + ") < " + BYTES
             );
         }
         final var array = new byte[BYTES];
@@ -480,17 +482,17 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     * packet:       0     &le; offset    &le; offset + length1
-     *               ↓       ↓           ↓
-     * packet.data: | | | | |.|.|.|.|.|.| | | | | | | | | | | | | | | | |
-     *                      |&lt; length1 &gt;|
+     * packet:       0 &le; offset        &le; offset + length1
+     *               ↓   ↓               ↓
+     * packet.data: | | |.|.|.|.|.|.|.|.| | | | | | | | | | | | | | |
+     *                  | -- length1 -- |
      *
      * Then, on successful return,
      *
-     * packet:       0     &le; offset                            &lt; offset + length2
-     *               ↓       ↓                                   ↓
-     * packet.data: | | | | |.|.|.|.|.|.|h|e|l|l|o|,| |w|o|r|l|d| | | | |
-     *                      |&lt; length2 = length1 + 12          &gt;|
+     * packet:       0 &le; offset                                &lt; offset + length2
+     *               ↓   ↓                                       ↓
+     * packet.data: | | |.|.|.|.|.|.|.|.|h|e|l|l|o|,| |w|o|r|l|d| | | | |
+     *                  | ------ length2 = length1 + 12 ------- |
      * </pre>
      *
      * @param packet the datagram packet to which bytes are appended.
@@ -622,7 +624,7 @@ public interface HelloWorld {
         if (socket == null) {
             throw new NullPointerException("socket is null");
         }
-//        final var stream = socket.getOutputStream();
+        final var stream = socket.getOutputStream();
 //        write(stream);
         return socket;
     }
@@ -707,20 +709,22 @@ public interface HelloWorld {
      * <pre>
      * Given,
      *
-     *          4                                        25            32
+     *  0                   1                   2                   3
+     *          4                                         5             2
      *  0    &lt;= position                           &lt;= limit   &lt;= capacity
      *  ↓       ↓                                         ↓             ↓
      * | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-     *         |--------------- remaining ---------------|
+     *         | -------------- remaining -------------- |
      *                               (21)
      *
      * Then, on successful return,
      *
-     *                                 16                25            32
+     *  0                   1                   2                   3
+     *                                  6                 5             2
      *  0                     &lt;= position          &lt;= limit   &lt;= capacity
      *  ↓                               ↓                 ↓             ↓
      * | | | | |h|e|l|l|o|,| |w|o|r|l|d| | | | | | | | | | | | | | | | |
-     *                                 |--- remaining ---|
+     *                                 | -- remaining -- |
      *                                            (9)
      * </pre>
      * <p>

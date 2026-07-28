@@ -1,0 +1,12 @@
+<stdint.h> INT8_MIN           int8_t                           -128 fixed
+<stdint.h> INT8_MAX           int8_t                           +127 fixed
+<stdint.h> UINT8_MAX          uint8_t                           255 fixed
+<stdint.h> INT16_MIN          int16_t                        -32768 fixed
+<stdint.h> INT16_MAX          int16_t                        +32767 fixed
+<stdint.h> UINT16_MAX         uint16_t                        65535 fixed
+<stdint.h> INT32_MIN          int32_t                   -2147483648 fixed
+<stdint.h> INT32_MAX          int32_t                   +2147483647 fixed
+<stdint.h> UINT32_MAX         uint32_t                   4294967295 fixed
+<stdint.h> INT64_MIN          int64_t          -9223372036854775808 fixed
+<stdint.h> INT64_MAX          int64_t          +9223372036854775807 fixed
+<stdint.h> UINT64_MAX         uint64_t         18446744073709551615 fixed

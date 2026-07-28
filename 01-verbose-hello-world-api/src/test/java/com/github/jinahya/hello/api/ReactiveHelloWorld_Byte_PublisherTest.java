@@ -32,7 +32,7 @@ import java.util.concurrent.locks.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.api.ReactiveHelloWorld__PublisherTestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfReactiveStream.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfReactiveStream.*;
 import static java.util.Arrays.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentCaptor.*;
@@ -344,14 +344,14 @@ class ReactiveHelloWorld_Byte_PublisherTest extends ReactiveHelloWorld__Publishe
             @Override public void onSubscribe(final Subscription s) {
                 requester.set(Thread.ofPlatform().daemon().start(() -> {
                     for (var i = 0; i < HelloWorld.BYTES; i++) {
-                        sleep(Duration.ofSeconds(1L));
+                        sleep(Duration.ofMillis(30L));
                         lock.lock();
                         try { if (terminated.get()) { break; } s.request(1L);
                         } finally { lock.unlock(); }
                     }
                 }));
                 canceller.set(Thread.ofPlatform().daemon().start(() -> {
-                    sleep(3L, 6L);
+                    sleep(Duration.ofMillis(ThreadLocalRandom.current().nextLong(100L, 200L)));
                     lock.lock();
                     try { s.cancel(); terminated.set(true); } finally { lock.unlock(); }
                 }));

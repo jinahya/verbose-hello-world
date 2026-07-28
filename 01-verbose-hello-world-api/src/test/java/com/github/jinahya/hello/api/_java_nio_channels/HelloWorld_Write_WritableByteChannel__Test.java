@@ -36,7 +36,7 @@ import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Nio_Channels_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_nio_channels._Channels_TestUtils.*;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.write(WritableByteChannel) / extras")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

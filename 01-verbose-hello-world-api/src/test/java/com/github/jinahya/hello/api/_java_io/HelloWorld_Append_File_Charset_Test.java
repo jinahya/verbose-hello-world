@@ -21,7 +21,7 @@ package com.github.jinahya.hello.api._java_io;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.miscellaneous.*;
+import com.github.jinahya.hello.miscellaneous._java_nio_channels.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
@@ -52,7 +52,7 @@ class HelloWorld_Append_File_Charset_Test
         extends HelloWorld__Test {
 
     private static Stream<Charset> charsetStream() {
-        return _Java_Nio_Charset_TestUtils.charsetStream();
+        return __Java_Nio_Charset_TestUtils.charsetStream();
     }
 
     // ---------------------------------------------------------------------------------------------

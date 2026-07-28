@@ -32,7 +32,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("java.util.stream")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {

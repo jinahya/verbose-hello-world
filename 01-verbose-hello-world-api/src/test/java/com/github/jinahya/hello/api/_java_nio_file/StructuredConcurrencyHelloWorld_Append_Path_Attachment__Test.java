@@ -26,7 +26,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.function.*;
 
-@_NotForPublishing
+@_HideNameFromPublishing
 @SuppressWarnings({"java:S101"})
 @DisplayName("StructuredConcurrencyHelloWorld.append(Path, Attachment)")
 class StructuredConcurrencyHelloWorld_Append_Path_Attachment__Test

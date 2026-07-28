@@ -28,6 +28,7 @@ import org.mockito.verification.*;
 
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -45,6 +46,10 @@ import static org.mockito.Mockito.*;
         "java:S2699"  // no assertions (yet)
 })
 class HelloWorld_Set_Array_Test extends HelloWorld__Test {
+
+    static {
+        assertTrue(true); // pin for imports
+    }
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method throws a
@@ -84,7 +89,7 @@ class HelloWorld_Set_Array_Test extends HelloWorld__Test {
 
     /**
      * Verifies that the {@link HelloWorld#set(byte[]) set(array)} method invokes
-     * {@link HelloWorld#set(byte[], int) set(array, index)} method with given {@code array} and
+     * {@link HelloWorld#set(byte[], int) set(array, index)} method with the given {@code array} and
      * {@code 0}, and returns the {@code array}.
      *
      * @see Mockito#verify(Object, VerificationMode)

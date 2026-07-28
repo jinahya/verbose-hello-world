@@ -32,8 +32,8 @@ import java.io.*;
 import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_KeyPair_TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_KeyPair_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("javax.crypto.Cipher")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

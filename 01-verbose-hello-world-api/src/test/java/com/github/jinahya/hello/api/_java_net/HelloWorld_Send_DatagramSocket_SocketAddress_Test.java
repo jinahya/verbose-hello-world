@@ -24,6 +24,7 @@ import com.github.jinahya.hello.api.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
+import org.mockito.*;
 
 import java.io.*;
 import java.net.*;
@@ -44,6 +45,10 @@ import static org.mockito.Mockito.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Send_DatagramSocket_SocketAddress_Test extends HelloWorld__Test {
+
+    static { // pinning
+        ArgumentCaptor.forClass(Object.class);
+    }
 
     /**
      * Verifies that the {@link HelloWorld#send(DatagramSocket, SocketAddress) send(socket, target)}

@@ -24,14 +24,18 @@ import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.api.io.*;
 
 import java.lang.foreign.*;
+import java.nio.*;
+import java.nio.channels.*;
 import java.nio.charset.*;
-import java.util.*;
+import java.nio.file.*;
+import java.util.zip.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestConstants.*;
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Lang_Foreign_Arena_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_lang_foreign._Arena_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
@@ -41,9 +45,14 @@ import static org.junit.jupiter.api.Assumptions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("copy(segment) via FFM")
-class HelloWorld_Copy_Segment__Test {
+class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
+
+    @BeforeEach
+    void __stubService() {
+        set_array_sets_hello_world_bytes(service());
+    }
 
     // -------------------------------------------------------------------------------------- C/libc
 
@@ -71,7 +80,7 @@ class HelloWorld_Copy_Segment__Test {
      */
     @DisplayName("libc")
     @Nested
-    class Libc_Test extends HelloWorld__Test {
+    class Libc_Test {
 
         /**
          * Verifies segment content using C {@code puts()}.
@@ -83,22 +92,19 @@ class HelloWorld_Copy_Segment__Test {
         @Test
         void _puts__() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
-                // +1 for null terminator (puts requires null-terminated string)
                 final var segment = arena.allocate(HelloWorld.BYTES + 1);
-                // ----------------------------------------------------------------------------when
-                service.copy(segment);
+                // -----------------------------------------------------------------------------when
+                service().copy(segment);
                 // ---------------------------------------------------------------------------- then
-                final var array = set_array12_invoked_once(service);
-                final var content = readSegmentAsString(segment, HelloWorld.BYTES);
+                final var content = segment.getString(0, StandardCharsets.US_ASCII);
                 assertEquals(HELLO_WORLD_STRING, content);
                 final var linker = Linker.nativeLinker();
-                final var puts = linker.downcallHandle(
+                final var handle = linker.downcallHandle(
                         linker.defaultLookup().find("puts").orElseThrow(),
                         FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
                 );
-                puts.invoke(segment);  // prints "hello, world\n"
+                handle.invoke(segment);  // prints "hello, world\n"
             }
         }
 
@@ -112,18 +118,17 @@ class HelloWorld_Copy_Segment__Test {
         @Test
         void _strlen__() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES + 1);
                 // ---------------------------------------------------------------------------- when
-                service.copy(segment);
+                service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 final var linker = Linker.nativeLinker();
-                final var strlen = linker.downcallHandle(
+                final var handle = linker.downcallHandle(
                         linker.defaultLookup().find("strlen").orElseThrow(),
                         FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)
                 );
-                final var len = (long) strlen.invoke(segment);
+                final var len = (long) handle.invoke(segment);
                 assertEquals(HelloWorld.BYTES, len);
             }
         }
@@ -138,14 +143,13 @@ class HelloWorld_Copy_Segment__Test {
         @Test
         void _memcmp__() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 // ---------------------------------------------------------------------------- when
-                service.copy(segment);
+                service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 final var linker = Linker.nativeLinker();
-                final var memcmp = linker.downcallHandle(
+                final var handle = linker.downcallHandle(
                         linker.defaultLookup().find("memcmp").orElseThrow(),
                         FunctionDescriptor.of(
                                 ValueLayout.JAVA_INT,
@@ -155,115 +159,8 @@ class HelloWorld_Copy_Segment__Test {
                         )
                 );
                 final var expected = arena.allocateFrom("hello, world", StandardCharsets.US_ASCII);
-                final var result = (int) memcmp.invoke(segment, expected, (long) HelloWorld.BYTES);
+                final var result = (int) handle.invoke(segment, expected, (long) HelloWorld.BYTES);
                 assertEquals(0, result, "Memory content should match 'hello, world'");
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------------------------- Python
-
-    /**
-     * Tests {@link HelloWorld#copy(MemorySegment)} with the Python interpreter via its C API.
-     * <p>
-     * <b>Python C API</b> allows embedding Python in C/C++ applications. The shared library
-     * ({@code libpython3.so}, {@code libpython3.dylib}, or {@code python3.dll}) provides functions
-     * to initialize the interpreter and execute Python code.
-     *
-     * <h2>Functions Used</h2>
-     * <ul>
-     *   <li>{@code Py_Initialize()} - Initializes the Python interpreter. Must be called
-     *       before any other Python C API functions (except a few).</li>
-     *   <li>{@code PyRun_SimpleString(const char *command)} - Executes Python source code
-     *       from a null-terminated string. Returns 0 on success, -1 on error.</li>
-     *   <li>{@code Py_Finalize()} - Shuts down the Python interpreter and frees resources.</li>
-     * </ul>
-     *
-     * @see <a href="https://docs.python.org/3/c-api/init.html#c.Py_Initialize">Py_Initialize</a>
-     * @see <a
-     * href="https://docs.python.org/3/c-api/veryhigh.html#c.PyRun_SimpleString">PyRun_SimpleString</a>
-     * @see <a href="https://docs.python.org/3/c-api/init.html#c.Py_Finalize">Py_Finalize</a>
-     */
-    @DisplayName("python")
-    @Nested
-    class Python_Test extends HelloWorld__Test {
-
-        private static final List<String> PYTHON_LIBS_MACOS = List.of(
-                // Homebrew Cellar paths (versioned)
-                "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/libpython3.14.dylib",
-                "/opt/homebrew/Cellar/python@3.13/3.13.12/Frameworks/Python.framework/Versions/3.13/lib/libpython3.13.dylib",
-                // Homebrew Framework paths
-                "/opt/homebrew/Frameworks/Python.framework/Versions/Current/lib/libpython3.dylib",
-                "/usr/local/Frameworks/Python.framework/Versions/Current/lib/libpython3.dylib",
-                // Generic names
-                "libpython3.14.dylib", "libpython3.13.dylib", "libpython3.12.dylib",
-                "libpython3.dylib"
-        );
-
-        private static final List<String> PYTHON_LIBS_LINUX = List.of(
-                "libpython3.13.so", "libpython3.12.so", "libpython3.11.so", "libpython3.so"
-        );
-
-        private static final List<String> PYTHON_LIBS_WINDOWS = List.of(
-                "python313.dll", "python312.dll", "python311.dll", "python3.dll"
-        );
-
-        private List<String> getPythonLibs() {
-            var os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("mac")) return PYTHON_LIBS_MACOS;
-            if (os.contains("win")) return PYTHON_LIBS_WINDOWS;
-            return PYTHON_LIBS_LINUX;
-        }
-
-        /**
-         * Verifies segment content by executing Python's {@code print()} function.
-         * <p>
-         * This test embeds the Python interpreter, builds a Python script dynamically, and executes
-         * it to print the "hello, world" content.
-         */
-        @DisplayName("print")
-        @Disabled
-        @Test
-        void _print_() throws Throwable {
-            // ------------------------------------------------------------------------------- given
-            assumeTrue(
-                    isLibraryAvailable(getPythonLibs().toArray(String[]::new)),
-                    "Python library not found - skipping test"
-            );
-            final var service = set_array_sets_hello_world_bytes(service());
-            final var linker = Linker.nativeLinker();
-            try (var arena = Arena.ofConfined()) {
-                final var python = findLibrary(arena,
-                                               getPythonLibs().toArray(
-                                                       String[]::new)).orElseThrow();
-                final var pyInitialize = linker.downcallHandle(
-                        python.find("Py_Initialize").orElseThrow(),
-                        FunctionDescriptor.ofVoid()
-                );
-                final var pyRunSimpleString = linker.downcallHandle(
-                        python.find("PyRun_SimpleString").orElseThrow(),
-                        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
-                );
-                final var pyFinalize = linker.downcallHandle(
-                        python.find("Py_Finalize").orElseThrow(),
-                        FunctionDescriptor.ofVoid()
-                );
-                final var segment = arena.allocate(HelloWorld.BYTES + 1);
-                final var content = readSegmentAsString(segment, HelloWorld.BYTES);
-                final var script = arena.allocateFrom(
-                        "print('Python says: " + content + "')",
-                        StandardCharsets.UTF_8
-                );
-                // ---------------------------------------------------------------------------- when
-                service.copy(segment);
-                // ---------------------------------------------------------------------------- then
-                pyInitialize.invoke();
-                try {
-                    final var result = (int) pyRunSimpleString.invoke(script);
-                    assertEquals(0, result, "PyRun_SimpleString should succeed");
-                } finally {
-                    pyFinalize.invoke();
-                }
             }
         }
     }
@@ -293,7 +190,7 @@ class HelloWorld_Copy_Segment__Test {
     @DisplayName("macOS")
     @Nested
     @EnabledOnOs(OS.MAC)
-    class MacOS_Test extends HelloWorld__Test {
+    class MacOS_Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
@@ -302,10 +199,8 @@ class HelloWorld_Copy_Segment__Test {
          */
         @DisplayName("write")
         @Test
-        void _write_()
-                throws Throwable {
+        void _write_() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 final var linker = Linker.nativeLinker();
@@ -319,7 +214,7 @@ class HelloWorld_Copy_Segment__Test {
                         )
                 );
                 // ---------------------------------------------------------------------------- when
-                service.copy(segment);
+                service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 System.out.print("macOS write() says: ");
                 System.out.flush();
@@ -341,7 +236,7 @@ class HelloWorld_Copy_Segment__Test {
     @DisplayName("Linux")
     @Nested
     @EnabledOnOs(OS.LINUX)
-    class Linux_Test extends HelloWorld__Test {
+    class Linux_Test {
 
         /**
          * Verifies segment content using POSIX {@code write()} to stdout.
@@ -350,7 +245,6 @@ class HelloWorld_Copy_Segment__Test {
         @Test
         void _write_() throws Throwable {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_hello_world_bytes(service());
             try (var arena = Arena.ofConfined()) {
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 final var linker = Linker.nativeLinker();
@@ -364,7 +258,7 @@ class HelloWorld_Copy_Segment__Test {
                         )
                 );
                 // ---------------------------------------------------------------------------- when
-                service.copy(segment);
+                service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 System.out.print("Linux write() says: ");
                 System.out.flush();
@@ -398,7 +292,7 @@ class HelloWorld_Copy_Segment__Test {
     @DisplayName("Windows")
     @Nested
     @EnabledOnOs(OS.WINDOWS)
-    class Windows_Test extends HelloWorld__Test {
+    class Windows_Test {
 
         /**
          * Verifies segment content using Windows {@code WriteConsoleA()}.
@@ -408,14 +302,12 @@ class HelloWorld_Copy_Segment__Test {
          */
         @DisplayName("WriteConsoleA")
         @Test
-        void _WriteConsoleA_()
-                throws Throwable {
+        void _WriteConsoleA_() throws Throwable {
             // ------------------------------------------------------------------------------- given
             assumeTrue(
                     isLibraryAvailable("kernel32", "kernel32.dll"),
                     "kernel32.dll not found"
             );
-            final var service = set_array_sets_hello_world_bytes(service());
             final var linker = Linker.nativeLinker();
             try (var arena = Arena.ofConfined()) {
                 final var kernel32 = findLibrary(arena, "kernel32", "kernel32.dll").orElseThrow();
@@ -436,7 +328,7 @@ class HelloWorld_Copy_Segment__Test {
                 );
                 final var segment = arena.allocate(HelloWorld.BYTES);
                 // ---------------------------------------------------------------------------- when
-                service.copy(segment);
+                service().copy(segment);
                 // ---------------------------------------------------------------------------- then
                 final var stdout = (MemorySegment) getStdHandle.invoke(-11);
                 final var bytesWritten = arena.allocate(ValueLayout.JAVA_INT);
@@ -448,6 +340,307 @@ class HelloWorld_Copy_Segment__Test {
                 System.out.println();
                 assertNotEquals(0, result, "WriteConsoleA should succeed");
             }
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------- zlib
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} with zlib's {@code crc32} function — a
+     * cross-platform native checksum routine that consumes the segment as a {@code const Bytef *}
+     * and returns the CRC-32 of its contents.
+     *
+     * <h2>Function Used</h2>
+     * <ul>
+     *   <li>{@code unsigned long crc32(unsigned long crc, const Bytef *buf, uInt len)} —
+     *       updates the running CRC-32 ({@code crc}) by processing {@code len} bytes from
+     *       {@code buf}. Pass {@code 0} to start a fresh checksum.</li>
+     * </ul>
+     * <p>
+     * The expected value is cross-checked against {@link CRC32}.
+     *
+     * @see <a href="https://zlib.net/manual.html#Checksum">zlib manual — Checksum
+     * functions</a>
+     */
+    @DisplayName("zlib")
+    @Nested
+    class Zlib_Test {
+
+        private static final String[] ZLIB_LIBS = {
+                "libz.so.1", "libz.so",
+                "libz.dylib",
+                "zlib1.dll", "zlib.dll"
+        };
+
+        /**
+         * Verifies the segment via zlib {@code crc32()}; the result must equal the CRC-32 of the
+         * hello-world bytes as computed by {@link CRC32}.
+         */
+        @DisplayName("crc32")
+        @Test
+        void _crc32__() throws Throwable {
+            assumeTrue(isLibraryAvailable(ZLIB_LIBS), "zlib not found");
+            try (var arena = Arena.ofConfined()) {
+                final var zlib = findLibrary(arena, ZLIB_LIBS).orElseThrow();
+                final var linker = Linker.nativeLinker();
+                // C 'unsigned long' is 64-bit on POSIX LP64, 32-bit on Windows LLP64
+                final var uLong = linker.canonicalLayouts().get("long");
+                final var crc32 = linker.downcallHandle(
+                        zlib.find("crc32").orElseThrow(),
+                        FunctionDescriptor.of(
+                                uLong,                  // unsigned long  (return)
+                                uLong,                  // unsigned long  crc
+                                ValueLayout.ADDRESS,    // const Bytef *  buf
+                                ValueLayout.JAVA_INT    // uInt           len
+                        )
+                );
+                final var segment = arena.allocate(HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service().copy(segment);
+                // ---------------------------------------------------------------------------- then
+                final long actual;
+                if (uLong.byteSize() == Long.BYTES) {
+                    actual = (long) crc32.invoke(0L, segment, HelloWorld.BYTES);
+                } else {
+                    actual = Integer.toUnsignedLong(
+                            (int) crc32.invoke(0, segment, HelloWorld.BYTES));
+                }
+                final var expected = new CRC32();
+                expected.update(hello_world_byte_array());
+                assertEquals(expected.getValue(), actual,
+                             "zlib crc32 should equal java.util.zip.CRC32");
+            }
+        }
+    }
+
+    // ----------------------------------------------------- java.lang.foreign.MemorySegment#ofArray
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against an on-heap segment wrapping a
+     * {@code byte[]} via {@link MemorySegment#ofArray(byte[])}. No arena, no off-heap allocation —
+     * the "first touch" example.
+     */
+    @DisplayName("ofArray (heap byte[])")
+    @Nested
+    class OfArray_Test {
+
+        /**
+         * Verifies that {@code copy} populates the heap array backing the segment.
+         */
+        @DisplayName("MemorySegment.ofArray(new byte[BYTES])")
+        @Test
+        void __() {
+            // ------------------------------------------------------------------------------- given
+            final var array = new byte[HelloWorld.BYTES];
+            final var segment = MemorySegment.ofArray(array);
+            // -------------------------------------------------------------------------------- when
+            service().copy(segment);
+            // -------------------------------------------------------------------------------- then
+            assertEquals(HELLO_WORLD_STRING, new String(array, StandardCharsets.US_ASCII));
+        }
+    }
+
+    // ---------------------------------------------------- java.lang.foreign.MemorySegment#ofBuffer
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against a segment wrapping a
+     * {@link java.nio.ByteBuffer} via {@link MemorySegment#ofBuffer(java.nio.Buffer)} — the FFM ↔
+     * NIO bridge — for both heap and direct buffers.
+     */
+    @DisplayName("ofBuffer (NIO bridge)")
+    @Nested
+    class OfBuffer_Test {
+
+        /**
+         * Verifies that {@code copy} populates a segment wrapping a
+         * {@linkplain ByteBuffer#allocate(int) heap} buffer.
+         */
+        @DisplayName("ofBuffer(ByteBuffer.allocate(BYTES))")
+        @Test
+        void _heap__() {
+            // ------------------------------------------------------------------------------- given
+            final var buffer = ByteBuffer.allocate(HelloWorld.BYTES);
+            final var segment = MemorySegment.ofBuffer(buffer);
+            // -------------------------------------------------------------------------------- when
+            service().copy(segment);
+            // -------------------------------------------------------------------------------- then
+            assertEquals(HELLO_WORLD_STRING,
+                         StandardCharsets.US_ASCII.decode(buffer).toString());
+        }
+
+        /**
+         * Verifies that {@code copy} populates a segment wrapping a
+         * {@linkplain ByteBuffer#allocateDirect(int) direct} buffer.
+         */
+        @DisplayName("ofBuffer(ByteBuffer.allocateDirect(BYTES))")
+        @Test
+        void _direct__() {
+            // ------------------------------------------------------------------------------- given
+            final var buffer = ByteBuffer.allocateDirect(HelloWorld.BYTES);
+            final var segment = MemorySegment.ofBuffer(buffer);
+            // -------------------------------------------------------------------------------- when
+            service().copy(segment);
+            // -------------------------------------------------------------------------------- then
+            assertEquals(HELLO_WORLD_STRING,
+                         StandardCharsets.US_ASCII.decode(buffer).toString());
+        }
+    }
+
+    // ----------------------------------------------------------- java.nio.channels.FileChannel#map
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against a segment backed by a memory-mapped file
+     * via {@link FileChannel#map(FileChannel.MapMode, long, long, Arena)} — the FFM-meets-I/O
+     * pathway. Strictly portable.
+     */
+    @DisplayName("FileChannel.map (memory-mapped file)")
+    @Nested
+    class Mapped_Test {
+
+        /**
+         * Verifies that {@code copy} writes to a memory-mapped region and the bytes land on disk.
+         *
+         * @param tempDir the per-test temp dir holding the mapped file.
+         */
+        @DisplayName("channel.map(READ_WRITE, 0, BYTES, arena)")
+        @Test
+        void __(@TempDir final Path tempDir) throws Exception {
+            // ------------------------------------------------------------------------------- given
+            final var path = tempDir.resolve("hello.bin");
+            try (var channel = FileChannel.open(path, StandardOpenOption.CREATE,
+                                                StandardOpenOption.READ,
+                                                StandardOpenOption.WRITE);
+                 var arena = Arena.ofShared()) {
+                final var segment = channel.map(FileChannel.MapMode.READ_WRITE,
+                                                0L, HelloWorld.BYTES, arena);
+                // ---------------------------------------------------------------------------- when
+                service().copy(segment);
+                segment.force();
+            }
+            // ----------------------------------------------------------------------------------then
+            assertEquals(HELLO_WORLD_STRING,
+                         Files.readString(path, StandardCharsets.US_ASCII));
+        }
+    }
+
+    // ----------------------------------------------------- java.lang.foreign.MemorySegment#asSlice
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} via {@link MemorySegment#asSlice(long)} — the
+     * supported way to write at a non-zero offset, per the method's {@code @apiNote}.
+     */
+    @DisplayName("asSlice (write at offset)")
+    @Nested
+    class AsSlice_Test {
+
+        /**
+         * Verifies that {@code copy(segment.asSlice(offset))} writes only into
+         * {@code [offset, offset+BYTES)} and leaves {@code [0, offset)} untouched.
+         */
+        @DisplayName("copy(segment.asSlice(5))")
+        @Test
+        void __() {
+            // ------------------------------------------------------------------------------- given
+            final var offset = 5;
+            acceptConfinedArena(arena -> {
+                final var segment = arena.allocate(offset + HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service().copy(segment.asSlice(offset));
+                // ---------------------------------------------------------------------------- then
+                for (var i = 0L; i < offset; i++) {
+                    assertEquals((byte) 0, segment.get(ValueLayout.JAVA_BYTE, i),
+                                 "byte at " + i + " must stay zero");
+                }
+                assertEquals(HELLO_WORLD_STRING,
+                             new String(segment.asSlice(offset, HelloWorld.BYTES)
+                                                .toArray(ValueLayout.JAVA_BYTE),
+                                        StandardCharsets.US_ASCII));
+            });
+        }
+    }
+
+    // ----------------------------------------------------------------- java.lang.foreign.Arena#of*
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} against off-heap segments allocated by each
+     * {@link Arena} lifetime variant — confined, shared, automatic, and global.
+     */
+    @DisplayName("Arena lifetime variants")
+    @Nested
+    class Arenas_Test {
+
+        /**
+         * Verifies {@code copy(segment)} against a segment allocated by {@link Arena#ofConfined()}
+         * — single-thread, explicit-close.
+         */
+        @DisplayName("Arena.ofConfined()")
+        @Test
+        void _confined__() {
+            acceptConfinedArena(a -> {
+                final var segment = a.allocate(HelloWorld.BYTES);
+                // -------------------------------------------------------------------------- when
+                service().copy(segment);
+                // -------------------------------------------------------------------------- then
+                assertEquals(HELLO_WORLD_STRING,
+                             new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                        StandardCharsets.US_ASCII));
+            });
+        }
+
+        /**
+         * Verifies {@code copy(segment)} against a segment allocated by {@link Arena#ofShared()} —
+         * multi-thread, explicit-close.
+         */
+        @DisplayName("Arena.ofShared()")
+        @Test
+        void _shared__() {
+            acceptSharedArena(a -> {
+                final var segment = a.allocate(HelloWorld.BYTES);
+                // -------------------------------------------------------------------------- when
+                service().copy(segment);
+                // -------------------------------------------------------------------------- then
+                assertEquals(HELLO_WORLD_STRING,
+                             new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                        StandardCharsets.US_ASCII));
+            });
+        }
+
+        /**
+         * Verifies {@code copy(segment)} against a segment allocated by {@link Arena#ofAuto()} —
+         * GC-managed, no explicit close.
+         */
+        @DisplayName("Arena.ofAuto()")
+        @SuppressWarnings({"resource", "java:S2095"}) // Arena.ofAuto() is GC-managed; no close
+        @Test
+        void _auto__() {
+            // ------------------------------------------------------------------------------- given
+            final var arena = Arena.ofAuto();
+            final var segment = arena.allocate(HelloWorld.BYTES);
+            // -------------------------------------------------------------------------------- when
+            service().copy(segment);
+            // -------------------------------------------------------------------------------- then
+            assertEquals(HELLO_WORLD_STRING,
+                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                    StandardCharsets.US_ASCII));
+        }
+
+        /**
+         * Verifies {@code copy(segment)} against a segment allocated by {@link Arena#global()} —
+         * never-released global lifetime.
+         */
+        @DisplayName("Arena.global()")
+        @SuppressWarnings({"resource", "java:S2095"}) // Arena.global() never closes
+        @Test
+        void _global__() {
+            // ------------------------------------------------------------------------------- given
+            final var arena = Arena.global();
+            final var segment = arena.allocate(HelloWorld.BYTES);
+            // -------------------------------------------------------------------------------- when
+            service().copy(segment);
+            // -------------------------------------------------------------------------------- then
+            assertEquals(HELLO_WORLD_STRING,
+                         new String(segment.toArray(ValueLayout.JAVA_BYTE),
+                                    StandardCharsets.US_ASCII));
         }
     }
 }

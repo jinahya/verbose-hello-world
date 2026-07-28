@@ -21,20 +21,13 @@ package com.github.jinahya.hello.api._java_lang_foreign;
  */
 
 import com.github.jinahya.hello.api.*;
-import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.*;
 import org.mockito.*;
 
-import java.io.*;
 import java.lang.foreign.*;
-import java.nio.channels.*;
-import java.nio.file.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -43,9 +36,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@Disabled
 @DisplayName("copy(segment)")
-@Slf4j
 class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
 
     /**
@@ -58,102 +49,21 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
     void __() {
         // ----------------------------------------------------------------------------------- given
         final var service = set_array_returns_the_array(service());
-        try (var arena = Arena.ofConfined()) {
-            final var segment = arena.allocate(HelloWorld.BYTES);
-            try (var mockedStatic = mockStatic(MemorySegment.class, Mockito.CALLS_REAL_METHODS)) {
-                // ---------------------------------------------------------------------------- when
-                final var result = service.copy(segment);
-                // ---------------------------------------------------------------------------- then
-                assertSame(segment, result);
-                final var array = set_array12_invoked_once(service);
-                mockedStatic.verify(() -> MemorySegment.copy(
-                        same(array),
-                        eq(0),
-                        same(segment),
-                        eq(ValueLayout.JAVA_BYTE),
-                        eq(0L),
-                        eq(array.length)
-                ));
-            }
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    static void compileNative(final Path source, final Path target) throws Exception {
-        final boolean windows = System.getProperty("os.name").startsWith("Win");
-        // List of common compilers in order of preference
-        final var compilers = windows
-                              ? new String[] {"gcc", "clang", "cl"}
-                              : new String[] {"cc", "gcc", "clang"};
-        String compiler = null;
-        for (final var c : compilers) {
-            try {
-                final var check = new ProcessBuilder(
-                        windows
-                        ? new String[] {"where", c}
-                        : new String[] {"which", c}
-                ).start();
-                if (check.waitFor() == 0) {
-                    compiler = c;
-                    break;
-                }
-            } catch (final IOException ioe) {
-                // ignored
-            }
-        }
-        log.debug("detected compiler: {}", compiler);
-        assumeFalse(compiler == null, "No C compiler found (tried gcc, clang, cc, msvc)");
-        ProcessBuilder pb;
-        if (compiler.equals("cl")) {
-            // MSVC syntax: cl source.c /Fe:target.exe
-            pb = new ProcessBuilder(compiler, source.toString(), "/Fe:" + target.toString());
-        } else {
-            // GCC/Clang syntax: gcc source.c -o target
-            pb = new ProcessBuilder(compiler, source.toString(), "-o", target.toString());
-        }
-        final var exitCode = pb.inheritIO().start().waitFor();
-        if (exitCode != 0) {
-            throw new RuntimeException("Compilation failed with exit code " + exitCode);
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    /**
-     * Verifies that the method bridges Java to a compiled C {@code reader} program that reads the
-     * mapped {@code segment} backing the {@code hello-world-bytes}.
-     *
-     * @param tempDir the {@link TempDir} holding the compiled binary and shared data file.
-     * @throws Exception if an error occurs while compiling or invoking the native binary.
-     */
-    @DisplayName("Java-to-C bridge")
-    @Test
-    void testJavaToCBridge(@TempDir final Path tempDir) throws Exception {
-        final var windows = System.getProperty("os.name").startsWith("Win");
-        final var sourcePath = Paths.get("src", "test", "c", "reader.c");
-        final var targetPath = tempDir.resolve(windows ? "reader.exe" : "reader");
-
-        // ------------------------------------------------------------------------- compile program
-        compileNative(sourcePath, targetPath);
-
-        // ----------------------------------------------------------------------------- shared data
-        final var dataPath = tempDir.resolve("data.bin");
-        try (final var channel = FileChannel.open(dataPath, StandardOpenOption.CREATE,
-                                                  StandardOpenOption.READ,
-                                                  StandardOpenOption.WRITE);
-             final var arena = Arena.ofShared()) {
-            // ---------------------------------------------------------------- write hello, world\0
-            final var segment = channel.map(FileChannel.MapMode.READ_WRITE, 0, 13, arena);
-            set_array_sets_hello_world_bytes(service());
-            service().copy(segment);
-            segment.set(ValueLayout.JAVA_BYTE, 12, (byte) 0);
-            log.debug("bytes written to the file");
-            // ----------------------------------------------------------------- read hello, world\0
-            final var process = new ProcessBuilder(targetPath.toString(),
-                                                   dataPath.toAbsolutePath().toString())
-                    .inheritIO()
-                    .start();
-            assertEquals(0, process.waitFor());
+        // MemorySegment is a sealed interface — Mockito can't mock the instance; use a real
+        // heap-backed segment of exact BYTES so the byteSize() guard passes naturally.
+        final var segment = MemorySegment.ofArray(new byte[HelloWorld.BYTES]);
+        try (var mockedStatic = mockStatic(MemorySegment.class, Mockito.CALLS_REAL_METHODS)) {
+            // -------------------------------------------------------------------------------- when
+            final var result = service.copy(segment);
+            // -------------------------------------------------------------------------------- then
+            assertSame(segment, result);
+            final var array = set_array12_invoked_once(service);
+            mockedStatic.verify(
+                    () -> MemorySegment.copy(
+                            array, 0, segment, ValueLayout.JAVA_BYTE, 0L, array.length),
+                    times(1)
+            );
+            mockedStatic.verifyNoMoreInteractions();
         }
     }
 }

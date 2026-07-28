@@ -21,7 +21,6 @@ package com.github.jinahya.hello.api._java_nio_channels;
  */
 
 import com.github.jinahya.hello.api.*;
-import com.github.jinahya.hello.api.annotations.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -36,7 +35,7 @@ import java.util.function.*;
 import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Util_Concurrent_ExecutorService_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_util_concurrent._Java_Util_Concurrent_ExecutorService_TestUtils.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.*;
  * @param <T> the subtype of {@link AsynchronousHelloWorld}.
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
 @DisplayName("AsynchronousHelloWorld.write(AsynchronousByteChannel, attachment, handler) / extras")
 @Slf4j
 abstract class AsynchronousHelloWorld_Write_AsynchronousByteChannel_Attachment_Handler__Test<

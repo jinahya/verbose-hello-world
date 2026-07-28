@@ -29,6 +29,7 @@ import org.mockito.*;
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.file.*;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.*;
@@ -45,6 +46,11 @@ import static org.mockito.Mockito.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 class HelloWorld_Append_Path_Test extends HelloWorld__Test {
+
+    static { // import pinning
+        final var a = new HashSet<String>();
+        final var b = Arrays.stream(new Object[0]);
+    }
 
     /**
      * Verifies that the {@link HelloWorld#append(Path) append(path)} method throws a

@@ -40,7 +40,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.send(DatagramChannel) / extras")
 @Slf4j
 class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {

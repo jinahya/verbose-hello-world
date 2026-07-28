@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8439">RFC 8439 &mdash;
  * ChaCha20 and Poly1305 for IETF Protocols (obsoletes RFC 7539)</a>
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("updateAAD(cipher)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

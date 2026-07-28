@@ -36,7 +36,7 @@ import java.security.spec.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Java_Security_Signature_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_Signature_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 // https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#signature-algorithms">Signature
  * Algorithms</a>
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("update(signature)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

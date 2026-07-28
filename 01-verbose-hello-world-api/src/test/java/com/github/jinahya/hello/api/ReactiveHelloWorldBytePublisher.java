@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
 import static com.github.jinahya.hello.api.ReactiveHelloWorldPublisherUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfReactiveStream.*;
+import static com.github.jinahya.hello.miscellaneous._org_mockito._Org_Mockito__TestUtils.OfReactiveStream.*;
 
 /**
  * A package-private {@link Publisher} of individual {@link Byte} elements — one per byte of the
@@ -48,10 +48,8 @@ import static com.github.jinahya.hello.miscellaneous._Org_Mockito__TestUtils.OfR
  * <strong>Signal serialization (Rules 1.3 / 1.7).</strong> The producer virtual thread is the
  * sole sender of {@code onNext} and {@code onComplete}, so signals are naturally serialized (<a
  * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.3">Rule
- * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag,
- * satisfying
- * <a
- * href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
+ * 1.3</a>). The terminal {@code onComplete} site CAS-guards the {@code terminated} flag, satisfying
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/master/README.md#1.7">Rule
  * 1.7</a> — at most one terminal ever fires.
  * <p>
  * <strong>Lifetime.</strong> The stream completes naturally after all {@value HelloWorld#BYTES}

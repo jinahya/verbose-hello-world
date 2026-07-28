@@ -32,7 +32,7 @@ import java.nio.file.*;
 import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
-import static com.github.jinahya.hello.miscellaneous._Javax_Crypto_Mac_TestUtils.*;
+import static com.github.jinahya.hello.miscellaneous._javax_crypto._Javax_Crypto_Mac_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.*;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8018">RFC 8018 &mdash; PKCS #5:
  * Password-Based Cryptography Specification Version 2.1 (PBE)</a>
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("update(mac)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j

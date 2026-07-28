@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@_NotForPublishing
+@_HideNameFromPublishing
 @DisplayName("HelloWorld.send(DatagramSocket, SocketAddress)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
