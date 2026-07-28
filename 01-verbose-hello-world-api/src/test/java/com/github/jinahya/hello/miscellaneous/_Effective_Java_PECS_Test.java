@@ -522,20 +522,20 @@ class _Effective_Java_PECS_Test {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Mammal> consumer = s -> counter.incrementAndGet();
-                zoo.inspect1(Mammal.class, consumer);
+                zoo.<Mammal>inspect1(Mammal.class, consumer);
                 assertEquals(2, counter.get()); // Cat + Whale
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Animal> consumer = a -> counter.incrementAndGet();
-//                zoo.inspect1(Mammal.class, consumer); // ❌ T inferred as Mammal; Animal ≠ Mammal
+//                zoo.<Mammal>inspect1(Mammal.class, consumer); // ❌ Animal ≠ Mammal (T = Mammal)
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Object> consumer = o -> counter.incrementAndGet();
-//                zoo.inspect1(Mammal.class, consumer); // ❌ same reason
+//                zoo.<Mammal>inspect1(Mammal.class, consumer); // ❌ same reason
             }
         }
 
@@ -553,21 +553,21 @@ class _Effective_Java_PECS_Test {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Mammal> consumer = s -> counter.incrementAndGet();
-                zoo.inspect2(Mammal.class, consumer);
+                zoo.<Mammal>inspect2(Mammal.class, consumer);
                 assertEquals(2, counter.get());
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Animal> consumer = a -> counter.incrementAndGet();
-                zoo.inspect2(Mammal.class, consumer); // ✅ Animal :> Mammal
+                zoo.<Mammal>inspect2(Mammal.class, consumer); // ✅ Animal :> Mammal
                 assertEquals(2, counter.get());
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Object> consumer = o -> counter.incrementAndGet();
-                zoo.inspect2(Mammal.class, consumer); // ✅ Object :> Mammal
+                zoo.<Mammal>inspect2(Mammal.class, consumer); // ✅ Object :> Mammal
                 assertEquals(2, counter.get());
             }
             // T = Cat — narrower T means a wider set of acceptable Consumer supertypes
@@ -575,14 +575,14 @@ class _Effective_Java_PECS_Test {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Mammal> consumer = s -> counter.incrementAndGet();
-                zoo.inspect2(Cat.class, consumer);       // ✅ Mammal :> Cat
+                zoo.<Cat>inspect2(Cat.class, consumer);       // ✅ Mammal :> Cat
                 assertEquals(1, counter.get());
             }
             {
                 final var zoo = new Zoo();
                 final var counter = new AtomicInteger();
                 final Consumer<Animal> consumer = a -> counter.incrementAndGet();
-                zoo.inspect2(Cat.class, consumer);       // ✅ Animal :> Cat
+                zoo.<Cat>inspect2(Cat.class, consumer);       // ✅ Animal :> Cat
                 assertEquals(1, counter.get());
             }
         }
@@ -674,12 +674,12 @@ class _Effective_Java_PECS_Test {
         @Test
         void breed1__() {
             {
-                // T inferred as Cat — supplier yields 3 Cats then null
+                // T = Cat — supplier yields 3 Cats then null
                 final var zoo = new Zoo();
                 final var remaining = new AtomicInteger(3);
                 final Supplier<Cat> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
-                zoo.breed1(source);
+                zoo.<Cat>breed1(source);
                 assertEquals(0, remaining.get()); // drained to 0
             }
             {
@@ -688,7 +688,7 @@ class _Effective_Java_PECS_Test {
                 final var remaining = new AtomicInteger(3);
                 final Supplier<Mammal> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
-                zoo.breed1(source);
+                zoo.<Mammal>breed1(source);
                 assertEquals(0, remaining.get());
             }
 
@@ -710,12 +710,12 @@ class _Effective_Java_PECS_Test {
         @Test
         void breed2__() {
             {
-                // T = Cat (inferred)
+                // T = Cat
                 final var zoo = new Zoo();
                 final var remaining = new AtomicInteger(3);
                 final Supplier<Cat> source = () ->
                         remaining.get() > 0 && remaining.decrementAndGet() >= 0 ? new Cat() : null;
-                zoo.breed2(source);
+                zoo.<Cat>breed2(source);
                 assertEquals(0, remaining.get());
             }
             {
@@ -801,22 +801,25 @@ class _Effective_Java_PECS_Test {
             {
                 final var zoo = new Zoo();
                 final Function<Cat, Animal> mapper = c -> c;
-                final List<Animal> result = zoo.tag1(Cat.class, mapper);
+                final List<Animal> result = zoo.<Cat, Animal>tag1(Cat.class, mapper);
                 assertEquals(1, result.size()); // one Cat in zoo
             }
 
             // these would NOT compile — Function<T, R> is invariant on BOTH sides:
             {
-                // input mismatch: Function<Animal, Animal> is not Function<Cat, Animal>
+                // input mismatch: Function<Animal, Animal> is not Function<Cat, Animal>.
+                // Fails on the INPUT side regardless of R (T = Cat).
                 final var zoo = new Zoo();
                 final Function<Animal, Animal> mapper = a -> a;
-//                zoo.tag1(Cat.class, mapper); // ❌ won't compile
+//                zoo.<Cat, Animal>tag1(Cat.class, mapper); // ❌ won't compile
             }
             {
-                // output mismatch: Function<Cat, Cat> is not Function<Cat, Animal>
+                // output mismatch: Function<Cat, Cat> is not Function<Cat, Animal>.
+                // The explicit <Cat, Animal> witness pins R = Animal, which is what makes
+                // this fail. Without it the compiler re-infers R = Cat and it would COMPILE.
                 final var zoo = new Zoo();
                 final Function<Cat, Cat> mapper = c -> c;
-//                final List<Animal> result = zoo.tag1(Cat.class, mapper); // ❌ won't compile
+//                zoo.<Cat, Animal>tag1(Cat.class, mapper); // ❌ won't compile
             }
         }
 
@@ -834,21 +837,21 @@ class _Effective_Java_PECS_Test {
             {
                 final var zoo = new Zoo();
                 final Function<Cat, Animal> mapper = c -> c;
-                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                final List<Animal> result = zoo.<Cat, Animal>tag2(Cat.class, mapper);
                 assertEquals(1, result.size());
             }
             {
                 // input "super" accepts Function<Animal, Animal> (Animal :> Cat)
                 final var zoo = new Zoo();
                 final Function<Animal, Animal> mapper = a -> a;
-                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                final List<Animal> result = zoo.<Cat, Animal>tag2(Cat.class, mapper);
                 assertEquals(1, result.size());
             }
             {
                 // output "extends" accepts Function<Cat, Cat> (Cat <: Animal)
                 final var zoo = new Zoo();
                 final Function<Cat, Cat> mapper = c -> c;
-                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                final List<Animal> result = zoo.<Cat, Animal>tag2(Cat.class, mapper);
                 assertEquals(1, result.size());
             }
             {
@@ -856,7 +859,7 @@ class _Effective_Java_PECS_Test {
                 // input super, output extends. THE PECS payoff: one mapper, multiple binding sites.
                 final var zoo = new Zoo();
                 final Function<Animal, Cat> mapper = a -> new Cat();
-                final List<Animal> result = zoo.tag2(Cat.class, mapper);
+                final List<Animal> result = zoo.<Cat, Animal>tag2(Cat.class, mapper);
                 assertEquals(1, result.size());
             }
         }
