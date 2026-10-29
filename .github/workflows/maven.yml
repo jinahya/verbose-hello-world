@@ -18,23 +18,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      - name: Set up JDK 27
+        uses: actions/setup-java@v6
         with:
-          java-version: '25'
+          java-version: '27'
           distribution: 'temurin'
           cache: maven
       - name: Cache SonarCloud packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Cache Maven packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -53,15 +53,19 @@ jobs:
         run: mvn -Pcdi-se-weld -pl 02-verbose-hello-world-lib test
       - name: cdi-se-weld-junit5
         run: mvn -Pcdi-se-weld-junit5 -pl 02-verbose-hello-world-lib test
+      - name: di-avaje
+        run: mvn -Pdi-avaje -pl 02-verbose-hello-world-lib test
       - name: di-dagger
         run: mvn -Pdi-dagger -pl 02-verbose-hello-world-lib test
       - name: di-guice
         run: mvn -Pdi-guice -pl 02-verbose-hello-world-lib test
       - name: di-hk2
-        run: mvn -Phk2 -pl 02-verbose-hello-world-lib test
+        run: mvn -Pdi-hk2 -pl 02-verbose-hello-world-lib test
+      - name: di-micronaut
+        run: mvn -Pdi-micronaut -pl 02-verbose-hello-world-lib test
       - name: di-spring
-        run: mvn -Pspring -pl 02-verbose-hello-world-lib test
+        run: mvn -Pdi-spring -pl 02-verbose-hello-world-lib test
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
       - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+        uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c # v6.0.1

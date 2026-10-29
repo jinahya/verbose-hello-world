@@ -77,7 +77,7 @@
     <profile>
       <id>cdi-se-openwebbeans</id>
       <properties>
-        <test>HelloWorldCdiSeOpenWebBeansTest</test>
+        <test>HelloWorldCdiSe_OpenWebBeans_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -139,7 +139,7 @@
     <profile>
       <id>cdi-se-openwebbeans-junit5</id>
       <properties>
-        <test>HelloWorldCdiSeOpenWebBeansJunit5Test</test>
+        <test>HelloWorldCdiSe_OpenWebBeans_Junit5_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -208,7 +208,7 @@
     <profile>
       <id>cdi-se-weld</id>
       <properties>
-        <test>HelloWorldCdiSeWeldTest</test>
+        <test>HelloWorldCdiSe_Weld_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -260,7 +260,7 @@
     <profile>
       <id>cdi-se-weld-junit5</id>
       <properties>
-        <test>HelloWorldCdiSeWeldJunit5Test</test>
+        <test>HelloWorldCdiSe_Weld_Junit5_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -307,7 +307,7 @@
     <profile>
       <id>di-avaje</id>
       <properties>
-        <test>HelloWorldDiAvajeTest</test>
+        <test>HelloWorldDi_Avaje_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -392,7 +392,7 @@
     <profile>
       <id>di-dagger</id>
       <properties>
-        <test>HelloWorldDiDaggerTest</test>
+        <test>HelloWorldDi_Dagger_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -486,7 +486,7 @@
     <profile>
       <id>di-guice</id>
       <properties>
-        <test>HelloWorldDiGuiceTest</test>
+        <test>HelloWorldDi_Guice_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -533,7 +533,7 @@
     <profile>
       <id>di-hk2</id>
       <properties>
-        <test>HelloWorldDiHk2Test</test>
+        <test>HelloWorldDi_Hk2_Test</test>
       </properties>
       <dependencies>
         <dependency>
@@ -580,7 +580,7 @@
     <profile>
       <id>di-micronaut</id>
       <properties>
-        <test>HelloWorldDiMicronautTest</test>
+        <test>HelloWorldDi_Micronaut_Test</test>
       </properties>
       <dependencyManagement>
         <dependencies>
@@ -676,7 +676,7 @@
     <profile>
       <id>di-spring</id>
       <properties>
-        <test>HelloWorldDiSpringTest</test>
+        <test>HelloWorldDi_Spring_Test</test>
       </properties>
       <dependencies>
         <dependency>

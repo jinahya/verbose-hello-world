@@ -22,7 +22,8 @@ package com.github.jinahya.hello.api;
 
 import akka.actor.*;
 import akka.stream.javadsl.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 

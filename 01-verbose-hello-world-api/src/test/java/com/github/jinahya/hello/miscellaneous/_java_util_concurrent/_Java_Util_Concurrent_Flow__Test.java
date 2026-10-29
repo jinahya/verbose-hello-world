@@ -21,7 +21,8 @@ package com.github.jinahya.hello.miscellaneous._java_util_concurrent;
  */
 
 import com.github.jinahya.hello.api.annotations.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;

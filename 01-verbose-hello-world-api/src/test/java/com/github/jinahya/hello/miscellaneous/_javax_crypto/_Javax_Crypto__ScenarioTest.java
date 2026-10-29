@@ -20,7 +20,8 @@ package com.github.jinahya.hello.miscellaneous._javax_crypto;
  * #L%
  */
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.*;
 
 /**

@@ -20,7 +20,8 @@ package com.github.jinahya.hello.miscellaneous;
  * #L%
  */
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;

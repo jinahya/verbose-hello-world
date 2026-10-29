@@ -20,8 +20,9 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.*;
-import lombok.experimental.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 

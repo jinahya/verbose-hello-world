@@ -22,7 +22,8 @@ package com.github.jinahya.hello.api._java_io;
 
 import com.github.jinahya.hello.api.*;
 import com.github.jinahya.hello.api.annotations.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;

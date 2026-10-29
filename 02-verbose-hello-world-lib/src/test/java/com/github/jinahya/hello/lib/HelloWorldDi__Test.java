@@ -23,7 +23,9 @@ package com.github.jinahya.hello.lib;
 import com.github.jinahya.hello.api.*;
 import jakarta.inject.*;
 import jakarta.inject.Named;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 

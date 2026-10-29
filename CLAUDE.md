@@ -66,8 +66,8 @@ When auditing or analyzing `HelloWorld.java`, treat **only the active (executed)
 ./mvnw test -Pcdi-se-weld-junit5 -pl 02-verbose-hello-world-lib
 ./mvnw test -Pdi-dagger -pl 02-verbose-hello-world-lib
 ./mvnw test -Pdi-guice -pl 02-verbose-hello-world-lib
-./mvnw test -Phk2 -pl 02-verbose-hello-world-lib
-./mvnw test -Pspring -pl 02-verbose-hello-world-lib
+./mvnw test -Pdi-hk2 -pl 02-verbose-hello-world-lib
+./mvnw test -Pdi-spring -pl 02-verbose-hello-world-lib
 
 # Run a single test class
 ./mvnw test -pl 01-verbose-hello-world-api -Dtest=HelloWorld_01_Set_ArrayWithIndex_Test
@@ -78,7 +78,7 @@ When auditing or analyzing `HelloWorld.java`, treat **only the active (executed)
 
 ## Build Requirements
 
-- **Java 25** with preview features enabled (`--enable-preview` configured in compiler, surefire, and `.mvn/jvm.config`)
+- **Java 27** with preview features enabled (`--enable-preview` configured in compiler, surefire, and `.mvn/jvm.config`)
 - **Maven 3.6.3+** (wrapper included: `./mvnw`)
 - `.mvn/jvm.config` exports internal compiler modules for Error Prone annotation processing
 - `.mvn/maven.config` enables ByteBuddy experimental mode (`-Dnet.bytebuddy.experimental=true`) required by Mockito
@@ -131,7 +131,7 @@ The `generate-executables` profile (active by default) produces multiple artifac
 - **JUnit 5** (Jupiter) with **Mockito** for mocking and **Awaitility** for async assertions
 - Coverage via **JaCoCo**
 - The default `./mvnw test` runs common tests; DI/CDI-specific tests require activating the corresponding Maven profile (see Build Commands above)
-- CI runs all 8 profiles sequentially against the lib module
+- CI runs all 10 profiles sequentially against the lib module
 
 ### Test Naming Conventions
 

@@ -101,7 +101,7 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
         Objects.requireNonNull(handler, "handler is null");
         Thread.startVirtualThread(() -> {
             try (var scope = StructuredTaskScope.open(
-                    StructuredTaskScope.Joiner.<R>awaitAll(),
+                    StructuredTaskScope.Joiner.<R>allUntil(s -> false),
                     configurator
             )) {
                 final var task = scope.fork(() -> mapper.apply(service));
@@ -134,7 +134,7 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
         final var future = new CompletableFuture<R>();
         Thread.startVirtualThread(() -> {
             try (var scope = StructuredTaskScope.open(
-                    StructuredTaskScope.Joiner.<R>awaitAll(),
+                    StructuredTaskScope.Joiner.<R>allUntil(s -> false),
                     configurator
             )) {
                 final var task = scope.fork(() -> mapper.apply(service));

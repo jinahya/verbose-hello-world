@@ -21,7 +21,8 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import com.github.jinahya.hello.api.annotations.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.*;
 
 import javax.crypto.*;

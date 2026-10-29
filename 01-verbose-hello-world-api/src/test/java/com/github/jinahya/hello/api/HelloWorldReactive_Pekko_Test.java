@@ -20,7 +20,8 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
 import org.apache.pekko.actor.*;
 import org.apache.pekko.stream.javadsl.*;
