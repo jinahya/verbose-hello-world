@@ -72,12 +72,12 @@ class HelloWorld_SetText_BreakIterator_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_hello_world_bytes(service());
+        final var service = set_array_sets_hello_world_bytes();
         final var iterator = mock(BreakIterator.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setText(iterator);
         // ------------------------------------------------------------------------------------ then
-        HelloWorld__TestUtils.set_array12_invoked_once(service);
+        set_array12_invoked_once();
         verify(iterator, times(1)).setText(hello_world_string());
         assertSame(iterator, result);
     }

@@ -66,12 +66,12 @@ class HelloWorld_SetInput_Deflater_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array(service());
+        final var service = set_array_returns_the_array();
         final var deflater = mock(Deflater.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setInput(deflater);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         verify(deflater, times(1)).setInput(array);
         verifyNoMoreInteractions(deflater);
         assertSame(deflater, result);

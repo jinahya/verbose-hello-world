@@ -95,7 +95,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test extends HelloWorld__T
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes();
         final var sink = new ByteArrayOutputStream();
         final var statement = mock(PreparedStatement.class);
         doAnswer(i -> {
@@ -107,7 +107,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int_Test extends HelloWorld__T
         // ------------------------------------------------------------------------------------ when
         final var result = service.setAsciiStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         verify(statement, times(1)).setAsciiStream(eq(index), notNull());
         assertArrayEquals(array, sink.toByteArray());
         assertSame(statement, result);

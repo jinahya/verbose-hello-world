@@ -185,7 +185,7 @@ class HelloWorld_Update_Checksum__Test extends HelloWorld__Test {
                 service().write(cos).flush();
                 checksum.reset();
                 try (var cis = new CheckedInputStream(hello_world_inputstream(), checksum)) {
-                    ByteStreams.exhaust(cis);
+                    cis.transferTo(OutputStream.nullOutputStream());
                     assertEquals(cos.getChecksum().getValue(), cis.getChecksum().getValue());
                 }
             }

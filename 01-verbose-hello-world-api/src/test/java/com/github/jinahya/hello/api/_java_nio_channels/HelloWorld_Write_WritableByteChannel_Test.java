@@ -73,7 +73,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
     @Test
     void __() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer12_put_random_bytes(service());
+        final var service = put_buffer12_put_random_bytes();
         final var channel = mock(WritableByteChannel.class);
         final var bufferPositions = new ArrayList<Integer>();
         doAnswer(i -> {
@@ -90,7 +90,7 @@ class HelloWorld_Write_WritableByteChannel_Test extends HelloWorld__Test {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = put_buffer12_invoked_once(service);
+        final var buffer = put_buffer12_invoked_once();
 //        verify(channel, atLeastOnce()).write(buffer);
 //        verifyNoMoreInteractions(channel);
 //        assertEquals(0, bufferPositions.getFirst());

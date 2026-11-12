@@ -25,7 +25,6 @@ import com.github.jinahya.hello.api.annotations.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
-import org.jspecify.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
 import org.junit.jupiter.params.*;
@@ -76,7 +75,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
      * @param signature          the signature bytes returned by {@link Signature#sign()}.
      */
     private static void printf(final Object keyPairParameter,
-                               final @Nullable Object signatureParameter,
+                               final Object signatureParameter,
                                final int iteration,
                                final byte[] signature) {
         final var encoded = Base64.getEncoder().encodeToString(signature);
@@ -98,7 +97,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __() throws SignatureException {
-        update_signature_updates_hello_world_bytes(service());
+        update_signature_updates_hello_world_bytes();
     }
 
     // ---------------------------------------------------------------------------------------------

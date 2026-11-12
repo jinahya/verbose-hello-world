@@ -1,0 +1,185 @@
+= Java 27: Changes and Follow-up Work
+:lang: ko
+:toc:
+:sectnums:
+
+== Scope and Current State
+
+Java 27은 2026-09-15에 정식 출시되었다.
+확인일은 2026-11-12이며, 아래 출시 기능은 https://openjdk.org/projects/jdk/27/[OpenJDK JDK 27]을 기준으로 한다.
+Java 25에서 출발하는 독자는 link:JAVA26.asciidoc[Java 26 변경 사항]도 함께 확인해야 한다.
+HTTP/3 지원, `final` 필드 변경 경고, Applet API 제거 등은 Java 26에서 도입된 변경이다.
+
+현재 작업 트리에서는 다음 설정이 이미 Java 27을 가리킨다.
+
+* `.java-version`: `27`.
+* 부모 `pom.xml`: `maven.compiler.source`가 `27`이며 target/release 및 test 설정이 이를 따른다.
+* Maven Enforcer의 Java 버전 범위: `[27,28)`.
+* `.github/workflows/maven.yml`: JDK 27 설정.
+* Compiler의 `enablePreview`, Surefire의 `--enable-preview`, Javadoc의 preview 옵션 및 `.mvn/jvm.config` 설정.
+
+이는 빌드의 대상 버전을 확인한 결과이다. Java 25 기반 예제의 이전 완료나 모든 도구의 Java 27 호환성을 의미하지 않는다.
+아래 항목은 기존 코드와 연결한 문서·구현 제안이며, 이 문서 작성 중 구현을 추가한 것은 아니다.
+
+== Release Changes
+
+[cols="1,3,4",options="header"]
+|===
+|JEP |Feature / Status |Change and relevance
+
+|https://openjdk.org/jeps/523[523]
+|Make G1 the Default Garbage Collector in All Environments
+|GC를 명시하지 않으면 작은 환경을 포함해 G1을 기본으로 선택한다. 명시적인 GC 선택은 계속 가능하다.
+
+|https://openjdk.org/jeps/527[527]
+|Post-Quantum Hybrid Key Exchange for TLS 1.3
+|전통적인 알고리즘과 양자 내성 알고리즘을 결합한 TLS 1.3 키 교환을 지원한다. `javax.net.ssl` 기반 연결의 검증에 연결한다.
+
+|https://openjdk.org/jeps/531[531]
+|Lazy Constants — Third Preview
+|`isInitialized`, `orElse`를 제거하고 `Set.ofLazy(...)`를 추가한다. Java 25의 `StableValue`와 직접 호환되는 API로 설명하면 안 된다.
+
+|https://openjdk.org/jeps/532[532]
+|Primitive Types in Patterns, instanceof, and switch — Fifth Preview
+|Java 26의 네 번째 preview를 변경 없이 다시 preview한다. 정식 언어 기능이 된 것은 아니다.
+
+|https://openjdk.org/jeps/533[533]
+|Structured Concurrency — Seventh Preview
+|Scope/Joiner의 예외 타입 매개변수, timeout과 join 정책 등의 API가 바뀐다. 기존 구조적 동시성 구현을 우선 검토한다.
+
+|https://openjdk.org/jeps/534[534]
+|Compact Object Headers by Default
+|64비트 HotSpot에서 compact object headers를 기본으로 사용한다. 객체 헤더가 96비트에서 64비트로 줄어든다.
+
+|https://openjdk.org/jeps/536[536]
+|JFR In-Process Data Redaction
+|명령행 인자와 초기 환경변수·시스템 속성의 민감한 값을 프로세스 내부에서 가리고 기록한다.
+
+|https://openjdk.org/jeps/537[537]
+|Vector API — Twelfth Incubator
+|API 변경 없이 재인큐베이션한다. ARM/RISC-V vector math에 쓰는 SLEEF 라이브러리도 갱신한다.
+
+|https://openjdk.org/jeps/538[538]
+|PEM Encodings of Cryptographic Objects — Third Preview
+|PEM 표현 타입, binary encoding 인터페이스, provider 지정 및 복호화 API 등을 변경한다.
+|===
+
+이 표는 Java 27의 출시 JEP 목록이며, 모든 버그 수정이나 API 차이를 대신하지 않는다.
+특히 preview와 incubator 표시는 정식 API와 구분해서 유지한다.
+Value Classes나 Code Reflection을 위 출시 목록에 근거 없이 추가하지 않는다.
+
+== Migration Priorities
+
+=== Structured Concurrency
+
+우선 확인할 파일은 `01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/StructuredConcurrencyHelloWorld.java`와
+`AsynchronousHelloWorlds.java`이다. 기존 구현은 호출마다 virtual thread에서 scope를 열고,
+`Joiner.allUntil(...)`로 mapper 작업을 기다린 뒤 handler 또는 `CompletionStage`에 결과를 전달한다.
+
+https://openjdk.org/jeps/533[JEP 533]에 따른 Java 26 → 27의 주요 차이는 다음과 같다.
+
+* `StructuredTaskScope`와 `Joiner`에 `join()`이 던질 예외를 표현하는 세 번째 타입 매개변수 `R_X`가 추가된다.
+* 기본 join 정책과 `UnaryOperator` 설정 함수를 함께 사용하는 `open` overload가 추가된다.
+* `allSuccessfulOrThrow`, `anySuccessfulOrThrow`, `awaitAllSuccessfulOrThrow`의 기본 실패 예외는 `ExecutionException`이다. 예외 변환 함수를 받는 overload도 있다.
+* `Joiner.awaitAll()`이 제거된다.
+* `Joiner.onTimeout()`이 `timeout()`으로 대체되고 timeout 결과·예외 처리 규칙이 바뀐다.
+
+현재 파일은 `var`와 factory를 사용하므로 타입 매개변수가 추가되었다는 이유만으로 모든 선언을 수정할 필요는 없다.
+사용 중인 factory의 실제 시그니처와 실패·timeout 결과를 JDK 27에서 확인한다.
+현재 사용하지 않는 `awaitAll()`이나 사용자 정의 Joiner를 이미 사용 중인 것처럼 기술하지 않는다.
+
+추가할 검증은 다음과 같다.
+
+* Mapper 정상 완료 및 예외 발생 시 handler가 정확히 한 번 호출되는지 확인한다. Handler 자체가 예외를 던지는 경우도 포함한다.
+* Timeout과 interruption에서 호출자에게 전달되는 예외 및 원인을 확인하고, subtask 종료를 관찰한다.
+* 반환한 `CompletionStage`의 취소가 실제 작업까지 전달되는지 별도로 확인한다. 현재 구조만으로 자동 전파를 보장하지 않는다.
+* 하나의 mapper를 fork하는 현재 예제에 더해, 관련 작업 두 개를 함께 fork하여 실패 시 나머지 작업을 정리하는 예제를 추가한다.
+
+기존 `StructuredConcurrencyHelloWorld_ApplyAsync_Mapper_*` 및 `_java_nio_channels`, `_java_nio_file`의 테스트와 연결한다.
+교재에는 `ExecutorHelloWorld`와 scope의 수명, 작업 소유권, 취소의 차이를 함께 설명한다.
+
+=== Preview API Evolution
+
+Lazy Constants는 Java 25의 `StableValue` → Java 26의 `LazyConstant` → Java 27의 세 번째 preview 순서로 설명한다.
+Java 27 예제에서는 제거된 `isInitialized`와 `orElse`를 사용하지 않고, 지연 값과 `List`/`Map`/`Set`의 지연 factory를 비교한다.
+초기화 시점과 동시 접근을 관찰하되, greeting 한 번의 실행만으로 성능 이점을 주장하지 않는다.
+구체적인 API 변경 근거는 https://openjdk.org/jeps/531[JEP 531]이다.
+
+PEM 예제를 추가할 때는 https://openjdk.org/jeps/538[JEP 538]의 변경을 반영한다.
+`PEM`은 record에서 일반 클래스로 바뀌며 Base64 byte array를 받는 생성자가 추가된다.
+`DEREncodable`은 `BinaryEncodable`로, `PEMDecoder.withFactory`는 `withFactoriesOf`로 바뀐다.
+`EncryptedPrivateKeyInfo`의 복호화 메서드 및 새 `CryptoException`도 확인한다.
+Java 25/26의 시그니처를 Java 27 예제로 그대로 복사하지 않는다.
+
+기존 `_java_security`, `_javax_crypto`의 키·인증서 예제와 연결하여 PEM 왕복 변환 및 잘못된 입력을 검증한다.
+여러 암호화 예제가 이미 존재하므로 모든 암호화 API를 Java 27 신규 기능으로 소개하지 않는다.
+
+=== Runtime Defaults and Diagnostics
+
+https://openjdk.org/jeps/523[JEP 523]은 작은 컨테이너나 제한된 환경의 기본 GC 선택에도 영향을 준다.
+예전 실행 결과가 Serial GC를 전제로 한다면 명시적 GC 설정과 기본 설정의 차이를 기록한다.
+G1 이외 GC가 제거된 것으로 설명하지 않는다.
+
+https://openjdk.org/jeps/534[JEP 534]의 compact headers는 Java 25에서 이미 정식 기능이었으며,
+Java 27의 변화는 기본 활성화이다. 객체 크기는 정렬과 필드 배치에도 좌우되므로
+모든 객체가 정확히 4바이트 작아진다거나 전체 heap이 일정 비율로 줄어든다고 단정하지 않는다.
+선택적 실험에서 `-XX:+UseCompactObjectHeaders`와 `-XX:-UseCompactObjectHeaders`를 비교할 수 있다.
+
+https://openjdk.org/jeps/536[JEP 536]과 연결하여 작은 JFR 기록 예제를 추가한다.
+민감한 값 대신 테스트용 문자열을 환경변수·시스템 속성·인자에 넣고 `jfr print`로 가림 결과를 확인한다.
+`-XX:FlightRecorderOptions`의 `redact-key`, `redact-argument` 설정 예제를 포함한다.
+이 기능이 애플리케이션 로그나 사용자 정의 JFR 이벤트의 모든 민감한 데이터를 자동으로 가린다고 설명하지 않는다.
+
+== Suggested Additions
+
+[cols="1,2,4",options="header"]
+|===
+|Priority |Topic / Existing location |Suggested addition
+
+|P1
+|Structured concurrency / `hello.api`
+|JDK 27 시그니처 확인, 실패·timeout·취소·handler 예외의 회귀 검증, 관련 작업 여러 개를 묶는 예제.
+
+|P1
+|Lazy Constants / `hello.miscellaneous`
+|Java 25/26/27 API 차이 표와 Java 27 기준의 지연 초기화 예제. 공유 가변 데이터와 상수의 차이도 설명한다.
+
+|P1
+|Primitive patterns / `hello.miscellaneous`
+|Java 26에서 강화된 exactness/dominance 예제를 재사용한다. Java 27에서 새로 문법이 바뀐 것으로 설명하지 않는다.
+
+|P2
+|TLS 1.3 / 기존 networking·crypto 예제
+|지원되는 두 endpoint 사이에서 hybrid key exchange와 호환 가능한 상대와의 동작을 확인하는 선택적 통합 예제.
+
+|P2
+|PEM / `_java_security`, `_javax_crypto`
+|Java 27 API로 키·인증서를 왕복 변환하고, 실패 예외와 provider 선택을 검증한다.
+
+|P2
+|JFR / 별도 실행 예제
+|테스트용 민감한 값의 가림을 기록 파일에서 검증한다. 기본 필터와 사용자 지정 필터를 비교한다.
+
+|P3
+|GC / Object layout / Vector
+|GC 선택 로그, header 설정 비교, 선택적 Vector workload를 별도 실험으로 추가한다. 환경과 측정 조건을 함께 기록한다.
+|===
+
+TLS 항목은 https://openjdk.org/jeps/527[JEP 527]의 TLS 1.3 hybrid key exchange이다.
+양자 내성 알고리즘을 직접 호출하는 기존 JCA 예제와 실제 TLS 협상을 구분한다.
+모든 서버와의 연결에서 hybrid 방식이 선택된다고 가정하지 않는다.
+
+Vector API는 https://openjdk.org/jeps/537[JEP 537]에서도 incubator이므로
+`jdk.incubator.vector` 모듈을 선택적 예제에 명시한다. `--enable-preview`와 모듈 활성화는 서로 다른 설정이다.
+
+== Completion Checklist
+
+. 실제 Maven 실행 JDK와 compiler release가 27인지 확인한 뒤 전체 모듈을 clean build한다. Java 25/26 preview 산출물은 다시 컴파일한다.
+. 기존 단위 테스트 및 새 예제를 검증하고 DI/CDI profile도 실행한다.
+. Lombok, Mockito와 Byte Buddy, AspectJ, coverage 도구 및 annotation processor가 실제 사용 버전에서 JDK 27 class file을 처리하는지 확인한다.
+. Javadoc과 교재를 생성하여 API 링크, preview 표시, 코드 발췌가 일치하는지 확인한다.
+. `03-verbose-hello-world-app/src/test/shell/`과 `_app.sh`의 실행 JAR, module path 및 별도 JVM 실행을 확인한다. Preview 클래스를 로드하는 각 JVM에는 별도의 preview 옵션이 필요하다.
+. HTTP/3·TLS 통합 예제와 성능 실험은 필요한 서버·네트워크·측정 환경을 마련한 뒤 실행한다.
+
+버전 설정이 이미 27이라는 이유만으로 위 항목을 완료 처리하지 않는다.
+이 문서 작성에서는 Java 소스, POM, CI 설정을 변경하지 않았으며 Java 빌드·테스트 결과를 주장하지 않는다.

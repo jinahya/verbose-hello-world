@@ -88,14 +88,14 @@ class HelloWorld_Accept_Consumer_Mapper_Test extends HelloWorld__Test {
     @SuppressWarnings("unchecked")
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes();
         final var consumer = mock(Consumer.class);
         final var mapper = mock(Function.class);
         doAnswer(i -> "m:" + i.getArgument(0)).when(mapper).apply(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.accept(consumer, mapper);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         final var inOrder = inOrder(mapper, consumer);
         for (final var b : array) {
             inOrder.verify(mapper, calls(1)).apply(b);

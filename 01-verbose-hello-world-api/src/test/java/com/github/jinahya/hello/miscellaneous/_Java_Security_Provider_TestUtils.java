@@ -22,7 +22,6 @@ package com.github.jinahya.hello.miscellaneous;
 
 import lombok.extern.slf4j.*;
 import org.bouncycastle.jce.provider.*;
-import org.jspecify.annotations.*;
 
 import java.security.*;
 import java.util.*;
@@ -73,7 +72,7 @@ class _Java_Security_Provider_TestUtils {
     }
 
     static void printProvidersServicesAndAlgorithms(final long providerLimit,
-                                                    final @Nullable String serviceType,
+                                                    final String serviceType,
                                                     final long serviceLimit,
                                                     final long algorithmLimit) {
         securityProviders().limit(providerLimit).forEach(p -> {

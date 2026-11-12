@@ -60,7 +60,7 @@ class HelloWorld_Append_File__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws IOException {
-        append_file_appends_hello_world(service());
+        append_file_appends_hello_world();
     }
 
     // ---------------------------------------------------------------------------------------------

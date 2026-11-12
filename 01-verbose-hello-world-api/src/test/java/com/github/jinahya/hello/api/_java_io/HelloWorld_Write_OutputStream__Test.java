@@ -67,7 +67,7 @@ class HelloWorld_Write_OutputStream__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __() throws IOException {
-        write_outputstream_writes_hello_world_bytes(service());
+        write_outputstream_writes_hello_world_bytes();
     }
 
     // ---------------------------------------------------------------------------------------------

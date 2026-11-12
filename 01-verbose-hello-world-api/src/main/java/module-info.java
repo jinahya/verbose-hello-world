@@ -25,7 +25,6 @@
  * built on top of it.
  */
 module com.github.jinahya.hello.api {
-    requires transitive org.jspecify;
     requires java.net.http;
     requires java.sql;
     requires java.desktop;

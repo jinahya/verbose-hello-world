@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous._javax_crypto;
  */
 
 import lombok.extern.slf4j.*;
-import org.jspecify.annotations.*;
 
 import javax.crypto.*;
 import java.security.*;
@@ -60,7 +59,7 @@ public final class _Javax_Crypto_TestUtils {
      * @throws NoSuchAlgorithmException if no provider supports the given {@code algorithm}.
      */
     public static SecretKey generateSecretKey(final String algorithm,
-                                              final @Nullable Integer keysize)
+                                              final Integer keysize)
             throws NoSuchAlgorithmException {
         final var generator = KeyGenerator.getInstance(algorithm);
         if (keysize != null) {

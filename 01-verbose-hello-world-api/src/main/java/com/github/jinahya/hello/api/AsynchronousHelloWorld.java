@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.*;
-
 import java.io.*;
 import java.lang.invoke.*;
 import java.net.http.*;
@@ -115,7 +113,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * built. Its {@link CompletionStage}-based counterpart is {@link #applyAsync(Function)}.
      */
     <R, A> void applyAsync(Function<? super T, ? extends R> mapper,
-                           @Nullable A attachment,
+                           A attachment,
                            CompletionHandler<? super R, ? super A> handler);
 
     // ------------------------------------------------------------------------------- java.net.http
@@ -292,7 +290,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #applyAsync(Function)
      */
     default <C extends AsynchronousByteChannel, A> void write_(
-            final C channel, @Nullable final A attachment,
+            final C channel, final A attachment,
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -343,7 +341,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #applyAsync(Function, Object, CompletionHandler)
      */
     default <C extends AsynchronousByteChannel, A> void write(
-            final C channel, @Nullable final A attachment,
+            final C channel, final A attachment,
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -390,7 +388,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #write(AsynchronousByteChannel, Object, CompletionHandler)
      */
     default <A> CompletionStage<A> write(final AsynchronousByteChannel channel,
-                                         final @Nullable A attachment) {
+                                         final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         final var future = new CompletableFuture<A>();
         write(channel, attachment, new CompletionHandler<>() { // @formatter:off
@@ -436,7 +434,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #applyAsync(Function)
      */
     default <C extends AsynchronousFileChannel, A> void write_(
-            final C channel, final long position, final @Nullable A attachment,
+            final C channel, final long position, final A attachment,
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
@@ -495,7 +493,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #applyAsync(Function, Object, CompletionHandler)
      */
     default <C extends AsynchronousFileChannel, A> void write(
-            final C channel, final long position, final @Nullable A attachment,
+            final C channel, final long position, final A attachment,
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
@@ -548,7 +546,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
      */
     default <A> CompletionStage<A> write(final AsynchronousFileChannel channel,
-                                         final long position, final @Nullable A attachment) {
+                                         final long position, final A attachment) {
         Objects.requireNonNull(channel, "channel is null");
         if (position < 0L) {
             throw new IllegalArgumentException("position(" + position + ") is negative");
@@ -596,7 +594,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #write(AsynchronousFileChannel, long, Object, CompletionHandler)
      */
     default <P extends Path, A>
-    void append(final P path, final @Nullable A attachment,
+    void append(final P path, final A attachment,
                 final CompletionHandler<? super P, ? super A> handler) {
         Objects.requireNonNull(path, "path is null");
         Objects.requireNonNull(handler, "handler is null");
@@ -660,7 +658,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @see #append(Path, Object, CompletionHandler)
      */
     default <A>
-    CompletionStage<A> append(final Path path, final @Nullable A attachment) { // @formatter:off
+    CompletionStage<A> append(final Path path, final A attachment) { // @formatter:off
         Objects.requireNonNull(path, "path is null");
         final var future = new CompletableFuture<A>();
         append(path, attachment, new CompletionHandler<>() {

@@ -80,7 +80,6 @@ When auditing or analyzing `HelloWorld.java`, treat **only the active (executed)
 
 - **Java 27** with preview features enabled (`--enable-preview` configured in compiler, surefire, and `.mvn/jvm.config`)
 - **Maven 3.6.3+** (wrapper included: `./mvnw`)
-- `.mvn/jvm.config` exports internal compiler modules for Error Prone annotation processing
 - `.mvn/maven.config` enables ByteBuddy experimental mode (`-Dnet.bytebuddy.experimental=true`) required by Mockito
 
 ## Module Architecture
@@ -165,8 +164,7 @@ The `generate-executables` profile (active by default) produces multiple artifac
 ## Key Conventions
 
 - Java Module System (`module-info.java`) is used across modules
-- Annotation processors: Lombok, Error Prone, NullAway
-- Null safety: JSpecify annotations (`@NullMarked`, `@Nullable`)
+- Annotation processor: Lombok
 - Custom annotations `@屋上架屋` and `@屋下架屋` are used as code documentation markers
 - Logging: SLF4J API with Logback runtime, plus `jul-to-slf4j` bridge
 

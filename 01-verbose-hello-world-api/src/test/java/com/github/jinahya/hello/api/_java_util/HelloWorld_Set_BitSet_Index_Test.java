@@ -79,13 +79,13 @@ class HelloWorld_Set_BitSet_Index_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes();
         final var bitset = spy(new BitSet(HelloWorld.BYTES << 3));
         final var index = 0;
         // ------------------------------------------------------------------------------------ when
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         assertArrayEquals(array, bitset.toByteArray());
         assertSame(bitset, result);
     }

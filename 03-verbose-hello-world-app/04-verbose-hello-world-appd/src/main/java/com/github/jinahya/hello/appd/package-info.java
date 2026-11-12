@@ -7,14 +7,9 @@
  * {@code hello, world} through a
  * {@link com.github.jinahya.hello.api.HelloWorldArrayPublisher HelloWorldArrayPublisher}
  * ({@link java.util.concurrent.Flow Reactive Streams}).
- * <p>
- * The whole package is {@linkplain org.jspecify.annotations.NullMarked null-marked} — references
- * default to non-null unless explicitly annotated
- * {@link org.jspecify.annotations.Nullable &#64;Nullable}.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-@org.jspecify.annotations.NullMarked
 package com.github.jinahya.hello.appd;
 
 /*-

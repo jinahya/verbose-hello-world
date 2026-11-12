@@ -20,8 +20,6 @@ package com.github.jinahya.hello.api;
  * #L%
  */
 
-import org.jspecify.annotations.*;
-
 import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -91,7 +89,7 @@ public final class ExecutorHelloWorld<T extends HelloWorld>
      */
     @Override
     public <R, A> void applyAsync(final Function<? super T, ? extends R> mapper,
-                                  final @Nullable A attachment,
+                                  final A attachment,
                                   final CompletionHandler<? super R, ? super A> handler) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(handler, "handler is null");

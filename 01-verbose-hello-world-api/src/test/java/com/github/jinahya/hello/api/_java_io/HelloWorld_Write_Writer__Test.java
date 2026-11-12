@@ -83,7 +83,7 @@ class HelloWorld_Write_Writer__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws IOException {
-        write_writer_writes_hello_world_string(service());
+        write_writer_writes_hello_world_string();
     }
 
     // ---------------------------------------------------------------------------------------------

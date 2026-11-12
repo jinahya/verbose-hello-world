@@ -93,7 +93,7 @@ class HelloWorld_SetCharacterStream_Clob_Long_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = write_writer_writes_hello_world_string(service());
+        final var service = write_writer_writes_hello_world_string();
         final var sink = new StringWriter();
         final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);

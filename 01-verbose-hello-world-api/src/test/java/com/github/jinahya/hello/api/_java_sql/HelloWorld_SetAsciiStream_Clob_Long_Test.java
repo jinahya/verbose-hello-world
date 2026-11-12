@@ -93,7 +93,7 @@ class HelloWorld_SetAsciiStream_Clob_Long_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = write_outputstream_writes_hello_world_bytes(service());
+        final var service = write_outputstream_writes_hello_world_bytes();
         final var sink = new ByteArrayOutputStream();
         final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);

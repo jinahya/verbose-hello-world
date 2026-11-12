@@ -66,9 +66,6 @@
     <version.com.google.dagger>2.60.1</version.com.google.dagger>
     <!--    <version.com.google.guava>33.3.1-jre</version.com.google.guava>-->
     <version.com.google.guava>33.8.0-jre</version.com.google.guava>
-    <!-- https://central.sonatype.com/artifact/com.google.errorprone/error_prone_core/versions -->
-    <version.com.google.errorprone>2.52.0</version.com.google.errorprone>
-    <version.com.uber.nullaway>0.14.3</version.com.uber.nullaway>
     <version.maven-surefire>3.6.1</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
@@ -94,7 +91,6 @@
     <version.org.jboss.weld-junit>5.0.3.Final</version.org.jboss.weld-junit> <!-- weld-junit5; for weld 6 -->
     <!-- https://central.sonatype.com/artifact/org.jboss.weld.se/weld-se-core/versions -->
     <version.org.jboss.weld.se>6.0.4.Final</version.org.jboss.weld.se> <!-- weld-se-core; cdi 4.1 (jakarta ee 11) -->
-    <version.org.jspecify>1.0.1</version.org.jspecify>
     <!-- https://central.sonatype.com/artifact/org.junit/junit-bom/versions -->
     <version.org.junit>6.1.3</version.org.junit>
     <version.org.junit.jupiter>${version.org.junit}</version.org.junit.jupiter>
@@ -185,11 +181,6 @@
         <version>${version.com.google.dagger}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.errorprone</groupId>
-        <artifactId>error_prone_core</artifactId>
-        <version>${version.com.google.errorprone}</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava-bom</artifactId>
         <version>${version.com.google.guava}</version>
@@ -228,12 +219,6 @@
         <version>2.8.8</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.uber.nullaway</groupId>
-        <artifactId>nullaway</artifactId>
-        <!-- https://central.sonatype.com/artifact/com.uber.nullaway/nullaway/versions -->
-        <version>${version.com.uber.nullaway}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -393,11 +378,6 @@
         <version>${version.org.jboss.weld.se}</version>
       </dependency>
       <dependency>
-        <groupId>org.jspecify</groupId>
-        <artifactId>jspecify</artifactId>
-        <version>${version.org.jspecify}</version>
-      </dependency>
-      <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
         <version>${version.org.projectlombok}</version>
@@ -527,23 +507,9 @@
             <enablePreview>true</enablePreview>
             <compilerArgs>
               <!--              <arg>-Xlint</arg>-->
-              <!--              <arg>-XDcompilePolicy=simple</arg>-->
-              <!--              <arg>&#45;&#45;should-stop=ifError=FLOW</arg>-->
-              <!--              &lt;!&ndash; https://github.com/google/error-prone/issues/5354 &ndash;&gt;-->
-              <!--              &lt;!&ndash;              <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true</arg>&ndash;&gt;-->
               <!--              <arg>-Xlint:preview</arg>-->
             </compilerArgs>
             <annotationProcessorPaths>
-              <path>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>${version.com.google.errorprone}</version>
-              </path>
-              <path>
-                <groupId>com.uber.nullaway</groupId>
-                <artifactId>nullaway</artifactId>
-                <version>${version.com.uber.nullaway}</version>
-              </path>
               <path>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -638,7 +604,6 @@
               <!--              <link>https://static.javadoc.io/org.junit.jupiter/junit-jupiter-api/${version.org.junit.jupiter}</link>-->
               <link>https://jakarta.ee/specifications/platform/11/apidocs/</link>
               <link>https://docs.junit.org/${version.org.junit}/api/</link>
-              <link>https://javadoc.io/doc/org.jspecify/jspecify/${version.org.jspecify}</link>
               <link>https://javadoc.io/doc/org.mockito/mockito-core/${version.org.mockito}</link>
               <link>https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc</link>
             </links>

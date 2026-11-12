@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import com.github.jinahya.hello.api.annotations.*;
-import org.jspecify.annotations.*;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -84,7 +83,7 @@ public final class _Javax_Crypto_Cipher_TestUtils {
     }
 
     public record Symmetric(SecretKey secretKey, Cipher cipher, AlgorithmParameterSpec params,
-                            byte @Nullable [] aad) {
+                            byte[] aad) {
 
     }
 

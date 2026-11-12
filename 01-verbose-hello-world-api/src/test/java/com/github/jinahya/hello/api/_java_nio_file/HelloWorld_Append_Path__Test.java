@@ -57,7 +57,7 @@ class HelloWorld_Append_Path__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void beforeEach() throws IOException {
-        append_path_appends_hello_world(service());
+        append_path_appends_hello_world();
     }
 
     /**

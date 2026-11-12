@@ -92,14 +92,14 @@ class HelloWorld_Add_SequencedCollection_Function_Test extends HelloWorld__Test 
     @SuppressWarnings("unchecked")
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes(service());
+        final var service = set_array_sets_random_bytes();
         final var collection = mock(SequencedCollection.class);
         final var mapper = mock(Function.class);
         doAnswer(i -> i.getArgument(0)).when(mapper).apply(any());
         // ------------------------------------------------------------------------------------ when
         final var result = service.add(collection, mapper);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         final var inOrder = inOrder(mapper, collection);
         for (final var b : array) {
             inOrder.verify(mapper, calls(1)).apply(b);

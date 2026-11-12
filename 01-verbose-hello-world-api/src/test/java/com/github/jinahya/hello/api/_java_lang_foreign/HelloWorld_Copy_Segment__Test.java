@@ -51,7 +51,7 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() {
-        set_array_sets_hello_world_bytes(service());
+        set_array_sets_hello_world_bytes();
     }
 
     // -------------------------------------------------------------------------------------- C/libc

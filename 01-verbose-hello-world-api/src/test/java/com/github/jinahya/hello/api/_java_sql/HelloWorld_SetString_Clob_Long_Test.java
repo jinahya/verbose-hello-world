@@ -88,13 +88,13 @@ class HelloWorld_SetString_Clob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_hello_world_bytes(service());
+        final var service = set_array_sets_hello_world_bytes();
         final var clob = mock(Clob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setString(clob, pos);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         verify(clob, times(1)).setString(pos, hello_world_string());
         assertSame(clob, result);
     }

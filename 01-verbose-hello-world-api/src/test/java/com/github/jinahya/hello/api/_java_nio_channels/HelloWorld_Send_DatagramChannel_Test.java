@@ -109,7 +109,7 @@ class HelloWorld_Send_DatagramChannel_Test extends HelloWorld__Test {
     @Test
     void __ChannelIsNotBlocking() throws IOException {
         // ----------------------------------------------------------------------------------- given
-        final var service = write_writablebytechannel_returns_channel(service());
+        final var service = write_writablebytechannel_returns_channel();
         final var channel = mock(DatagramChannel.class);
         doReturn(true).when(channel).isConnected();
         doReturn(false).when(channel).isBlocking();

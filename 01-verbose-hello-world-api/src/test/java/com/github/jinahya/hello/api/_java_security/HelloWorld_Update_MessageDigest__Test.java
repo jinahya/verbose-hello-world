@@ -29,7 +29,6 @@ import lombok.extern.slf4j.*;
 import org.apache.commons.io.*;
 import org.bouncycastle.crypto.digests.*;
 import org.bouncycastle.jce.provider.*;
-import org.jspecify.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
 import org.junit.jupiter.params.*;
@@ -86,8 +85,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws IOException {
-        write_outputstream_writes_hello_world_bytes(service());
-        set_array_sets_hello_world_bytes(service());
+        write_outputstream_writes_hello_world_bytes();
+        set_array_sets_hello_world_bytes();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -114,7 +113,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      * @param algorithm 알고리즘 이름. ({@code "SHA-256"} 등.)
      * @param provider  공급자 이름. {@code null} 이면 기본 공급자({@code SUN}) 를 쓴다.
      */
-    void __(final String algorithm, final @Nullable String provider)
+    void __(final String algorithm, final String provider)
             throws GeneralSecurityException {
         final var digest = provider != null
                            ? MessageDigest.getInstance(algorithm, provider)
@@ -287,7 +286,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
                 service().write(dos).flush();
                 try (var dis = new DigestInputStream(hello_world_inputstream(),
                                                      MessageDigest.getInstance(algorithm))) {
-                    IOUtils.consume(dis);
+                    dis.transferTo(OutputStream.nullOutputStream());
                     assertArrayEquals(dos.getMessageDigest().digest(),
                                       dis.getMessageDigest().digest());
                 }

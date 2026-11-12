@@ -356,7 +356,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
     @Test
     void __BufferDoesNotHaveBackingArray() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array(service());
+        final var service = set_array_returns_the_array();
         final var buffer = spy(
                 slice(ByteBuffer.allocateDirect(HelloWorld.BYTES << 1), HelloWorld.BYTES)
         );
@@ -366,7 +366,7 @@ class HelloWorld_Put_ByteBuffer_Test extends HelloWorld__Test {
         // ------------------------------------------------------------------------------------ when
         final var result = service.put(buffer);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
 //        verify(buffer, times(1)).put(array);
         assertSame(buffer, result);
     }

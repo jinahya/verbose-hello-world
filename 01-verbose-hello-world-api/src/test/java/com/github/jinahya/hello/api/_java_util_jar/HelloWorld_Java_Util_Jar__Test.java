@@ -52,7 +52,7 @@ class HelloWorld_Java_Util_Jar__Test extends HelloWorld__Test {
     // ---------------------------------------------------------------------------------------------
     @BeforeEach
     void __() throws IOException {
-        write_stream_writes_hello_world_bytes(service());
+        write_stream_writes_hello_world_bytes();
     }
 
     // ---------------------------------------------------------------------------------------------

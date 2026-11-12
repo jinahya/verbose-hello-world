@@ -97,13 +97,13 @@ class HelloWorld_SetBytes_PreparedStatement_Int_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array(service());
+        final var service = set_array_returns_the_array();
         final var preparedStatement = mock(PreparedStatement.class);
         final var parameterIndex = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBytes(preparedStatement, parameterIndex);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         verify(preparedStatement, times(1)).setBytes(parameterIndex, array);
         assertSame(preparedStatement, result);
     }

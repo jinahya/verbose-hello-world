@@ -74,12 +74,12 @@ class HelloWorld_Update_Signature_Test
     @Test
     void __() throws Exception {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array(service());
+        final var service = set_array_returns_the_array();
         final var signature = mock(Signature.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(signature);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once(service);
+        final var array = set_array12_invoked_once();
         verify(signature, times(1)).update(array);
         assertEquals(signature, result);
     }

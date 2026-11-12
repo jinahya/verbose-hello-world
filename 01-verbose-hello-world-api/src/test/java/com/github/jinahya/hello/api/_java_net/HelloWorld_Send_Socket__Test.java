@@ -63,7 +63,7 @@ class HelloWorld_Send_Socket__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __() throws IOException {
-        send_socket_sends_hello_world_bytes(service());
+        send_socket_sends_hello_world_bytes();
     }
 
     // ---------------------------------------------------------------------------------------------

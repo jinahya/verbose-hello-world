@@ -56,7 +56,7 @@ class HelloWorld_Cipher__Test extends HelloWorld__Test {
     @BeforeEach
     @SuppressWarnings({"unchecked"})
     void __subService() throws IOException {
-        write_outputstream_writes_hello_world_bytes(service());
+        write_outputstream_writes_hello_world_bytes();
 //        doAnswer(i -> {
 //            final var cipher = i.getArgument(0, Cipher.class);
 //            final var consumer = i.getArgument(1, Consumer.class);

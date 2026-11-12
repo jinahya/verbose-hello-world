@@ -77,7 +77,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
     @SuppressWarnings({"rawtypes"})
     void __() throws InterruptedException, ExecutionException {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer12_increases_buffer_position_by_12(service());
+        final var service = put_buffer12_increases_buffer_position_by_12();
         final var channel = mock(AsynchronousByteChannel.class);
         final var bufferPositions = new ArrayList<Integer>();
         final var futureReference = new AtomicReference<Future>();
@@ -101,7 +101,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(channel);
         // ------------------------------------------------------------------------------------ then
-        final var buffer = put_buffer12_invoked_once(service);
+        final var buffer = put_buffer12_invoked_once();
 //        verify(channel, atLeastOnce()).write(buffer);
 //        verifyNoMoreInteractions(channel);
 //        assertEquals(0, bufferPositions.getFirst());
@@ -122,7 +122,7 @@ class HelloWorld_Write_AsynchronousByteChannel_Test extends HelloWorld__Test {
     @SuppressWarnings({"rawtypes"})
     void __fails() {
         // ----------------------------------------------------------------------------------- given
-        final var service = put_buffer12_increases_buffer_position_by_12(service());
+        final var service = put_buffer12_increases_buffer_position_by_12();
         final var channel = mock(AsynchronousByteChannel.class);
         final var reference = new AtomicReference<Future>();
         final var cause = new IOException("simulated write failure");
