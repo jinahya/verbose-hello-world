@@ -30,6 +30,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
+import static com.github.jinahya.hello.api.HelloWorldUtils.*;
+
 /**
  * An interface for writing the
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> asynchronously through various
@@ -141,7 +143,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default CompletionStage<WebSocket> sendBinary(final WebSocket socket, final boolean last) {
         Objects.requireNonNull(socket, "socket is null");
-        return applyAsync(s -> HelloWorldUtils.buffer(s).flip())
+        return applyAsync(s -> buffer(s).flip())
                 .thenCompose(b -> socket.sendBinary(b, last));
     }
 
@@ -169,8 +171,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default CompletionStage<WebSocket> sendPing(final WebSocket socket) {
         Objects.requireNonNull(socket, "socket is null");
-        return applyAsync(s -> HelloWorldUtils.buffer(s).flip())
-                .thenCompose(socket::sendPing);
+        return applyAsync(s -> buffer(s).flip()).thenCompose(socket::sendPing);
     }
 
     /**
@@ -197,8 +198,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default CompletionStage<WebSocket> sendPong(final WebSocket socket) {
         Objects.requireNonNull(socket, "socket is null");
-        return applyAsync(s -> HelloWorldUtils.buffer(s).flip())
-                .thenCompose(socket::sendPong);
+        return applyAsync(s -> buffer(s).flip()).thenCompose(socket::sendPong);
     }
 
     /**
@@ -252,9 +252,8 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
         Objects.requireNonNull(function, "function is null");
         Objects.requireNonNull(client, "client is null");
         Objects.requireNonNull(handler, "handler is null");
-        return applyAsync(
-                s -> HttpRequest.BodyPublishers.ofByteArray(HelloWorldUtils.array(s))
-        ).thenApply(function).thenCompose(r -> client.sendAsync(r, handler));
+        return applyAsync(s -> HttpRequest.BodyPublishers.ofByteArray(array(s)))
+                .thenApply(function).thenCompose(r -> client.sendAsync(r, handler));
     }
 
     // --------------------------------------------------------------------------- java.nio.channels
@@ -287,22 +286,20 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(s -> HelloWorldUtils.buffer(s).flip()).whenComplete((b, t) -> {
+        applyAsync(s -> buffer(s).flip()).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
             }
             channel.write(b, attachment, new CompletionHandler<>() { // @formatter:off
-                @Override
-                public void completed(final Integer result, final A attachment) {
+                @Override public void completed(final Integer result, final A attachment) {
                     if (b.hasRemaining()) {
                         channel.write(b, attachment, this);
                         return;
                     }
                     handler.completed(channel, attachment);
                 }
-                @Override
-                public void failed(final Throwable exc, final A attachment) {
+                @Override public void failed(final Throwable exc, final A attachment) {
                     handler.failed(exc, attachment);
                 } // @formatter:on
             });
@@ -338,26 +335,22 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(s -> HelloWorldUtils.buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
-            @Override
-            public void completed(final ByteBuffer b, final A attachment) {
+        applyAsync(s -> buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
+            @Override public void completed(final ByteBuffer b, final A attachment) {
                 channel.write(b, attachment, new CompletionHandler<>() {
-                    @Override
-                    public void completed(final Integer result, final A attachment) {
+                    @Override public void completed(final Integer result, final A attachment) {
                         if (b.hasRemaining()) {
                             channel.write(b, attachment, this);
                             return;
                         }
                         handler.completed(channel, attachment);
                     }
-                    @Override
-                    public void failed(final Throwable exc, final A attachment) {
+                    @Override public void failed(final Throwable exc, final A attachment) {
                         handler.failed(exc, attachment);
                     }
                 });
             }
-            @Override
-            public void failed(final Throwable exc, final A attachment) {
+            @Override public void failed(final Throwable exc, final A attachment) {
                 handler.failed(exc, attachment);
             } // @formatter:on
         });
@@ -434,7 +427,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(s -> HelloWorldUtils.buffer(s).flip()).whenComplete((b, t) -> {
+        applyAsync(s -> buffer(s).flip()).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
@@ -493,7 +486,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(s -> HelloWorldUtils.buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
+        applyAsync(s -> buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
             @Override
             public void completed(final ByteBuffer b, final A attachment) {
                 channel.write(b, position, position, new CompletionHandler<>() {
