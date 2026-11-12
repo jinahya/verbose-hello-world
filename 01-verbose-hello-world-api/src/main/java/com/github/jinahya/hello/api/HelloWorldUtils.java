@@ -106,8 +106,8 @@ public final class HelloWorldUtils {
      * {@linkplain CharsetDecoder#malformedInputAction() actions}.
      * <p>
      * The result reads {@code "hello, world"} only when the decoder's charset is ASCII-compatible
-     * (e.g., {@link StandardCharsets#US_ASCII US-ASCII}, {@link StandardCharsets#ISO_8859_1
-     * ISO-8859-1}, or {@link StandardCharsets#UTF_8 UTF-8}).
+     * (e.g., {@link StandardCharsets#US_ASCII US-ASCII},
+     * {@link StandardCharsets#ISO_8859_1 ISO-8859-1}, or {@link StandardCharsets#UTF_8 UTF-8}).
      *
      * @param service the {@link HelloWorld} service that produces the bytes.
      * @param decoder the decoder with which the bytes are decoded.
@@ -128,8 +128,9 @@ public final class HelloWorldUtils {
     /**
      * Returns a new {@link CharBuffer} containing the
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded in the specified
-     * charset, produced by invoking {@link #decode(HelloWorld, CharsetDecoder) decode(service,
-     * decoder)} with a {@linkplain Charset#newDecoder() new decoder} of the {@code charset}.
+     * charset, produced by invoking
+     * {@link #decode(HelloWorld, CharsetDecoder) decode(service, decoder)} with a
+     * {@linkplain Charset#newDecoder() new decoder} of the {@code charset}.
      * <p>
      * Unlike {@link Charset#decode(ByteBuffer) charset.decode(buffer)}, which replaces malformed or
      * unmappable input, a new decoder <em>reports</em> it, so this method throws a

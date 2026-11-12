@@ -141,9 +141,8 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default CompletionStage<WebSocket> sendBinary(final WebSocket socket, final boolean last) {
         Objects.requireNonNull(socket, "socket is null");
-        return applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).thenCompose(b -> socket.sendBinary(b, last));
+        return applyAsync(s -> HelloWorldUtils.buffer(s).flip())
+                .thenCompose(b -> socket.sendBinary(b, last));
     }
 
     /**
@@ -170,9 +169,8 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default CompletionStage<WebSocket> sendPing(final WebSocket socket) {
         Objects.requireNonNull(socket, "socket is null");
-        return applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).thenCompose(socket::sendPing);
+        return applyAsync(s -> HelloWorldUtils.buffer(s).flip())
+                .thenCompose(socket::sendPing);
     }
 
     /**
@@ -199,9 +197,8 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      */
     default CompletionStage<WebSocket> sendPong(final WebSocket socket) {
         Objects.requireNonNull(socket, "socket is null");
-        return applyAsync(
-                s -> s.put(ByteBuffer.allocate(HelloWorld.BYTES)).flip()
-        ).thenCompose(socket::sendPong);
+        return applyAsync(s -> HelloWorldUtils.buffer(s).flip())
+                .thenCompose(socket::sendPong);
     }
 
     /**
@@ -256,11 +253,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
         Objects.requireNonNull(client, "client is null");
         Objects.requireNonNull(handler, "handler is null");
         return applyAsync(
-                s -> {
-                    final var array = new byte[HelloWorld.BYTES];
-                    s.set(array);
-                    return HttpRequest.BodyPublishers.ofByteArray(array);
-                }
+                s -> HttpRequest.BodyPublishers.ofByteArray(HelloWorldUtils.array(s))
         ).thenApply(function).thenCompose(r -> client.sendAsync(r, handler));
     }
 
