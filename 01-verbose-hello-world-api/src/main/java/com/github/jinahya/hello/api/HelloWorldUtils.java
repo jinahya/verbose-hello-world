@@ -24,7 +24,6 @@ import java.net.*;
 import java.nio.*;
 import java.nio.charset.*;
 import java.util.*;
-import java.util.function.*;
 
 /**
  * Convenience methods that produce the
@@ -53,49 +52,25 @@ public final class HelloWorldUtils {
     }
 
     /**
-     * Returns a {@link ByteBuffer} containing the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>, produced by invoking
-     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} on the specified service with a buffer
-     * obtained from the specified supplier, and then {@linkplain ByteBuffer#flip() flipping} the
-     * result.
+     * Returns a new {@value HelloWorld#BYTES}-byte {@link ByteBuffer} on which the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> are put, produced by
+     * invoking {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} on the specified service with a
+     * freshly heap-allocated {@value HelloWorld#BYTES}-byte buffer.
      * <p>
-     * The buffer returned by {@code supplier.get()} is passed straight through to the service; this
-     * method does not inspect or validate it. Whatever the supplier returns — {@code null}, a
-     * buffer with fewer or more than {@value HelloWorld#BYTES}
-     * {@linkplain ByteBuffer#remaining() remaining} bytes, a read-only buffer, etc. — is the
-     * service's concern, and any resulting exception propagates from
-     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} unchanged.
+     * The buffer is returned as {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)} leaves it; it
+     * is
+     * <em>not</em> {@linkplain ByteBuffer#flip() flipped}. Invoke {@link ByteBuffer#flip() flip()}
+     * on the result to read the bytes.
      *
-     * @param service  the {@link HelloWorld} service that produces the bytes.
-     * @param supplier a supplier of the {@link ByteBuffer} to pass to the service.
-     * @return the {@link ByteBuffer} returned by the service, after
-     * {@linkplain ByteBuffer#flip() flipping}.
-     * @throws NullPointerException if the {@code service} is {@code null}, or the {@code supplier}
-     *                              is {@code null}.
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return the {@link ByteBuffer} returned by
+     * {@link HelloWorld#put(ByteBuffer) put(ByteBuffer)}.
+     * @throws NullPointerException if the {@code service} is {@code null}.
      * @see HelloWorld#put(ByteBuffer)
      */
-    public static ByteBuffer buffer(final HelloWorld service,
-                                    final Supplier<? extends ByteBuffer> supplier) {
-        Objects.requireNonNull(service, "service is null");
-        Objects.requireNonNull(supplier, "supplier is null");
-        return service.put(supplier.get()).flip();
-    }
-
-    /**
-     * The single-argument convenience of
-     * {@link #buffer(HelloWorld, Supplier) buffer(service, () ->
-     * ByteBuffer.allocate(HelloWorld.BYTES))} — supplies a freshly heap-allocated
-     * {@value HelloWorld#BYTES}-byte buffer to the service.
-     *
-     * @param service the {@link HelloWorld} service that produces the bytes; must not be
-     *                {@code null}.
-     * @return the {@link ByteBuffer} returned by the service, after
-     * {@linkplain ByteBuffer#flip() flipping}; never {@code null}.
-     * @throws NullPointerException if {@code service} is {@code null}.
-     * @see #buffer(HelloWorld, Supplier)
-     */
     public static ByteBuffer buffer(final HelloWorld service) {
-        return buffer(service, () -> ByteBuffer.allocate(HelloWorld.BYTES));
+        Objects.requireNonNull(service, "service is null");
+        return service.put(ByteBuffer.allocate(HelloWorld.BYTES));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -119,26 +94,80 @@ public final class HelloWorldUtils {
 
     /**
      * Returns a new {@link CharBuffer} containing the
-     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded as
-     * {@link StandardCharsets#US_ASCII US-ASCII}, produced by
-     * {@linkplain #buffer(HelloWorld, Supplier) obtaining the byte buffer} from the specified
-     * service with the specified supplier, and passing it to a fresh
-     * {@link StandardCharsets#US_ASCII US-ASCII} decoder.
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded by the specified
+     * decoder, produced by {@linkplain #buffer(HelloWorld) obtaining the byte buffer} from the
+     * specified service, {@linkplain ByteBuffer#flip() flipping} it, and passing it to
+     * {@link CharsetDecoder#decode(ByteBuffer) decoder.decode(buffer)}.
+     * <p>
+     * The {@link CharsetDecoder#decode(ByteBuffer) decode(buffer)} method resets the decoder before
+     * decoding, so the same decoder may be reused for sequential invocations. A decoder is not
+     * thread-safe, though; do not share one among concurrent invocations. Whether malformed or
+     * unmappable input is reported, replaced, or ignored is up to the decoder's
+     * {@linkplain CharsetDecoder#malformedInputAction() actions}.
+     * <p>
+     * The result reads {@code "hello, world"} only when the decoder's charset is ASCII-compatible
+     * (e.g., {@link StandardCharsets#US_ASCII US-ASCII}, {@link StandardCharsets#ISO_8859_1
+     * ISO-8859-1}, or {@link StandardCharsets#UTF_8 UTF-8}).
      *
-     * @param service  the {@link HelloWorld} service that produces the bytes.
-     * @param supplier a supplier of the {@link ByteBuffer} to pass to the service.
-     * @return a new {@value HelloWorld#BYTES}-character {@link CharBuffer} containing the
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @param decoder the decoder with which the bytes are decoded.
+     * @return a new {@link CharBuffer} containing the decoded
      * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
      * @throws NullPointerException     if the {@code service} is {@code null}, or the
-     *                                  {@code supplier} is {@code null}.
-     * @throws CharacterCodingException if the US-ASCII decoder fails to decode the bytes.
-     * @see #buffer(HelloWorld, Supplier)
+     *                                  {@code decoder} is {@code null}.
+     * @throws CharacterCodingException if the {@code decoder} reports a decoding error.
+     * @see #buffer(HelloWorld)
      * @see CharsetDecoder#decode(ByteBuffer)
      */
-    public static CharBuffer decode(final HelloWorld service,
-                                    final Supplier<? extends ByteBuffer> supplier)
+    public static CharBuffer decode(final HelloWorld service, final CharsetDecoder decoder)
             throws CharacterCodingException {
-        return StandardCharsets.US_ASCII.newDecoder().decode(buffer(service, supplier));
+        Objects.requireNonNull(decoder, "decoder is null");
+        return decoder.decode(buffer(service).flip());
+    }
+
+    /**
+     * Returns a new {@link CharBuffer} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded in the specified
+     * charset, produced by invoking {@link #decode(HelloWorld, CharsetDecoder) decode(service,
+     * decoder)} with a {@linkplain Charset#newDecoder() new decoder} of the {@code charset}.
+     * <p>
+     * Unlike {@link Charset#decode(ByteBuffer) charset.decode(buffer)}, which replaces malformed or
+     * unmappable input, a new decoder <em>reports</em> it, so this method throws a
+     * {@link CharacterCodingException} instead of returning replacement characters.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @param charset the charset in which the bytes are decoded.
+     * @return a new {@link CharBuffer} containing the decoded
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
+     * @throws NullPointerException     if the {@code service} is {@code null}, or the
+     *                                  {@code charset} is {@code null}.
+     * @throws CharacterCodingException if the bytes are malformed or unmappable in the
+     *                                  {@code charset}.
+     * @see #decode(HelloWorld, CharsetDecoder)
+     * @see Charset#newDecoder()
+     */
+    public static CharBuffer decode(final HelloWorld service, final Charset charset)
+            throws CharacterCodingException {
+        Objects.requireNonNull(charset, "charset is null");
+        return decode(service, charset.newDecoder());
+    }
+
+    /**
+     * Returns a new {@link CharBuffer} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> decoded as
+     * {@link StandardCharsets#US_ASCII US-ASCII}, produced by invoking
+     * {@link #decode(HelloWorld, Charset) decode(service, charset)} with
+     * {@link StandardCharsets#US_ASCII}.
+     *
+     * @param service the {@link HelloWorld} service that produces the bytes.
+     * @return a new {@value HelloWorld#BYTES}-character {@link CharBuffer} containing the
+     * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a>.
+     * @throws NullPointerException     if the {@code service} is {@code null}.
+     * @throws CharacterCodingException if the bytes are not valid US-ASCII.
+     * @see #decode(HelloWorld, Charset)
+     */
+    public static CharBuffer decode(final HelloWorld service) throws CharacterCodingException {
+        return decode(service, StandardCharsets.US_ASCII);
     }
 
     // ------------------------------------------------------------------------------------ java.net

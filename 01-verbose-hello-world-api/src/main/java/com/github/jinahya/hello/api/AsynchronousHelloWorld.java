@@ -294,7 +294,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
+        applyAsync(s -> HelloWorldUtils.buffer(s).flip()).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
@@ -345,7 +345,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             final CompletionHandler<? super C, ? super A> handler) {
         Objects.requireNonNull(channel, "channel is null");
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(HelloWorldUtils::buffer, attachment, new CompletionHandler<>() { // @formatter:off
+        applyAsync(s -> HelloWorldUtils.buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
             @Override
             public void completed(final ByteBuffer b, final A attachment) {
                 channel.write(b, attachment, new CompletionHandler<>() {
@@ -441,7 +441,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(HelloWorldUtils::buffer).whenComplete((b, t) -> {
+        applyAsync(s -> HelloWorldUtils.buffer(s).flip()).whenComplete((b, t) -> {
             if (t != null) {
                 handler.failed(t, attachment);
                 return;
@@ -500,7 +500,7 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             throw new IllegalArgumentException("position(" + position + ") is negative");
         }
         Objects.requireNonNull(handler, "handler is null");
-        applyAsync(HelloWorldUtils::buffer, attachment, new CompletionHandler<>() { // @formatter:off
+        applyAsync(s -> HelloWorldUtils.buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
             @Override
             public void completed(final ByteBuffer b, final A attachment) {
                 channel.write(b, position, position, new CompletionHandler<>() {

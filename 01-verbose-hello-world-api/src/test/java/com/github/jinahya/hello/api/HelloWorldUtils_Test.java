@@ -9,11 +9,10 @@ import org.junit.jupiter.params.provider.*;
 
 import java.nio.*;
 import java.nio.charset.*;
-import java.util.function.*;
-import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /*-
  * #%L
@@ -45,15 +44,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class HelloWorldUtils_Test extends HelloWorld__Test {
 
-    private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
-        return Stream.of(
-                () -> ByteBuffer.allocate(HelloWorld.BYTES),
-                () -> ByteBuffer.allocateDirect(HelloWorld.BYTES)
-        );
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     /**
      * Stubs the service's collaborator methods used by the tests in this class.
      */
@@ -81,26 +71,21 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
         }
     }
 
-    @DisplayName("buffer(service, supplier)")
+    @DisplayName("buffer(service)")
     @Nested
-    class Buffer_Supplier_Test {
-
-        private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
-            return HelloWorldUtils_Test.byteBufferSupplierStream();
-        }
+    class Buffer_Test {
 
         /**
-         * Asserts that {@code HelloWorldUtils.buffer(service, supplier)} returns a
-         * {@link ByteBuffer} containing the {@code hello-world-bytes}.
-         *
-         * @param supplier the {@link ByteBuffer} supplier under test.
+         * Asserts that {@code HelloWorldUtils.buffer(service)} returns a {@link ByteBuffer}, not
+         * flipped, on which the {@code hello-world-bytes} are put.
          */
-        @DisplayName("ByteBuffer / hello-world-bytes")
-        @MethodSource({"byteBufferSupplierStream"})
-        @ParameterizedTest
-        void __(final Supplier<ByteBuffer> supplier) {
-            final var result = HelloWorldUtils.buffer(service(), supplier);
-            assertEquals(hello_world_byte_buffer(), result);
+        @DisplayName("ByteBuffer / not flipped / hello-world-bytes")
+        @Test
+        void __() {
+            final var result = HelloWorldUtils.buffer(service());
+            assertEquals(HelloWorld.BYTES, result.position());
+            assertFalse(result.hasRemaining());
+            assertEquals(hello_world_byte_buffer(), result.flip());
         }
     }
 
@@ -120,27 +105,104 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
         }
     }
 
-    @DisplayName("decode(service, supplier)")
+    @DisplayName("decode(service)")
     @Nested
-    class Decode_Supplier_Test {
-
-        private static Stream<Supplier<ByteBuffer>> byteBufferSupplierStream() {
-            return HelloWorldUtils_Test.byteBufferSupplierStream();
-        }
+    class Decode_Test {
 
         /**
-         * Asserts that {@code HelloWorldUtils.decode(service, supplier)} returns a
-         * {@link CharBuffer} containing the {@code hello-world-string}.
+         * Asserts that {@code HelloWorldUtils.decode(service)} returns a {@link CharBuffer}
+         * containing the {@code hello-world-string}.
          *
-         * @param supplier the {@link ByteBuffer} supplier under test.
          * @throws CharacterCodingException if a decoding error occurs.
          */
         @DisplayName("CharBuffer / hello-world-string")
-        @MethodSource({"byteBufferSupplierStream"})
-        @ParameterizedTest
-        void __(final Supplier<ByteBuffer> supplier) throws CharacterCodingException {
-            final var result = HelloWorldUtils.decode(service(), supplier);
+        @Test
+        void __() throws CharacterCodingException {
+            final var result = HelloWorldUtils.decode(service());
             assertEquals(hello_world_char_buffer(), result);
+        }
+    }
+
+    @DisplayName("decode(service, decoder)")
+    @Nested
+    class Decode_Decoder_Test {
+
+        /**
+         * Asserts that {@code HelloWorldUtils.decode(service, decoder)} returns a
+         * {@link CharBuffer} containing the {@code hello-world-string} for a decoder of the given
+         * ASCII-compatible charset.
+         *
+         * @param charsetName the name of the charset whose decoder is used.
+         * @throws CharacterCodingException if a decoding error occurs.
+         */
+        @DisplayName("CharBuffer / hello-world-string")
+        @ValueSource(strings = {"US-ASCII", "ISO-8859-1", "UTF-8"})
+        @ParameterizedTest
+        void __(final String charsetName) throws CharacterCodingException {
+            final var decoder = Charset.forName(charsetName).newDecoder();
+            final var result = HelloWorldUtils.decode(service(), decoder);
+            assertEquals(hello_world_char_buffer(), result);
+        }
+
+        /**
+         * Asserts that {@code HelloWorldUtils.decode(service, decoder)} may be invoked twice in a
+         * row with the same decoder, yielding the {@code hello-world-string} each time.
+         *
+         * @throws CharacterCodingException if a decoding error occurs.
+         */
+        @DisplayName("same decoder / sequential reuse")
+        @Test
+        void __reuse() throws CharacterCodingException {
+            final var decoder = StandardCharsets.US_ASCII.newDecoder();
+            assertEquals(hello_world_char_buffer(), HelloWorldUtils.decode(service(), decoder));
+            assertEquals(hello_world_char_buffer(), HelloWorldUtils.decode(service(), decoder));
+        }
+
+        /**
+         * Asserts that {@code HelloWorldUtils.decode(service, decoder)} throws a
+         * {@link NullPointerException} when the {@code decoder} is {@code null}, without
+         * invoking the service.
+         */
+        @DisplayName("NullPointerException / decoder is null")
+        @Test
+        void _ThrowNullPointerException_DecoderIsNull() {
+            assertThrows(NullPointerException.class,
+                         () -> HelloWorldUtils.decode(service(), (CharsetDecoder) null));
+            verify(service(), never()).put(any());
+        }
+    }
+
+    @DisplayName("decode(service, charset)")
+    @Nested
+    class Decode_Charset_Test {
+
+        /**
+         * Asserts that {@code HelloWorldUtils.decode(service, charset)} returns a
+         * {@link CharBuffer} containing the {@code hello-world-string} for the given
+         * ASCII-compatible charset.
+         *
+         * @param charsetName the name of the charset in which the bytes are decoded.
+         * @throws CharacterCodingException if a decoding error occurs.
+         */
+        @DisplayName("CharBuffer / hello-world-string")
+        @ValueSource(strings = {"US-ASCII", "ISO-8859-1", "UTF-8"})
+        @ParameterizedTest
+        void __(final String charsetName) throws CharacterCodingException {
+            final var result = HelloWorldUtils.decode(service(), Charset.forName(charsetName));
+            assertEquals(hello_world_char_buffer(), result);
+        }
+
+        /**
+         * Asserts that {@code HelloWorldUtils.decode(service, charset)} throws a
+         * {@link NullPointerException} when the {@code charset} is {@code null}, without
+         * invoking the service.
+         */
+        @DisplayName("NullPointerException / charset is null")
+        @Test
+        void _ThrowNullPointerException_CharsetIsNull() {
+            assertThrows(NullPointerException.class,
+                         () -> HelloWorldUtils.decode(service(), (Charset) null));
+            verify(service(), never()).put(any());
         }
     }
 }
