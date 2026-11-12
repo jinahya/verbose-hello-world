@@ -146,7 +146,8 @@ class _Java_Security_MessageDigest_Test {
                 digest.update(plain);
                 final var value = digest.digest();
                 printMessageDigest(digest, value);
-            } catch (final IllegalArgumentException _) {
+            } catch (final IllegalArgumentException | IllegalStateException _) {
+                // e.g., BC's Haraka-256/512 accept exactly 32/64 bytes
             }
         });
     }

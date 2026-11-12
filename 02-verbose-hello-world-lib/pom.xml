@@ -108,11 +108,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -170,11 +182,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -229,11 +253,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -276,11 +312,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -333,11 +381,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -413,11 +473,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -502,11 +574,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -549,11 +633,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -617,11 +713,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -692,11 +800,23 @@
             <artifactId>maven-clean-plugin</artifactId>
             <executions>
               <execution>
+                <!-- drops other profiles' test outputs; after generate-test-sources so that site's forks don't wipe target/classes -->
                 <id>clean</id>
-                <phase>initialize</phase>
+                <phase>process-test-sources</phase>
                 <goals>
                   <goal>clean</goal>
                 </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.testOutputDirectory}</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}/generated-test-sources</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
               </execution>
             </executions>
           </plugin>

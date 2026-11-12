@@ -60,10 +60,18 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
             final var array = set_array12_invoked_once(service);
             mockedStatic.verify(
                     () -> MemorySegment.copy(
-                            array, 0, segment, ValueLayout.JAVA_BYTE, 0L, array.length),
+                            array,                 // <srcArray>
+                            0,                     // <srcIndex>
+                            segment,               // <dstSegment>
+                            ValueLayout.JAVA_BYTE, // <dstLayout>
+                            0L,                    // <dstOffset>
+                            array.length           // <elementCount>
+                    ),
                     times(1)
             );
-            mockedStatic.verifyNoMoreInteractions();
+            // no verifyNoMoreInteractions(); CALLS_REAL_METHODS runs the real copy(...), whose
+            // body may call (and so record) other MemorySegment static methods.
+            assertArrayEquals(array, segment.toArray(ValueLayout.JAVA_BYTE));
         }
     }
 }
