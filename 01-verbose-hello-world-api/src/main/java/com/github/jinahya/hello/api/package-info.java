@@ -10,7 +10,8 @@
  * {@link java.net.http HTTP}, {@link java.util.concurrent.Flow Reactive Streams}, &hellip;). The
  * asynchronous counterpart
  * {@link com.github.jinahya.hello.api.AsynchronousHelloWorld AsynchronousHelloWorld} and the
- * package-private {@code ReactiveHelloWorld*Publisher/Processor} implementations build on top.
+ * {@link java.util.concurrent.Flow.Publisher Flow.Publisher} implementations
+ * ({@code HelloWorld*Publisher}) build on top.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
