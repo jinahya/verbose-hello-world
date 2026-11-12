@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import lombok.extern.slf4j.*;
-import org.bouncycastle.jce.provider.*;
 import org.junit.jupiter.api.*;
 
 import java.security.*;
@@ -60,9 +59,6 @@ class _Java_Security_MessageDigest_Test {
     @DisplayName("algorithms by providers")
     @Test
     void algorithmsByProviders__() {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
         for (final var provider : Security.getProviders()) {
             for (final var service : provider.getServices()) {
                 if (!service.getType().equals(MESSAGE_DIGEST_SERVICE_TYPE)) {
@@ -147,7 +143,7 @@ class _Java_Security_MessageDigest_Test {
                 final var value = digest.digest();
                 printMessageDigest(digest, value);
             } catch (final IllegalArgumentException | IllegalStateException _) {
-                // e.g., BC's Haraka-256/512 accept exactly 32/64 bytes
+                // e.g., digests that accept only a fixed input length
             }
         });
     }

@@ -51,7 +51,7 @@ class HelloWorld_SetAsciiStream_PreparedStatement_Int__Test extends HelloWorld__
 
     @BeforeEach
     void __() throws IOException, SQLException {
-        set_array_returns_the_array();
+        set_array_returns_the_array(service());
         doAnswer(i -> {
             final var statement = i.getArgument(0, PreparedStatement.class);
             final var index = i.getArgument(1, Integer.class);

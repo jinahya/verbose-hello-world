@@ -90,7 +90,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var builder = mock(HttpRequest.Builder.class);
         final var method = "WHATEVER";
         try (var mockStatic = mockStatic(HttpRequest.BodyPublishers.class,
@@ -98,7 +98,7 @@ class HelloWorld_Method_HttpRequestBuilder_String_Test extends HelloWorld__Test 
             // -------------------------------------------------------------------------------- when
             final var result = service.method(builder, method);
             // -------------------------------------------------------------------------------- then
-            final var array = set_array12_invoked_once();
+            final var array = set_array12_invoked_once(service());
             mockStatic.verify(
                     () -> HttpRequest.BodyPublishers.ofByteArray(array),
                     times(1)

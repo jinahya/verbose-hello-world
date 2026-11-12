@@ -65,12 +65,12 @@ class HelloWorld_Update_Checksum_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var checksum = mock(Checksum.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(checksum);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(checksum, times(1)).update(array);
         verifyNoMoreInteractions(checksum);
         assertSame(checksum, result);

@@ -99,7 +99,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_random_bytes();
+        final var service = set_array_sets_random_bytes(service());
         final var sink = new ByteArrayOutputStream();
         final var statement = mock(PreparedStatement.class);
         doAnswer(i -> {
@@ -110,7 +110,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBinaryStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(statement, times(1)).setBinaryStream(eq(index), notNull());
         assertArrayEquals(array, sink.toByteArray());
         assertSame(statement, result);

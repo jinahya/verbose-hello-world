@@ -71,12 +71,12 @@ class HelloWorld_Update_MessageDigest_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var digest = mock(MessageDigest.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(digest);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(digest, times(1)).update(array);
         assertSame(digest, result);
     }

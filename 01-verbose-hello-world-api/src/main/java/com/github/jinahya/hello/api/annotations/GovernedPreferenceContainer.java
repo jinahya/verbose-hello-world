@@ -28,17 +28,6 @@ import java.lang.annotation.*;
  * criterion (for example, one rank for general-interoperability use and another for a specific
  * policy domain).
  *
- * <p>Concrete sites where this container would surface &mdash; one rank set per KeyAgreement
- * family in {@code com.github.jinahya.hello.miscellaneous._Javax_Crypto_KeyAgreement__Test}:
- * <ul>
- *   <li>DiffieHellman (FFDH) group sources &mdash; {@code __DH} / {@code __DH1} / {@code __DH2} /
- *       {@code __DH3} / {@code __DH4} (ranks 1 → 5).</li>
- *   <li>ECDH curve families &mdash; {@code __ECDH} / {@code __ECDH1} / {@code __ECDH2} /
- *       {@code __ECDH3} / {@code __ECDH4} / {@code __ECDH5} (ranks 1 → 6).</li>
- *   <li>XDH API entry points &mdash; {@code __XDH} / {@code __XDH1} / {@code __XDH2}
- *       (ranks 1 → 3).</li>
- * </ul>
- *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see GovernedPreference
  * @see _LatestLTS

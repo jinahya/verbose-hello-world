@@ -70,7 +70,7 @@ class HelloWorld_Write_WritableByteChannel__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void beforeEach() throws IOException {
-        write_writablebytechannel_writes_hello_world_buffer();
+        write_writablebytechannel_writes_hello_world_buffer(service());
     }
 
     // ---------------------------------------------------------------------------------------------

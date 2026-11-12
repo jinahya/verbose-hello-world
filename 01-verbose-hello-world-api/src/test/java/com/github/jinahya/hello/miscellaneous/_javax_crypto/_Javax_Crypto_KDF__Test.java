@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous._javax_crypto;
  */
 
 import com.github.jinahya.hello.api.annotations.*;
-import com.github.jinahya.hello.miscellaneous._org_bouncycastle_jce_provider.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.*;
@@ -42,8 +41,4 @@ import javax.crypto.*;
 @DisplayName("javax.crypto.KDF")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KDF__Test {
-
-    static {
-        _org_bouncycastle_jce_provider__TestUtils.addBouncyCastleProvider();
-    }
 }

@@ -53,7 +53,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws IOException {
-        append_appendable_appends_hello_world_bytes();
+        append_appendable_appends_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ class HelloWorld_Append_Appendable__Test extends HelloWorld__Test {
         @Test
         void __() throws IOException {
             // ------------------------------------------------------------------------------- given
-            final var service = set_array_sets_hello_world_bytes();
+            final var service = set_array_sets_hello_world_bytes(service());
             final var appendable = new StringBuilder();
             // -------------------------------------------------------------------------------- when
             service.append(appendable);

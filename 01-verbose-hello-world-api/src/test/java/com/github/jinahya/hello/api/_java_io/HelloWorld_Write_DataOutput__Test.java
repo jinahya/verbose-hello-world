@@ -71,7 +71,7 @@ class HelloWorld_Write_DataOutput__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __() throws IOException {
-        write_dataoutput_writes_hello_world_bytes();
+        write_dataoutput_writes_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------

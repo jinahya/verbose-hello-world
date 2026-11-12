@@ -59,19 +59,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class _Javax_Crypto_PBE_Test {
 
     /**
-     * Registers the {@link org.bouncycastle.jce.provider.BouncyCastleProvider BouncyCastle}
-     * provider with the JCA so {@code SCRYPT/BC} resolves by its standard JCE name. Password4j is
-     * invoked through its native (non-JCA) API and needs no JCA registration.
-     */
-    @BeforeAll
-    static void registerProviders() {
-        if (Security.getProvider(org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME)
-            == null) {
-            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        }
-    }
-
-    /**
      * Prints a one-line summary of a password-hashing derivation &mdash; algorithm/label, password,
      * hash byte length, Base64-encoded first/last four characters, and elapsed time &mdash; to
      * {@link System#out}.
@@ -197,8 +184,6 @@ class _Javax_Crypto_PBE_Test {
         // 1 — RFC 7914 §6 example value; common standard
         private static final int p = 1;
 
-        // shared by both nested classes so Password4j and BC, given the same password, produce
-        // byte-identical hashes (scrypt is deterministic given password + salt + N + r + p + dkLen)
         private static final byte[] SALT = new byte[SALT_BYTES];
 
         static {
@@ -263,76 +248,15 @@ class _Javax_Crypto_PBE_Test {
                 }
             }
         }
-
-        /**
-         * A nested test class running scrypt via the BouncyCastle JCE provider, using
-         * {@link SecretKeyFactory#getInstance(String, String)} with {@code "SCRYPT"} and
-         * {@link org.bouncycastle.jcajce.spec.ScryptKeySpec}.
-         */
-        @DisplayName("BouncyCastle JCE")
-        @Nested
-        class BouncyCastle_Test {
-
-            // BC registered name (uppercase)
-            private static final String ALGORITHM = "SCRYPT";
-
-            /**
-             * Verifies that signing up the given {@code password} with scrypt (via the BC
-             * {@link SecretKeyFactory}) and packing {@code salt | hash} into a 48-byte record
-             * yields a byte array that is reproduced exactly during login by re-deriving with the
-             * stored salt.
-             *
-             * @param password the password to register and verify.
-             */
-            @DisplayName("password column")
-            @ValueSource(strings = {
-                    "iloveyou",
-                    "letmein"
-            })
-            @ParameterizedTest
-            void __(final String password) throws Exception {
-                // --------------------------------------------------------------------------- given
-                final var factory = SecretKeyFactory.getInstance(
-                        ALGORITHM,
-                        org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
-                // ---------------------------------------------------------------------------------
-                final byte[] column;
-                // -------------------------------------------------------------------------- signup
-                {
-                    final var salt = SALT;
-                    final var spec = new org.bouncycastle.jcajce.spec.ScryptKeySpec(
-                            password.toCharArray(), salt, N, r, p, HASH_BYTES << 3);
-                    final var start = System.nanoTime();
-                    final var hash = factory.generateSecret(spec).getEncoded();
-                    printf(ALGORITHM + "/BC", password, hash,
-                           Duration.ofNanos(System.nanoTime() - start));
-                    column = new byte[COLUMN_BYTES];
-                    System.arraycopy(salt, 0, column, 0, SALT_BYTES);
-                    System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
-                }
-                // --------------------------------------------------------------------------- login
-                {
-                    final var salt = Arrays.copyOfRange(column, 0, SALT_BYTES);
-                    final var spec = new org.bouncycastle.jcajce.spec.ScryptKeySpec(
-                            password.toCharArray(), salt, N, r, p, HASH_BYTES << 3);
-                    final var hash = factory.generateSecret(spec).getEncoded();
-                    final var attempt = new byte[COLUMN_BYTES];
-                    System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
-                    System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                    assertArrayEquals(column, attempt);
-                }
-            }
-        }
     }
 
     /**
-     * A nested test class demonstrating password storage with Argon2id, run twice through two
-     * different APIs (Password4j-JCA and BouncyCastle low-level) using identical parameters so the
-     * resulting columns are byte-for-byte equivalent.
+     * A nested test class demonstrating password storage with Argon2id via the Password4j native
+     * API.
      *
      * <p>The constants ({@code SALT_BYTES}, {@code HASH_BYTES}, {@code MEMORY_KB},
      * {@code ITERATIONS}, {@code PARALLELISM}) are not mandated by the spec; they are tunable
-     * parameters set to OWASP-recommended values and shared across the two paths.
+     * parameters set to OWASP-recommended values.
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc9106">RFC 9106 &mdash; Argon2
      * Memory-Hard Function for Password Hashing</a>
@@ -360,8 +284,6 @@ class _Javax_Crypto_PBE_Test {
         // 4 lanes — RFC 9106 §4 recommendation
         private static final int PARALLELISM = 4;
 
-        // shared by both nested classes so Password4j and BC, given the same password, produce
-        // byte-identical hashes (Argon2id is deterministic given password + salt + m + t + p + len)
         private static final byte[] SALT = new byte[SALT_BYTES];
 
         static {
@@ -422,87 +344,6 @@ class _Javax_Crypto_PBE_Test {
                             .addSalt(salt)
                             .with(function)
                             .getBytes();
-                    final var attempt = new byte[COLUMN_BYTES];
-                    System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
-                    System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);
-                    assertArrayEquals(column, attempt);
-                }
-            }
-        }
-
-        /**
-         * A nested test class running Argon2id via the BouncyCastle low-level API
-         * ({@link org.bouncycastle.crypto.generators.Argon2BytesGenerator} +
-         * {@link org.bouncycastle.crypto.params.Argon2Parameters}). BouncyCastle does not register
-         * a JCE {@link SecretKeyFactory} for Argon2, so this is the canonical idiom for using BC's
-         * Argon2 implementation.
-         */
-        @DisplayName("BouncyCastle (low-level)")
-        @Nested
-        class BouncyCastle_Test {
-
-            /**
-             * Derives a {@value Argon2id_Test#HASH_BYTES}-byte Argon2id hash from the given
-             * password and salt, using
-             * {@link org.bouncycastle.crypto.generators.Argon2BytesGenerator} configured with the
-             * enclosing class's memory, iteration, and parallelism parameters.
-             *
-             * @param password the password.
-             * @param salt     the salt.
-             * @return the derived hash.
-             */
-            private static byte[] derive(final char[] password, final byte[] salt) {
-                final var params = new org.bouncycastle.crypto.params.Argon2Parameters.Builder(
-                        org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_id)
-                        .withVersion(
-                                org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_VERSION_13)
-                        .withSalt(salt)
-                        .withMemoryAsKB(MEMORY_KB)
-                        .withIterations(ITERATIONS)
-                        .withParallelism(PARALLELISM)
-                        .build();
-                final var generator = new org.bouncycastle.crypto.generators.Argon2BytesGenerator();
-                generator.init(params);
-                final var out = new byte[HASH_BYTES];
-                generator.generateBytes(
-                        new String(password).getBytes(StandardCharsets.UTF_8), out);
-                return out;
-            }
-
-            /**
-             * Verifies that signing up the given {@code password} with Argon2id (via the
-             * BouncyCastle low-level
-             * {@link org.bouncycastle.crypto.generators.Argon2BytesGenerator}) and packing
-             * {@code salt | hash} into a 48-byte record yields a byte array that is reproduced
-             * exactly during login by re-deriving with the stored salt.
-             *
-             * @param password the password to register and verify.
-             */
-            @DisplayName("password column")
-            @ValueSource(strings = {
-                    "iloveyou",
-                    "letmein"
-            })
-            @ParameterizedTest
-            void __(final String password) {
-                // --------------------------------------------------------------------------- given
-                // ---------------------------------------------------------------------------------
-                final byte[] column;
-                // -------------------------------------------------------------------------- signup
-                {
-                    final var salt = SALT;
-                    final var start = System.nanoTime();
-                    final var hash = derive(password.toCharArray(), salt);
-                    printf("Argon2id/BC", password, hash,
-                           Duration.ofNanos(System.nanoTime() - start));
-                    column = new byte[COLUMN_BYTES];
-                    System.arraycopy(salt, 0, column, 0, SALT_BYTES);
-                    System.arraycopy(hash, 0, column, SALT_BYTES, HASH_BYTES);
-                }
-                // --------------------------------------------------------------------------- login
-                {
-                    final var salt = Arrays.copyOfRange(column, 0, SALT_BYTES);
-                    final var hash = derive(password.toCharArray(), salt);
                     final var attempt = new byte[COLUMN_BYTES];
                     System.arraycopy(salt, 0, attempt, 0, SALT_BYTES);
                     System.arraycopy(hash, 0, attempt, SALT_BYTES, HASH_BYTES);

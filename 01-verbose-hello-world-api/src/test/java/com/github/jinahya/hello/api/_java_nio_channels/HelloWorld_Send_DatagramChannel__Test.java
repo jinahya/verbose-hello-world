@@ -55,8 +55,8 @@ class HelloWorld_Send_DatagramChannel__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws IOException {
-        send_datagramsocket_sends_hello_world_packet();
-        write_writablebytechannel_writes_hello_world_buffer();
+        send_datagramsocket_sends_hello_world_packet(service());
+        write_writablebytechannel_writes_hello_world_buffer(service());
     }
 
     // ---------------------------------------------------------------------------------------------

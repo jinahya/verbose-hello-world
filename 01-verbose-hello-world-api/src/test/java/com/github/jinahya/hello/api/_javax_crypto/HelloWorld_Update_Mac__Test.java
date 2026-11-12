@@ -265,4 +265,37 @@ class HelloWorld_Update_Mac__Test extends HelloWorld__Test {
         // ------------------------------------------------------------------------------------ then
         assertArrayEquals(tag1, tag2);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies the method works with the {@code PBEWithHmacSHA256} algorithm.
+     *
+     * @throws Exception if any error occurs.
+     */
+    @_LatestJDK
+    @DisplayName("PBEWithHmacSHA256")
+    @Test
+    void __PBEWithHmacSHA256() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var maccing = PBEWithHmacSHA256();
+        final var mac = maccing.mac();
+        // ----------------------------------------------------------------------------------- mac1
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag1 = service().update(mac).doFinal();
+        printf("PBEWithHmacSHA256", null, tag1);
+        // ----------------------------------------------------------------------------------- mac2
+        if (maccing.params() != null) {
+            mac.init(maccing.secretKey(), maccing.params());
+        } else {
+            mac.init(maccing.secretKey());
+        }
+        final var tag2 = service().update(mac).doFinal();
+        // ------------------------------------------------------------------------------------ then
+        assertArrayEquals(tag1, tag2);
+    }
 }

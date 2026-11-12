@@ -21,7 +21,6 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import lombok.extern.slf4j.*;
-import org.bouncycastle.jce.provider.*;
 
 import java.security.*;
 import java.util.*;
@@ -36,12 +35,6 @@ import static java.util.stream.Collectors.*;
  */
 @Slf4j
 class _Java_Security_Provider_TestUtils {
-
-    static {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-    }
 
     public static Stream<Provider> providers(final String serviceType) {
         return Arrays.stream(Security.getProviders())

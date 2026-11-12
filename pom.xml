@@ -342,12 +342,6 @@
         <version>4.3.0</version>
       </dependency>
       <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-lts8on</artifactId>
-        <!-- https://central.sonatype.com/artifact/org.bouncycastle/bcprov-lts8on/versions -->
-        <version>2.73.13</version>
-      </dependency>
-      <dependency>
         <groupId>org.duckdb</groupId>
         <artifactId>duckdb_jdbc</artifactId>
         <version>1.5.3.0</version>

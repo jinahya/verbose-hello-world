@@ -98,7 +98,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
     @Test
     void __() throws IOException, SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_sets_hello_world_bytes();
+        final var service = set_array_sets_hello_world_bytes(service());
         final var sink = new StringWriter();
         final var statement = mock(PreparedStatement.class);
         doAnswer(i -> {
@@ -109,7 +109,7 @@ class HelloWorld_SetCharacterStream_PreparedStatement_Int_Test
         // ------------------------------------------------------------------------------------ when
         final var result = service.setCharacterStream(statement, index);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(statement, times(1)).setCharacterStream(eq(index), notNull());
         assertEquals(hello_world_string(), sink.toString());
         assertSame(statement, result);

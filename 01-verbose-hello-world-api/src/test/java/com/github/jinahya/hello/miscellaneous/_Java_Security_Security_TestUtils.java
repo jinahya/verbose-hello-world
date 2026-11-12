@@ -21,13 +21,10 @@ package com.github.jinahya.hello.miscellaneous;
  */
 
 import lombok.extern.slf4j.*;
-import org.bouncycastle.jce.provider.*;
 
 import java.security.*;
 import java.util.*;
 import java.util.stream.*;
-
-import static org.bouncycastle.jce.provider.BouncyCastleProvider.*;
 
 /**
  * A class providing test utilities for {@link java.security.Security}.
@@ -35,12 +32,6 @@ import static org.bouncycastle.jce.provider.BouncyCastleProvider.*;
 @Slf4j
 @SuppressWarnings({"java:S101"})
 public final class _Java_Security_Security_TestUtils {
-
-    static {
-        if (Security.getProvider(PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-    }
 
     public static Stream<Provider> securityProviders() {
         return Arrays.stream(Security.getProviders());

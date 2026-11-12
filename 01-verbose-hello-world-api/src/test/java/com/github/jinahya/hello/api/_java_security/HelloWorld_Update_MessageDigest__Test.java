@@ -27,8 +27,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.*;
 import org.apache.commons.io.*;
-import org.bouncycastle.crypto.digests.*;
-import org.bouncycastle.jce.provider.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.*;
 import org.junit.jupiter.params.*;
@@ -48,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * A class for exploring
  * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method with
- * real {@link MessageDigest} implementations from JDK and BouncyCastle providers.
+ * real {@link MessageDigest} implementations from the JDK providers.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
@@ -85,8 +83,8 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws IOException {
-        write_outputstream_writes_hello_world_bytes();
-        set_array_sets_hello_world_bytes();
+        write_outputstream_writes_hello_world_bytes(service());
+        set_array_sets_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -148,24 +146,6 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         __(algorithm, "SUN");
     }
 
-    /**
-     * Verifies that the
-     * {@link com.github.jinahya.hello.api.HelloWorld#update(MessageDigest) update(digest)} method
-     * updates a real {@link MessageDigest} obtained from the {@code BouncyCastle} provider for the
-     * given algorithm.
-     *
-     * @param algorithm an algorithm name supplied by {@link #algorithms()}.
-     */
-    @DisplayName("BouncyCastle")
-    @MethodSource({"algorithms"})
-    @ParameterizedTest
-    void __BC(final String algorithm) throws GeneralSecurityException {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-        __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
-    }
-
     @DisplayName("SHA3")
     @ValueSource(strings = {
             "SHA3-224",
@@ -175,10 +155,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
     })
     @ParameterizedTest
     void __SHA3(final String algorithm) throws GeneralSecurityException {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-        __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
+        __(algorithm, null);
     }
 
     @DisplayName("SHAKE")
@@ -192,39 +169,7 @@ class HelloWorld_Update_MessageDigest__Test extends HelloWorld__Test {
         })
         @ParameterizedTest
         void __SHAKE(final String algorithm) throws GeneralSecurityException {
-            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-                Security.addProvider(new BouncyCastleProvider());
-            }
-            __(algorithm, BouncyCastleProvider.PROVIDER_NAME);
-        }
-
-        @DisplayName("prefix")
-        @ValueSource(ints = {128, 256})
-        @ParameterizedTest
-        void __SHAKE_prefix(final int bitStrength) throws GeneralSecurityException {
-            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-                Security.addProvider(new BouncyCastleProvider());
-            }
-            // --------------------------------------------------- long output via JCA MessageDigest
-            final var fixedName = "SHAKE" + bitStrength + "-" + (bitStrength << 1);
-            final var longBytes = service().update(MessageDigest.getInstance(
-                    fixedName, BouncyCastleProvider.PROVIDER_NAME)).digest();
-            // --------------------------------------------------- short output via BC low-level XOF
-            final var array = new byte[HelloWorld.BYTES];
-            service().set(array);
-            final var xof = new SHAKEDigest(bitStrength);
-            xof.update(array, 0, array.length);
-            final var shortLen = longBytes.length >> 1;
-            final var shortBytes = new byte[shortLen];
-            xof.doOutput(shortBytes, 0, shortLen);
-            // -------------------------------------------------------------------------------- then
-            assertArrayEquals(shortBytes, Arrays.copyOf(longBytes, shortLen));
-            final var shortName = "SHAKE" + bitStrength + "-" + bitStrength;
-            System.out.printf("%12s %10s %d %s%n", shortName, "lw", shortLen << 3,
-                              Base64.getEncoder().encodeToString(shortBytes));
-            System.out.printf("%12s %10s %d %s%n", fixedName,
-                              BouncyCastleProvider.PROVIDER_NAME, longBytes.length << 3,
-                              Base64.getEncoder().encodeToString(longBytes));
+            __(algorithm, null);
         }
     }
 

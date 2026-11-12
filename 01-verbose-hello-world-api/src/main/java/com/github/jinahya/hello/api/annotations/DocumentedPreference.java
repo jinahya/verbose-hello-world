@@ -35,10 +35,10 @@ import java.lang.annotation.*;
  *       standard names (e.g., {@code "ECDH"}, {@code "XDH"}, {@code "X25519"},
  *       {@code "secp256r1"});</li>
  *   <li>listed in a provider-specific section of the <em>JDK Providers Documentation</em> /
- *       Security Developer's Guide (e.g., Brainpool / non-NIST curve names exposed by BC).</li>
+ *       Security Developer's Guide (e.g., provider-specific curve names).</li>
  * </ol>
- * Declarations whose algorithm / parameter is in none of the three (BC-only, niche standard
- * outside any JDK document) are simply left unannotated. The annotation is
+ * Declarations whose algorithm / parameter is in none of the three (a niche standard outside
+ * any JDK document) are simply left unannotated. The annotation is
  * {@link Repeatable repeatable} via {@link DocumentedPreferenceContainer}: stack multiple
  * {@code @DocumentedPreference} markers when a single declaration spans more than one tier.
  *

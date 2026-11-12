@@ -67,12 +67,12 @@ class HelloWorld_UpdateAAD_Cipher_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var cipher = mock(Cipher.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.updateAAD(cipher);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(cipher).updateAAD(array);
         assertSame(cipher, result);
     }

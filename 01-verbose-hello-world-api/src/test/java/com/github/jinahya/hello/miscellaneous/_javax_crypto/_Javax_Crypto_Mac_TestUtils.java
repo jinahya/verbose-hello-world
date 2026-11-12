@@ -79,6 +79,25 @@ public final class _Javax_Crypto_Mac_TestUtils {
         return Hmac_("HmacSHA512");
     }
 
+    /**
+     * Prepares a {@code PBEWithHmacSHA256} MAC. The key is derived from a fixed password by a
+     * {@code PBEWithHmacSHA256AndAES_128} {@link SecretKeyFactory}, and the salt and the iteration
+     * count are supplied with a {@link javax.crypto.spec.PBEParameterSpec}.
+     *
+     * @return a maccing of {@code PBEWithHmacSHA256}.
+     * @throws GeneralSecurityException if the algorithm is not available.
+     */
+    @_LatestJDK
+    public static Maccing PBEWithHmacSHA256() throws GeneralSecurityException {
+        final var algorithm = "PBEWithHmacSHA256";
+        final var secretKey = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128")
+                .generateSecret(new javax.crypto.spec.PBEKeySpec("password".toCharArray()));
+        final var salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        final var params = new javax.crypto.spec.PBEParameterSpec(salt, 1_000);
+        return new Maccing(secretKey, Mac.getInstance(algorithm), params);
+    }
+
     private _Javax_Crypto_Mac_TestUtils() {
         throw new AssertionError("instantiation is not allowed");
     }

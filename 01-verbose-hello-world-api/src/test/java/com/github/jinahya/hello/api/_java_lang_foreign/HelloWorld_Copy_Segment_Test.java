@@ -48,7 +48,7 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         // MemorySegment is a sealed interface — Mockito can't mock the instance; use a real
         // heap-backed segment of exact BYTES so the byteSize() guard passes naturally.
         final var segment = MemorySegment.ofArray(new byte[HelloWorld.BYTES]);
@@ -57,7 +57,7 @@ class HelloWorld_Copy_Segment_Test extends HelloWorld__Test {
             final var result = service.copy(segment);
             // -------------------------------------------------------------------------------- then
             assertSame(segment, result);
-            final var array = set_array12_invoked_once();
+            final var array = set_array12_invoked_once(service());
             mockedStatic.verify(
                     () -> MemorySegment.copy(
                             array,                 // <srcArray>

@@ -63,27 +63,20 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
     private static File tempDir;
 
     /**
-     * Prints a one-line summary of a single signature to standard output: the key-pair parameter,
-     * the signature parameter, the iteration number, the signature length, and the first and last
-     * 12 characters of its Base64 encoding.
+     * Prints a line of the signing result: the signature algorithm, the key-pair generation
+     * parameter (key length or curve name), the length of the signature, and the head and tail of
+     * its Base64 encoding.
      *
-     * @param keyPairParameter   the key-pair generation parameter (key length, curve name, etc.).
-     * @param signatureParameter the signature parameter ({@link PSSParameterSpec}, etc.; an empty
-     *                           string is shown when {@code null}).
-     * @param iteration          the iteration number when signing repeatedly with the same key
-     *                           pair.
-     * @param signature          the signature bytes returned by {@link Signature#sign()}.
+     * @param algorithm        the signature algorithm.
+     * @param keyPairParameter the key-pair generation parameter (key length, curve name, etc.).
+     * @param signature        the signature bytes returned by {@link Signature#sign()}.
      */
-    private static void printf(final Object keyPairParameter,
-                               final Object signatureParameter,
-                               final int iteration,
+    private static void printf(final String algorithm, final Object keyPairParameter,
                                final byte[] signature) {
         final var encoded = Base64.getEncoder().encodeToString(signature);
-        System.out.printf("%10s %20s #%d (%4d) %s...%s%n", keyPairParameter,
-                          Optional.ofNullable(signatureParameter).orElse(""),
-                          iteration, signature.length,
-                          encoded.substring(0, 12),
-                          encoded.substring(encoded.length() - 12));
+        System.out.printf("%24s | %9s | %3d | %s...%s%n", algorithm, keyPairParameter,
+                          signature.length, encoded.substring(0, 4),
+                          encoded.substring(encoded.length() - 4));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -97,7 +90,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __() throws SignatureException {
-        update_signature_updates_hello_world_bytes();
+        update_signature_updates_hello_world_bytes(service());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -117,6 +110,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -145,6 +139,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -172,6 +167,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), "secp256r1", signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -199,6 +195,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), "secp384r1", signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -227,6 +224,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -255,6 +253,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -283,6 +282,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf(signature.getAlgorithm(), keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -311,6 +311,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf("RSASSA-PSS (SHA-256)", keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {
@@ -339,6 +340,7 @@ class HelloWorld_Update_Signature__Test extends HelloWorld__Test {
         }
         service().update(signature);
         final var signed = signature.sign();
+        printf("RSASSA-PSS (SHA-384)", keysize, signed);
         // ---------------------------------------------------------------------------------- verify
         signature.initVerify(signing.keyPair().getPublic());
         if (signing.params() != null) {

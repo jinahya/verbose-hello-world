@@ -41,8 +41,4 @@ import javax.crypto.*;
 @DisplayName("javax.crypto.KDF")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 class _Javax_Crypto_KDF__Test {
-
-    static {
-        _org_bouncycastle_jce_provider__TestUtils.addBouncyCastleProvider();
-    }
 }

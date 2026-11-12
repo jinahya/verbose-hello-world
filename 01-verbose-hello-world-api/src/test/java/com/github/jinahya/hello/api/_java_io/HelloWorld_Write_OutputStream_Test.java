@@ -77,7 +77,7 @@ class HelloWorld_Write_OutputStream_Test extends HelloWorld__Test {
         // ------------------------------------------------------------------------------------ when
         final var result = service.write(stream);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
 //        verify(stream, times(1)).write(array);
         assertSame(stream, result);
     }

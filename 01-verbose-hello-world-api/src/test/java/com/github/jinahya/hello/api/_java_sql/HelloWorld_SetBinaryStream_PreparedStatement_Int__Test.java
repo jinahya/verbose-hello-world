@@ -63,7 +63,7 @@ class HelloWorld_SetBinaryStream_PreparedStatement_Int__Test
                 ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
-        set_array_returns_the_array();
+        set_array_returns_the_array(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------

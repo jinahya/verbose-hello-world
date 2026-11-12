@@ -65,12 +65,12 @@ class HelloWorld_Update_Mac_Test
     @Test
     void __() {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var mac = mock(Mac.class);
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(mac);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(mac, times(1)).update(array);
         assertSame(mac, result);
     }

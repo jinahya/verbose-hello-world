@@ -13,6 +13,6 @@ class _HelloWorld_Java_Io__Test extends HelloWorld__Test {
 
     @BeforeEach
     void __stubService() throws IOException {
-        write_outputstream_writes_hello_world_bytes();
+        write_outputstream_writes_hello_world_bytes(service());
     }
 }

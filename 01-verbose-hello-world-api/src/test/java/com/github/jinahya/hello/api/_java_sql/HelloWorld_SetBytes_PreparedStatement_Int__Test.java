@@ -32,6 +32,7 @@ import java.nio.charset.*;
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 
 /**
  * A class for exploring
@@ -59,7 +60,7 @@ class HelloWorld_SetBytes_PreparedStatement_Int__Test
                 ArgumentMatchers.<PreparedStatement>notNull(),
                 ArgumentMatchers.intThat(v -> v >= 1)
         );
-        set_array_returns_the_array();
+        set_array_returns_the_array(service());
     }
 
     // -----------------------------------------------------------------------------------------------------------------

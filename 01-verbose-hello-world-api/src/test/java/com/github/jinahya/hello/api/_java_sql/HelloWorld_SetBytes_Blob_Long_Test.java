@@ -89,13 +89,13 @@ class HelloWorld_SetBytes_Blob_Long_Test
     @Test
     void __() throws SQLException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var blob = mock(Blob.class);
         final var pos = ThreadLocalRandom.current().nextLong(1L, Long.MAX_VALUE);
         // ------------------------------------------------------------------------------------ when
         final var result = service.setBytes(blob, pos);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(blob, times(1)).setBytes(pos, array);
         assertSame(blob, result);
     }

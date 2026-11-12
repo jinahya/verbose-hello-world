@@ -90,7 +90,7 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
     @Test
     void __() throws ShortBufferException {
         // ----------------------------------------------------------------------------------- given
-        final var service = set_array_returns_the_array();
+        final var service = set_array_returns_the_array(service());
         final var cipher = mock(Cipher.class);
         final var output = new byte[HelloWorld.BYTES << 1];                           // 24
         final var offset = ThreadLocalRandom.current().nextInt(HelloWorld.BYTES + 1); // [0..12]
@@ -101,7 +101,7 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
         // ------------------------------------------------------------------------------------ when
         final var result = service.update(cipher, output, offset, consumer);
         // ------------------------------------------------------------------------------------ then
-        final var array = set_array12_invoked_once();
+        final var array = set_array12_invoked_once(service());
         verify(cipher).update(array, 0, HelloWorld.BYTES, output, offset);
         verify(consumer).accept(bytes);
         assertSame(cipher, result);

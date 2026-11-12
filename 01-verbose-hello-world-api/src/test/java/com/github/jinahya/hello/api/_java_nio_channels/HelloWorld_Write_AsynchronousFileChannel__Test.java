@@ -63,7 +63,7 @@ class HelloWorld_Write_AsynchronousFileChannel__Test extends HelloWorld__Test {
      */
     @BeforeEach
     void __stubService() throws ExecutionException, InterruptedException {
-        write_asynchronousfilechannel_long_writes_hello_world();
+        write_asynchronousfilechannel_long_writes_hello_world(service());
     }
 
     // ---------------------------------------------------------------------------------------------
