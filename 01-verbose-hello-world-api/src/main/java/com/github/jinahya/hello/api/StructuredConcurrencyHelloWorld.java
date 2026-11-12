@@ -83,11 +83,14 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
      * {@inheritDoc}
      *
      * @implSpec This implementation spawns a virtual thread that opens a
-     * {@link StructuredTaskScope}, forks {@code () -> mapper.apply(service)} as a single subtask,
-     * and joins the scope. On {@link StructuredTaskScope.Subtask.State#SUCCESS SUCCESS} it invokes
-     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)}; on
-     * {@link StructuredTaskScope.Subtask.State#FAILED FAILED} or any {@link Throwable} thrown while
-     * opening or joining the scope (including {@link InterruptedException}), it invokes
+     * {@link StructuredTaskScope} with a
+     * {@link StructuredTaskScope.Joiner#anySuccessfulOrThrow(Function) anySuccessfulOrThrow}
+     * joiner whose exception function is the identity, forks {@code () -> mapper.apply(service)}
+     * as a single subtask, and joins the scope. If the subtask succeeds it invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(result, attachment)};
+     * on any {@link Throwable} — the subtask's own exception, unwrapped, or one thrown while
+     * opening or joining the scope (including {@link InterruptedException} and
+     * {@link StructuredTaskScope.CancelledByTimeoutException}) — it invokes
      * {@link CompletionHandler#failed(Throwable, Object) handler.failed(t, attachment)}. The
      * handler is guaranteed to be notified exactly once.
      */
@@ -98,20 +101,19 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(handler, "handler is null");
         Thread.startVirtualThread(() -> {
+            final R result;
             try (var scope = StructuredTaskScope.open(
-                    StructuredTaskScope.Joiner.<R>allUntil(s -> false),
+                    StructuredTaskScope.Joiner.<R, Throwable>anySuccessfulOrThrow(
+                            Function.identity()),
                     configurator
             )) {
-                final var task = scope.fork(() -> mapper.apply(service));
-                scope.join();
-                if (task.state() == StructuredTaskScope.Subtask.State.SUCCESS) {
-                    handler.completed(task.get(), attachment);
-                } else {
-                    handler.failed(task.exception(), attachment);
-                }
+                scope.fork(() -> mapper.apply(service));
+                result = scope.join();
             } catch (final Throwable t) {
                 handler.failed(t, attachment);
+                return;
             }
+            handler.completed(result, attachment);
         });
     }
 
@@ -119,12 +121,14 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
      * {@inheritDoc}
      *
      * @implSpec This implementation spawns a virtual thread that opens a
-     * {@link StructuredTaskScope}, forks {@code () -> mapper.apply(service)} as a single subtask,
-     * and joins the scope. On {@link StructuredTaskScope.Subtask.State#SUCCESS SUCCESS} it
-     * completes the returned stage with the subtask's result; on
-     * {@link StructuredTaskScope.Subtask.State#FAILED FAILED} or any {@link Throwable} thrown while
-     * opening or joining the scope (including {@link InterruptedException}), it completes the
-     * returned stage exceptionally with that cause.
+     * {@link StructuredTaskScope} with a
+     * {@link StructuredTaskScope.Joiner#anySuccessfulOrThrow(Function) anySuccessfulOrThrow}
+     * joiner whose exception function is the identity, forks {@code () -> mapper.apply(service)}
+     * as a single subtask, and joins the scope. If the subtask succeeds it completes the returned
+     * stage with the subtask's result; on any {@link Throwable} — the subtask's own exception,
+     * unwrapped, or one thrown while opening or joining the scope (including
+     * {@link InterruptedException} and {@link StructuredTaskScope.CancelledByTimeoutException}) —
+     * it completes the returned stage exceptionally with that cause.
      */
     @Override
     public <R> CompletionStage<R> applyAsync(final Function<? super T, ? extends R> mapper) {
@@ -132,16 +136,12 @@ public final class StructuredConcurrencyHelloWorld<T extends HelloWorld>
         final var future = new CompletableFuture<R>();
         Thread.startVirtualThread(() -> {
             try (var scope = StructuredTaskScope.open(
-                    StructuredTaskScope.Joiner.<R>allUntil(s -> false),
+                    StructuredTaskScope.Joiner.<R, Throwable>anySuccessfulOrThrow(
+                            Function.identity()),
                     configurator
             )) {
-                final var task = scope.fork(() -> mapper.apply(service));
-                scope.join();
-                if (task.state() == StructuredTaskScope.Subtask.State.SUCCESS) {
-                    future.complete(task.get());
-                } else {
-                    future.completeExceptionally(task.exception());
-                }
+                scope.fork(() -> mapper.apply(service));
+                future.complete(scope.join());
             } catch (final Throwable t) {
                 future.completeExceptionally(t);
             }
