@@ -161,6 +161,28 @@ public interface HelloWorld {
         return null;
     }
 
+//    /**
+//     * Returns a new array of {@value #BYTES} bytes on which the
+//     * <a href="#hello-world-bytes">hello-world-bytes</a> are set.
+//     * <p>
+//     * The elements in the returned array will be set as follows.
+//     * <pre>
+//     *  0                       12
+//     *  ↓                       ↓
+//     * |h|e|l|l|o|,| |w|o|r|l|d|
+//     *                          ↑
+//     *                          array.length
+//     * </pre>
+//     *
+//     * @return a new array of the <a href="#hello-world-bytes">hello-world-bytes</a>.
+//     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with a new
+//     * array of {@value #BYTES} bytes, and returns the result.
+//     * @see #set(byte[])
+//     */
+//    default byte[] set() {
+//        return set(new byte[BYTES]);
+//    }
+
     /**
      * Appends the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified appendable.
      * <p>
@@ -793,6 +815,33 @@ public interface HelloWorld {
         }
         return buffer;
     }
+
+//    /**
+//     * Returns a new byte buffer of {@value #BYTES} bytes on which the
+//     * <a href="#hello-world-bytes">hello-world-bytes</a> are put.
+//     * <p>
+//     * The returned buffer is <em>not</em> flipped; its position is at its limit, and nothing
+//     * remains.
+//     * <pre>
+//     *  0                       12
+//     *  ↓                       ↓
+//     * |h|e|l|l|o|,| |w|o|r|l|d|
+//     *                          ↑
+//     *                          position, limit, capacity
+//     * </pre>
+//     * Invoke {@link ByteBuffer#flip() flip()} on the result to read the bytes.
+//     *
+//     * @return a new byte buffer on which the <a href="#hello-world-bytes">hello-world-bytes</a>
+//     * are put.
+//     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
+//     * new {@link ByteBuffer#allocate(int) heap buffer} of {@value #BYTES} bytes, and returns the
+//     * result.
+//     * @see #put(ByteBuffer)
+//     * @see ByteBuffer#flip()
+//     */
+//    default ByteBuffer put() {
+//        return put(ByteBuffer.allocate(BYTES));
+//    }
 
     // --------------------------------------------------------------------------- java.nio.channels
 

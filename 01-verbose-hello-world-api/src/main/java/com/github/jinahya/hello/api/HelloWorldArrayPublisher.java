@@ -81,8 +81,8 @@ public class HelloWorldArrayPublisher implements Flow.Publisher<byte[]> {
      * subscriber with it (firing {@link Flow.Subscriber#onSubscribe(Flow.Subscription) onSubscribe}
      * synchronously on the caller's thread), and starts a dedicated virtual thread that loops while
      * the {@link SubmissionPublisher} has the subscriber attached, on each iteration submitting a
-     * fresh {@code byte[HelloWorld.BYTES]} filled via
-     * {@link HelloWorld#set(byte[]) service.set(...)}. On
+     * fresh {@code byte[HelloWorld.BYTES]} returned by
+     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(service)}. On
      * {@link HelloWorld#set(byte[]) service.set(...)} throwing, the producer routes the failure via
      * {@link SubmissionPublisher#closeExceptionally(Throwable) closeExceptionally(t)}.
      */
@@ -95,7 +95,7 @@ public class HelloWorldArrayPublisher implements Flow.Publisher<byte[]> {
         Thread.ofVirtual().name("hello-world-array-producer").start(() -> {
             try {
                 while (publisher.hasSubscribers()) {
-                    publisher.submit(service.set(new byte[HelloWorld.BYTES]));
+                    publisher.submit(HelloWorldUtils.array(service));
                 }
                 publisher.close();
             } catch (final Throwable t) {

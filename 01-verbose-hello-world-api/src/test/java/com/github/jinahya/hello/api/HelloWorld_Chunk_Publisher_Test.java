@@ -85,20 +85,36 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
     }
 
     /**
-     * Builds a {@link HelloWorldChunkPublisher} and reflectively swaps its private {@code upstream}
-     * field with a {@link LoggingByteFixture} — yields full inner byte-stream logging without
-     * modifying the SUT.
+     * A test-only subclass of {@link HelloWorldBytePublisher} that ignores the service and emits
+     * only the first {@value #LENGTH} bytes of the {@code hello-world-bytes} before completing —
+     * an upstream which completes short of {@value HelloWorld#BYTES} bytes.
+     */
+    private static final class ShortByteFixture extends HelloWorldBytePublisher {
+
+        private static final int LENGTH = 5;
+
+        ShortByteFixture(final HelloWorld service) {
+            super(service);
+        }
+
+        @Override
+        public void subscribe(final Flow.Subscriber<? super Byte> s) {
+            final var publisher = new SubmissionPublisher<Byte>();
+            publisher.subscribe(s);
+            final var bytes = hello_world_byte_array();
+            for (int i = 0; i < LENGTH; i++) {
+                publisher.submit(bytes[i]);
+            }
+            publisher.close();
+        }
+    }
+
+    /**
+     * Builds a {@link HelloWorldChunkPublisher} whose upstream is a {@link LoggingByteFixture} —
+     * yields full inner byte-stream logging without modifying the SUT.
      */
     private static HelloWorldChunkPublisher withLoggingUpstream(final HelloWorld service) {
-        final var publisher = new HelloWorldChunkPublisher(service);
-        try {
-            final var field = HelloWorldChunkPublisher.class.getDeclaredField("upstream");
-            field.setAccessible(true);
-            field.set(publisher, new LoggingByteFixture(service));
-        } catch (final ReflectiveOperationException roe) {
-            throw new AssertionError("failed to swap upstream", roe);
-        }
-        return publisher;
+        return new HelloWorldChunkPublisher(new LoggingByteFixture(service));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -353,5 +369,78 @@ class HelloWorld_Chunk_Publisher_Test extends HelloWorld__Publisher_Test<byte[]>
         verify(subscriber, times(1)).onSubscribe(notNull());
         verify(subscriber, never()).onNext(any());
         verify(subscriber, never()).onComplete(); // @formatter:on
+    }
+
+    /**
+     * Verifies that the
+     * {@link HelloWorldChunkPublisher#HelloWorldChunkPublisher(HelloWorldBytePublisher)
+     * HelloWorldChunkPublisher(upstream)} constructor throws a {@link NullPointerException} when
+     * the {@code upstream} argument is {@code null}.
+     */
+    @DisplayName("new(upstream) / NullPointerException / upstream is null")
+    @Test
+    void _ThrowNullPointerException_UpstreamIsNull() {
+        assertThrows(NullPointerException.class,
+                     () -> new HelloWorldChunkPublisher((HelloWorldBytePublisher) null));
+    }
+
+    /**
+     * Verifies that the inner byte subscriptions run on the executor of the
+     * {@link HelloWorldBytePublisher} given to the constructor.
+     */
+    @DisplayName("upstream executor / byte subscriptions run on it")
+    @Test
+    void __upstreamExecutor() {
+        // ----------------------------------------------------------------------------------- given
+        final var executor = mock(Executor.class,
+                                  AdditionalAnswers.delegatesTo(ForkJoinPool.commonPool()));
+        final var publisher = new HelloWorldChunkPublisher(
+                new HelloWorldBytePublisher(service(), executor));
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() { // @formatter:off
+            private Flow.Subscription subscription;
+            @Override public void onSubscribe(final Flow.Subscription s) {
+                subscription = s;
+                s.request(1L);
+            }
+            @Override public void onNext(final byte[] item) { subscription.cancel(); }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        }); // @formatter:on
+        // ------------------------------------------------------------------------------------ when
+        publisher.subscribe(subscriber);
+        // ------------------------------------------------------------------------------------ then
+        final var elementCaptor = forClass(byte[].class);
+        verify(subscriber, timeout(TIMEOUT).times(1)).onNext(elementCaptor.capture());
+        assertArrayEquals(hello_world_byte_array(), elementCaptor.getValue());
+        verify(executor, atLeastOnce()).execute(notNull());
+        verify(subscriber, never()).onError(any());
+    }
+
+    /**
+     * Verifies that the publisher signals {@code onError} with an {@link IllegalStateException},
+     * and no {@code onNext}, when the upstream completes before emitting
+     * {@value HelloWorld#BYTES} bytes.
+     */
+    @DisplayName("onError / upstream completes short")
+    @Test
+    void _OnError_UpstreamCompletesShort() {
+        // ----------------------------------------------------------------------------------- given
+        final var publisher = new HelloWorldChunkPublisher(new ShortByteFixture(service()));
+        final var subscriber = loggingArraySubscriber(new Flow.Subscriber<>() { // @formatter:off
+            @Override public void onSubscribe(final Flow.Subscription subscription) {
+                subscription.request(Long.MAX_VALUE);
+            }
+            @Override public void onNext(final byte[] item) { }
+            @Override public void onError(final Throwable throwable) { }
+            @Override public void onComplete() { }
+        }); // @formatter:on
+        // ------------------------------------------------------------------------------------ when
+        publisher.subscribe(subscriber);
+        // ------------------------------------------------------------------------------------ then
+        final var errorCaptor = forClass(Throwable.class);
+        verify(subscriber, timeout(TIMEOUT).times(1)).onError(errorCaptor.capture());
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        assertInstanceOf(IllegalStateException.class, errorCaptor.getValue());
     }
 }

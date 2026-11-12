@@ -56,7 +56,9 @@ import java.util.concurrent.*;
  * {@code "hello-world-chunk-producer"}. Virtual threads are always daemon, so an abandoned
  * subscriber cannot block JVM shutdown. The outer {@link SubmissionPublisher} defaults are used —
  * dispatch on {@link ForkJoinPool#commonPool()} with {@link Flow#defaultBufferSize()}
- * per-subscriber buffer.
+ * per-subscriber buffer. The inner byte subscriptions run on the executor of the
+ * {@link HelloWorldBytePublisher} given to the constructor ({@link ForkJoinPool#commonPool()} when
+ * the instance is created from a {@link HelloWorld} service).
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see HelloWorldArrayPublisher
@@ -65,18 +67,29 @@ import java.util.concurrent.*;
 public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
 
     /**
-     * Creates a new instance backed by the specified service.
+     * Creates a new instance which chunks the output of the specified byte publisher.
+     *
+     * @param upstream the {@link HelloWorldBytePublisher} to subscribe to once per chunk; must not
+     *                 be {@code null}.
+     * @throws NullPointerException if the {@code upstream} is {@code null}.
+     */
+    public HelloWorldChunkPublisher(final HelloWorldBytePublisher upstream) {
+        super();
+        this.upstream = Objects.requireNonNull(upstream, "upstream is null");
+    }
+
+    /**
+     * Creates a new instance which chunks the output of a {@link HelloWorldBytePublisher} backed by
+     * the specified service.
      *
      * @param service the {@link HelloWorld} service that produces the
      *                {@value HelloWorld#BYTES}-byte payload via
      *                {@link HelloWorld#set(byte[]) set(array)}; must not be {@code null}.
      * @throws NullPointerException if the {@code service} is {@code null}.
+     * @see HelloWorldBytePublisher#HelloWorldBytePublisher(HelloWorld)
      */
     public HelloWorldChunkPublisher(final HelloWorld service) {
-        super();
-        upstream = new HelloWorldBytePublisher(
-                Objects.requireNonNull(service, "service is null")
-        );
+        this(new HelloWorldBytePublisher(service));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -95,7 +108,8 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
      * {@link CompletableFuture} on {@code onComplete}/{@code onError}; the producer thread then
      * {@link CompletableFuture#join() join}s the future and
      * {@link SubmissionPublisher#submit(Object) submits} the array, parking on backpressure as
-     * needed. On inner failure, the cause is routed via
+     * needed. On inner failure, including an inner {@code onComplete} that arrives before
+     * {@value HelloWorld#BYTES} bytes (an {@link IllegalStateException}), the cause is routed via
      * {@link SubmissionPublisher#closeExceptionally(Throwable) closeExceptionally(t)}.
      */
     @SuppressWarnings("resource")  // closed by the producer thread, not by a synchronous scope
@@ -113,13 +127,17 @@ public class HelloWorldChunkPublisher implements Flow.Publisher<byte[]> {
                     @Override public void onSubscribe(final Flow.Subscription s) {
                         s.request(HelloWorld.BYTES);
                     }
-                    @Override public void onNext(final Byte b) {
-                        array[index++] = b;
-                    }
+                    @Override public void onNext(final Byte b) { array[index++] = b; }
                     @Override public void onError(final Throwable t) {
                         done.completeExceptionally(t);
                     }
                     @Override public void onComplete() {
+                        if (index < HelloWorld.BYTES) {
+                            done.completeExceptionally(new IllegalStateException(
+                                    "completed after " + index + " byte(s)"
+                            ));
+                            return;
+                        }
                         done.complete(array);
                     }
                 }); // @formatter:on
