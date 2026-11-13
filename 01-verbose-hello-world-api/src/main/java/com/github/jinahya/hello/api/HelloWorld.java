@@ -21,6 +21,8 @@ package com.github.jinahya.hello.api;
  */
 
 import javax.crypto.*;
+import javax.net.ssl.*;
+import javax.sound.sampled.*;
 import java.io.*;
 import java.lang.foreign.*;
 import java.lang.invoke.*;
@@ -717,8 +719,6 @@ public interface HelloWorld extends JdbcHelloWorld {
         return builder;
     }
 
-    // -------------------------------------------------------------------------------- java.net.ssl
-
     // ------------------------------------------------------------------------------------ java.nio
 
     /**
@@ -1031,6 +1031,43 @@ public interface HelloWorld extends JdbcHelloWorld {
     }
 
     /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified file channel,
+     * starting at the given file position. The {@link FileChannel#position() position} of the
+     * {@code channel} is not modified.
+     *
+     * @param <T>      channel type parameter
+     * @param channel  the file channel to which bytes are written.
+     * @param position the file position at which the transfer is to begin; must be non-negative.
+     * @return the given {@code channel}.
+     * @throws NullPointerException     if {@code channel} is {@code null}.
+     * @throws IllegalArgumentException if {@code position} is negative.
+     * @throws IOException              if an I/O error occurs.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
+     * buffer of {@value #BYTES} bytes, flips it, and writes the {@code buffer} to {@code channel},
+     * while the {@code buffer} {@link ByteBuffer#hasRemaining() has remaining}, by continuously
+     * invoking {@link FileChannel#write(ByteBuffer, long) channel.write(buffer, position)} method
+     * with the {@code buffer} and {@code position} adjusted by the previous result.
+     * @see #put(ByteBuffer)
+     * @see FileChannel#write(ByteBuffer, long)
+     * @see #write(AsynchronousFileChannel, long)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/nio/channels/FileChannel.html">java.nio.channels.FileChannel</a>
+     */
+    default <T extends FileChannel> T write(final T channel, long position) throws IOException {
+        Objects.requireNonNull(channel, "channel is null");
+        if (position < 0L) {
+            throw new IllegalArgumentException("position(" + position + ") is negative");
+        }
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            position += channel.write(buffer, position);
+        }
+        return channel;
+    }
+
+    /**
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a> to the specified asynchronous
      * file channel, starting at the given file position.
      * <pre>
@@ -1195,6 +1232,32 @@ public interface HelloWorld extends JdbcHelloWorld {
         set(array);
         signature.update(array);
         return signature;
+    }
+
+    /**
+     * Supplements the seed of the specified secure random with the
+     * <a href="#hello-world-bytes">hello-world-bytes</a>.
+     *
+     * @param <T>    secure random type parameter
+     * @param random the secure random to be reseeded.
+     * @return the given {@code random}.
+     * @throws NullPointerException if {@code random} is {@code null}.
+     * @apiNote The {@link SecureRandom#setSeed(byte[])} method supplements, rather than replaces,
+     * the existing seed; hence this method never reduces the randomness of the {@code random}.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link SecureRandom#setSeed(byte[]) reseeds} the {@code random}
+     * with the array, and returns the {@code random}.
+     * @see #set(byte[])
+     * @see SecureRandom#setSeed(byte[])
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/SecureRandom.html">java.security.SecureRandom</a>
+     */
+    default <T extends SecureRandom> T setSeed(final T random) {
+        Objects.requireNonNull(random, "random is null");
+        final var array = new byte[BYTES];
+        set(array);
+        random.setSeed(array);
+        return random;
     }
 
     // ----------------------------------------------------------------------------------- java.text
@@ -1381,7 +1444,10 @@ public interface HelloWorld extends JdbcHelloWorld {
      * @see Consumer#accept(Object)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/function/Consumer.html">java.util.function.Consumer</a>
+     * @deprecated A {@link Consumer} is not a byte sink of any Java I/O API; this method only
+     * iterates the hello-world-bytes, and is subject to removal.
      */
+    @Deprecated(forRemoval = true)
     default <T extends Consumer<? super U>, U>
     T accept(final T consumer, final Function<? super Byte, ? extends U> mapper) {
         Objects.requireNonNull(consumer, "consumer is null");
@@ -1394,7 +1460,18 @@ public interface HelloWorld extends JdbcHelloWorld {
         return consumer;
     }
 
-    // undocumented, yet
+    /**
+     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, as an {@code int},
+     * to the specified consumer.
+     *
+     * @param <T>      consumer type parameter
+     * @param consumer the consumer to which each byte is accepted.
+     * @return the given {@code consumer}.
+     * @throws NullPointerException if {@code consumer} is {@code null}.
+     * @deprecated An {@link IntConsumer} is not a byte sink of any Java I/O API; this method only
+     * iterates the hello-world-bytes, and is subject to removal.
+     */
+    @Deprecated(forRemoval = true)
     default <T extends IntConsumer> T accept(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         accept(consumer::accept, Byte::intValue);
@@ -1589,5 +1666,89 @@ public interface HelloWorld extends JdbcHelloWorld {
         set(array);
         mac.update(array);
         return mac;
+    }
+
+    // ------------------------------------------------------------------------------- javax.net.ssl
+
+    /**
+     * Wraps the <a href="#hello-world-bytes">hello-world-bytes</a>, as application data, with the
+     * specified SSL engine into the specified destination buffer.
+     * <p>
+     * The {@code engine} is expected to have completed its handshake; an engine still handshaking
+     * produces handshake data without consuming any application data.
+     *
+     * @param <T>    SSL engine type parameter
+     * @param engine the SSL engine with which bytes are wrapped.
+     * @param dst    the buffer into which the wrapped (encoded) data are put.
+     * @return the given {@code engine}.
+     * @throws NullPointerException    if either {@code engine} or {@code dst} is {@code null}.
+     * @throws BufferOverflowException if the {@code dst} does not have enough space.
+     * @throws SSLException            if no bytes are consumed by the {@code engine}, if the
+     *                                 {@code engine} is closed, or if a problem occurs while
+     *                                 wrapping.
+     * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} with a byte
+     * buffer of {@value #BYTES} bytes, flips it, and, while the buffer
+     * {@link ByteBuffer#hasRemaining() has remaining}, continuously invokes
+     * {@link SSLEngine#wrap(ByteBuffer, ByteBuffer) engine.wrap(buffer, dst)} method, and returns
+     * the {@code engine}.
+     * @see #put(ByteBuffer)
+     * @see SSLEngine#wrap(ByteBuffer, ByteBuffer)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/net/ssl/SSLEngine.html">javax.net.ssl.SSLEngine</a>
+     */
+    default <T extends SSLEngine> T wrap(final T engine, final ByteBuffer dst)
+            throws SSLException {
+        Objects.requireNonNull(engine, "engine is null");
+        Objects.requireNonNull(dst, "dst is null");
+        final var buffer = ByteBuffer.allocate(BYTES);
+        put(buffer);
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            final var result = engine.wrap(buffer, dst);
+            switch (result.getStatus()) {
+                case OK -> {
+                    if (result.bytesConsumed() == 0) {
+                        throw new SSLException("no bytes consumed; " + result);
+                    }
+                }
+                case BUFFER_OVERFLOW -> throw new BufferOverflowException();
+                default -> throw new SSLException("unexpected result; " + result);
+            }
+        }
+        return engine;
+    }
+
+    // ------------------------------------------------------------------------- javax.sound.sampled
+
+    /**
+     * Writes the <a href="#hello-world-bytes">hello-world-bytes</a>, as audio data, to the
+     * specified source data line.
+     * <p>
+     * The bytes are interpreted in the {@link DataLine#getFormat() format} of the {@code line};
+     * the {@link AudioFormat#getFrameSize() frame size} of the format should divide
+     * {@value #BYTES}.
+     *
+     * @param <T>  source data line type parameter
+     * @param line the source data line to which bytes are written.
+     * @return the given {@code line}.
+     * @throws NullPointerException     if {@code line} is {@code null}.
+     * @throws IllegalArgumentException if {@value #BYTES} is not an integral number of sample
+     *                                  frames of the {@code line}'s format.
+     * @apiNote The {@link SourceDataLine#write(byte[], int, int)} method blocks until all the bytes
+     * are written, unless the {@code line} is stopped, flushed, or closed.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, {@link SourceDataLine#write(byte[], int, int) writes} the array to
+     * the {@code line}, and returns the {@code line}.
+     * @see #set(byte[])
+     * @see SourceDataLine#write(byte[], int, int)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.desktop/javax/sound/sampled/SourceDataLine.html">javax.sound.sampled.SourceDataLine</a>
+     */
+    default <T extends SourceDataLine> T write(final T line) {
+        Objects.requireNonNull(line, "line is null");
+        final var array = new byte[BYTES];
+        set(array);
+        line.write(array, 0, array.length);
+        return line;
     }
 }

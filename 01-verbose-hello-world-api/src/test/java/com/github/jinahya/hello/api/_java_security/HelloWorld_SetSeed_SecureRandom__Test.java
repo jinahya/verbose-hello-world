@@ -1,0 +1,112 @@
+package com.github.jinahya.hello.api._java_security;
+
+
+/*-
+ * #%L
+ * verbose-hello-world-api
+ * %%
+ * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.github.jinahya.hello.api.*;
+import com.github.jinahya.hello.api.annotations.*;
+import lombok.extern.slf4j.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
+
+import java.security.*;
+import java.util.stream.*;
+
+import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * A class for exploring
+ * {@link com.github.jinahya.hello.api.HelloWorld#setSeed(SecureRandom) setSeed(random)} method
+ * with real {@link SecureRandom} implementations.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ */
+@_HideNameFromPublishing
+@DisplayName("setSeed(random) / extras")
+@Slf4j
+class HelloWorld_SetSeed_SecureRandom__Test extends HelloWorld__Test {
+
+    /**
+     * Returns the names of all {@link SecureRandom} algorithms of the installed providers.
+     *
+     * @return a stream of {@link SecureRandom} algorithm names.
+     */
+    private static Stream<String> getAlgorithms() {
+        return Security.getAlgorithms("SecureRandom").stream().sorted();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Stubs {@code service.setSeed(random)} to reseed the random with the
+     * {@code hello-world-bytes} before each test.
+     */
+    @BeforeEach
+    void __stubService() {
+        doAnswer(i -> {
+            final var random = i.getArgument(0, SecureRandom.class);
+            random.setSeed(hello_world_byte_array());
+            return random;
+        }).when(service()).setSeed(notNull());
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Verifies that every {@link SecureRandom} algorithm accepts the {@code hello-world-bytes} as
+     * a supplementary seed and keeps generating bytes.
+     *
+     * @param algorithm the {@link SecureRandom} algorithm name.
+     * @throws NoSuchAlgorithmException if the {@code algorithm} is not available.
+     */
+    @MethodSource({"getAlgorithms"})
+    @ParameterizedTest
+    void __(final String algorithm) throws NoSuchAlgorithmException {
+        final var random = SecureRandom.getInstance(algorithm);
+        assertSame(random, service().setSeed(random));
+        final var bytes = new byte[HelloWorld.BYTES];
+        random.nextBytes(bytes);
+        log.debug("{}: {}", algorithm, bytes);
+    }
+
+    /**
+     * Asserts that a {@code SHA1PRNG} instance, seeded with the {@code hello-world-bytes} before
+     * it generates anything, produces a deterministic sequence; the given seed replaces, rather
+     * than supplements, the self-seeding for this algorithm.
+     *
+     * @throws NoSuchAlgorithmException if {@code SHA1PRNG} is not available.
+     */
+    @DisplayName("SHA1PRNG / deterministic")
+    @Test
+    void __SHA1PRNG() throws NoSuchAlgorithmException {
+        final var random1 = service().setSeed(SecureRandom.getInstance("SHA1PRNG"));
+        final var random2 = service().setSeed(SecureRandom.getInstance("SHA1PRNG"));
+        final var bytes1 = new byte[HelloWorld.BYTES];
+        final var bytes2 = new byte[HelloWorld.BYTES];
+        random1.nextBytes(bytes1);
+        random2.nextBytes(bytes2);
+        assertArrayEquals(bytes1, bytes2);
+    }
+}

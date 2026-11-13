@@ -955,7 +955,10 @@ public final class HelloWorld__TestUtils {
                 position += channel.write(b, position).get();
             }
             return channel;
-        }).when(service).write(notNull(), longThat(v -> v >= 0L));
+        }).when(service).write(
+                ArgumentMatchers.<AsynchronousFileChannel>notNull(),
+                longThat(v -> v >= 0L)
+        );
         return service;
     }
 
