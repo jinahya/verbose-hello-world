@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#cipher-algorithms">JDK
+ * href="https://docs.oracle.com/en/java/javase/27/docs/specs/security/standard-names.html#cipher-algorithms">JDK
  * 25 JCA Standard Algorithm Names &mdash; Cipher Algorithms</a>
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc8017">RFC 8017 &mdash; PKCS #1 v2.2: RSA
  * Cryptography Specifications (RSAES-OAEP, RSAES-PKCS1-v1_5)</a>

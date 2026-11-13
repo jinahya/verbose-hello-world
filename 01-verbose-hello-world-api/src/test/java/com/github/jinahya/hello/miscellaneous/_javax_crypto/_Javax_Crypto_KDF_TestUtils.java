@@ -31,10 +31,10 @@ import java.util.concurrent.*;
  * A class providing test utilities for {@link javax.crypto.KDF}.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
  * (Java 26)
  */
 public final class _Javax_Crypto_KDF_TestUtils {

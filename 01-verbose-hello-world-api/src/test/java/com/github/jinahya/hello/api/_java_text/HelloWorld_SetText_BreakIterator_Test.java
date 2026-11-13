@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see BreakIterator#setText(String)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/BreakIterator.html">java.text.BreakIterator</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/text/BreakIterator.html">java.text.BreakIterator</a>
  */
 @DisplayName("HelloWorld.setText(BreakIterator)")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)

@@ -39,7 +39,7 @@ import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static com.github.jinahya.hello.miscellaneous._java_security._Java_Security_Signature_TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-// https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html
+// https://docs.oracle.com/en/java/javase/27/security/oracle-providers.html
 
 /**
  * A class for exploring
@@ -47,10 +47,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * real {@link Signature} algorithms provided by JDK.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
- * @see <a href="https://docs.oracle.com/en/java/javase/25/security/oracle-providers.html">Oracle
+ * @see <a href="https://docs.oracle.com/en/java/javase/27/security/oracle-providers.html">Oracle
  * Providers Documentation</a>
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#signature-algorithms">Signature
+ * href="https://docs.oracle.com/en/java/javase/27/docs/specs/security/standard-names.html#signature-algorithms">Signature
  * Algorithms</a>
  */
 @_HideNameFromPublishing

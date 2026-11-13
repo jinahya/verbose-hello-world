@@ -26,7 +26,7 @@
  */
 module com.github.jinahya.hello.api {
     requires java.net.http;
-    requires java.sql;
+    requires transitive java.sql;
     requires java.desktop;
     exports com.github.jinahya.hello.api;
 //    exports com.github.jinahya.hello.api.annotations;

@@ -55,5 +55,19 @@ class HelloWorld_Constants_Test {
             final var actual = HelloWorld.BYTES;
             assertEquals(expected, actual);
         }
+
+        /**
+         * Verifies that {@link HelloWorld#BYTES} equals the encoded length of the
+         * {@code hello-world-string} in {@link java.nio.charset.StandardCharsets#US_ASCII US_ASCII},
+         * computed by {@link String#encodedLength(java.nio.charset.Charset)} without creating an
+         * encoded array.
+         */
+        @DisplayName("12 (encodedLength)")
+        @Test
+        void _12_BYTES_encodedLength() {
+            final var expected = HELLO_WORLD_STRING.encodedLength(US_ASCII);
+            final var actual = HelloWorld.BYTES;
+            assertEquals(expected, actual);
+        }
     }
 }

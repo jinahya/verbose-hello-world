@@ -4,7 +4,7 @@ package com.github.jinahya.hello.api;
  * #%L
  * verbose-hello-world-api
  * %%
- * Copyright (C) 2018 - 2026 Jinahya, Inc.
+ * Copyright (C) 2018 - 2019 Jinahya, Inc.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.mockito.quality.*;
 @ExtendWith({MockitoExtension.class})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public abstract class JdbcHelloWorld__Test {
+abstract class JdbcHelloWorld__Test {
 
     // -------------------------------------------------------------------------------- CONSTRUCTORS
 

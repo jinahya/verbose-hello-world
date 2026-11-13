@@ -36,10 +36,10 @@ import java.util.concurrent.*;
  * A class providing test utilities for {@link javax.crypto.Cipher}.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/Cipher.html">javax.crypto.Cipher</a>
  * (Java 26)
  */
 public final class _Javax_Crypto_Cipher_TestUtils {

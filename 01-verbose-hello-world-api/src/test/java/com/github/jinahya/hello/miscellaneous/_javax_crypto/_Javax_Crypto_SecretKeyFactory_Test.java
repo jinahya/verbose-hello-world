@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * A class for testing {@link javax.crypto.SecretKeyFactory} with the JCA-mandatory algorithms.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/SecretKeyFactory.html">javax.crypto.SecretKeyFactory</a>
  * (Java 26)
  */
 @DisplayName("javax.crypto.SecretKeyFactory")

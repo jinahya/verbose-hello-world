@@ -21,30 +21,41 @@ package com.github.jinahya.hello.api;
  */
 
 import java.io.*;
+import java.nio.charset.*;
 import java.sql.*;
 import java.util.*;
 
-import static com.github.jinahya.hello.api.HelloWorldUtils.*;
+import static com.github.jinahya.hello.api.JdbcHelloWorldUtils.*;
 
 /**
- * An extension of the {@link HelloWorld} interface for writing
+ * A package-private super interface of the {@link HelloWorld} interface for writing
  * <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to various targets of the
  * {@code java.sql} package; prepared statements, callable statements, result sets, blobs, clobs,
  * and SQL output streams.
  * <p>
- * Since this interface does not add any abstract method, any {@link HelloWorld} instance can be
- * adapted to this interface with a method reference.
- * {@snippet lang = "java":
- * HelloWorld helloWorld = ServiceLoader.load(HelloWorld.class).findFirst().orElseThrow();
- * JdbcHelloWorld jdbcHelloWorld = helloWorld::set;
- *}
+ * This interface exists only to keep the {@code java.sql} methods out of the {@link HelloWorld}
+ * source file. The {@link HelloWorld} interface is its only sub-interface, and every method
+ * declared here is a public method of the {@link HelloWorld} interface.
+ * <p>
+ * Every default method in this interface relies only on the {@link #set(byte[], int)} method, which
+ * is the same method as the {@link HelloWorld#set(byte[], int)} method.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
  * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/package-summary.html">java.sql</a>
  */
-@FunctionalInterface
-public interface JdbcHelloWorld extends HelloWorld {
+interface JdbcHelloWorld {
+
+    /**
+     * Sets the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> on the specified
+     * array starting at the specified index.
+     *
+     * @param array the array on which bytes are set.
+     * @param index the starting index of the {@code array}.
+     * @return the given {@code array}.
+     * @see HelloWorld#set(byte[], int)
+     */
+    byte[] set(byte[] array, int index);
 
     // ------------------------------------------------------------------ java.sql.PreparedStatement
 
@@ -64,13 +75,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link PreparedStatement#setAsciiStream(int, InputStream) setAsciiStream(parameterIndex,
      * stream)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
      * stream, {@link InputStream#close() closes} the stream, and returns the
      * {@code preparedStatement}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setAsciiStream(int, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -104,13 +115,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link PreparedStatement#setBinaryStream(int, InputStream) setBinaryStream(parameterIndex,
      * stream)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
      * stream, {@link InputStream#close() closes} the stream, and returns the
      * {@code preparedStatement}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setBinaryStream(int, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -143,11 +154,11 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link PreparedStatement#setBytes(int, byte[]) setBytes(parameterIndex, array)} method on the
      * {@code preparedStatement} with the {@code parameterIndex} and the array, and returns the
      * {@code preparedStatement}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setBytes(int, byte[])
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -178,12 +189,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  marker in the SQL statement, if a database access error
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link PreparedStatement#setString(int, String) setString(parameterIndex, string)} method on
      * the {@code preparedStatement} with the {@code parameterIndex} and the string, and returns the
      * {@code preparedStatement}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setString(int, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -215,13 +227,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  marker in the SQL statement, if a database access error
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link PreparedStatement#setCharacterStream(int, Reader) setCharacterStream(parameterIndex,
      * reader)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
      * reader, {@link Reader#close() closes} the reader, and returns the {@code preparedStatement}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setCharacterStream(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -253,12 +266,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  marker in the SQL statement, if a database access error
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link PreparedStatement#setNString(int, String) setNString(parameterIndex, string)} method
      * on the {@code preparedStatement} with the {@code parameterIndex} and the string, and returns
      * the {@code preparedStatement}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setNString(int, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -289,15 +303,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  marker in the SQL statement, if a database access error
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link PreparedStatement#setNCharacterStream(int, Reader) setNCharacterStream(parameterIndex,
      * reader)} method on the {@code preparedStatement} with the {@code parameterIndex} and the
      * reader, and returns the {@code preparedStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setNCharacterStream(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -330,14 +345,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link PreparedStatement#setBlob(int, InputStream) setBlob(parameterIndex, stream)} method on
      * the {@code preparedStatement} with the {@code parameterIndex} and the stream, and returns the
      * {@code preparedStatement}.
      * @apiNote This method does not close the stream, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setBlob(int, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -368,15 +383,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  marker in the SQL statement, if a database access error
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link PreparedStatement#setClob(int, Reader) setClob(parameterIndex, reader)} method on the
      * {@code preparedStatement} with the {@code parameterIndex} and the reader, and returns the
      * {@code preparedStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setClob(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -408,15 +424,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  marker in the SQL statement, if a database access error
      *                                  occurs, or if this method is called on a closed
      *                                  {@link PreparedStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link PreparedStatement#setNClob(int, Reader) setNClob(parameterIndex, reader)} method on
      * the {@code preparedStatement} with the {@code parameterIndex} and the reader, and returns the
      * {@code preparedStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see PreparedStatement#setNClob(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/PreparedStatement.html">java.sql.PreparedStatement</a>
@@ -449,14 +466,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link CallableStatement#setAsciiStream(String, InputStream) setAsciiStream(parameterName,
      * stream)} method on the {@code callableStatement} with the {@code parameterName} and the
      * stream, and returns the {@code callableStatement}.
      * @apiNote This method does not close the stream, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setAsciiStream(String, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -485,14 +502,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link CallableStatement#setBinaryStream(String, InputStream) setBinaryStream(parameterName,
      * stream)} method on the {@code callableStatement} with the {@code parameterName} and the
      * stream, and returns the {@code callableStatement}.
      * @apiNote This method does not close the stream, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setBinaryStream(String, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -521,11 +538,11 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link CallableStatement#setBytes(String, byte[]) setBytes(parameterName, array)} method on
      * the {@code callableStatement} with the {@code parameterName} and the array, and returns the
      * {@code callableStatement}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setBytes(String, byte[])
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -553,12 +570,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException         if {@code parameterName} does not correspond to a named
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link CallableStatement#setString(String, String) setString(parameterName, string)} method
      * on the {@code callableStatement} with the {@code parameterName} and the string, and returns
      * the {@code callableStatement}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setString(String, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -586,15 +604,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException         if {@code parameterName} does not correspond to a named
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link CallableStatement#setCharacterStream(String, Reader) setCharacterStream(parameterName,
      * reader)} method on the {@code callableStatement} with the {@code parameterName} and the
      * reader, and returns the {@code callableStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setCharacterStream(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -622,12 +641,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException         if {@code parameterName} does not correspond to a named
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link CallableStatement#setNString(String, String) setNString(parameterName, string)} method
      * on the {@code callableStatement} with the {@code parameterName} and the string, and returns
      * the {@code callableStatement}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setNString(String, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -655,15 +675,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException         if {@code parameterName} does not correspond to a named
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link CallableStatement#setNCharacterStream(String, Reader)
      * setNCharacterStream(parameterName, reader)} method on the {@code callableStatement} with the
      * {@code parameterName} and the reader, and returns the {@code callableStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setNCharacterStream(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -692,14 +713,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link CallableStatement#setBlob(String, InputStream) setBlob(parameterName, stream)} method
      * on the {@code callableStatement} with the {@code parameterName} and the stream, and returns
      * the {@code callableStatement}.
      * @apiNote This method does not close the stream, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setBlob(String, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -727,15 +748,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException         if {@code parameterName} does not correspond to a named
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link CallableStatement#setClob(String, Reader) setClob(parameterName, reader)} method on
      * the {@code callableStatement} with the {@code parameterName} and the reader, and returns the
      * {@code callableStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setClob(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -764,15 +786,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException         if {@code parameterName} does not correspond to a named
      *                              parameter, if a database access error occurs, or if this method
      *                              is called on a closed {@link CallableStatement}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link CallableStatement#setNClob(String, Reader) setNClob(parameterName, reader)} method on
      * the {@code callableStatement} with the {@code parameterName} and the reader, and returns the
      * {@code callableStatement}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see CallableStatement#setNClob(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/CallableStatement.html">java.sql.CallableStatement</a>
@@ -804,8 +827,8 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link ResultSet#updateAsciiStream(int, InputStream) updateAsciiStream(columnIndex, stream)}
      * method on the {@code resultSet} with the {@code columnIndex} and the stream, and returns the
      * {@code resultSet}.
@@ -813,7 +836,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateAsciiStream(int, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -844,8 +867,8 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link ResultSet#updateBinaryStream(int, InputStream) updateBinaryStream(columnIndex,
      * stream)} method on the {@code resultSet} with the {@code columnIndex} and the stream, and
      * returns the {@code resultSet}.
@@ -853,7 +876,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateBinaryStream(int, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -884,14 +907,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link ResultSet#updateBytes(int, byte[]) updateBytes(columnIndex, array)} method on the
      * {@code resultSet} with the {@code columnIndex} and the array, and returns the
      * {@code resultSet}.
      * @apiNote This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateBytes(int, byte[])
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -921,15 +944,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  error occurs, if the result set concurrency is
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link ResultSet#updateString(int, String) updateString(columnIndex, string)} method on the
      * {@code resultSet} with the {@code columnIndex} and the string, and returns the
      * {@code resultSet}.
      * @apiNote This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateString(int, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -959,9 +983,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  error occurs, if the result set concurrency is
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateCharacterStream(int, Reader) updateCharacterStream(columnIndex,
      * reader)} method on the {@code resultSet} with the {@code columnIndex} and the reader, and
      * returns the {@code resultSet}.
@@ -969,7 +994,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateCharacterStream(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1000,15 +1025,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  error occurs, if the result set concurrency is
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link ResultSet#updateNString(int, String) updateNString(columnIndex, string)} method on the
      * {@code resultSet} with the {@code columnIndex} and the string, and returns the
      * {@code resultSet}.
      * @apiNote This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateNString(int, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1039,9 +1065,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  error occurs, if the result set concurrency is
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateNCharacterStream(int, Reader) updateNCharacterStream(columnIndex,
      * reader)} method on the {@code resultSet} with the {@code columnIndex} and the reader, and
      * returns the {@code resultSet}.
@@ -1049,7 +1076,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateNCharacterStream(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1081,8 +1108,8 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link ResultSet#updateBlob(int, InputStream) updateBlob(columnIndex, stream)} method on the
      * {@code resultSet} with the {@code columnIndex} and the stream, and returns the
      * {@code resultSet}.
@@ -1090,7 +1117,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateBlob(int, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1121,9 +1148,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  error occurs, if the result set concurrency is
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateClob(int, Reader) updateClob(columnIndex, reader)} method on the
      * {@code resultSet} with the {@code columnIndex} and the reader, and returns the
      * {@code resultSet}.
@@ -1131,7 +1159,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateClob(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1162,9 +1190,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                                  error occurs, if the result set concurrency is
      *                                  {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if
      *                                  this method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateNClob(int, Reader) updateNClob(columnIndex, reader)} method on the
      * {@code resultSet} with the {@code columnIndex} and the reader, and returns the
      * {@code resultSet}.
@@ -1172,7 +1201,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateNClob(int, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1205,8 +1234,8 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link ResultSet#updateAsciiStream(String, InputStream) updateAsciiStream(columnLabel,
      * stream)} method on the {@code resultSet} with the {@code columnLabel} and the stream, and
      * returns the {@code resultSet}.
@@ -1214,7 +1243,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateAsciiStream(String, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1245,8 +1274,8 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link ResultSet#updateBinaryStream(String, InputStream) updateBinaryStream(columnLabel,
      * stream)} method on the {@code resultSet} with the {@code columnLabel} and the stream, and
      * returns the {@code resultSet}.
@@ -1254,7 +1283,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateBinaryStream(String, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1285,14 +1314,14 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link ResultSet#updateBytes(String, byte[]) updateBytes(columnLabel, array)} method on the
      * {@code resultSet} with the {@code columnLabel} and the array, and returns the
      * {@code resultSet}.
      * @apiNote This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateBytes(String, byte[])
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1322,15 +1351,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              occurs, if the result set concurrency is
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link ResultSet#updateString(String, String) updateString(columnLabel, string)} method on
      * the {@code resultSet} with the {@code columnLabel} and the string, and returns the
      * {@code resultSet}.
      * @apiNote This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateString(String, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1360,9 +1390,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              occurs, if the result set concurrency is
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateCharacterStream(String, Reader) updateCharacterStream(columnLabel,
      * reader)} method on the {@code resultSet} with the {@code columnLabel} and the reader, and
      * returns the {@code resultSet}.
@@ -1370,7 +1401,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateCharacterStream(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1401,15 +1432,16 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              occurs, if the result set concurrency is
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link ResultSet#updateNString(String, String) updateNString(columnLabel, string)} method on
      * the {@code resultSet} with the {@code columnLabel} and the string, and returns the
      * {@code resultSet}.
      * @apiNote This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateNString(String, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1439,9 +1471,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              occurs, if the result set concurrency is
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateNCharacterStream(String, Reader) updateNCharacterStream(columnLabel,
      * reader)} method on the {@code resultSet} with the {@code columnLabel} and the reader, and
      * returns the {@code resultSet}.
@@ -1449,7 +1482,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateNCharacterStream(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1481,8 +1514,8 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link ResultSet#updateBlob(String, InputStream) updateBlob(columnLabel, stream)} method on
      * the {@code resultSet} with the {@code columnLabel} and the stream, and returns the
      * {@code resultSet}.
@@ -1490,7 +1523,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateBlob(String, InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1520,9 +1553,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              occurs, if the result set concurrency is
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateClob(String, Reader) updateClob(columnLabel, reader)} method on the
      * {@code resultSet} with the {@code columnLabel} and the reader, and returns the
      * {@code resultSet}.
@@ -1530,7 +1564,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateClob(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1560,9 +1594,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      *                              occurs, if the result set concurrency is
      *                              {@link ResultSet#CONCUR_READ_ONLY CONCUR_READ_ONLY}, or if this
      *                              method is called on a closed result set.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link ResultSet#updateNClob(String, Reader) updateNClob(columnLabel, reader)} method on the
      * {@code resultSet} with the {@code columnLabel} and the reader, and returns the
      * {@code resultSet}.
@@ -1570,7 +1605,7 @@ public interface JdbcHelloWorld extends HelloWorld {
      * method returns. This method does not update the underlying database; the caller should invoke
      * {@link ResultSet#updateRow() updateRow()} or {@link ResultSet#insertRow() insertRow()} method
      * on the {@code resultSet}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see ResultSet#updateNClob(String, Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/ResultSet.html">java.sql.ResultSet</a>
@@ -1601,10 +1636,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException             if there is an error accessing the {@code BLOB} value.
      * @implSpec Default implementation opens an output stream by invoking
      * {@link Blob#setBinaryStream(long) blob.setBinaryStream(pos)} method on the {@code blob} with
-     * the {@code pos}, invokes {@link #write(OutputStream) write(stream)} method with the stream,
-     * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
-     * returns the {@code blob}.
-     * @see #write(OutputStream)
+     * the {@code pos}, writes, to the stream, an array of the hello-world-bytes set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, {@link OutputStream#flush() flushes}
+     * and {@link OutputStream#close() closes} the stream, and returns the {@code blob}.
+     * @see #set(byte[], int)
      * @see Blob#setBinaryStream(long)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Blob.html">java.sql.Blob</a>
@@ -1616,7 +1651,7 @@ public interface JdbcHelloWorld extends HelloWorld {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
         try (var stream = blob.setBinaryStream(pos)) {
-            write(stream);
+            stream.write(array(this));
             stream.flush();
         }
         return blob;
@@ -1635,10 +1670,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws IllegalArgumentException if {@code pos} is not positive.
      * @throws SQLException             if there is an error accessing the {@code BLOB} value.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link Blob#setBytes(long, byte[]) blob.setBytes(pos, array)} method on the {@code blob} with
      * the {@code pos} and the array, and returns the {@code blob}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see Blob#setBytes(long, byte[])
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Blob.html">java.sql.Blob</a>
@@ -1670,10 +1705,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException             if there is an error accessing the {@code CLOB} value.
      * @implSpec Default implementation opens an output stream by invoking
      * {@link Clob#setAsciiStream(long) clob.setAsciiStream(pos)} method on the {@code clob} with
-     * the {@code pos}, invokes {@link #write(OutputStream) write(stream)} method with the stream,
-     * {@link OutputStream#flush() flushes} and {@link OutputStream#close() closes} the stream, and
-     * returns the {@code clob}.
-     * @see #write(OutputStream)
+     * the {@code pos}, writes, to the stream, an array of the hello-world-bytes set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, {@link OutputStream#flush() flushes}
+     * and {@link OutputStream#close() closes} the stream, and returns the {@code clob}.
+     * @see #set(byte[], int)
      * @see Clob#setAsciiStream(long)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
@@ -1685,7 +1720,7 @@ public interface JdbcHelloWorld extends HelloWorld {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
         try (var stream = clob.setAsciiStream(pos)) {
-            write(stream);
+            stream.write(array(this));
             stream.flush();
         }
         return clob;
@@ -1706,10 +1741,11 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws SQLException             if there is an error accessing the {@code CLOB} value.
      * @implSpec Default implementation opens a writer by invoking
      * {@link Clob#setCharacterStream(long) clob.setCharacterStream(pos)} method on the {@code clob}
-     * with the {@code pos}, invokes {@link #write(Writer) write(writer)} method with the writer,
-     * {@link Writer#flush() flushes} and {@link Writer#close() closes} the writer, and returns the
-     * {@code clob}.
-     * @see #write(Writer)
+     * with the {@code pos}, writes, to the writer, a string of the hello-world-bytes decoded, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, from the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, {@link Writer#flush() flushes} and
+     * {@link Writer#close() closes} the writer, and returns the {@code clob}.
+     * @see #set(byte[], int)
      * @see Clob#setCharacterStream(long)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
@@ -1721,7 +1757,7 @@ public interface JdbcHelloWorld extends HelloWorld {
             throw new IllegalArgumentException("non-positive pos: " + pos);
         }
         try (var writer = clob.setCharacterStream(pos)) {
-            write(writer);
+            writer.write(string(this));
             writer.flush();
         }
         return clob;
@@ -1740,11 +1776,12 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws IllegalArgumentException if {@code pos} is not positive.
      * @throws SQLException             if there is an error accessing the {@code CLOB} value, or if
      *                                  {@code pos} is greater than the length of the {@code clob}.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link Clob#setString(long, String) clob.setString(pos, string)} method on the {@code clob}
      * with the {@code pos} and the string, and returns the {@code clob}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see Clob#setString(long, String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/Clob.html">java.sql.Clob</a>
@@ -1771,13 +1808,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws SQLException         if a database access error occurs.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link SQLOutput#writeAsciiStream(InputStream) writeAsciiStream(stream)} method on the
      * {@code output} with the stream, and returns the {@code output}.
      * @apiNote This method does not close the stream, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see SQLOutput#writeAsciiStream(InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/SQLOutput.html">java.sql.SQLOutput</a>
@@ -1799,13 +1836,13 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws SQLException         if a database access error occurs.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, wraps the array
-     * in a {@link ByteArrayInputStream}, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the array in a
+     * {@link ByteArrayInputStream}, invokes
      * {@link SQLOutput#writeBinaryStream(InputStream) writeBinaryStream(stream)} method on the
      * {@code output} with the stream, and returns the {@code output}.
      * @apiNote This method does not close the stream, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see SQLOutput#writeBinaryStream(InputStream)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/SQLOutput.html">java.sql.SQLOutput</a>
@@ -1827,10 +1864,10 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws SQLException         if a database access error occurs.
      * @implSpec Default implementation obtains an array of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#array(HelloWorld) HelloWorldUtils.array(this)} method, invokes
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link SQLOutput#writeBytes(byte[]) writeBytes(array)} method on the {@code output} with the
      * array, and returns the {@code output}.
-     * @see HelloWorldUtils#array(HelloWorld)
+     * @see #set(byte[], int)
      * @see SQLOutput#writeBytes(byte[])
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/SQLOutput.html">java.sql.SQLOutput</a>
@@ -1851,11 +1888,12 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @return the given {@code output}.
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws SQLException         if a database access error occurs.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link SQLOutput#writeString(String) writeString(string)} method on the {@code output} with
      * the string, and returns the {@code output}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see SQLOutput#writeString(String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/SQLOutput.html">java.sql.SQLOutput</a>
@@ -1876,14 +1914,15 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @return the given {@code output}.
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws SQLException         if a database access error occurs.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, wraps the
-     * string in a {@link StringReader}, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, wraps the string in a
+     * {@link StringReader}, invokes
      * {@link SQLOutput#writeCharacterStream(Reader) writeCharacterStream(reader)} method on the
      * {@code output} with the reader, and returns the {@code output}.
      * @apiNote This method does not close the reader, since the driver may still read it after this
      * method returns.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see SQLOutput#writeCharacterStream(Reader)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/SQLOutput.html">java.sql.SQLOutput</a>
@@ -1904,11 +1943,12 @@ public interface JdbcHelloWorld extends HelloWorld {
      * @return the given {@code output}.
      * @throws NullPointerException if {@code output} is {@code null}.
      * @throws SQLException         if a database access error occurs.
-     * @implSpec Default implementation obtains a string of the hello-world-bytes by invoking
-     * {@link HelloWorldUtils#string(HelloWorld) HelloWorldUtils.string(this)} method, invokes
+     * @implSpec Default implementation obtains a string of the hello-world-bytes by decoding, in
+     * {@link StandardCharsets#US_ASCII US-ASCII}, the array set by invoking
+     * {@link #set(byte[], int) set(new byte[12], 0)} method, invokes
      * {@link SQLOutput#writeNString(String) writeNString(string)} method on the {@code output} with
      * the string, and returns the {@code output}.
-     * @see HelloWorldUtils#string(HelloWorld)
+     * @see #set(byte[], int)
      * @see SQLOutput#writeNString(String)
      * @see <a
      * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.sql/java/sql/SQLOutput.html">java.sql.SQLOutput</a>

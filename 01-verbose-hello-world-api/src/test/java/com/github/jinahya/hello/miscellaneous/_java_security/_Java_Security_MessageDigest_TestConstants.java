@@ -30,10 +30,10 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
  * (Java 26)
  */
 @Slf4j
@@ -55,7 +55,7 @@ public final class _Java_Security_MessageDigest_TestConstants {
      * .
      *
      * @see <a
-     * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
      * (Java 25)
      */
     @_LatestLTS
@@ -69,7 +69,7 @@ public final class _Java_Security_MessageDigest_TestConstants {
      * .
      *
      * @see <a
-     * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
      * (Java 26)
      */
     @_LatestJDK

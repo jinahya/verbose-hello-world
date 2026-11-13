@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * A class for testing {@link javax.crypto.KDF} with the JCA-mandatory {@code HKDF} algorithms.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/KDF.html">javax.crypto.KDF</a>
  * (Java 26)
  */
 @DisplayName("javax.crypto.KDF")

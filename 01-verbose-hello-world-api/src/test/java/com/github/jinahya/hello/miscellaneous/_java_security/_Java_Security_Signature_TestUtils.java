@@ -36,10 +36,10 @@ import java.util.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/Signature.html">java.security.Signature</a>
  * (Java 26)
  */
 @Slf4j

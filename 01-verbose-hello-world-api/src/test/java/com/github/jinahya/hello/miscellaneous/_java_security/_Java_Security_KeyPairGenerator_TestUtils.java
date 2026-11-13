@@ -30,10 +30,10 @@ import java.security.spec.*;
  * A class providing test utilities for {@link java.security.KeyPairGenerator}.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
  * (Java 26)
  */
 @Slf4j

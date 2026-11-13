@@ -34,7 +34,7 @@ import javax.crypto.*;
  * algorithm left to explore here, so this class is intentionally empty for now.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#kdf-algorithms">JDK
+ * href="https://docs.oracle.com/en/java/javase/27/docs/specs/security/standard-names.html#kdf-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; KDF Algorithms</a>
  */
 @_HideNameFromPublishing

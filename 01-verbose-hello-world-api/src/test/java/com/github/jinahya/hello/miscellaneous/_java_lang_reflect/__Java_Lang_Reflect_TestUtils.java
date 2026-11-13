@@ -35,7 +35,7 @@ public final class __Java_Lang_Reflect_TestUtils {
      * class whose parameter list is invocable with the specified actual arguments, applying the
      * same {@code null}-as-any-reference and primitive/wrapper boxing rules the JVM uses at an
      * actual call site. When more than one constructor matches, the
-     * <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.12.2.5">JLS
+     * <a href="https://docs.oracle.com/javase/specs/jls/se27/html/jls-15.html#jls-15.12.2.5">JLS
      * most-specific</a> one is returned; if no unique most-specific constructor exists, the call is
      * treated as ambiguous and {@link IllegalArgumentException} is thrown.
      * <p>

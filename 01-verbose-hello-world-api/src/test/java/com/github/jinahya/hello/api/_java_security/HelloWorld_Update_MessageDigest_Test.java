@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/MessageDigest.html">java.security.MessageDigest</a>
  */
 @DisplayName("update(digest)")
 @Slf4j

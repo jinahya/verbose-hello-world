@@ -61,7 +61,7 @@ import java.util.zip.*;
         "java:S1865", // useless assignments
         "java:S4274" // assert ...
 })
-public interface HelloWorld {
+public interface HelloWorld extends JdbcHelloWorld {
 
     private static System.Logger log() {
         return System.getLogger(MethodHandles.lookup().lookupClass().getName());

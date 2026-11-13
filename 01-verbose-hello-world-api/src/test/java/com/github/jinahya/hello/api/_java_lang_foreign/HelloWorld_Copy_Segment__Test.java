@@ -54,6 +54,70 @@ class HelloWorld_Copy_Segment__Test extends HelloWorld__Test {
         set_array_sets_hello_world_bytes(service());
     }
 
+    // ---------------------------------------------------------------------------------------- Java
+
+    /**
+     * Tests {@link HelloWorld#copy(MemorySegment)} with string methods of {@link MemorySegment}.
+     *
+     * @see MemorySegment#getString(long, Charset, long)
+     * @see MemorySegment#copy(String, Charset, int, MemorySegment, long, int)
+     */
+    @DisplayName("Java")
+    @Nested
+    class Java_Test {
+
+        /**
+         * Verifies segment content using {@link MemorySegment#getString(long, Charset, long)},
+         * which reads a string of the given byte length without a null terminator.
+         */
+        @DisplayName("getString(offset, charset, byteLength)")
+        @Test
+        void _getString__() {
+            // ------------------------------------------------------------------------------- given
+            try (var arena = Arena.ofConfined()) {
+                final var segment = arena.allocate(HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service().copy(segment);
+                // ---------------------------------------------------------------------------- then
+                assertThrows(
+                        IndexOutOfBoundsException.class,
+                        () -> segment.getString(0L, StandardCharsets.US_ASCII)
+                );
+                final var content = segment.getString(
+                        0L, StandardCharsets.US_ASCII, HelloWorld.BYTES
+                );
+                assertEquals(HELLO_WORLD_STRING, content);
+            }
+        }
+
+        /**
+         * Verifies segment content against a segment into which the string is encoded directly via
+         * {@link MemorySegment#copy(String, Charset, int, MemorySegment, long, int)}.
+         */
+        @DisplayName("copy(string, charset, srcIndex, dst, dstOffset, numChars)")
+        @Test
+        void _copyString__() {
+            // ------------------------------------------------------------------------------- given
+            try (var arena = Arena.ofConfined()) {
+                final var segment = arena.allocate(HelloWorld.BYTES);
+                // ---------------------------------------------------------------------------- when
+                service().copy(segment);
+                // ---------------------------------------------------------------------------- then
+                final var expected = arena.allocate(HelloWorld.BYTES);
+                final var copied = MemorySegment.copy(
+                        HELLO_WORLD_STRING,
+                        StandardCharsets.US_ASCII,
+                        0,
+                        expected,
+                        0L,
+                        HELLO_WORLD_STRING.length()
+                );
+                assertEquals(HelloWorld.BYTES, copied);
+                assertEquals(-1L, segment.mismatch(expected));
+            }
+        }
+    }
+
     // -------------------------------------------------------------------------------------- C/libc
 
     /**

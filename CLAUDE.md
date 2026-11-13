@@ -172,7 +172,7 @@ The `generate-executables` profile (active by default) produces multiple artifac
 
 - **Articles**: Use "the given" (not "given"), "the specified", "the result"
 - **Oxford commas**: Applied consistently in lists of 3+ items
-- **JLS references**: Use `se25` version (e.g., `jls/se25/html/jls-9.html`)
+- **JLS references**: Use `se27` version (e.g., `jls/se27/html/jls-9.html`)
 - **Type precision**: Match descriptions to exact types (e.g., "asynchronous file channel" for `AsynchronousFileChannel`, not "file channel")
 - **ASCII diagrams**: Used in `<pre>` blocks to visualize:
   - Array indices and contents: `|h|e|l|l|o|,| |w|o|r|l|d|`

@@ -38,10 +38,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * algorithms.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
  * (Java 25)
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/security/KeyPairGenerator.html">java.security.KeyPairGenerator</a>
  * (Java 26)
  */
 @DisplayName("java.security.KeyPairGenerator")

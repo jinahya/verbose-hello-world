@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * streaming (non-AEAD) ChaCha20, and a legacy Blowfish block cipher.
  *
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/26/docs/specs/security/standard-names.html#cipher-algorithms">JDK
+ * href="https://docs.oracle.com/en/java/javase/27/docs/specs/security/standard-names.html#cipher-algorithms">JDK
  * 26 JCA Standard Algorithm Names &mdash; Cipher Algorithms</a>
  */
 @_HideNameFromPublishing

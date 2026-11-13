@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @see <a
- * href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
+ * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/javax/crypto/Mac.html">javax.crypto.Mac</a>
  */
 @DisplayName("update(mac)")
 @Slf4j
