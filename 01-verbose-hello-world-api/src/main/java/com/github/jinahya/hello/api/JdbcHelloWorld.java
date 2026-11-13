@@ -21,6 +21,7 @@ package com.github.jinahya.hello.api;
  */
 
 import java.io.*;
+import java.lang.invoke.*;
 import java.nio.charset.*;
 import java.sql.*;
 import java.util.*;
@@ -46,6 +47,11 @@ import static com.github.jinahya.hello.api.JdbcHelloWorldUtils.*;
  */
 interface JdbcHelloWorld {
 
+    private static System.Logger log() {
+        return System.getLogger(MethodHandles.lookup().lookupClass().getName());
+    }
+
+    // ---------------------------------------------------------------------------------------------
     /**
      * Sets the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> on the specified
      * array starting at the specified index.

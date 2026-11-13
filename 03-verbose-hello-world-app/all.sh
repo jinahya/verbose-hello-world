@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 apps=(
-  app1
-  app2
-  app3
-  app4
+  appa
+  appb
+  appc
+  appd
 )
 for app in "${apps[@]}"; do
   echo "------------------------------------------------------------------------"

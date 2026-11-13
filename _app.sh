@@ -7,10 +7,10 @@ echo "==> packaging with generate-executables"
 mvn -f "${script_dir}/pom.xml" -q -Pgenerate-executables -DskipTests clean package
 
 apps=(
-  01-verbose-hello-world-app1
-  02-verbose-hello-world-app2
-  03-verbose-hello-world-app3
-  04-verbose-hello-world-app4
+  01-verbose-hello-world-appa
+  02-verbose-hello-world-appb
+  03-verbose-hello-world-appc
+  04-verbose-hello-world-appd
 )
 variants=(
   jar-with-dependencies
