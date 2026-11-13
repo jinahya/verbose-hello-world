@@ -1,0 +1,143 @@
+= TODO
+:toc:
+
+Any kind of TODOs of this project.
+
+== Deprecation
+
+Candidates for `@Deprecated(forRemoval = true)`.
+
+The criterion: every method should give out the `hello, world` bytes to a *target* that receives
+them (a stream, a channel, a socket, a digest, a cipher, ...). A method is a candidate when it
+
+* gives the bytes, one by one through a caller-supplied mapper, to a general-purpose container
+  rather than to a byte sink; or
+* duplicates another method with the same target (see <<Removed>>).
+
+=== Already deprecated
+
+[cols="2,3",options="header"]
+|===
+| Method | Reason
+
+| `HelloWorld.accept(Consumer, Function)`
+| A `Consumer` is not a byte sink; the method only iterates the bytes.
+
+| `HelloWorld.accept(IntConsumer)`
+| An `IntConsumer` is not a byte sink; the method only iterates the bytes.
+|===
+
+When removed, also remove the `_java_util_function` tests, and the then-empty `java.util.function`
+section of `HelloWorld`.
+
+=== Group A: general-purpose containers, per-byte mappers
+
+Same reason as `accept`.
+
+[cols="2,3",options="header"]
+|===
+| Method | Reason
+
+| `HelloWorld.add(SequencedCollection, Function)`
+| Adds each mapped byte to a collection; equivalent to `accept(collection::addLast, mapper)`.
+
+| `HelloWorld.put(SequencedMap, Function, Function)`
+| Puts a mapped key/value per byte; the map receives whatever the mappers produce, not
+`hello, world`.
+
+| `HelloWorld.all(Stream.Builder, Function)`
+| Adds each mapped byte to a stream builder; same shape as `add(SequencedCollection, Function)`.
+The name looks like a typo for `add`.
+
+| `HelloWorld.add(IntStream.Builder)`
+| Adds each byte, as an `int`, to an int stream builder.
+|===
+
+=== Removed
+
+Removed outright, without deprecation, since nothing used them.
+
+[cols="2,3",options="header"]
+|===
+| Method | Reason
+
+| `AsynchronousHelloWorld.write_(AsynchronousByteChannel, A, CompletionHandler)`
+| Duplicated `write(AsynchronousByteChannel, A, CompletionHandler)` with the same target; only built
+on the stage-based `applyAsync(Function)` instead of the handler-based one. Unused and untested.
+
+| `AsynchronousHelloWorld.write_(AsynchronousFileChannel, long, A, CompletionHandler)`
+| Duplicated `write(AsynchronousFileChannel, long, A, CompletionHandler)` with the same target; only
+built on the stage-based `applyAsync(Function)` instead of the handler-based one. Unused and
+untested.
+|===
+
+=== Reviewed and kept
+
+[cols="2,3",options="header"]
+|===
+| Method | Reason
+
+| `HelloWorld.write(URLConnection)`, `HelloWorld.send(Socket)`, `HelloWorld.send(DatagramChannel, SocketAddress)`, `HelloWorld.send(DatagramChannel)`
+| Delegate internally to `write(OutputStream)` / `send(DatagramSocket, ...)`, but each targets a
+distinct JDK type.
+
+| `HelloWorld.write(Writer)`
+| A `Writer` is an `Appendable`, yet `Writer.write` is its own API.
+
+| `HelloWorld.set(BitSet, int)`
+| Borderline; a `BitSet` is a container, but it receives the bytes as they are, bit by bit, without
+any mapper.
+
+| `HelloWorld.setText(BreakIterator)`, `HelloWorld.method(HttpRequest.Builder, String)`,
+`HelloWorld.update(...)`, `HelloWorld.setInput(Deflater)`
+| Each is a genuine target receiving the bytes.
+
+| `JdbcHelloWorld.*`
+| Every method feeds a statement, a result set, a LOB, or an SQL output.
+|===
+
+== API
+
+* `HelloWorld` has an empty `java.util.jar` section; a `JarOutputStream` is already covered by
+  `write(OutputStream)` (see `HelloWorld_Java_Util_Jar__Test`). Remove the header, or keep it as a
+  placeholder.
+* `JdbcHelloWorldConstants`, `JdbcHelloWorldUtils`: no class-level javadoc, and no javadoc on
+  `JdbcHelloWorldConstants.BYTES`.
+* Decide whether the new targets, `write(FileChannel, long)`, `setSeed(SecureRandom)`,
+  `wrap(SSLEngine, ByteBuffer)`, and `write(SourceDataLine)`, should ship with commented-out
+  (teaching) bodies, as `write(AsynchronousFileChannel, long)` does.
+
+== Tests
+
+* `JdbcHelloWorld_*_CallableStatement_String__Test`: all disabled, for both H2 (named parameters not
+  resolved) and SQLite (no stored procedures); the `set*(CallableStatement, String)` methods have no
+  real-database coverage.
+* `wrap(SSLEngine, ByteBuffer)`: no exploration (`__Test`) with a real handshaken `SSLEngine` pair.
+* `write(SourceDataLine)`: no exploration (`__Test`) with a real line; it would need an audio
+  device, and would make sound.
+
+== Apps
+
+* `appc`: the shaded jar fails with `NoSuchElementException`; there is no
+  `META-INF/services/com.github.jinahya.hello.api.HelloWorld`, and the lib registers its provider
+  only via `module-info`.
+* `appd`: the shaded jar fails with `WELD-001409: Ambiguous dependencies for type HelloWorld`; the
+  empty `beans.xml` makes `HelloWorldImpl` a bean besides the `@Produces` one.
+* `appc` uses only `AsynchronousHelloWorld#applyAsync(Function)`; no app demonstrates asynchronous
+  I/O (`write(AsynchronousByteChannel, ...)`, `append(Path, ...)`, `sendAsync(...)`), the
+  handler-based `applyAsync`, or `StructuredConcurrencyHelloWorld`.
+* `appc`: raw `AsynchronousHelloWorld` / `ExecutorHelloWorld` types in `HelloWorldConfiguration`.
+* `appd`: suppresses `java:S6813` (field injection) while it uses constructor injection; the section
+  comment says `Flow.Subscriber<byte>` instead of `Flow.Subscriber<byte[]>`.
+* `appa` .. `appd`: no javadoc.
+
+== Scripts
+
+* `_app.sh` looks for `...-0.0.1-SNAPSHOT-<variant>.jar`; the version is now `1.0.1-SNAPSHOT`.
+* `03-verbose-hello-world-app/all.sh`, `all.ps1` invoke `appX.sh` / `appX.ps1` beside themselves,
+  which live in `src/test/shell/` (with their own `all.*`); remove them, or fix the paths.
+
+== Build
+
+* `03-verbose-hello-world-app/pom.xml` declares no `ServicesResourceTransformer` for
+  `maven-shade-plugin`; related to the `appc` failure above.

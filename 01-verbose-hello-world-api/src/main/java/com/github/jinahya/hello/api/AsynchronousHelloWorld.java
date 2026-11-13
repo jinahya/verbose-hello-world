@@ -269,54 +269,6 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * @param attachment the attachment for the {@code handler}; may be {@code null}.
      * @param handler    the completion handler to be notified with a completion (or a failure).
      * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
-     * @implSpec The default implementation invokes {@link #applyAsync(Function)} with a mapper that
-     * prepares a {@value HelloWorld#BYTES}-byte source buffer via
-     * {@link HelloWorld#put(ByteBuffer)} on the wrapped service; the resulting stage's
-     * {@link CompletionStage#whenComplete(java.util.function.BiConsumer) whenComplete} starts the
-     * recursive
-     * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel.write}
-     * loop that, on the final completion, notifies {@code handler.completed(channel, attachment)} —
-     * or, on failure, notifies {@code handler.failed(exc, attachment)}.
-     * @see HelloWorld#put(ByteBuffer)
-     * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
-     * @see #applyAsync(Function)
-     */
-    default <C extends AsynchronousByteChannel, A> void write_(
-            final C channel, final A attachment,
-            final CompletionHandler<? super C, ? super A> handler) {
-        Objects.requireNonNull(channel, "channel is null");
-        Objects.requireNonNull(handler, "handler is null");
-        applyAsync(s -> buffer(s).flip()).whenComplete((b, t) -> {
-            if (t != null) {
-                handler.failed(t, attachment);
-                return;
-            }
-            channel.write(b, attachment, new CompletionHandler<>() { // @formatter:off
-                @Override public void completed(final Integer result, final A attachment) {
-                    if (b.hasRemaining()) {
-                        channel.write(b, attachment, this);
-                        return;
-                    }
-                    handler.completed(channel, attachment);
-                }
-                @Override public void failed(final Throwable exc, final A attachment) {
-                    handler.failed(exc, attachment);
-                } // @formatter:on
-            });
-        });
-    }
-
-    /**
-     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
-     * asynchronous byte channel, and notifies a completion (or a failure) to the specified handler
-     * with the specified attachment.
-     *
-     * @param <C>        channel type parameter
-     * @param <A>        attachment type parameter
-     * @param channel    the asynchronous byte channel to which the bytes are written.
-     * @param attachment the attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the completion handler to be notified with a completion (or a failure).
-     * @throws NullPointerException if either {@code channel} or {@code handler} is {@code null}.
      * @implSpec The default implementation invokes
      * {@link #applyAsync(Function, Object, CompletionHandler) applyAsync(mapper, attachment,
      * handler)} with a mapper that prepares a {@value HelloWorld#BYTES}-byte source buffer via
@@ -391,65 +343,6 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    /**
-     * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
-     * asynchronous file channel starting at the specified position, and notifies a completion (or a
-     * failure) to the specified handler with the specified attachment.
-     *
-     * @param <C>        channel type parameter
-     * @param <A>        attachment type parameter
-     * @param channel    the asynchronous file channel to which the bytes are written.
-     * @param position   the file position at which the transfer is to begin; must be non-negative.
-     * @param attachment the attachment for the {@code handler}; may be {@code null}.
-     * @param handler    the completion handler to be notified with a completion (or a failure).
-     * @throws NullPointerException     if either {@code channel} or {@code handler} is
-     *                                  {@code null}.
-     * @throws IllegalArgumentException if {@code position} is negative.
-     * @implSpec The default implementation invokes {@link #applyAsync(Function)} with a mapper that
-     * prepares a {@value HelloWorld#BYTES}-byte source buffer via
-     * {@link HelloWorld#put(ByteBuffer)} on the wrapped service; the resulting stage's
-     * {@link CompletionStage#whenComplete(java.util.function.BiConsumer) whenComplete} starts the
-     * recursive
-     * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
-     * channel.write} loop that, on the final completion, notifies
-     * {@code handler.completed(channel, attachment)} — or, on failure, notifies
-     * {@code handler.failed(exc, attachment)}.
-     * @see HelloWorld#put(ByteBuffer)
-     * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
-     * @see #applyAsync(Function)
-     */
-    default <C extends AsynchronousFileChannel, A> void write_(
-            final C channel, final long position, final A attachment,
-            final CompletionHandler<? super C, ? super A> handler) {
-        Objects.requireNonNull(channel, "channel is null");
-        if (position < 0L) {
-            throw new IllegalArgumentException("position(" + position + ") is negative");
-        }
-        Objects.requireNonNull(handler, "handler is null");
-        applyAsync(s -> buffer(s).flip()).whenComplete((b, t) -> {
-            if (t != null) {
-                handler.failed(t, attachment);
-                return;
-            }
-            channel.write(b, position, position, new CompletionHandler<>() { // @formatter:off
-                @Override
-                public void completed(final Integer result, Long position) {
-                    if (b.hasRemaining()) {
-                        position += result;
-                        channel.write(b, position, position, this);
-                        return;
-                    }
-                    handler.completed(channel, attachment);
-                }
-
-                @Override
-                public void failed(final Throwable exc, final Long position) {
-                    handler.failed(exc, attachment);
-                } // @formatter:on
-            });
-        });
-    }
 
     /**
      * Writes the <a href="HelloWorld.html#hello-world-bytes">hello-world-bytes</a> to the specified
