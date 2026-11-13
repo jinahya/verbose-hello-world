@@ -14,8 +14,8 @@
  * widths as int (%+d). Everything here is #ifdef-guarded: exact-width types are
  * optional, and the *_WIDTH macros need C23.
  *
- * Build: see the repository Makefile (`make c`) or simply:
- *     cc -Wall -Wextra -O2 fixed_integral.c -o fixed_integral -lm
+ * Build: see the module Makefile (`make c`), or CMakeLists.txt, or simply:
+ *     cc -std=c23 -Wall -Wextra -O2 fixed_integral.c -o fixed_integral -lm
  */
 #include <stdio.h>
 #include <stdarg.h>

@@ -18,8 +18,8 @@
  * *_MIN_10_EXP, *_MAX_10_EXP, FP_ILOGB0, FP_ILOGBNAN, math_errhandling,
  * MATH_ERRNO, MATH_ERREXCEPT. See floating.c for the exhaustive dump.
  *
- * Build: see the repository Makefile (`make c`) or simply:
- *     cc -Wall -Wextra -O2 ieee754.c -o ieee754 -lm
+ * Build: see the module Makefile (`make c`), or CMakeLists.txt, or simply:
+ *     cc -std=c23 -Wall -Wextra -O2 ieee754.c -o ieee754 -lm
  */
 #include <stdio.h>
 #include <stdarg.h>

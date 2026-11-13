@@ -1,3 +1,4 @@
+<limits.h> BOOL_WIDTH         bool                               +1 fixed
 <stdint.h> INT8_MIN           int8_t                           -128 fixed
 <stdint.h> INT8_MAX           int8_t                           +127 fixed
 <stdint.h> UINT8_MAX          uint8_t                           255 fixed

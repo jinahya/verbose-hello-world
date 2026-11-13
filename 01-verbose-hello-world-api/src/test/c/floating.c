@@ -12,8 +12,8 @@
  *
  * Companion to _IEEE754.asciidoc. See ieee754.c for the IEEE-754-only subset.
  *
- * Build: see the repository Makefile (`make c`) or simply:
- *     cc -Wall -Wextra -O2 floating.c -o floating -lm
+ * Build: see the module Makefile (`make c`), or CMakeLists.txt, or simply:
+ *     cc -std=c23 -Wall -Wextra -O2 floating.c -o floating -lm
  */
 #include <stdio.h>
 #include <stdarg.h>

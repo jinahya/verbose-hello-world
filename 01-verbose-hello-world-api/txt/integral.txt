@@ -17,6 +17,19 @@
 <limits.h> LLONG_MIN          long long                  -9223372036854775808 impl
 <limits.h> LLONG_MAX          long long                  +9223372036854775807 impl
 <limits.h> ULLONG_MAX         unsigned long long         18446744073709551615 impl
+<limits.h> BOOL_WIDTH         bool                                         +1 fixed
+<limits.h> CHAR_WIDTH         char                                         +8 impl
+<limits.h> SCHAR_WIDTH        signed char                                  +8 impl
+<limits.h> UCHAR_WIDTH        unsigned char                                +8 impl
+<limits.h> SHRT_WIDTH         short                                       +16 impl
+<limits.h> USHRT_WIDTH        unsigned short                              +16 impl
+<limits.h> INT_WIDTH          int                                         +32 impl
+<limits.h> UINT_WIDTH         unsigned int                                +32 impl
+<limits.h> LONG_WIDTH         long                                        +64 impl
+<limits.h> ULONG_WIDTH        unsigned long                               +64 impl
+<limits.h> LLONG_WIDTH        long long                                   +64 impl
+<limits.h> ULLONG_WIDTH       unsigned long long                          +64 impl
+<limits.h> BITINT_MAXWIDTH    int                                        +128 impl
 <stdint.h> INT8_MIN           int8_t                                     -128 fixed
 <stdint.h> INT8_MAX           int8_t                                     +127 fixed
 <stdint.h> UINT8_MAX          uint8_t                                     255 fixed

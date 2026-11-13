@@ -21,7 +21,7 @@
 ###
 #
 # (Re)builds every C program under src/test/c via the module Makefile, runs each
-# produced binary, and writes its stdout to target/c/<binary>.txt.
+# produced binary, and writes its stdout to txt/<binary>.txt.
 #
 set -euo pipefail
 
