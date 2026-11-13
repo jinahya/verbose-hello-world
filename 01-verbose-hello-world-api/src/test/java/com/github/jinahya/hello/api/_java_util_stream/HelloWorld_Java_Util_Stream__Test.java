@@ -42,11 +42,16 @@ class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
     @SuppressWarnings({"unchecked"})
     void __stubService() {
         doAnswer(i -> {
-            final var consumer = i.getArgument(0, Consumer.class);
+            final var builder = i.getArgument(0, Stream.Builder.class);
             final var mapper = i.getArgument(1, Function.class);
-            hello_world_byte_stream().map(mapper).forEach(consumer);
-            return consumer;
-        }).when(service()).accept(any(), any());
+            hello_world_byte_stream().map(mapper).forEach(builder::add);
+            return builder;
+        }).when(service()).all(any(Stream.Builder.class), any());
+        doAnswer(i -> {
+            final var builder = i.getArgument(0, IntStream.Builder.class);
+            hello_world_byte_stream().mapToInt(Byte::intValue).forEach(builder::add);
+            return builder;
+        }).when(service()).add(any(IntStream.Builder.class));
     }
 
     @DisplayName("Stream.Builder")
@@ -57,7 +62,7 @@ class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
         @Test
         void __() {
             final var builder = Stream.<Byte>builder();
-            service().accept(builder, Function.identity());
+            service().all(builder, Function.identity());
             assertEquals(
                     hello_world_byte_stream().toList(),
                     builder.build().toList()
@@ -73,7 +78,7 @@ class HelloWorld_Java_Util_Stream__Test extends HelloWorld__Test {
         @Test
         void __() {
             final var builder = IntStream.builder();
-            service().accept((Consumer<Integer>) builder::add, Byte::intValue);
+            service().add(builder);
             assertArrayEquals(
                     hello_world_byte_stream().mapToInt(Byte::intValue).toArray(),
                     builder.build().toArray()

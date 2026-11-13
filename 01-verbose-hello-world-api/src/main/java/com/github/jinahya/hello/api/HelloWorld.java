@@ -1474,26 +1474,77 @@ public interface HelloWorld extends JdbcHelloWorld {
     @Deprecated(forRemoval = true)
     default <T extends IntConsumer> T accept(final T consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
-        accept(consumer::accept, Byte::intValue);
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            consumer.accept(b);
+        }
         return consumer;
     }
 
     // ------------------------------------------------------------------------------- java.util.jar
 
     // ---------------------------------------------------------------------------- java.util.stream
-    // undocumented, yet
+    /**
+     * Adds each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the specified
+     * mapper, to the specified stream builder.
+     *
+     * @param <T>     stream builder type parameter
+     * @param <U>     element type parameter
+     * @param builder the stream builder to which each mapped value is added.
+     * @param mapper  the function applied to each byte, boxed as {@link Byte}, to produce the value
+     *                to be added.
+     * @return the given {@code builder}.
+     * @throws NullPointerException  if either {@code builder} or {@code mapper} is {@code null}.
+     * @throws IllegalStateException if the {@code builder} has already transitioned to the built
+     *                               state.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, boxed as
+     * {@link Byte}, and {@link Stream.Builder#add(Object) adds} the result to the
+     * {@code builder}.
+     * @see #set(byte[])
+     * @see Function#apply(Object)
+     * @see Stream.Builder#add(Object)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/Stream.Builder.html">java.util.stream.Stream.Builder</a>
+     */
     default <T extends Stream.Builder<? super U>, U>
     T all(final T builder, final Function<? super Byte, ? extends U> mapper) {
         Objects.requireNonNull(builder, "builder is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        accept(builder, mapper);
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            builder.add(mapper.apply(b));
+        }
         return builder;
     }
 
-    // undocumented, yet
+    /**
+     * Adds each of the <a href="#hello-world-bytes">hello-world-bytes</a>, as an {@code int}, to
+     * the specified int stream builder.
+     *
+     * @param <T>     int stream builder type parameter
+     * @param builder the int stream builder to which each byte is added.
+     * @return the given {@code builder}.
+     * @throws NullPointerException  if {@code builder} is {@code null}.
+     * @throws IllegalStateException if the {@code builder} has already transitioned to the built
+     *                               state.
+     * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
+     * of {@value #BYTES} bytes, and {@link IntStream.Builder#add(int) adds} each byte in the array,
+     * widened to an {@code int}, to the {@code builder}.
+     * @see #set(byte[])
+     * @see IntStream.Builder#add(int)
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/stream/IntStream.Builder.html">java.util.stream.IntStream.Builder</a>
+     */
     default <T extends IntStream.Builder> T add(final T builder) {
         Objects.requireNonNull(builder, "builder is null");
-        accept(builder::add);
+        final var array = new byte[BYTES];
+        set(array);
+        for (final var b : array) {
+            builder.add(b);
+        }
         return builder;
     }
 
