@@ -90,7 +90,7 @@ class HelloWorld_Append_Appendable_Test extends HelloWorld__Test {
 //        verify(appendable, times(array.length)).append(charCaptor.capture());
 //        final var chars = charCaptor.getAllValues();
 //        for (int i = 0; i < chars.size(); i++) {
-//            assertEquals(array[i], (byte) chars.get(i).charValue());
+//            assertEquals((char) array[i], chars.get(i).charValue());
 //        }
         assertSame(appendable, result);
     }

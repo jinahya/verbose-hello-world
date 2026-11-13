@@ -86,7 +86,7 @@ class HelloWorld_Set_BitSet_Index_Test extends HelloWorld__Test {
         final var result = service.set(bitset, index);
         // ------------------------------------------------------------------------------------ then
         final var array = set_array12_invoked_once(service());
-        assertArrayEquals(array, bitset.toByteArray());
+        assertArrayEquals(array, Arrays.copyOf(bitset.toByteArray(), array.length));
         assertSame(bitset, result);
     }
 }

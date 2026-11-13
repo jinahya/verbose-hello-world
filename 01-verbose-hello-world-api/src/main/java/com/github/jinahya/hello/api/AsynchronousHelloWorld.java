@@ -28,6 +28,7 @@ import java.nio.channels.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import static com.github.jinahya.hello.api.HelloWorldUtils.*;
@@ -276,8 +277,11 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * inner handler starts the recursive
      * {@link AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler) channel.write}
      * loop that, on the final completion, notifies {@code handler.completed(channel, attachment)} —
-     * or, on failure (either of the mapper or of the channel write), notifies
-     * {@code handler.failed(exc, attachment)}.
+     * or, on failure (either of the mapper or of the channel write, including a
+     * {@link RuntimeException} thrown synchronously when a write is initiated), notifies
+     * {@code handler.failed(exc, attachment)}. Each operation notifies the {@code handler} at most
+     * once; a {@link RuntimeException} thrown by the {@code handler} itself is not reported as a
+     * failure but propagates to the thread that invoked it.
      * @see HelloWorld#put(ByteBuffer)
      * @see AsynchronousByteChannel#write(ByteBuffer, Object, CompletionHandler)
      * @see #applyAsync(Function, Object, CompletionHandler)
@@ -289,18 +293,35 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
         Objects.requireNonNull(handler, "handler is null");
         applyAsync(s -> buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
             @Override public void completed(final ByteBuffer b, final A attachment) {
-                channel.write(b, attachment, new CompletionHandler<>() {
-                    @Override public void completed(final Integer result, final A attachment) {
-                        if (b.hasRemaining()) {
-                            channel.write(b, attachment, this);
-                            return;
+                final var notified = new AtomicBoolean();
+                try {
+                    channel.write(b, attachment, new CompletionHandler<>() {
+                        @Override public void completed(final Integer result, final A attachment) {
+                            if (b.hasRemaining()) {
+                                try {
+                                    channel.write(b, attachment, this);
+                                } catch (final RuntimeException e) {
+                                    if (notified.getAndSet(true)) {
+                                        throw e;
+                                    }
+                                    handler.failed(e, attachment);
+                                }
+                                return;
+                            }
+                            notified.set(true);
+                            handler.completed(channel, attachment);
                         }
-                        handler.completed(channel, attachment);
+                        @Override public void failed(final Throwable exc, final A attachment) {
+                            notified.set(true);
+                            handler.failed(exc, attachment);
+                        }
+                    });
+                } catch (final RuntimeException e) {
+                    if (notified.getAndSet(true)) {
+                        throw e;
                     }
-                    @Override public void failed(final Throwable exc, final A attachment) {
-                        handler.failed(exc, attachment);
-                    }
-                });
+                    handler.failed(e, attachment);
+                }
             }
             @Override public void failed(final Throwable exc, final A attachment) {
                 handler.failed(exc, attachment);
@@ -366,7 +387,10 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * {@link AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      * channel.write} loop that, on the final completion, notifies
      * {@code handler.completed(channel, attachment)} — or, on failure (either of the mapper or of
-     * the channel write), notifies {@code handler.failed(exc, attachment)}.
+     * the channel write, including a {@link RuntimeException} thrown synchronously when a write is
+     * initiated), notifies {@code handler.failed(exc, attachment)}. Each operation notifies the
+     * {@code handler} at most once; a {@link RuntimeException} thrown by the {@code handler} itself
+     * is not reported as a failure but propagates to the thread that invoked it.
      * @see HelloWorld#put(ByteBuffer)
      * @see AsynchronousFileChannel#write(ByteBuffer, long, Object, CompletionHandler)
      * @see #applyAsync(Function, Object, CompletionHandler)
@@ -382,21 +406,38 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
         applyAsync(s -> buffer(s).flip(), attachment, new CompletionHandler<>() { // @formatter:off
             @Override
             public void completed(final ByteBuffer b, final A attachment) {
-                channel.write(b, position, position, new CompletionHandler<>() {
-                    @Override
-                    public void completed(final Integer result, Long position) {
-                        if (b.hasRemaining()) {
-                            position += result;
-                            channel.write(b, position, position, this);
-                            return;
+                final var notified = new AtomicBoolean();
+                try {
+                    channel.write(b, position, position, new CompletionHandler<>() {
+                        @Override
+                        public void completed(final Integer result, Long position) {
+                            if (b.hasRemaining()) {
+                                position += result;
+                                try {
+                                    channel.write(b, position, position, this);
+                                } catch (final RuntimeException e) {
+                                    if (notified.getAndSet(true)) {
+                                        throw e;
+                                    }
+                                    handler.failed(e, attachment);
+                                }
+                                return;
+                            }
+                            notified.set(true);
+                            handler.completed(channel, attachment);
                         }
-                        handler.completed(channel, attachment);
+                        @Override
+                        public void failed(final Throwable exc, final Long position) {
+                            notified.set(true);
+                            handler.failed(exc, attachment);
+                        }
+                    });
+                } catch (final RuntimeException e) {
+                    if (notified.getAndSet(true)) {
+                        throw e;
                     }
-                    @Override
-                    public void failed(final Throwable exc, final Long position) {
-                        handler.failed(exc, attachment);
-                    }
-                });
+                    handler.failed(e, attachment);
+                }
             }
             @Override
             public void failed(final Throwable exc, final A attachment) {
@@ -465,7 +506,9 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
      * {@link CompletionHandler} that closes the channel before notifying the outer {@code handler}
      * — {@code handler.completed(path, attachment)} on success, or
      * {@code handler.failed(exc, attachment)} on failure (failures from {@code open} / {@code size}
-     * / {@code close} are routed the same way).
+     * / {@code close} are routed the same way). A {@link RuntimeException} thrown synchronously by
+     * the delegated {@code write} — e.g., a {@link RejectedExecutionException} — closes the channel
+     * and propagates to the caller.
      * @apiNote {@link AsynchronousFileChannel} does not support {@link StandardOpenOption#APPEND};
      * the end-of-file position is obtained via {@link AsynchronousFileChannel#size()} and used as
      * the starting write position. With concurrent writers, this is not OS-level atomic append.
@@ -497,27 +540,36 @@ public interface AsynchronousHelloWorld<T extends HelloWorld> {
             handler.failed(e, attachment);
             return;
         }
-        write(channel, position, attachment, new CompletionHandler<>() { // @formatter:off
-            @Override
-            public void completed(final AsynchronousFileChannel result, final A attachment) {
-                try {
-                    channel.close();
-                } catch (final IOException e) {
-                    handler.failed(e, attachment);
-                    return;
+        try {
+            write(channel, position, attachment, new CompletionHandler<>() { // @formatter:off
+                @Override
+                public void completed(final AsynchronousFileChannel result, final A attachment) {
+                    try {
+                        channel.close();
+                    } catch (final IOException e) {
+                        handler.failed(e, attachment);
+                        return;
+                    }
+                    handler.completed(path, attachment);
                 }
-                handler.completed(path, attachment);
+                @Override
+                public void failed(final Throwable exc, final A attachment) {
+                    try {
+                        channel.close();
+                    } catch (final IOException s) {
+                        exc.addSuppressed(s);
+                    }
+                    handler.failed(exc, attachment);
+                } // @formatter:on
+            });
+        } catch (final RuntimeException e) {
+            try {
+                channel.close();
+            } catch (final IOException s) {
+                e.addSuppressed(s);
             }
-            @Override
-            public void failed(final Throwable exc, final A attachment) {
-                try {
-                    channel.close();
-                } catch (final IOException s) {
-                    exc.addSuppressed(s);
-                }
-                handler.failed(exc, attachment);
-            } // @formatter:on
-        });
+            throw e;
+        }
     }
 
     /**

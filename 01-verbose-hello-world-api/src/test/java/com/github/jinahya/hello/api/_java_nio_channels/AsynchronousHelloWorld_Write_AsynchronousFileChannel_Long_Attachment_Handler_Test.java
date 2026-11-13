@@ -24,8 +24,10 @@ import com.github.jinahya.hello.api.*;
 import lombok.extern.slf4j.*;
 import org.junit.jupiter.api.*;
 
+import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
@@ -232,5 +234,191 @@ abstract class AsynchronousHelloWorld_Write_AsynchronousFileChannel_Long_Attachm
         for (int i = 0; i < channelPositions.size(); i++) {
             assertEquals(position + bufferPositions.get(i), channelPositions.get(i).longValue());
         }
+    }
+
+    /**
+     * Verifies that the method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} when the
+     * first {@code channel.write} invocation throws a {@link RuntimeException} synchronously.
+     */
+    @DisplayName("failed / first write throws")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void __failed_FirstWriteThrows() {
+        // ----------------------------------------------------------------------------------- given
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
+        final var service = asynchronousService();
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var exc = new NonWritableChannelException();
+        doThrow(exc).when(channel).write(any(), anyLong(), any(), any());
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        final var handler = mock(CompletionHandler.class);
+        // ------------------------------------------------------------------------------------ when
+        service.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
+        verify(handler, timeout(TIMEOUT).times(1)).failed(exc, attachment);
+        verify(handler, never()).completed(any(), any());
+        verify(channel, times(1)).write(any(), eq(position), any(), any());
+    }
+
+    /**
+     * Verifies that the method invokes
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} when a
+     * subsequent {@code channel.write} invocation, initiated for the remaining bytes, throws a
+     * {@link RuntimeException} synchronously.
+     */
+    @DisplayName("failed / subsequent write throws")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void __failed_SubsequentWriteThrows() {
+        // ----------------------------------------------------------------------------------- given
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
+        final var service = asynchronousService();
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var exc = new NonWritableChannelException();
+        final var invocations = new AtomicInteger();
+        doAnswer(i -> {
+            if (invocations.getAndIncrement() > 0) {
+                throw exc;
+            }
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
+            Thread.ofPlatform().daemon().start(() -> {
+                src.position(src.position() + 1);
+                handler.completed(1, attachment);
+            });
+            return null;
+        }).when(channel).write(any(), anyLong(), any(), any());
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        final var handler = mock(CompletionHandler.class);
+        // ------------------------------------------------------------------------------------ when
+        service.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
+        verify(handler, timeout(TIMEOUT).times(1)).failed(exc, attachment);
+        verify(handler, never()).completed(any(), any());
+        verify(channel, times(1)).write(any(), eq(position), any(), any());
+        verify(channel, times(1)).write(any(), eq(position + 1L), any(), any());
+    }
+
+    /**
+     * Verifies that the method keeps initiating {@code channel.write} for the remaining bytes, at
+     * the advanced file positions, when the {@code channel} writes exactly {@code 3}, {@code 4},
+     * and {@code 5} bytes in turn, and finally invokes
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}.
+     */
+    @DisplayName("completed / partial writes of 3, 4, and 5 bytes")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void __completed_PartialWrites() {
+        // ----------------------------------------------------------------------------------- given
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
+        final var service = asynchronousService();
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var counts = new int[] {3, 4, 5};
+        final var invocations = new AtomicInteger();
+        final var bufferPositions = new CopyOnWriteArrayList<Integer>();
+        final var channelPositions = new CopyOnWriteArrayList<Long>();
+        doAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            channelPositions.add(i.getArgument(1, Long.class));
+            final var attachment = i.getArgument(2);
+            final var handler = i.getArgument(3, CompletionHandler.class);
+            bufferPositions.add(src.position());
+            final var n = counts[invocations.getAndIncrement()];
+            Thread.ofPlatform().daemon().start(() -> {
+                src.position(src.position() + n);
+                handler.completed(n, attachment);
+            });
+            return null;
+        }).when(channel).write(any(), anyLong(), any(), any());
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        final var handler = mock(CompletionHandler.class);
+        // ------------------------------------------------------------------------------------ when
+        service.write(channel, position, attachment, handler);
+        // ------------------------------------------------------------------------------------ then
+        verify(handler, timeout(TIMEOUT).times(1)).completed(channel, attachment);
+        verify(handler, never()).failed(any(), any());
+        final var buffer = put_buffer12_invoked_once(synchronousService());
+        verify(channel, times(3)).write(same(buffer), anyLong(), any(), notNull());
+        assertEquals(List.of(0, 3, 7), bufferPositions);
+        assertEquals(List.of(position, position + 3L, position + 7L), channelPositions);
+        assertFalse(buffer.hasRemaining());
+    }
+
+    /**
+     * Verifies that the method notifies
+     * {@link CompletionHandler#completed(Object, Object) handler.completed(channel, attachment)}
+     * exactly once, and never notifies a failure, when the {@code channel} completes inline and
+     * the {@code handler.completed} itself throws a {@link RuntimeException}.
+     */
+    @DisplayName("completed once / handler.completed throws on an inline completion")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void __completedOnce_HandlerThrowsOnInlineCompletion() {
+        // ----------------------------------------------------------------------------------- given
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
+        final var service = asynchronousService();
+        final var channel = mock(AsynchronousFileChannel.class);
+        doAnswer(i -> {
+            final var src = i.getArgument(0, ByteBuffer.class);
+            final var n = src.remaining();
+            src.position(src.limit());
+            i.getArgument(3, CompletionHandler.class).completed(n, i.getArgument(2));
+            return null;
+        }).when(channel).write(any(), anyLong(), any(), any());
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        final var handler = mock(CompletionHandler.class);
+        final var exc = new RuntimeException("simulated handler failure");
+        doThrow(exc).when(handler).completed(any(), any());
+        // ------------------------------------------------------------------------------------ when
+        try {
+            service.write(channel, position, attachment, handler);
+        } catch (final RuntimeException e) {
+            assertSame(exc, e);
+        }
+        // ------------------------------------------------------------------------------------ then
+        verify(handler, timeout(TIMEOUT).times(1)).completed(channel, attachment);
+        verify(handler, after(500L).never()).failed(any(), any());
+    }
+
+    /**
+     * Verifies that the method notifies
+     * {@link CompletionHandler#failed(Throwable, Object) handler.failed(exc, attachment)} exactly
+     * once when the {@code channel} fails inline and the {@code handler.failed} itself throws a
+     * {@link RuntimeException}.
+     */
+    @DisplayName("failed once / handler.failed throws on an inline failure")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void __failedOnce_HandlerThrowsOnInlineFailure() {
+        // ----------------------------------------------------------------------------------- given
+        put_buffer12_increases_buffer_position_by_12(synchronousService());
+        final var service = asynchronousService();
+        final var channel = mock(AsynchronousFileChannel.class);
+        final var failure = new IOException("simulated write failure");
+        doAnswer(i -> {
+            i.getArgument(3, CompletionHandler.class).failed(failure, i.getArgument(2));
+            return null;
+        }).when(channel).write(any(), anyLong(), any(), any());
+        final var position = ThreadLocalRandom.current().nextLong(1024L);
+        final var attachment = ThreadLocalRandom.current().nextBoolean() ? null : new Object();
+        final var handler = mock(CompletionHandler.class);
+        final var exc = new RuntimeException("simulated handler failure");
+        doThrow(exc).when(handler).failed(any(), any());
+        // ------------------------------------------------------------------------------------ when
+        try {
+            service.write(channel, position, attachment, handler);
+        } catch (final RuntimeException e) {
+            assertSame(exc, e);
+        }
+        // ------------------------------------------------------------------------------------ then
+        verify(handler, timeout(TIMEOUT).times(1)).failed(failure, attachment);
+        verify(handler, after(500L).times(1)).failed(any(), any());
+        verify(handler, never()).completed(any(), any());
     }
 }

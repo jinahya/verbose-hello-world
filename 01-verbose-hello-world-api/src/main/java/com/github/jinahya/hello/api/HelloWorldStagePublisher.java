@@ -55,6 +55,12 @@ import java.util.concurrent.*;
  * class deliberately does <em>not</em> implement {@link AutoCloseable}: its lifetime is bounded by
  * its subscriber, not by a synchronous scope.
  * <p>
+ * <strong>Limitation.</strong> Cancellation is observed only at the loop condition. While the
+ * producer {@linkplain CompletableFuture#join() joins} the oldest stage — which has already been
+ * removed from the window — a stage that never completes keeps the producer waiting, and that
+ * stage is not cancelled. This teaching example assumes every {@code set(...)} eventually
+ * completes.
+ * <p>
  * <strong>Threading.</strong> Each subscription owns one virtual thread named
  * {@code "hello-world-stage-producer"}, which parks on the oldest stage in the window and on the
  * {@link SubmissionPublisher}'s backpressure. The {@link HelloWorld#set(byte[]) set(array)} calls

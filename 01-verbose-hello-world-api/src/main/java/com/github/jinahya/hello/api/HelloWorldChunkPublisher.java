@@ -52,6 +52,12 @@ import java.util.concurrent.*;
  * exits. No external close is required, and this class deliberately does <em>not</em> implement
  * {@link AutoCloseable}: its lifetime is bounded by its subscriber, not by a synchronous scope.
  * <p>
+ * <strong>Limitation.</strong> The next loop iteration is reached only after the current upstream
+ * subscription terminates. The inner Subscriber does not keep the upstream
+ * {@link Flow.Subscription}, so a downstream cancel cannot be propagated to an upstream that
+ * stalls. This teaching example assumes the upstream completes right after {@value HelloWorld#BYTES}
+ * bytes, as {@link HelloWorldBytePublisher} does.
+ * <p>
  * <strong>Threading.</strong> Each subscription owns one virtual thread named
  * {@code "hello-world-chunk-producer"}. Virtual threads are always daemon, so an abandoned
  * subscriber cannot block JVM shutdown. The outer {@link SubmissionPublisher} defaults are used —

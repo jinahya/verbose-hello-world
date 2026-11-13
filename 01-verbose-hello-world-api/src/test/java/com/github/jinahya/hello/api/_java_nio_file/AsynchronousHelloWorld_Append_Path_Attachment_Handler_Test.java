@@ -169,4 +169,37 @@ abstract class AsynchronousHelloWorld_Append_Path_Attachment_Handler_Test<
         }
         verify(handler, never()).completed(any(), any());
     }
+
+    /**
+     * Verifies that the method closes the opened channel and rethrows when the delegated write
+     * throws synchronously, e.g., when the executor rejects the task with a
+     * {@link RejectedExecutionException}.
+     */
+    @DisplayName("throws / delegated write rejected after open")
+    @Test
+    @SuppressWarnings({"unchecked"})
+    void _ThrowRejectedExecutionException_WriteRejected() throws Exception {
+        // ----------------------------------------------------------------------------------- given
+        final var asynchronousService = asynchronousService();
+        final var exc = new RejectedExecutionException("simulated rejection");
+        doThrow(exc).when(asynchronousService).applyAsync(any(), any(), any());
+        final var path = mock(Path.class);
+        final var channel = mock(AsynchronousFileChannel.class);
+        doReturn(0L).when(channel).size();
+        final var attachment = new Object();
+        final var handler = mock(CompletionHandler.class);
+        try (var mockStatic = mockStatic(AsynchronousFileChannel.class)) {
+            mockStatic.when(() -> AsynchronousFileChannel.open(same(path), any(OpenOption[].class)))
+                    .thenReturn(channel);
+            // ------------------------------------------------------------------------------- when
+            final var thrown = assertThrows(
+                    RejectedExecutionException.class,
+                    () -> asynchronousService.append(path, attachment, handler)
+            );
+            // ------------------------------------------------------------------------------- then
+            assertSame(exc, thrown);
+        }
+        verify(channel, times(1)).close();
+        verifyNoInteractions(handler);
+    }
 }
