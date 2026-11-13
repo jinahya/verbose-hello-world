@@ -64,6 +64,24 @@ class HelloWorld_Update_Cipher_Output_Offset_Consumer_Test extends HelloWorld__T
     }
 
     /**
+     * Verifies that the method throws a {@link NullPointerException} when the {@code output}
+     * argument is {@code null}.
+     */
+    @DisplayName("throws NPE / output is null")
+    @Test
+    void _ThrowNullPointerException_OutputIsNull() {
+        // ----------------------------------------------------------------------------------- given
+        final var service = service();
+        final var cipher = mock(Cipher.class);
+        final var output = (byte[]) null;
+        final var offset = 0;
+        final var consumer = mock(IntConsumer.class);
+        // ----------------------------------------------------------------------------- when / then
+        assertThrows(NullPointerException.class,
+                     () -> service.update(cipher, output, offset, consumer));
+    }
+
+    /**
      * Verifies that the method throws a {@link NullPointerException} when the {@code consumer}
      * argument is {@code null}.
      */

@@ -1610,7 +1610,8 @@ public interface HelloWorld extends JdbcHelloWorld {
      * @param offset   the offset in {@code output} at which the result is stored.
      * @param consumer the consumer to accept the number of bytes stored in {@code output}.
      * @return the given {@code cipher}.
-     * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
+     * @throws NullPointerException if any of {@code cipher}, {@code output}, or {@code consumer} is
+     *                              {@code null}.
      * @throws ShortBufferException if {@code output} is too small to hold the result.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, invokes
@@ -1627,6 +1628,7 @@ public interface HelloWorld extends JdbcHelloWorld {
                                         final IntConsumer consumer)
             throws ShortBufferException {
         Objects.requireNonNull(cipher, "cipher is null");
+        Objects.requireNonNull(output, "output is null");
         Objects.requireNonNull(consumer, "consumer is null");
         final var array = new byte[BYTES];
         set(array);
@@ -1645,7 +1647,8 @@ public interface HelloWorld extends JdbcHelloWorld {
      * @param output   the output buffer into which the result is written.
      * @param consumer the consumer to accept the number of bytes stored in {@code output}.
      * @return the given {@code cipher}.
-     * @throws NullPointerException if either {@code cipher} or {@code consumer} is {@code null}.
+     * @throws NullPointerException if any of {@code cipher}, {@code output}, or {@code consumer} is
+     *                              {@code null}.
      * @throws ShortBufferException if {@code output} does not have enough remaining bytes to hold
      *                              the result.
      * @implSpec Default implementation invokes {@link #put(ByteBuffer) put(buffer)} method with a
@@ -1663,6 +1666,7 @@ public interface HelloWorld extends JdbcHelloWorld {
                                         final IntConsumer consumer)
             throws ShortBufferException {
         Objects.requireNonNull(cipher, "cipher is null");
+        Objects.requireNonNull(output, "output is null");
         Objects.requireNonNull(consumer, "consumer is null");
         final var buffer = ByteBuffer.allocate(BYTES);
         put(buffer);

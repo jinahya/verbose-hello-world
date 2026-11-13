@@ -7,8 +7,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
+import java.net.*;
 import java.nio.*;
 import java.nio.charset.*;
+import java.util.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -203,6 +205,86 @@ class HelloWorldUtils_Test extends HelloWorld__Test {
             assertThrows(NullPointerException.class,
                          () -> HelloWorldUtils.decode(service(), (Charset) null));
             verify(service(), never()).put(any());
+        }
+    }
+
+    @DisplayName("packet(service)")
+    @Nested
+    class Packet_Test {
+
+        /**
+         * Asserts that {@code HelloWorldUtils.packet(service)} returns a packet whose data are the
+         * {@code hello-world-bytes}.
+         */
+        @DisplayName("DatagramPacket / hello-world-bytes")
+        @Test
+        void __() {
+            final var result = HelloWorldUtils.packet(service());
+            assertEquals(HelloWorld.BYTES, result.getLength());
+            assertArrayEquals(
+                    hello_world_byte_array(),
+                    Arrays.copyOfRange(result.getData(), result.getOffset(),
+                                       result.getOffset() + result.getLength())
+            );
+        }
+
+        /**
+         * Asserts that {@code HelloWorldUtils.packet(service)} throws a
+         * {@link NullPointerException} when the {@code service} is {@code null}.
+         */
+        @DisplayName("NullPointerException / service is null")
+        @Test
+        void _ThrowNullPointerException_ServiceIsNull() {
+            assertThrows(NullPointerException.class, () -> HelloWorldUtils.packet(null));
+        }
+    }
+
+    @DisplayName("packet(service, address)")
+    @Nested
+    class Packet_Address_Test {
+
+        /**
+         * Asserts that {@code HelloWorldUtils.packet(service, address)} returns a packet whose
+         * data are the {@code hello-world-bytes}, and whose socket address is the
+         * {@code address}.
+         */
+        @DisplayName("DatagramPacket / hello-world-bytes / address")
+        @Test
+        void __() {
+            final var address = new InetSocketAddress(InetAddress.getLoopbackAddress(), 7);
+            final var result = HelloWorldUtils.packet(service(), address);
+            assertEquals(address, result.getSocketAddress());
+            assertEquals(HelloWorld.BYTES, result.getLength());
+            assertArrayEquals(
+                    hello_world_byte_array(),
+                    Arrays.copyOfRange(result.getData(), result.getOffset(),
+                                       result.getOffset() + result.getLength())
+            );
+        }
+
+        /**
+         * Asserts that {@code HelloWorldUtils.packet(service, address)} throws a
+         * {@link NullPointerException} when the {@code service} is {@code null}.
+         */
+        @DisplayName("NullPointerException / service is null")
+        @Test
+        void _ThrowNullPointerException_ServiceIsNull() {
+            final var address = new InetSocketAddress(InetAddress.getLoopbackAddress(), 7);
+            assertThrows(NullPointerException.class,
+                         () -> HelloWorldUtils.packet(null, address));
+        }
+
+        /**
+         * Asserts that {@code HelloWorldUtils.packet(service, address)} throws a
+         * {@link NullPointerException}, rather than an {@link IllegalArgumentException}, when the
+         * {@code address} is {@code null}, without invoking the service.
+         */
+        @DisplayName("NullPointerException / address is null")
+        @Test
+        void _ThrowNullPointerException_AddressIsNull() {
+            assertThrows(NullPointerException.class,
+                         () -> HelloWorldUtils.packet(service(), null));
+            verify(service(), never()).append(any(DatagramPacket.class));
         }
     }
 }

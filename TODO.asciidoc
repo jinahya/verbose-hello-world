@@ -1,7 +1,16 @@
 = TODO
 :toc:
 
-Any kind of TODOs of this project.
+Actionable backlog from the 2026-11-13 review of this repository: API, library,
+all four apps, tests, Maven configuration, CI, and supporting scripts/C examples.
+P1 denotes runtime failures or resource-lifecycle defects; P2 denotes build,
+coverage, documentation, or design follow-up. Deprecation candidates below remain
+policy decisions, not confirmed defects.
+
+The commented-out teaching bodies and assertions are intentional exercise scaffolding.
+Do not restore them indiscriminately. Make the intended exercise/completed-example
+boundary explicit before changing behavior or interpreting a green test run as proof
+that the apps emit the payload.
 
 == Deprecation
 
@@ -96,48 +105,158 @@ any mapper.
 | Every method feeds a statement, a result set, a LOB, or an SQL output.
 |===
 
-== API
+== Runtime correctness (P1)
 
-* `HelloWorld` has an empty `java.util.jar` section; a `JarOutputStream` is already covered by
-  `write(OutputStream)` (see `HelloWorld_Java_Util_Jar__Test`). Remove the header, or keep it as a
-  placeholder.
-* `JdbcHelloWorldConstants`, `JdbcHelloWorldUtils`: no class-level javadoc, and no javadoc on
-  `JdbcHelloWorldConstants.BYTES`.
-* Decide whether the new targets, `write(FileChannel, long)`, `setSeed(SecureRandom)`,
-  `wrap(SSLEngine, ByteBuffer)`, and `write(SourceDataLine)`, should ship with commented-out
-  (teaching) bodies, as `write(AsynchronousFileChannel, long)` does.
+=== Asynchronous channel failures and append cleanup
 
-== Tests
+* `01-verbose-hello-world-api/src/main/java/com/github/jinahya/hello/api/AsynchronousHelloWorld.java`:
+  both handler-based `write(...)` loops call `channel.write(...)` without catching synchronous
+  initiation failures. A standalone probe with `ExecutorHelloWorld` and a channel that throws
+  `WritePendingException` leaves the stage-based `write(channel, attachment)` result incomplete;
+  the exception escapes on the executor thread. Route initiation failures from the first and
+  subsequent writes to `handler.failed(...)`, without catching exceptions thrown by the caller's
+  own terminal callback and notifying it twice. Add deterministic regressions for both byte and
+  file channels, including a failure after a partial write.
+* In the same class, `append(Path, attachment, handler)` owns an open channel before invoking
+  `write(...)`. If task submission is rejected synchronously, no completion callback closes it.
+  Close owned channels on delegation/submission failure and preserve suppressed close failures;
+  define whether rejection is thrown or delivered to the handler and test that contract.
 
-* `JdbcHelloWorld_*_CallableStatement_String__Test`: all disabled, for both H2 (named parameters not
-  resolved) and SQLite (no stored procedures); the `set*(CallableStatement, String)` methods have no
-  real-database coverage.
-* `wrap(SSLEngine, ByteBuffer)`: no exploration (`__Test`) with a real handshaken `SSLEngine` pair.
-* `write(SourceDataLine)`: no exploration (`__Test`) with a real line; it would need an audio
-  device, and would make sound.
+=== Publisher cancellation and exceptional exits
 
-== Apps
+* `HelloWorldStagePublisher.subscribe(...)`: downstream cancellation is observed only at the loop
+  boundary. `stages.remove().join()` can wait forever on an unfinished stage, and that removed
+  stage is absent from the deque cancelled in `finally`. A standalone probe confirms cancelling
+  downstream leaves the current stage incomplete and uncancelled. Track the current stage and
+  arrange for cancellation to release the waiting producer and cancel queued work. Test with an
+  explicitly controlled, never-completing stage; verify producer termination as well as absence of
+  downstream signals.
+* `HelloWorldChunkPublisher.subscribe(...)`: the inner subscription is not retained, and
+  `done.join()` cannot observe outer cancellation while upstream is stalled. Retain and cancel
+  upstream, release the waiting producer when downstream cancels, and test with a stalled inner
+  source. Also guard `upstream.subscribe(...)` and the producer loop: a synchronous throw currently
+  escapes the virtual thread without closing the outer publisher or notifying its subscriber.
 
-* `appc`: the shaded jar fails with `NoSuchElementException`; there is no
-  `META-INF/services/com.github.jinahya.hello.api.HelloWorld`, and the lib registers its provider
-  only via `module-info`.
-* `appd`: the shaded jar fails with `WELD-001409: Ambiguous dependencies for type HelloWorld`; the
-  empty `beans.xml` makes `HelloWorldImpl` a bean besides the `@Produces` one.
-* `appc` uses only `AsynchronousHelloWorld#applyAsync(Function)`; no app demonstrates asynchronous
-  I/O (`write(AsynchronousByteChannel, ...)`, `append(Path, ...)`, `sendAsync(...)`), the
-  handler-based `applyAsync`, or `StructuredConcurrencyHelloWorld`.
-* `appc`: raw `AsynchronousHelloWorld` / `ExecutorHelloWorld` types in `HelloWorldConfiguration`.
-* `appd`: suppresses `java:S6813` (field injection) while it uses constructor injection; the section
-  comment says `Flow.Subscriber<byte>` instead of `Flow.Subscriber<byte[]>`.
-* `appa` .. `appd`: no javadoc.
+=== JDBC reader lifetime
 
-== Scripts
+* `JdbcHelloWorld.setCharacterStream(PreparedStatement, int)` closes its `StringReader` before
+  returning. A driver that reads the bound reader during statement execution encounters a closed
+  reader (a deferred-reader probe reports `Stream closed`). Keep it readable until the driver
+  consumes it, consistently with `setNCharacterStream`
+  and the LOB setters. Add a deferred-consumption regression that captures the bound reader and
+  reads it after the helper returns; immediate Mockito answers and eager drivers miss this case.
+  Review the adjacent ASCII/binary stream lifetime documentation at the same time.
 
-* `_app.sh` looks for `...-0.0.1-SNAPSHOT-<variant>.jar`; the version is now `1.0.1-SNAPSHOT`.
-* `03-verbose-hello-world-app/all.sh`, `all.ps1` invoke `appX.sh` / `appX.ps1` beside themselves,
-  which live in `src/test/shell/` (with their own `all.*`); remove them, or fix the paths.
+=== Executable apps
 
-== Build
+* `appc`: the freshly built shaded jar fails with `NoSuchElementException` during Spring bean
+  creation. The library registers `HelloWorldImpl` only in `module-info.java`; its jar has no
+  `META-INF/services/com.github.jinahya.hello.api.HelloWorld`. `appb` supplies its own descriptor,
+  so this is not a failure of every SPI app. Supply provider metadata for classpath consumers
+  such as `appc` and `appd`, and verify discovery from the packaged artifacts.
+* `appd`: the freshly built shaded jar fails with `WELD-001409: Ambiguous dependencies for type
+  HelloWorld`. Its `META-INF/beans.xml` explicitly uses `bean-discovery-mode="all"`, discovering
+  `HelloWorldImpl` alongside the `HelloWorldProvider` producer. Choose one CDI registration path,
+  then verify producer-based SPI discovery after the ambiguity is removed. The assembled jar
+  reproduces the ambiguity; the manual jar instead reaches the producer and fails with
+  `NoSuchElementException`, so both discovery paths need coverage.
 
-* `03-verbose-hello-world-app/pom.xml` declares no `ServicesResourceTransformer` for
-  `maven-shade-plugin`; related to the `appc` failure above.
+== API and documentation (P2)
+
+* Document which `HelloWorld` methods remain exercises and what the packaged demos should print
+  in that state. `set(byte[])` currently returns `null`, while `write(OutputStream)` and
+  `write(WritableByteChannel)` omit the actual write. The current shaded `appa` and `appb` exit
+  successfully but emit only a newline. A completed-example build, if desired, needs an explicit
+  implementation path plus payload assertions.
+* `HelloWorldArrayPublisher`, `HelloWorldBytePublisher`, and `HelloWorldStagePublisher` Javadoc
+  incorrectly promises synchronous `onSubscribe` on the caller's thread. A queued-executor probe
+  shows `HelloWorldBytePublisher.subscribe(...)` returns before `onSubscribe`; delivery is
+  scheduled through `SubmissionPublisher`'s executor. Correct the threading and ordering claims
+  and avoid tests or examples relying on synchronous subscription notification.
+* `HelloWorld.send(DatagramChannel, SocketAddress)` Javadoc describes `SO_SNDBUF` checks,
+  `Thread.onSpinWait()`, and related exceptions that are absent from the implementation. Reconcile
+  the contract with the actual loop, and decide how a non-blocking channel repeatedly returning
+  zero should yield or be bounded. Verify zero-progress behavior with a controlled channel.
+* Decide whether `write(FileChannel, long)`, `setSeed(SecureRandom)`, `wrap(SSLEngine, ByteBuffer)`,
+  and `write(SourceDataLine)` should use commented-out teaching bodies like the older targets.
+* `HelloWorld` has an empty `java.util.jar` section; `JarOutputStream` is already covered by
+  `write(OutputStream)` (see `HelloWorld_Java_Util_Jar__Test`). Remove the header or explicitly
+  retain it as a placeholder.
+* Add class-level Javadoc to `JdbcHelloWorldConstants` and `JdbcHelloWorldUtils`, and document
+  `JdbcHelloWorldConstants.BYTES` and its relationship to `HelloWorld.BYTES`.
+* `appc`'s `package-info.java` and `module-info.java` describe appending to a temporary file;
+  `HelloWorldMain.print()` actually maps to a string and prints it. Align those descriptions.
+* Consider a runnable example of asynchronous I/O (`write(AsynchronousByteChannel, ...)`,
+  `append(Path, ...)`, or `sendAsync(...)`), handler-based `applyAsync`, and
+  `StructuredConcurrencyHelloWorld`. The apps currently demonstrate only the stage-based mapper.
+* Parameterize the raw `AsynchronousHelloWorld` and `ExecutorHelloWorld` types in `appc`'s
+  `HelloWorldConfiguration`.
+* `appd`: remove the obsolete `java:S6813` suppression for field injection (the app uses constructor
+  injection), and fix the section comment from `Flow.Subscriber<byte>` to `Flow.Subscriber<byte[]>`.
+* Expand `README.md` and the API README with the required JDK 27/preview setup, wrapper commands,
+  exercise status, DI/CDI profile commands, and how to build/run the executable variants.
+  The current API README contains only its title and one description line.
+
+== Tests and build (P2)
+
+* Add app smoke checks to CI after packaging. Check the exit status and intended stdout for each
+  supported executable variant; Maven's default tests currently pass while `appc` and `appd`
+  shaded launches fail. Keep exercise-mode expectations explicit for `appa`/`appb`.
+* `JdbcHelloWorld_*_CallableStatement_String__Test`: all database cases remain disabled for H2
+  (named parameters not resolved) and SQLite (no stored procedures). Add an opt-in database/driver
+  fixture that supports named callable parameters, or clearly document the integration gap.
+* Preserve the new SSL-engine and audio exploration tests. The current working tree already
+  includes `HelloWorld_Wrap_SSLEngine_Dst__Test` and `HelloWorld_Write_SourceDataLine__Test`;
+  the old missing-test TODOs are obsolete. The audio test is deliberately opt-in via
+  `hello.audio`; keep the hardware requirement separate from default CI coverage.
+* `03-verbose-hello-world-app/pom.xml`: review service-resource merging for shaded dependency jars;
+  only a `ManifestResourceTransformer` is configured. Add `ServicesResourceTransformer` where
+  required and verify the resulting descriptors. A transformer alone cannot create the library's
+  missing `HelloWorld` provider descriptor.
+* Root `pom.xml`: Surefire hardcodes `argLine` to `--enable-preview`, while JaCoCo's `prepare-agent`
+  writes its agent option into `argLine`. Preserve the JaCoCo contribution in the forked JVM
+  arguments (with a safe default when inactive), and verify fresh coverage data/report generation.
+* Configure Mockito instrumentation explicitly if tests must run in environments that disallow
+  self-attachment. The sandboxed run failed during Byte Buddy attachment; rerunning outside the
+  sandbox passed. Treat this as an execution-environment limitation, not an API regression.
+
+== Scripts (P2)
+
+* `_app.sh`: derive artifact names from Maven rather than the hardcoded `0.0.1-SNAPSHOT` (the POM
+  version is `1.0.1-SNAPSHOT`). Fail if packaging fails or no expected jars are found; currently
+  `set -uo pipefail` and the skip logic can report success after a failed build or zero launches.
+  Check each Java exit status as well as stdout, and use the preview runtime flag when needed.
+* `03-verbose-hello-world-app/all.sh` and `all.ps1` look for `appX.*` beside themselves, but the
+  launchers live in `src/test/shell/`. Remove the duplicates or fix their paths.
+* All `03-verbose-hello-world-app/src/test/shell/appX.sh` and `appX.ps1` launchers resolve their POM
+  beneath the script directory instead of the app aggregator directory, and use nonexistent
+  `com.github.jinahya.hello.appX_.HelloWorldMain` classes (extra underscore). Fix both the relative
+  POM path and the main-class name; test launchers from an unrelated working directory.
+* `_mvn.all.sh` declares `/bin/sh` but uses Bash arrays. Use a Bash shebang or POSIX iteration,
+  propagate individual failures, and include `di-avaje` and `di-micronaut` if it is meant to mirror
+  the CI profile list. Aggregate app/profile launchers should return nonzero if any child fails.
+* `_docker_maven.sh` requires at least three arguments although its usage permits a tag plus one
+  phase. Accept that two-argument invocation and quote the artifact/container/work-directory
+  expansions.
+* `01-verbose-hello-world-api/src/test/sh/c.sh` says it writes stdout to `target/c/<binary>.txt`,
+  but actually updates tracked `txt/<binary>.txt` files. Correct its comment and make that update
+  behavior clear before contributors run it.
+
+== Review validation
+
+* Environment: Temurin `27.0.1.0.2`, macOS arm64; existing local changes were included in the review.
+* `./mvnw -q -o -Dsurefire.skipAfterFailureCount=1 test` passed outside the sandbox:
+  API 1,169 tests (141 skipped), library 24 tests, zero failures/errors. The ten optional DI/CDI
+  profiles were inspected but not rerun; this result covers the default reactor configuration.
+* `./mvnw -q -o -DskipTests package` passed. Fresh shaded jars were launched with
+  `java --enable-preview -jar`: `appa`/`appb` exited 0 with only a newline, `appc` failed provider
+  discovery, and `appd` failed CDI dependency resolution as described above.
+* `./mvnw -q -Pgenerate-executables -DskipTests package` also passed after downloading uncached
+  plugins. The additional manual and assembled jars were launched with preview enabled:
+  `appa`/`appb` again printed only a newline, `appc` failed provider discovery in both variants,
+  and `appd` failed provider discovery in the manual jar and CDI resolution in the assembled jar.
+* Standalone probes confirmed deferred `onSubscribe`, stalled-stage cancellation behavior, and an
+  incomplete result stage after a synchronous asynchronous-channel write failure, and a closed
+  JDBC reader when consumption is deferred until after the helper returns.
+* `make -C 01-verbose-hello-world-api c` compiled all five C examples; Bash syntax checks passed.
+  PowerShell execution, audio hardware, and a rendered documentation build were not exercised.

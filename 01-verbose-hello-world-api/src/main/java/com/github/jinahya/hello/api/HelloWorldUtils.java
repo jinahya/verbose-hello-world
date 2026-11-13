@@ -189,6 +189,7 @@ public final class HelloWorldUtils {
      * @see DatagramPacket#DatagramPacket(byte[], int)
      */
     public static DatagramPacket packet(final HelloWorld service) {
+        Objects.requireNonNull(service, "service is null");
         return service.append(
                 new DatagramPacket(new byte[HelloWorld.BYTES], 0)
         );
@@ -206,11 +207,13 @@ public final class HelloWorldUtils {
      * @param address the destination {@link SocketAddress}.
      * @return a new {@link DatagramPacket} of length {@value HelloWorld#BYTES} addressed to
      * {@code address}.
-     * @throws NullPointerException if the {@code service} is {@code null}.
+     * @throws NullPointerException if either {@code service} or {@code address} is {@code null}.
      * @see HelloWorld#append(DatagramPacket)
      * @see DatagramPacket#DatagramPacket(byte[], int, java.net.SocketAddress)
      */
     public static DatagramPacket packet(final HelloWorld service, final SocketAddress address) {
+        Objects.requireNonNull(service, "service is null");
+        Objects.requireNonNull(address, "address is null");
         return service.append(
                 new DatagramPacket(new byte[HelloWorld.BYTES], 0, address)
         );
