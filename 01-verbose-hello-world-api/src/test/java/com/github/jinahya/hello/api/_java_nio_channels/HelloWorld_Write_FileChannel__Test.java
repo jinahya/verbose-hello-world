@@ -84,7 +84,8 @@ class HelloWorld_Write_FileChannel__Test extends HelloWorld__Test {
 
     /**
      * Verifies that the method writes the {@code hello-world-bytes} to a real {@link FileChannel}
-     * at a {@code position}, without changing the channel's own position.
+     * at a {@code position}, without changing the channel's own position. The values of the bytes
+     * before the {@code position} are unspecified, and are not verified.
      *
      * @throws IOException if an I/O error occurs.
      */
@@ -101,9 +102,9 @@ class HelloWorld_Write_FileChannel__Test extends HelloWorld__Test {
             assertEquals(0L, channel.position());
         }
         // ------------------------------------------------------------------------------------ then
+        // the values of the bytes before the position, if any, are unspecified
         final var bytes = Files.readAllBytes(path);
         assertEquals(position + HelloWorld.BYTES, bytes.length);
-        assertArrayEquals(new byte[(int) position], Arrays.copyOf(bytes, (int) position));
         assertArrayEquals(
                 hello_world_byte_array(),
                 Arrays.copyOfRange(bytes, (int) position, bytes.length)

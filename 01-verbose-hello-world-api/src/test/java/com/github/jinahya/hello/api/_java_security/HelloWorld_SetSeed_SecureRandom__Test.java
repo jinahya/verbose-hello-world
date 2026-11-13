@@ -29,6 +29,7 @@ import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
 import java.security.*;
+import java.util.*;
 import java.util.stream.*;
 
 import static com.github.jinahya.hello.api.HelloWorld__TestUtils.*;
@@ -88,13 +89,16 @@ class HelloWorld_SetSeed_SecureRandom__Test extends HelloWorld__Test {
         assertSame(random, service().setSeed(random));
         final var bytes = new byte[HelloWorld.BYTES];
         random.nextBytes(bytes);
-        log.debug("{}: {}", algorithm, bytes);
+        log.debug("{} ({}): {}", algorithm, random.getProvider().getName(),
+                  HexFormat.of().formatHex(bytes));
     }
 
     /**
      * Asserts that a {@code SHA1PRNG} instance, seeded with the {@code hello-world-bytes} before
      * it generates anything, produces a deterministic sequence; the given seed replaces, rather
      * than supplements, the self-seeding for this algorithm.
+     * <p>
+     * The sequence depends only on the seed, hence is the same on every platform.
      *
      * @throws NoSuchAlgorithmException if {@code SHA1PRNG} is not available.
      */
@@ -108,5 +112,6 @@ class HelloWorld_SetSeed_SecureRandom__Test extends HelloWorld__Test {
         random1.nextBytes(bytes1);
         random2.nextBytes(bytes2);
         assertArrayEquals(bytes1, bytes2);
+        log.debug("SHA1PRNG: {}", HexFormat.of().formatHex(bytes1));
     }
 }
