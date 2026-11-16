@@ -59,7 +59,7 @@
     <!-- ai: logback-classic's version should be matched to the slf4j-api's version -->
     <!-- ai: we should check the following logback-parent's pom for the corresponding slf4j-api's version -->
     <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent -->
-    <version.ch.logback.classic>1.6.6</version.ch.logback.classic>
+    <version.ch.logback.classic>1.6.7</version.ch.logback.classic>
 <!--    <version.com.formdev>3.7.2</version.com.formdev>-->
     <version.com.formdev>3.8</version.com.formdev>
     <!-- https://central.sonatype.com/artifact/com.google.dagger/dagger/versions -->
@@ -69,6 +69,8 @@
     <version.maven-surefire>3.6.1</version.maven-surefire>
     <version.maven-failsafe>${version.maven-surefire}</version.maven-failsafe>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
+    <!-- https://central.sonatype.com/artifact/jakarta.platform/jakarta.jakartaee-bom/versions -->
+    <version.jakarta.platform>11.0.0</version.jakarta.platform> <!-- jakarta ee 11; cdi 4.1 -->
     <!-- https://central.sonatype.com/artifact/io.avaje/avaje-inject-bom/versions -->
     <version.io.avaje>12.7</version.io.avaje>
     <!-- https://central.sonatype.com/artifact/io.micronaut/micronaut-core/versions -->
@@ -76,7 +78,7 @@
     <!-- https://central.sonatype.com/artifact/io.micronaut.platform/micronaut-platform/versions -->
     <version.io.micronaut.platform>5.2.6</version.io.micronaut.platform>
     <!-- https://central.sonatype.com/artifact/io.quarkus.platform/quarkus-bom/versions -->
-    <version.io.quarkus.platform>3.40.1.1</version.io.quarkus.platform>
+    <version.io.quarkus.platform>3.40.1.2</version.io.quarkus.platform>
     <!-- https://central.sonatype.com/artifact/org.apache.openwebbeans/openwebbeans-junit5/versions -->
     <!--    <version.org.apache.openwebbeans>4.0.3</version.org.apache.openwebbeans>-->
     <version.org.apache.openwebbeans>4.1.1</version.org.apache.openwebbeans> <!-- cdi 4.1 (jakarta ee 11) -->
@@ -112,9 +114,18 @@
       </dependency>
       <!--
         Order-sensitive BOM imports: these must be declared BEFORE quarkus-bom so that
-        their pins (junit-jupiter, mockito-junit-jupiter) win. Maven applies the
+        their pins (jakarta.*, junit-jupiter, mockito-junit-jupiter) win. Maven applies the
         first matching managed version from the import order.
       -->
+      <dependency><!-- base limit for every jakarta.* api; keep first -->
+        <groupId>jakarta.platform</groupId>
+        <artifactId>jakarta.jakartaee-bom</artifactId>
+        <!-- https://central.sonatype.com/artifact/jakarta.platform/jakarta.jakartaee-bom/versions -->
+        <!-- manages cdi-api 4.1.0, inject-api 2.0.1, annotation-api 3.0.0, interceptor-api 2.2.0, el-api 6.0.1 -->
+        <version>${version.jakarta.platform}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
@@ -132,7 +143,7 @@
       <dependency>
         <groupId>at.yawk.lz4</groupId>
         <artifactId>lz4-java</artifactId>
-        <version>1.12.1</version>
+        <version>1.14.0</version>
       </dependency>
       <dependency><!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-parent/versions -->
         <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
@@ -231,15 +242,6 @@
         <groupId>io.quarkus.platform</groupId>
         <artifactId>quarkus-bom</artifactId>
         <version>${version.io.quarkus.platform}</version> <!-- Match your desired Quarkus stream version -->
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.platform</groupId>
-        <artifactId>jakarta.jakartaee-bom</artifactId>
-        <!-- https://central.sonatype.com/artifact/jakarta.platform/jakarta.jakartaee-bom/versions -->
-        <!-- manages cdi-api 4.1.0, inject-api 2.0.1, annotation-api 3.0.0, interceptor-api 2.2.0, el-api 6.0.1 -->
-        <version>11.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -626,7 +628,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.25.1</version>
+          <version>2.25.2</version>
           <configuration>
             <ruleSet>
               <ignoreVersions>

@@ -680,6 +680,20 @@
             <artifactId>logback-core</artifactId>
             <version>${version.ch.logback.classic}</version>
           </dependency>
+          <dependency><!-- import before Micronaut BOM so its jakarta.* versions (e.g., annotation-api 2.1.1) don't win -->
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-bom</artifactId>
+            <version>${version.jakarta.platform}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+          <dependency><!-- import before Micronaut BOM so its mockito version doesn't win -->
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-bom</artifactId>
+            <version>${version.org.mockito}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
           <dependency>
             <groupId>io.micronaut.platform</groupId>
             <artifactId>micronaut-platform</artifactId>
