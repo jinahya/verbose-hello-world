@@ -1170,28 +1170,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setAsciiStream(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 준비된 문의 지정한 매개변수에
- * ASCII 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws IOException              입출력 오류가 발생한 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@link ByteArrayInputStream} 으로 감싸고,
- * {@code preparedStatement.setAsciiStream(parameterIndex, stream)} 를 호출한 뒤,
- * 스트림을 닫고 {@code preparedStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 준비된 문의 지정한 매개변수에 ASCII 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>IOException</code> (예외): 입출력 오류가 발생한 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>preparedStatement.setAsciiStream(parameterIndex, stream)</code> 를 호출한 뒤, 스트림을 닫고 <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setAsciiStream(preparedStatement, parameterIndex)</div>
@@ -1385,28 +1400,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setBinaryStream(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 준비된 문의 지정한 매개변수에
- * 이진 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws IOException              입출력 오류가 발생한 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@link ByteArrayInputStream} 으로 감싸고,
- * {@code preparedStatement.setBinaryStream(parameterIndex, stream)} 를 호출한 뒤,
- * 스트림을 닫고 {@code preparedStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 준비된 문의 지정한 매개변수에 이진 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>IOException</code> (예외): 입출력 오류가 발생한 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>preparedStatement.setBinaryStream(parameterIndex, stream)</code> 를 호출한 뒤, 스트림을 닫고 <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBinaryStream(preparedStatement, parameterIndex)</div>
@@ -1582,25 +1612,40 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setBytes(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 준비된 문의 지정한 매개변수 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@code preparedStatement.setBytes(parameterIndex, array)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 준비된 문의 지정한 매개변수 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>preparedStatement.setBytes(parameterIndex, array)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBytes(preparedStatement, parameterIndex)</div>
@@ -1774,25 +1819,40 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setString(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 문자열을 주어진 준비된 문의 지정한 매개변수 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로 디코딩해
- * 문자열을 얻고, {@code preparedStatement.setString(parameterIndex, string)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setString</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setString</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 문자열을 주어진 준비된 문의 지정한 매개변수 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>preparedStatement.setString(parameterIndex, string)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setString(preparedStatement, parameterIndex)</div>
@@ -1967,28 +2027,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setCharacterStream(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 문자열을 주어진 준비된 문의 지정한 매개변수에
- * 문자 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws IOException              입출력 오류가 발생한 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로 디코딩해
- * 문자열을 얻어 {@link StringReader} 로 감싸고,
- * {@code preparedStatement.setCharacterStream(parameterIndex, reader)} 를 호출한 뒤,
- * {@code reader} 를 닫고 {@code preparedStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 문자열을 주어진 준비된 문의 지정한 매개변수에 문자 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>IOException</code> (예외): 입출력 오류가 발생한 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻어 <code>StringReader</code> 로 감싸고, <code>preparedStatement.setCharacterStream(parameterIndex, reader)</code> 를 호출한 뒤, <code>reader</code> 를 닫고 <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setCharacterStream(preparedStatement, parameterIndex)</div>
@@ -2151,26 +2226,40 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setNString(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 문자열을 주어진 준비된 문의 지정한 매개변수에
- * 국가별 문자열 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로 디코딩해
- * 문자열을 얻고, {@code preparedStatement.setNString(parameterIndex, string)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNString</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNString</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 문자열을 주어진 준비된 문의 지정한 매개변수에 국가별 문자열 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>preparedStatement.setNString(parameterIndex, string)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setNString(preparedStatement, parameterIndex)</div>
@@ -2322,29 +2411,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setNCharacterStream(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 문자열을 주어진 준비된 문의 지정한 매개변수에
- * 국가별 문자 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로 디코딩해
- * 문자열을 얻어 {@link StringReader} 로 감싸고,
- * {@code preparedStatement.setNCharacterStream(parameterIndex, reader)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- * @apiNote 이 메서드는 {@code reader} 를 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가
- * {@code reader} 를 읽을 수 있기 때문이다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 문자열을 주어진 준비된 문의 지정한 매개변수에 국가별 문자 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻어 <code>StringReader</code> 로 감싸고, <code>preparedStatement.setNCharacterStream(parameterIndex, reader)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 <code>reader</code> 를 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가 <code>reader</code> 를 읽을 수 있기 때문이다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setNCharacterStream(preparedStatement, parameterIndex)</div>
@@ -2513,29 +2616,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setBlob(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 준비된 문의 지정한 매개변수에
- * 입력 스트림에서 읽을 {@code BLOB} 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@link ByteArrayInputStream} 으로 감싸고,
- * {@code preparedStatement.setBlob(parameterIndex, stream)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- * @apiNote 이 메서드는 {@code stream} 을 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가
- * {@code stream} 을 읽을 수 있기 때문이다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 준비된 문의 지정한 매개변수에 입력 스트림에서 읽을 <code>BLOB</code> 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>preparedStatement.setBlob(parameterIndex, stream)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 <code>stream</code> 을 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가 <code>stream</code> 을 읽을 수 있기 때문이다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBlob(preparedStatement, parameterIndex)</div>
@@ -2707,29 +2824,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setClob(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 문자열을 주어진 준비된 문의 지정한 매개변수에
- * {@code Reader} 에서 읽을 {@code CLOB} 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로 디코딩해
- * 문자열을 얻어 {@link StringReader} 로 감싸고,
- * {@code preparedStatement.setClob(parameterIndex, reader)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- * @apiNote 이 메서드는 {@code reader} 를 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가
- * {@code reader} 를 읽을 수 있기 때문이다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setClob</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setClob</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 문자열을 주어진 준비된 문의 지정한 매개변수에 <code>Reader</code> 에서 읽을 <code>CLOB</code> 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻어 <code>StringReader</code> 로 감싸고, <code>preparedStatement.setClob(parameterIndex, reader)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 <code>reader</code> 를 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가 <code>reader</code> 를 읽을 수 있기 때문이다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setClob(preparedStatement, parameterIndex)</div>
@@ -2892,29 +3023,43 @@ SQL 문을 실행하지는 않는다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setNClob(PreparedStatement, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 문자열을 주어진 준비된 문의 지정한 매개변수에
- * {@code Reader} 에서 읽을 {@code NCLOB} 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 준비된 문의 구체 타입.
- * @param preparedStatement 값을 넣을 준비된 문.
- * @param parameterIndex    매개변수 번호. 첫 번째 매개변수가 {@code 1} 이다.
- * @return 주어진 {@code preparedStatement}.
- * @throws NullPointerException     {@code preparedStatement} 가 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code parameterIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code parameterIndex} 에 해당하는 매개변수가 없거나,
- *                                  데이터베이스 접근 오류가 발생했거나, 닫힌
- *                                  {@code PreparedStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로 디코딩해
- * 문자열을 얻어 {@link StringReader} 로 감싸고,
- * {@code preparedStatement.setNClob(parameterIndex, reader)} 를 호출한 뒤,
- * {@code preparedStatement} 를 반환한다.
- * @apiNote 이 메서드는 {@code reader} 를 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가
- * {@code reader} 를 읽을 수 있기 때문이다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">PreparedStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">preparedStatement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">parameterIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 문자열을 주어진 준비된 문의 지정한 매개변수에 <code>Reader</code> 에서 읽을 <code>NCLOB</code> 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 준비된 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>preparedStatement</code> (매개변수): 값을 넣을 준비된 문.</p>
+</li>
+<li>
+<p><code>parameterIndex</code> (매개변수): 매개변수 번호. 첫 번째 매개변수가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>preparedStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>preparedStatement</code> 가 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>parameterIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterIndex</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>PreparedStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻어 <code>StringReader</code> 로 감싸고, <code>preparedStatement.setNClob(parameterIndex, reader)</code> 를 호출한 뒤, <code>preparedStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 <code>reader</code> 를 닫지 않는다. 이 메서드가 반환한 뒤에도 드라이버가 <code>reader</code> 를 읽을 수 있기 때문이다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setNClob(preparedStatement, parameterIndex)</div>
@@ -3165,29 +3310,40 @@ H2 드라이버는 <code>CallableStatement</code> 의 매개변수 이름을 해
 <div class="listingblock">
 <div class="title">HelloWorld#setAsciiStream(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * ASCII 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@link ByteArrayInputStream} 으로 감싸고,
- * {@code callableStatement.setAsciiStream(parameterName, stream)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는
- * 스트림을 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 ASCII 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>ByteArrayInputStream</code> 으로 감싸고, <code>callableStatement.setAsciiStream(parameterName, stream)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는 스트림을 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setAsciiStream(callableStatement, parameterName)</div>
@@ -3387,29 +3543,40 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setBinaryStream(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 이진 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@link ByteArrayInputStream} 으로 감싸고,
- * {@code callableStatement.setBinaryStream(parameterName, stream)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는
- * 스트림을 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 이진 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>ByteArrayInputStream</code> 으로 감싸고, <code>callableStatement.setBinaryStream(parameterName, stream)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는 스트림을 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBinaryStream(callableStatement, parameterName)</div>
@@ -3539,26 +3706,37 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setBytes(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 바이트 배열 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@code callableStatement.setBytes(parameterName, array)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 바이트 배열 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>callableStatement.setBytes(parameterName, array)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBytes(callableStatement, parameterName)</div>
@@ -3670,27 +3848,37 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setString(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 문자열 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고,
- * {@code callableStatement.setString(parameterName, string)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setString</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setString</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 문자열 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>callableStatement.setString(parameterName, string)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setString(callableStatement, parameterName)</div>
@@ -3802,29 +3990,40 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setCharacterStream(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 문자 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고, {@link StringReader} 로 감싸고,
- * {@code callableStatement.setCharacterStream(parameterName, reader)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는
- * 리더를 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 문자 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>StringReader</code> 로 감싸고, <code>callableStatement.setCharacterStream(parameterName, reader)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는 리더를 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setCharacterStream(callableStatement, parameterName)</div>
@@ -3954,27 +4153,37 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setNString(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 국가별 문자열 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고,
- * {@code callableStatement.setNString(parameterName, string)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNString</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNString</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 국가별 문자열 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>callableStatement.setNString(parameterName, string)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setNString(callableStatement, parameterName)</div>
@@ -4086,29 +4295,40 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setNCharacterStream(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 국가별 문자 스트림 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고, {@link StringReader} 로 감싸고,
- * {@code callableStatement.setNCharacterStream(parameterName, reader)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는
- * 리더를 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 국가별 문자 스트림 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>StringReader</code> 로 감싸고, <code>callableStatement.setNCharacterStream(parameterName, reader)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는 리더를 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setNCharacterStream(callableStatement, parameterName)</div>
@@ -4241,29 +4461,40 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setBlob(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 입력 스트림에서 읽는 {@code BLOB} 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@link ByteArrayInputStream} 으로 감싸고,
- * {@code callableStatement.setBlob(parameterName, stream)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는
- * 스트림을 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 입력 스트림에서 읽는 <code>BLOB</code> 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>ByteArrayInputStream</code> 으로 감싸고, <code>callableStatement.setBlob(parameterName, stream)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는 스트림을 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBlob(callableStatement, parameterName)</div>
@@ -4393,29 +4624,40 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setClob(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 리더에서 읽는 {@code CLOB} 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고, {@link StringReader} 로 감싸고,
- * {@code callableStatement.setClob(parameterName, reader)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는
- * 리더를 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setClob</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setClob</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 리더에서 읽는 <code>CLOB</code> 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>StringReader</code> 로 감싸고, <code>callableStatement.setClob(parameterName, reader)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는 리더를 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setClob(callableStatement, parameterName)</div>
@@ -4542,29 +4784,40 @@ SQLite 로 확인하는 시험도 같은 순서로 작성되어 있지만, SQLit
 <div class="listingblock">
 <div class="title">HelloWorld#setNClob(CallableStatement, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에
- * 리더에서 읽는 {@code NCLOB} 값으로 넣는다.
- *
- * @param &lt;T&gt;               호출자가 건넨 호출 가능한 문의 구체 타입.
- * @param callableStatement 값을 넣을 호출 가능한 문.
- * @param parameterName     매개변수 이름.
- * @return 주어진 {@code callableStatement}.
- * @throws NullPointerException {@code callableStatement} 나 {@code parameterName} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code parameterName} 에 해당하는 매개변수가 없거나,
- *                              데이터베이스 접근 오류가 발생했거나, 닫힌
- *                              {@code CallableStatement} 에 대해 호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고, {@link StringReader} 로 감싸고,
- * {@code callableStatement.setNClob(parameterName, reader)} 를 호출한 뒤,
- * {@code callableStatement} 를 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는
- * 리더를 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">CallableStatement</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">callableStatement</span><span class="o">,</span> <span class="nc">String</span> <span class="n">parameterName</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 호출 가능한 문의 이름으로 지정한 매개변수에 리더에서 읽는 <code>NCLOB</code> 값으로 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 호출 가능한 문의 구체 타입.</p>
+</li>
+<li>
+<p><code>callableStatement</code> (매개변수): 값을 넣을 호출 가능한 문.</p>
+</li>
+<li>
+<p><code>parameterName</code> (매개변수): 매개변수 이름.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>callableStatement</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>callableStatement</code> 나 <code>parameterName</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>parameterName</code> 에 해당하는 매개변수가 없거나, 데이터베이스 접근 오류가 발생했거나, 닫힌 <code>CallableStatement</code> 에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>StringReader</code> 로 감싸고, <code>callableStatement.setNClob(parameterName, reader)</code> 를 호출한 뒤, <code>callableStatement</code> 를 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는 리더를 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setNClob(callableStatement, parameterName)</div>
@@ -4829,31 +5082,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateAsciiStream(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 ASCII 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@code ByteArrayInputStream} 으로 감싸고,
- * {@code resultSet.updateAsciiStream(columnIndex, stream)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 ASCII 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>resultSet.updateAsciiStream(columnIndex, stream)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateAsciiStream(resultSet, columnIndex)</div>
@@ -5054,31 +5319,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateBinaryStream(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 이진 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@code ByteArrayInputStream} 으로 감싸고,
- * {@code resultSet.updateBinaryStream(columnIndex, stream)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 이진 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>resultSet.updateBinaryStream(columnIndex, stream)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateBinaryStream(resultSet, columnIndex)</div>
@@ -5221,29 +5498,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateBytes(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 바이트 배열로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@code resultSet.updateBytes(columnIndex, array)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 바이트 배열로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>resultSet.updateBytes(columnIndex, array)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateBytes(resultSet, columnIndex)</div>
@@ -5375,30 +5666,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateString(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 문자열로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고,
- * {@code resultSet.updateString(columnIndex, string)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 문자열로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>resultSet.updateString(columnIndex, string)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateString(resultSet, columnIndex)</div>
@@ -5524,31 +5828,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateCharacterStream(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 문자 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateCharacterStream(columnIndex, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 문자 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateCharacterStream(columnIndex, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateCharacterStream(resultSet, columnIndex)</div>
@@ -5682,30 +5998,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateNString(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 국가별 문자열로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고,
- * {@code resultSet.updateNString(columnIndex, string)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 국가별 문자열로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>resultSet.updateNString(columnIndex, string)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateNString(resultSet, columnIndex)</div>
@@ -5833,31 +6162,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateNCharacterStream(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 국가별 문자 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateNCharacterStream(columnIndex, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 국가별 문자 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateNCharacterStream(columnIndex, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateNCharacterStream(resultSet, columnIndex)</div>
@@ -5993,31 +6334,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateBlob(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 입력 스트림에서 읽는 {@code BLOB} 값으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@code ByteArrayInputStream} 으로 감싸고,
- * {@code resultSet.updateBlob(columnIndex, stream)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 입력 스트림에서 읽는 <code>BLOB</code> 값으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>resultSet.updateBlob(columnIndex, stream)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateBlob(resultSet, columnIndex)</div>
@@ -6159,31 +6512,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateClob(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 리더에서 읽는 {@code CLOB} 값으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateClob(columnIndex, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 리더에서 읽는 <code>CLOB</code> 값으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateClob(columnIndex, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateClob(resultSet, columnIndex)</div>
@@ -6321,31 +6686,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateNClob(ResultSet, int)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 리더에서 읽는 {@code NCLOB} 값으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnIndex 열 번호. 첫 번째 열이 {@code 1}, 두 번째 열이 {@code 2} 이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException     {@code resultSet} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code columnIndex} 가 양수가 아닌 경우.
- * @throws SQLException             {@code columnIndex} 가 올바르지 않거나, 데이터베이스 접근
- *                                  오류가 발생했거나, 결과 집합의 동시성이
- *                                  {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                                  호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateNClob(columnIndex, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="kt">int</span> <span class="n">columnIndex</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 리더에서 읽는 <code>NCLOB</code> 값으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnIndex</code> (매개변수): 열 번호. 첫 번째 열이 <code>1</code>, 두 번째 열이 <code>2</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>columnIndex</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnIndex</code> 가 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateNClob(columnIndex, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateNClob(resultSet, columnIndex)</div>
@@ -6483,32 +6860,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateAsciiStream(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 ASCII 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@code ByteArrayInputStream} 으로 감싸고,
- * {@code resultSet.updateAsciiStream(columnLabel, stream)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 ASCII 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>resultSet.updateAsciiStream(columnLabel, stream)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateAsciiStream(resultSet, columnLabel)</div>
@@ -6586,32 +6971,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateBinaryStream(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 이진 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@code ByteArrayInputStream} 으로 감싸고,
- * {@code resultSet.updateBinaryStream(columnLabel, stream)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 이진 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>resultSet.updateBinaryStream(columnLabel, stream)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateBinaryStream(resultSet, columnLabel)</div>
@@ -6689,30 +7082,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateBytes(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 바이트 배열로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@code resultSet.updateBytes(columnLabel, array)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 바이트 배열로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>resultSet.updateBytes(columnLabel, array)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateBytes(resultSet, columnLabel)</div>
@@ -6789,31 +7192,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateString(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 문자열로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고,
- * {@code resultSet.updateString(columnLabel, string)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 문자열로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>resultSet.updateString(columnLabel, string)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateString(resultSet, columnLabel)</div>
@@ -6890,32 +7302,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateCharacterStream(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 문자 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateCharacterStream(columnLabel, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 문자 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateCharacterStream(columnLabel, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateCharacterStream(resultSet, columnLabel)</div>
@@ -6993,31 +7413,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateNString(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 국가별 문자열로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 문자열을 얻고,
- * {@code resultSet.updateNString(columnLabel, string)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNString</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 국가별 문자열로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 문자열을 얻고, <code>resultSet.updateNString(columnLabel, string)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateNString(resultSet, columnLabel)</div>
@@ -7094,32 +7523,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateNCharacterStream(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 국가별 문자 스트림으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateNCharacterStream(columnLabel, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 국가별 문자 스트림으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateNCharacterStream(columnLabel, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateNCharacterStream(resultSet, columnLabel)</div>
@@ -7197,32 +7634,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateBlob(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 입력 스트림에서 읽는 {@code BLOB} 값으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어
- * {@code ByteArrayInputStream} 으로 감싸고,
- * {@code resultSet.updateBlob(columnLabel, stream)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateBlob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 입력 스트림에서 읽는 <code>BLOB</code> 값으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어 <code>ByteArrayInputStream</code> 으로 감싸고, <code>resultSet.updateBlob(columnLabel, stream)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 스트림을 읽을 수 있으므로 스트림은 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateBlob(resultSet, columnLabel)</div>
@@ -7299,32 +7744,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateClob(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 리더에서 읽는 {@code CLOB} 값으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateClob(columnLabel, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 리더에서 읽는 <code>CLOB</code> 값으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateClob(columnLabel, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateClob(resultSet, columnLabel)</div>
@@ -7401,32 +7854,40 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#updateNClob(ResultSet, String)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * 주어진 결과 집합 현재 행의 지정한 열 값을 {@code hello, world} 바이트들로 갱신한다.
- * 값은 리더에서 읽는 {@code NCLOB} 값으로 넘긴다.
- *
- * @param &lt;T&gt;         호출자가 건넨 결과 집합의 구체 타입.
- * @param resultSet   현재 행을 갱신할 결과 집합.
- * @param columnLabel SQL {@code AS} 절로 지정한 열 레이블. {@code AS} 절이 없으면 열
- *                    이름이다.
- * @return 주어진 {@code resultSet}.
- * @throws NullPointerException {@code resultSet} 이나 {@code columnLabel} 이
- *                              {@code null} 인 경우.
- * @throws SQLException         {@code columnLabel} 이 올바르지 않거나, 데이터베이스 접근
- *                              오류가 발생했거나, 결과 집합의 동시성이
- *                              {@code CONCUR_READ_ONLY} 이거나, 닫힌 결과 집합에 대해
- *                              호출한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 채운 배열을 US-ASCII 로
- * 디코딩해 얻은 문자열을 {@code StringReader} 로 감싸고,
- * {@code resultSet.updateNClob(columnLabel, reader)} 를 호출한 뒤,
- * {@code resultSet} 을 반환한다.
- * @apiNote 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다.
- * 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 {@code resultSet} 에 대해
- * {@code updateRow()} 나 {@code insertRow()} 를 호출해야 한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">ResultSet</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">updateNClob</span><span class="o">(</span><span class="no">T</span> <span class="n">resultSet</span><span class="o">,</span> <span class="nc">String</span> <span class="n">columnLabel</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>주어진 결과 집합 현재 행의 지정한 열 값을 <code>hello, world</code> 바이트들로 갱신한다. 값은 리더에서 읽는 <code>NCLOB</code> 값으로 넘긴다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 결과 집합의 구체 타입.</p>
+</li>
+<li>
+<p><code>resultSet</code> (매개변수): 현재 행을 갱신할 결과 집합.</p>
+</li>
+<li>
+<p><code>columnLabel</code> (매개변수): SQL <code>AS</code> 절로 지정한 열 레이블. <code>AS</code> 절이 없으면 열 이름이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>resultSet</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>resultSet</code> 이나 <code>columnLabel</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>columnLabel</code> 이 올바르지 않거나, 데이터베이스 접근 오류가 발생했거나, 결과 집합의 동시성이 <code>CONCUR_READ_ONLY</code> 이거나, 닫힌 결과 집합에 대해 호출한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 채운 배열을 US-ASCII 로 디코딩해 얻은 문자열을 <code>StringReader</code> 로 감싸고, <code>resultSet.updateNClob(columnLabel, reader)</code> 를 호출한 뒤, <code>resultSet</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환된 뒤에도 드라이버가 리더를 읽을 수 있으므로 리더는 닫지 않는다. 이 메서드는 데이터베이스를 갱신하지 않는다. 호출자가 <code>resultSet</code> 에 대해 <code>updateRow()</code> 나 <code>insertRow()</code> 를 호출해야 한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#updateNClob(resultSet, columnLabel)</div>
@@ -7549,24 +8010,43 @@ SQLite 로 확인하는 시험은 모두 <code>@Disabled</code> 로 꺼져 있�
 <div class="listingblock">
 <div class="title">HelloWorld#setBinaryStream(Blob, long)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 {@code Blob} 에서 얻은 이진 스트림에, 지정한 위치부터 기록한다.
- *
- * @param &lt;T&gt;  호출자가 건넨 {@code Blob} 의 구체 타입.
- * @param blob 바이트들을 기록할 {@code Blob}.
- * @param pos  기록을 시작할 위치. 첫 번째 바이트의 위치가 {@code 1} 이다.
- * @return 주어진 {@code blob}.
- * @throws NullPointerException     {@code blob} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code pos} 가 양수가 아닌 경우.
- * @throws IOException              입출력 오류가 발생한 경우.
- * @throws SQLException             {@code BLOB} 값에 접근하다가 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code blob.setBinaryStream(pos)} 로 출력 스트림을 열고,
- * {@code set(new byte[12], 0)} 으로 얻은 배열을 그 스트림에 쓴 뒤, 스트림을
- * {@code flush()} 하고 닫은 다음, {@code blob} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Blob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">blob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Blob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">blob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span><span class="o">,</span> <span class="nc">IOException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 <code>Blob</code> 에서 얻은 이진 스트림에, 지정한 위치부터 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 <code>Blob</code> 의 구체 타입.</p>
+</li>
+<li>
+<p><code>blob</code> (매개변수): 바이트들을 기록할 <code>Blob</code>.</p>
+</li>
+<li>
+<p><code>pos</code> (매개변수): 기록을 시작할 위치. 첫 번째 바이트의 위치가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>blob</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>blob</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>pos</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>IOException</code> (예외): 입출력 오류가 발생한 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>BLOB</code> 값에 접근하다가 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>blob.setBinaryStream(pos)</code> 로 출력 스트림을 열고, <code>set(new byte[12], 0)</code> 으로 얻은 배열을 그 스트림에 쓴 뒤, 스트림을 <code>flush()</code> 하고 닫은 다음, <code>blob</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBinaryStream(blob, pos)</div>
@@ -7727,21 +8207,39 @@ SQLite 드라이버가 <code>Connection.createBlob()</code> 을 구현하지 않
 <div class="listingblock">
 <div class="title">HelloWorld#setBytes(Blob, long)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 {@code Blob} 의 지정한 위치부터 넣는다.
- *
- * @param &lt;T&gt;  호출자가 건넨 {@code Blob} 의 구체 타입.
- * @param blob 바이트들을 넣을 {@code Blob}.
- * @param pos  기록을 시작할 위치. 첫 번째 바이트의 위치가 {@code 1} 이다.
- * @return 주어진 {@code blob}.
- * @throws NullPointerException     {@code blob} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code pos} 가 양수가 아닌 경우.
- * @throws SQLException             {@code BLOB} 값에 접근하다가 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@code blob.setBytes(pos, array)} 를 호출한 뒤, {@code blob} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Blob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">blob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Blob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">blob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 <code>Blob</code> 의 지정한 위치부터 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 <code>Blob</code> 의 구체 타입.</p>
+</li>
+<li>
+<p><code>blob</code> (매개변수): 바이트들을 넣을 <code>Blob</code>.</p>
+</li>
+<li>
+<p><code>pos</code> (매개변수): 기록을 시작할 위치. 첫 번째 바이트의 위치가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>blob</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>blob</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>pos</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>BLOB</code> 값에 접근하다가 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>blob.setBytes(pos, array)</code> 를 호출한 뒤, <code>blob</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setBytes(blob, pos)</div>
@@ -7896,24 +8394,43 @@ H2 시험에서 달라지는 줄은 호출하는 메서드뿐이다.</p>
 <div class="listingblock">
 <div class="title">HelloWorld#setAsciiStream(Clob, long)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 {@code Clob} 에서 얻은 ASCII 스트림에, 지정한 위치부터 기록한다.
- *
- * @param &lt;T&gt;  호출자가 건넨 {@code Clob} 의 구체 타입.
- * @param clob 바이트들을 기록할 {@code Clob}.
- * @param pos  기록을 시작할 위치. 첫 번째 문자의 위치가 {@code 1} 이다.
- * @return 주어진 {@code clob}.
- * @throws NullPointerException     {@code clob} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code pos} 가 양수가 아닌 경우.
- * @throws IOException              입출력 오류가 발생한 경우.
- * @throws SQLException             {@code CLOB} 값에 접근하다가 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code clob.setAsciiStream(pos)} 로 출력 스트림을 열고,
- * {@code set(new byte[12], 0)} 으로 얻은 배열을 그 스트림에 쓴 뒤, 스트림을
- * {@code flush()} 하고 닫은 다음, {@code clob} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Clob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">clob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Clob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">clob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span><span class="o">,</span> <span class="nc">IOException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 <code>Clob</code> 에서 얻은 ASCII 스트림에, 지정한 위치부터 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 <code>Clob</code> 의 구체 타입.</p>
+</li>
+<li>
+<p><code>clob</code> (매개변수): 바이트들을 기록할 <code>Clob</code>.</p>
+</li>
+<li>
+<p><code>pos</code> (매개변수): 기록을 시작할 위치. 첫 번째 문자의 위치가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>clob</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>clob</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>pos</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>IOException</code> (예외): 입출력 오류가 발생한 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>CLOB</code> 값에 접근하다가 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>clob.setAsciiStream(pos)</code> 로 출력 스트림을 열고, <code>set(new byte[12], 0)</code> 으로 얻은 배열을 그 스트림에 쓴 뒤, 스트림을 <code>flush()</code> 하고 닫은 다음, <code>clob</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setAsciiStream(clob, pos)</div>
@@ -8074,25 +8591,43 @@ SQLite 드라이버가 <code>Connection.createClob()</code> 을 구현하지 않
 <div class="listingblock">
 <div class="title">HelloWorld#setCharacterStream(Clob, long)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 주어진 {@code Clob} 에서 얻은 문자 스트림에, 지정한 위치부터 기록한다.
- *
- * @param &lt;T&gt;  호출자가 건넨 {@code Clob} 의 구체 타입.
- * @param clob 문자들을 기록할 {@code Clob}.
- * @param pos  기록을 시작할 위치. 첫 번째 문자의 위치가 {@code 1} 이다.
- * @return 주어진 {@code clob}.
- * @throws NullPointerException     {@code clob} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code pos} 가 양수가 아닌 경우.
- * @throws IOException              입출력 오류가 발생한 경우.
- * @throws SQLException             {@code CLOB} 값에 접근하다가 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code clob.setCharacterStream(pos)} 로 {@code Writer} 를 열고,
- * {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로 디코딩한 문자열을 그
- * {@code Writer} 에 쓴 뒤, {@code Writer} 를 {@code flush()} 하고 닫은 다음,
- * {@code clob} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Clob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">clob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Clob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">clob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span>
         <span class="kd">throws</span> <span class="nc">SQLException</span><span class="o">,</span> <span class="nc">IOException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 주어진 <code>Clob</code> 에서 얻은 문자 스트림에, 지정한 위치부터 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 <code>Clob</code> 의 구체 타입.</p>
+</li>
+<li>
+<p><code>clob</code> (매개변수): 문자들을 기록할 <code>Clob</code>.</p>
+</li>
+<li>
+<p><code>pos</code> (매개변수): 기록을 시작할 위치. 첫 번째 문자의 위치가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>clob</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>clob</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>pos</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>IOException</code> (예외): 입출력 오류가 발생한 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>CLOB</code> 값에 접근하다가 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>clob.setCharacterStream(pos)</code> 로 <code>Writer</code> 를 열고, <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩한 문자열을 그 <code>Writer</code> 에 쓴 뒤, <code>Writer</code> 를 <code>flush()</code> 하고 닫은 다음, <code>clob</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setCharacterStream(clob, pos)</div>
@@ -8206,23 +8741,39 @@ H2 시험에서는 호출하는 메서드가 다르고, 마지막 확인이 여�
 <div class="listingblock">
 <div class="title">HelloWorld#setString(Clob, long)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 문자열로 바꿔, 주어진 {@code Clob} 의 지정한 위치부터 넣는다.
- *
- * @param &lt;T&gt;  호출자가 건넨 {@code Clob} 의 구체 타입.
- * @param clob 문자열을 넣을 {@code Clob}.
- * @param pos  기록을 시작할 위치. 첫 번째 문자의 위치가 {@code 1} 이다.
- * @return 주어진 {@code clob}.
- * @throws NullPointerException     {@code clob} 이 {@code null} 인 경우.
- * @throws IllegalArgumentException {@code pos} 가 양수가 아닌 경우.
- * @throws SQLException             {@code CLOB} 값에 접근하다가 오류가 발생했거나,
- *                                  {@code pos} 가 {@code clob} 의 길이보다 큰 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩한 문자열로 {@code clob.setString(pos, string)} 을 호출한 뒤,
- * {@code clob} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Clob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setString</span><span class="o">(</span><span class="no">T</span> <span class="n">clob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">Clob</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">setString</span><span class="o">(</span><span class="no">T</span> <span class="n">clob</span><span class="o">,</span> <span class="kt">long</span> <span class="n">pos</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 문자열로 바꿔, 주어진 <code>Clob</code> 의 지정한 위치부터 넣는다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 <code>Clob</code> 의 구체 타입.</p>
+</li>
+<li>
+<p><code>clob</code> (매개변수): 문자열을 넣을 <code>Clob</code>.</p>
+</li>
+<li>
+<p><code>pos</code> (매개변수): 기록을 시작할 위치. 첫 번째 문자의 위치가 <code>1</code> 이다.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>clob</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>clob</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>IllegalArgumentException</code> (예외): <code>pos</code> 가 양수가 아닌 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): <code>CLOB</code> 값에 접근하다가 오류가 발생했거나, <code>pos</code> 가 <code>clob</code> 의 길이보다 큰 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩한 문자열로 <code>clob.setString(pos, string)</code> 을 호출한 뒤, <code>clob</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#setString(clob, pos)</div>
@@ -8411,22 +8962,36 @@ UDT 를 자바 클래스로 대응시키면 그 클래스는 <code>SQLData</code
 <div class="listingblock">
 <div class="title">HelloWorld#writeAsciiStream(SQLOutput)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 ASCII 스트림으로 주어진 SQL 출력 스트림에 기록한다.
- *
- * @param &lt;T&gt;    호출자가 건넨 SQL 출력 스트림의 구체 타입.
- * @param output 값을 기록할 SQL 출력 스트림.
- * @return 주어진 {@code output}.
- * @throws NullPointerException {@code output} 이 {@code null} 인 경우.
- * @throws SQLException         데이터베이스 접근 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을
- * {@code ByteArrayInputStream} 으로 감싸, {@code output.writeAsciiStream(stream)} 을
- * 호출한 뒤, {@code output} 을 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는
- * 스트림을 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeAsciiStream</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 ASCII 스트림으로 주어진 SQL 출력 스트림에 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 SQL 출력 스트림의 구체 타입.</p>
+</li>
+<li>
+<p><code>output</code> (매개변수): 값을 기록할 SQL 출력 스트림.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>output</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>output</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): 데이터베이스 접근 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 <code>ByteArrayInputStream</code> 으로 감싸, <code>output.writeAsciiStream(stream)</code> 을 호출한 뒤, <code>output</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는 스트림을 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#writeAsciiStream(output)</div>
@@ -8506,22 +9071,36 @@ UDT 를 자바 클래스로 대응시키면 그 클래스는 <code>SQLData</code
 <div class="listingblock">
 <div class="title">HelloWorld#writeBinaryStream(SQLOutput)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 이진 스트림으로 주어진 SQL 출력 스트림에 기록한다.
- *
- * @param &lt;T&gt;    호출자가 건넨 SQL 출력 스트림의 구체 타입.
- * @param output 값을 기록할 SQL 출력 스트림.
- * @return 주어진 {@code output}.
- * @throws NullPointerException {@code output} 이 {@code null} 인 경우.
- * @throws SQLException         데이터베이스 접근 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을
- * {@code ByteArrayInputStream} 으로 감싸, {@code output.writeBinaryStream(stream)} 을
- * 호출한 뒤, {@code output} 을 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는
- * 스트림을 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeBinaryStream</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 이진 스트림으로 주어진 SQL 출력 스트림에 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 SQL 출력 스트림의 구체 타입.</p>
+</li>
+<li>
+<p><code>output</code> (매개변수): 값을 기록할 SQL 출력 스트림.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>output</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>output</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): 데이터베이스 접근 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 <code>ByteArrayInputStream</code> 으로 감싸, <code>output.writeBinaryStream(stream)</code> 을 호출한 뒤, <code>output</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 스트림을 읽을 수 있으므로, 이 메서드는 스트림을 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#writeBinaryStream(output)</div>
@@ -8582,19 +9161,33 @@ UDT 를 자바 클래스로 대응시키면 그 클래스는 <code>SQLData</code
 <div class="listingblock">
 <div class="title">HelloWorld#writeBytes(SQLOutput)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 바이트 배열로 주어진 SQL 출력 스트림에 기록한다.
- *
- * @param &lt;T&gt;    호출자가 건넨 SQL 출력 스트림의 구체 타입.
- * @param output 값을 기록할 SQL 출력 스트림.
- * @return 주어진 {@code output}.
- * @throws NullPointerException {@code output} 이 {@code null} 인 경우.
- * @throws SQLException         데이터베이스 접근 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 배열을 얻어,
- * {@code output.writeBytes(array)} 를 호출한 뒤, {@code output} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeBytes</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 바이트 배열로 주어진 SQL 출력 스트림에 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 SQL 출력 스트림의 구체 타입.</p>
+</li>
+<li>
+<p><code>output</code> (매개변수): 값을 기록할 SQL 출력 스트림.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>output</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>output</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): 데이터베이스 접근 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 배열을 얻어, <code>output.writeBytes(array)</code> 를 호출한 뒤, <code>output</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#writeBytes(output)</div>
@@ -8666,20 +9259,33 @@ UDT 를 자바 클래스로 대응시키면 그 클래스는 <code>SQLData</code
 <div class="listingblock">
 <div class="title">HelloWorld#writeString(SQLOutput)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 문자열로 주어진 SQL 출력 스트림에 기록한다.
- *
- * @param &lt;T&gt;    호출자가 건넨 SQL 출력 스트림의 구체 타입.
- * @param output 값을 기록할 SQL 출력 스트림.
- * @return 주어진 {@code output}.
- * @throws NullPointerException {@code output} 이 {@code null} 인 경우.
- * @throws SQLException         데이터베이스 접근 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩한 문자열로 {@code output.writeString(string)} 을 호출한 뒤,
- * {@code output} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeString</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeString</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 문자열로 주어진 SQL 출력 스트림에 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 SQL 출력 스트림의 구체 타입.</p>
+</li>
+<li>
+<p><code>output</code> (매개변수): 값을 기록할 SQL 출력 스트림.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>output</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>output</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): 데이터베이스 접근 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩한 문자열로 <code>output.writeString(string)</code> 을 호출한 뒤, <code>output</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#writeString(output)</div>
@@ -8751,22 +9357,36 @@ UDT 를 자바 클래스로 대응시키면 그 클래스는 <code>SQLData</code
 <div class="listingblock">
 <div class="title">HelloWorld#writeCharacterStream(SQLOutput)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 문자 스트림으로 주어진 SQL 출력 스트림에 기록한다.
- *
- * @param &lt;T&gt;    호출자가 건넨 SQL 출력 스트림의 구체 타입.
- * @param output 값을 기록할 SQL 출력 스트림.
- * @return 주어진 {@code output}.
- * @throws NullPointerException {@code output} 이 {@code null} 인 경우.
- * @throws SQLException         데이터베이스 접근 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩한 문자열을 {@code StringReader} 로 감싸,
- * {@code output.writeCharacterStream(reader)} 를 호출한 뒤, {@code output} 을 반환한다.
- * @apiNote 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는
- * 리더를 닫지 않는다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeCharacterStream</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 문자 스트림으로 주어진 SQL 출력 스트림에 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 SQL 출력 스트림의 구체 타입.</p>
+</li>
+<li>
+<p><code>output</code> (매개변수): 값을 기록할 SQL 출력 스트림.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>output</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>output</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): 데이터베이스 접근 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩한 문자열을 <code>StringReader</code> 로 감싸, <code>output.writeCharacterStream(reader)</code> 를 호출한 뒤, <code>output</code> 을 반환한다.</p>
+</li>
+<li>
+<p>참고: 이 메서드가 반환한 뒤에도 드라이버가 리더를 읽을 수 있으므로, 이 메서드는 리더를 닫지 않는다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#writeCharacterStream(output)</div>
@@ -8839,20 +9459,33 @@ SQL 의 <code>NCHAR</code> / <code>NVARCHAR</code> / <code>LONGNVARCHAR</code> �
 <div class="listingblock">
 <div class="title">HelloWorld#writeNString(SQLOutput)</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="cm">/**
- * {@code hello, world} 바이트들을 국가별 문자열로 주어진 SQL 출력 스트림에 기록한다.
- *
- * @param &lt;T&gt;    호출자가 건넨 SQL 출력 스트림의 구체 타입.
- * @param output 값을 기록할 SQL 출력 스트림.
- * @return 주어진 {@code output}.
- * @throws NullPointerException {@code output} 이 {@code null} 인 경우.
- * @throws SQLException         데이터베이스 접근 오류가 발생한 경우.
- * @implSpec 기본 구현은 {@code set(new byte[12], 0)} 으로 얻은 배열을 US-ASCII 로
- * 디코딩한 문자열로 {@code output.writeNString(string)} 을 호출한 뒤,
- * {@code output} 을 반환한다.
- */</span>
-<span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeNString</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">SQLOutput</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">writeNString</span><span class="o">(</span><span class="no">T</span> <span class="n">output</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">SQLException</span></code></pre>
 </div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hello, world</code> 바이트들을 국가별 문자열로 주어진 SQL 출력 스트림에 기록한다.</p>
+</li>
+<li>
+<p><code>T</code> (타입 매개변수): 호출자가 건넨 SQL 출력 스트림의 구체 타입.</p>
+</li>
+<li>
+<p><code>output</code> (매개변수): 값을 기록할 SQL 출력 스트림.</p>
+</li>
+<li>
+<p>반환값: 주어진 <code>output</code>.</p>
+</li>
+<li>
+<p><code>NullPointerException</code> (예외): <code>output</code> 이 <code>null</code> 인 경우.</p>
+</li>
+<li>
+<p><code>SQLException</code> (예외): 데이터베이스 접근 오류가 발생한 경우.</p>
+</li>
+<li>
+<p>기본 구현: <code>set(new byte[12], 0)</code> 으로 얻은 배열을 US-ASCII 로 디코딩한 문자열로 <code>output.writeNString(string)</code> 을 호출한 뒤, <code>output</code> 을 반환한다.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">JdbcHelloWorld#writeNString(output)</div>
