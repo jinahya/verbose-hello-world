@@ -670,45 +670,10 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <!--      <plugin>-->
-      <!--        <groupId>org.apache.maven.plugins</groupId>-->
-      <!--        <artifactId>maven-dependency-plugin</artifactId>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <goals>-->
-      <!--              <goal>properties</goal>-->
-      <!--            </goals>-->
-      <!--            <phase>initialize</phase>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--        <configuration>-->
-      <!--          <multiRelease>17</multiRelease>-->
-      <!--        </configuration>-->
-      <!--      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
-      <!--      <plugin>-->
-      <!--        <groupId>org.apache.maven.plugins</groupId>-->
-      <!--        <artifactId>maven-jdeps-plugin</artifactId>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <goals>-->
-      <!--              <goal>jdkinternals</goal>-->
-      <!--&lt;!&ndash;              <goal>test-jdkinternals</goal>&ndash;&gt;-->
-      <!--            </goals>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--        <configuration>-->
-      <!--          <multiRelease>25</multiRelease>-->
-      <!--&lt;!&ndash;          <modulePath>${project.build.outputDirectory}</modulePath>&ndash;&gt;-->
-      <!--&lt;!&ndash;          <failOnMissingEntry>false</failOnMissingEntry>&ndash;&gt;-->
-      <!--          <ignoreMissingDependencies>true</ignoreMissingDependencies>-->
-      <!--          <ignoreMissingDeps>true</ignoreMissingDeps>-->
-      <!--          <recursive>true</recursive>-->
-      <!--        </configuration>-->
-      <!--      </plugin>-->
     </plugins>
   </build>
 
