@@ -53,6 +53,7 @@
     <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
     <maven.compiler.testTarget>${maven.compiler.testSource}</maven.compiler.testTarget>
     <maven.compiler.testRelease>${maven.compiler.testTarget}</maven.compiler.testRelease>
+    <argLine/> <!-- empty default for surefire's @{argLine} in modules without jacoco -->
     <sonar.organization>jinahya-github</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!-- https://central.sonatype.com/artifact/ch.qos.logback/logback-classic/versions -->
@@ -591,7 +592,7 @@
             <!-- https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3 -->
             <!--            <argLine>@{argLine} -XX:+EnableDynamicAgentLoading -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
             <!--            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>-->
-            <argLine>--enable-preview</argLine>
+            <argLine>@{argLine} --enable-preview</argLine> <!-- @{argLine} carries jacoco's agent -->
             <!--            <argLine>&#45;&#45;enable-preview -Djdk.httpclient.HttpClient.log=all</argLine>-->
             <redirectTestOutputToFile>false</redirectTestOutputToFile>
             <!--            <trimStackTrace>false</trimStackTrace>-->
@@ -644,6 +645,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
+          <!-- https://central.sonatype.com/artifact/org.jacoco/jacoco-maven-plugin/versions -->
           <version>0.8.16</version>
           <executions>
             <execution>
