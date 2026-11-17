@@ -24,6 +24,9 @@ import java.net.*;
 import java.nio.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.function.*;
+
+import static com.github.jinahya.hello.api.HelloWorld.*;
 
 /**
  * Convenience methods that produce the
@@ -48,7 +51,7 @@ public final class HelloWorldUtils {
      */
     public static byte[] array(final HelloWorld service) {
         Objects.requireNonNull(service, "service is null");
-        return service.set(new byte[HelloWorld.BYTES]);
+        return service.set(new byte[BYTES]);
     }
 
     /**
@@ -70,7 +73,7 @@ public final class HelloWorldUtils {
      */
     public static ByteBuffer buffer(final HelloWorld service) {
         Objects.requireNonNull(service, "service is null");
-        return service.put(ByteBuffer.allocate(HelloWorld.BYTES));
+        return service.put(ByteBuffer.allocate(BYTES));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -191,7 +194,7 @@ public final class HelloWorldUtils {
     public static DatagramPacket packet(final HelloWorld service) {
         Objects.requireNonNull(service, "service is null");
         return service.append(
-                new DatagramPacket(new byte[HelloWorld.BYTES], 0)
+                new DatagramPacket(new byte[BYTES], 0)
         );
     }
 
@@ -215,7 +218,7 @@ public final class HelloWorldUtils {
         Objects.requireNonNull(service, "service is null");
         Objects.requireNonNull(address, "address is null");
         return service.append(
-                new DatagramPacket(new byte[HelloWorld.BYTES], 0, address)
+                new DatagramPacket(new byte[BYTES], 0, address)
         );
     }
 
