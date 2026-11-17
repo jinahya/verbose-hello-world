@@ -39,12 +39,14 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+      - name: Build
+        run: mvn -B install
+      - name: Analyze
+        continue-on-error: true  # a rejected SONAR_TOKEN (HTTP 403) must not block the build or the profile tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jinahya_verbose-hello-world
-        run: mvn -B install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jinahya_verbose-hello-world
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=jinahya_verbose-hello-world
       - name: cdi-se-openwebbeans
         run: mvn -Pcdi-se-openwebbeans -pl 02-verbose-hello-world-lib test
       - name: cdi-se-openwebbeans-junit5
