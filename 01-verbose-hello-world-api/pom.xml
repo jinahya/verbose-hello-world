@@ -150,6 +150,26 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
       </plugin>
+      <!-- the *__Test explorations live in src/test/java-companion so that src/test/java holds the *_Test contract
+           tests (and the three base classes, HelloWorld__Test, AsynchronousHelloWorld__Test and JdbcHelloWorld__Test,
+           they extend); both directories are compiled and run together -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-test-source-java-companion</id>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.basedir}/src/test/java-companion</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
