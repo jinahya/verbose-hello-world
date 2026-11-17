@@ -1367,6 +1367,26 @@ public interface HelloWorld extends JdbcHelloWorld {
     }
 
     /**
+     * Collects each of the <a href="#hello-world-bytes">hello-world-bytes</a>, boxed as
+     * {@link Byte}, into the specified collection.
+     *
+     * @param <T>        collection type parameter
+     * @param collection the collection into which each byte is collected.
+     * @return the given {@code collection}.
+     * @throws NullPointerException if {@code collection} is {@code null}.
+     * @implSpec Default implementation invokes
+     * {@link #add(SequencedCollection, Function) add(collection, mapper)} method with the
+     * {@code collection} and {@link Function#identity()}, and returns the result.
+     * @see #add(SequencedCollection, Function)
+     * @see Function#identity()
+     * @see <a
+     * href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/util/SequencedCollection.html">java.util.SequencedCollection</a>
+     */
+    default <T extends SequencedCollection<? super Byte>> T add(final T collection) {
+        return add(collection, Function.identity());
+    }
+
+    /**
      * Puts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the specified
      * value mapper and keyed by the specified key mapper, into the specified sequenced map.
      * <p>
@@ -1461,8 +1481,8 @@ public interface HelloWorld extends JdbcHelloWorld {
     }
 
     /**
-     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, as an {@code int},
-     * to the specified consumer.
+     * Accepts each of the <a href="#hello-world-bytes">hello-world-bytes</a>, as an {@code int}, to
+     * the specified consumer.
      *
      * @param <T>      consumer type parameter
      * @param consumer the consumer to which each byte is accepted.
@@ -1485,6 +1505,7 @@ public interface HelloWorld extends JdbcHelloWorld {
     // ------------------------------------------------------------------------------- java.util.jar
 
     // ---------------------------------------------------------------------------- java.util.stream
+
     /**
      * Adds each of the <a href="#hello-world-bytes">hello-world-bytes</a>, mapped by the specified
      * mapper, to the specified stream builder.
@@ -1500,8 +1521,7 @@ public interface HelloWorld extends JdbcHelloWorld {
      *                               state.
      * @implSpec Default implementation invokes {@link #set(byte[]) set(array)} method with an array
      * of {@value #BYTES} bytes, applies the {@code mapper} to each byte in the array, boxed as
-     * {@link Byte}, and {@link Stream.Builder#add(Object) adds} the result to the
-     * {@code builder}.
+     * {@link Byte}, and {@link Stream.Builder#add(Object) adds} the result to the {@code builder}.
      * @see #set(byte[])
      * @see Function#apply(Object)
      * @see Stream.Builder#add(Object)
@@ -1779,9 +1799,8 @@ public interface HelloWorld extends JdbcHelloWorld {
      * Writes the <a href="#hello-world-bytes">hello-world-bytes</a>, as audio data, to the
      * specified source data line.
      * <p>
-     * The bytes are interpreted in the {@link DataLine#getFormat() format} of the {@code line};
-     * the {@link AudioFormat#getFrameSize() frame size} of the format should divide
-     * {@value #BYTES}.
+     * The bytes are interpreted in the {@link DataLine#getFormat() format} of the {@code line}; the
+     * {@link AudioFormat#getFrameSize() frame size} of the format should divide {@value #BYTES}.
      *
      * @param <T>  source data line type parameter
      * @param line the source data line to which bytes are written.
