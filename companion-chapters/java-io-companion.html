@@ -5,9 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.26">
-<meta name="keywords" content="Java, java.util.BitSet, Jaccard, Hamming, Sieve of Eratosthenes, Bloom filter, Bitap, hello world, TDD">
+<meta name="keywords" content="Java, java.io, hello world, TDD">
 <meta name="author" content="Jin Kwon">
-<title>Verbose Hello World 온라인 부록: BitSet 활용 사례</title>
+<title>Verbose Hello World 온라인 부록: java.io</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,222 +439,125 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <style>
 pre.rouge table td { padding: 5px; }
 pre.rouge table pre { margin: 0; }
-pre.rouge .cm {
-  color: #999988;
-  font-style: italic;
+pre.rouge, pre.rouge .w {
+  color: #24292f;
+  background-color: #f6f8fa;
 }
-pre.rouge .cp {
-  color: #999999;
-  font-weight: bold;
-}
-pre.rouge .c1 {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .cs {
-  color: #999999;
-  font-weight: bold;
-  font-style: italic;
-}
-pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .err {
-  color: #a61717;
-  background-color: #e3d2d2;
-}
-pre.rouge .gd {
-  color: #000000;
-  background-color: #ffdddd;
-}
-pre.rouge .ge {
-  color: #000000;
-  font-style: italic;
+pre.rouge .k, pre.rouge .kd, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kt, pre.rouge .kv {
+  color: #cf222e;
 }
 pre.rouge .gr {
-  color: #aa0000;
+  color: #f6f8fa;
 }
-pre.rouge .gh {
-  color: #999999;
+pre.rouge .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+pre.rouge .nb {
+  color: #953800;
+}
+pre.rouge .nc {
+  color: #953800;
+}
+pre.rouge .no {
+  color: #953800;
+}
+pre.rouge .nn {
+  color: #953800;
+}
+pre.rouge .sr {
+  color: #116329;
+}
+pre.rouge .na {
+  color: #116329;
+}
+pre.rouge .nt {
+  color: #116329;
 }
 pre.rouge .gi {
-  color: #000000;
-  background-color: #ddffdd;
+  color: #116329;
+  background-color: #dafbe1;
 }
-pre.rouge .go {
-  color: #888888;
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
 }
-pre.rouge .gp {
-  color: #555555;
+pre.rouge .kc {
+  color: #0550ae;
 }
-pre.rouge .gs {
+pre.rouge .l, pre.rouge .ld, pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #0550ae;
+}
+pre.rouge .sb {
+  color: #0550ae;
+}
+pre.rouge .bp {
+  color: #0550ae;
+}
+pre.rouge .ne {
+  color: #0550ae;
+}
+pre.rouge .nl {
+  color: #0550ae;
+}
+pre.rouge .py {
+  color: #0550ae;
+}
+pre.rouge .nv, pre.rouge .vc, pre.rouge .vg, pre.rouge .vi, pre.rouge .vm {
+  color: #0550ae;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #0550ae;
+}
+pre.rouge .gh {
+  color: #0550ae;
   font-weight: bold;
 }
 pre.rouge .gu {
-  color: #aaaaaa;
-}
-pre.rouge .gt {
-  color: #aa0000;
-}
-pre.rouge .kc {
-  color: #000000;
+  color: #0550ae;
   font-weight: bold;
 }
-pre.rouge .kd {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kn {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kp {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kr {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kt {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .k, pre.rouge .kv {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .mf {
-  color: #009999;
-}
-pre.rouge .mh {
-  color: #009999;
-}
-pre.rouge .il {
-  color: #009999;
-}
-pre.rouge .mi {
-  color: #009999;
-}
-pre.rouge .mo {
-  color: #009999;
-}
-pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
-  color: #009999;
-}
-pre.rouge .sa {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .sb {
-  color: #d14;
-}
-pre.rouge .sc {
-  color: #d14;
-}
-pre.rouge .sd {
-  color: #d14;
-}
-pre.rouge .s2 {
-  color: #d14;
-}
-pre.rouge .se {
-  color: #d14;
-}
-pre.rouge .sh {
-  color: #d14;
-}
-pre.rouge .si {
-  color: #d14;
-}
-pre.rouge .sx {
-  color: #d14;
-}
-pre.rouge .sr {
-  color: #009926;
-}
-pre.rouge .s1 {
-  color: #d14;
-}
-pre.rouge .ss {
-  color: #990073;
-}
-pre.rouge .s, pre.rouge .dl {
-  color: #d14;
-}
-pre.rouge .na {
-  color: #008080;
-}
-pre.rouge .bp {
-  color: #999999;
-}
-pre.rouge .nb {
-  color: #0086B3;
-}
-pre.rouge .nc {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .no {
-  color: #008080;
+pre.rouge .s, pre.rouge .sa, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .se, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1, pre.rouge .ss {
+  color: #0a3069;
 }
 pre.rouge .nd {
-  color: #3c5d5d;
-  font-weight: bold;
-}
-pre.rouge .ni {
-  color: #800080;
-}
-pre.rouge .ne {
-  color: #990000;
-  font-weight: bold;
+  color: #8250df;
 }
 pre.rouge .nf, pre.rouge .fm {
-  color: #990000;
+  color: #8250df;
+}
+pre.rouge .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cp, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #6e7781;
+}
+pre.rouge .gl {
+  color: #6e7781;
+}
+pre.rouge .gt {
+  color: #6e7781;
+}
+pre.rouge .ni {
+  color: #24292f;
+}
+pre.rouge .si {
+  color: #24292f;
+}
+pre.rouge .ge {
+  color: #24292f;
+  font-style: italic;
+}
+pre.rouge .gs {
+  color: #24292f;
   font-weight: bold;
-}
-pre.rouge .nl {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nn {
-  color: #555555;
-}
-pre.rouge .nt {
-  color: #000080;
-}
-pre.rouge .vc {
-  color: #008080;
-}
-pre.rouge .vg {
-  color: #008080;
-}
-pre.rouge .vi {
-  color: #008080;
-}
-pre.rouge .nv, pre.rouge .vm {
-  color: #008080;
-}
-pre.rouge .ow {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .o {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .w {
-  color: #bbbbbb;
-}
-pre.rouge {
-  background-color: #f8f8f8;
 }
 </style>
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Verbose Hello World 온라인 부록: BitSet 활용 사례</h1>
+<h1>Verbose Hello World 온라인 부록: java.io</h1>
 <div class="details">
 <span id="author" class="author">Jin Kwon</span><br>
 <span id="revnumber">version 27</span>
@@ -663,306 +566,247 @@ pre.rouge {
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#bitset-활용-사례"><code>BitSet</code> 활용 사례</a>
+<li><a href="#java-io-bytearrayoutputstream"><code>java.io.ByteArrayOutputStream</code></a></li>
+<li><a href="#java-io-pipedoutputstream"><code>java.io.PipedOutputStream</code></a></li>
+<li><a href="#java-io-writer"><code>java.io.Writer</code></a>
 <ul class="sectlevel2">
-<li><a href="#자카드-유사도-jaccard-similarity">자카드 유사도 (Jaccard similarity)</a></li>
-<li><a href="#해밍-거리-hamming-distance">해밍 거리 (Hamming distance)</a></li>
-<li><a href="#에라토스테네스의-체-sieve-of-eratosthenes">에라토스테네스의 체 (Sieve of Eratosthenes)</a></li>
-<li><a href="#블룸-필터-bloom-filter">블룸 필터 (Bloom filter)</a></li>
-<li><a href="#bitap-shift-and-부분-문자열-일치">Bitap (Shift-And) 부분 문자열 일치</a></li>
+<li><a href="#writer-appendchar-c"><code>Writer append(char c)</code></a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="bitset-활용-사례"><code>BitSet</code> 활용 사례</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>BitSet</code> 의 집합 연산 (<code>and()</code>, <code>or()</code>, <code>xor()</code>) 과 <code>cardinality()</code> 를 조합하면 몇 가지 교과서적인 알고리즘을 짧게 구현할 수 있다. 아래 예제에서 부르는 <code>service().set(bitset, index)</code> 는 <code>hello, world</code> 96 비트를 <code>bitset</code> 의 <code>index</code> 부터 설정하는 <code>HelloWorld</code> 의 메서드이며, 책의 <code>java.util</code> 절에서 다룬다.</p>
+<p>책의 <code>java.io</code> 절은 <code>OutputStream</code> 의 확장 클래스 가운데 <code>FileOutputStream</code> 만 다룬다. 아래 두 절은 메모리와 파이프를 대상으로 하는 다른 확장 클래스에 <code>HelloWorld</code> 의 <code>write(OutputStream)</code> 으로 기록해 본다. 예제의 <code>service()</code> 는 <code>write(OutputStream)</code> 이 주어진 스트림에 <code>hello, world</code> 의 <code>12</code> 바이트를 기록하도록 미리 스텁해 둔 <code>HelloWorld</code> 이다.</p>
 </div>
-<div class="sect2">
-<h3 id="자카드-유사도-jaccard-similarity">자카드 유사도 (Jaccard similarity)</h3>
-<div class="paragraph">
-<p>두 집합 A, B 의 자카드 유사도는 <code>J(A, B) = |A ∩ B| / |A ∪ B|</code> 로 정의된다. <code>BitSet</code> 의 <code>and()</code>, <code>or()</code>, <code>cardinality()</code> 를 조합하면 이를 직접 계산할 수 있다. 추천 시스템·중복 탐지·근사 중복 검출 등에 활용된다.</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="java-io-bytearrayoutputstream"><code>java.io.ByteArrayOutputStream</code></h2>
+<div class="sectionbody">
 <div class="paragraph">
-<div class="title">A 와 B 를 같은 인덱스에 설정하면 J = 1.0</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.JaccardSimilarity_Test#</em>identical()</p>
+<p><code>java.io.ByteArrayOutputStream</code> 은 메모리 상의 바이트 배열에 기록하는 <code>OutputStream</code> 의 확장 클래스이다.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup></p>
 </div>
 <div class="listingblock">
+<div class="title">java.io.ByteArrayOutputStream</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>        <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">intersection</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">a</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">intersection</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">union</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">a</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">union</span><span class="o">.</span><span class="na">or</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">double</span> <span class="n">jaccard</span> <span class="o">=</span> <span class="o">(</span><span class="kt">double</span><span class="o">)</span> <span class="n">intersection</span><span class="o">.</span><span class="na">cardinality</span><span class="o">()</span> <span class="o">/</span> <span class="n">union</span><span class="o">.</span><span class="na">cardinality</span><span class="o">();</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="mf">1.0</span><span class="o">,</span> <span class="n">jaccard</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">java.io</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ByteArrayOutputStream</span> <span class="kd">extends</span> <span class="nc">OutputStream</span> <span class="o">{</span>
+
+    <span class="o">...</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>메모리 내부의 바이트 배열에만 기록하므로 비워야 할 버퍼나 해제할 자원이 없다. <code>flush()</code> 메서드는 (아무 일도 하지 않는) <code>OutputStream#flush()</code> 의 기본 구현을 그대로 쓰고, <code>close()</code> 메서드는 (역시 아무 일도 하지 않는 채로) 재정의되어 있다. <code>try-with-resources</code> 블록이나 명시적인 <code>flush()</code>/<code>close()</code> 호출은 동작상 필요하지 않지만, 다른 <code>OutputStream</code> 구현과의 일관성을 위해 사용한다.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>아래는 실제 <code>ByteArrayOutputStream</code> 으로 <code>write(stream)</code> 을 확인하는 예시이다.</p>
+</div>
+<div class="listingblock">
+<div class="title">ByteArray(In|Output)Stream</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">try</span> <span class="o">(</span><span class="kt">var</span> <span class="n">baos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayOutputStream</span><span class="o">(</span><span class="nc">HelloWorld</span><span class="o">.</span><span class="na">BYTES</span><span class="o">))</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">service</span><span class="o">().</span><span class="na">write</span><span class="o">(</span><span class="n">baos</span><span class="o">).</span><span class="na">flush</span><span class="o">();</span>
+    <span class="n">assertEquals</span><span class="o">(</span><span class="nc">HelloWorld</span><span class="o">.</span><span class="na">BYTES</span><span class="o">,</span> <span class="n">baos</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>               <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="k">try</span> <span class="o">(</span><span class="kt">var</span> <span class="n">bais</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayInputStream</span><span class="o">(</span><span class="n">baos</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">()))</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">var</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">bais</span><span class="o">.</span><span class="na">readAllBytes</span><span class="o">();</span>
+        <span class="n">assertArrayEquals</span><span class="o">(</span><span class="n">hello_world_byte_array</span><span class="o">(),</span> <span class="n">bytes</span><span class="o">);</span>    <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="kd">final</span> <span class="kt">var</span> <span class="n">decoded</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">US_ASCII</span><span class="o">);</span>
+        <span class="n">assertEquals</span><span class="o">(</span><span class="no">HELLO_WORLD_STRING</span><span class="o">,</span> <span class="n">decoded</span><span class="o">);</span>             <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>A 와 B 를 동일한 인덱스에 설정하면 두 집합의 비트가 완전히 겹친다.</td>
+<td>알고 있는 길이(<code>HelloWorld.BYTES</code>, 즉 <code>12</code> 바이트)에 맞춰 내부 버퍼 용량을 잡고 <code>ByteArrayOutputStream</code> 을 연다.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>교집합이 합집합과 같으므로 <code>J(A, B)</code> 는 <code>1.0</code> 이 된다.</td>
+<td><code>write(stream)</code> 으로 기록된 바이트 수가 정확히 <code>HelloWorld.BYTES</code> 인지 확인한다.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>다시 읽어 낸 바이트 배열이 기대한 <code>hello, world</code> 바이트와 같은지 확인한다.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>그 바이트를 US-ASCII 로 디코딩한 문자열이 <code>hello, world</code> 와 같은지 확인한다.</td>
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="java-io-pipedoutputstream"><code>java.io.PipedOutputStream</code></h2>
+<div class="sectionbody">
 <div class="paragraph">
-<div class="title">A 와 B 가 겹치지 않으면 J = 0.0</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.JaccardSimilarity_Test#</em>disjoint()</p>
+<p><code>java.io.PipedOutputStream</code> 은 연결된 <code>java.io.PipedInputStream</code> 으로 바이트를 보내는 <code>OutputStream</code> 의 확장 클래스이다.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
 </div>
 <div class="listingblock">
+<div class="title">java.io.PipedOutputStream</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="mi">96</span><span class="o">);</span>       <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">intersection</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">a</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">intersection</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">union</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">a</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">union</span><span class="o">.</span><span class="na">or</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">double</span> <span class="n">jaccard</span> <span class="o">=</span> <span class="o">(</span><span class="kt">double</span><span class="o">)</span> <span class="n">intersection</span><span class="o">.</span><span class="na">cardinality</span><span class="o">()</span> <span class="o">/</span> <span class="n">union</span><span class="o">.</span><span class="na">cardinality</span><span class="o">();</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="n">jaccard</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">java.io</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PipedOutputStream</span> <span class="kd">extends</span> <span class="nc">OutputStream</span> <span class="o">{</span>
+
+    <span class="o">...</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>OutputStream</code> 을 물을 내보낼 수 있는 출수관(出水管)이라고 생각해 본다면, <code>InputStream</code> 은 물이 들어오는 입수관(入水管)으로 볼 수 있다.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMzUiIGhlaWdodD0iNTQiIHZpZXdCb3g9IjAgMCAyMzUuMyA1NCI+CjwhLS0gQW4gT3V0cHV0U3RyZWFtIGFzIGFuIG91dGxldCBwaXBlOiB3YXRlciBnb2VzIG91dCB0aHJvdWdoIGl0IC0tPgo8cmVjdCB4PSI4LjAiIHk9IjEwIiB3aWR0aD0iNTkuMSIgaGVpZ2h0PSIzNCIgcng9IjgiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjx0ZXh0IHg9IjM3LjYiIHk9IjMxLjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMwMDAwMDAiPndhdGVyPC90ZXh0Pgo8bGluZSB4MT0iNjcuMSIgeTE9IjI3LjAiIHgyPSIxMTUuMSIgeTI9IjI3LjAiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+CjxwYXRoIGQ9Ik0xMTcuMSwyNy4wIEwxMDguMSwyMy4wIEwxMDguMSwzMS4wIHoiIGZpbGw9IiMxODE4MTgiLz4KPHJlY3QgeD0iMTE3LjEiIHk9IjEwIiB3aWR0aD0iMTEwLjIiIGhlaWdodD0iMzQiIHJ4PSIzIiBmaWxsPSIjRjFGMUYxIiBzdHJva2U9IiMxODE4MTgiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIxNzIuMiIgeT0iMzEuMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMwMDAwMDAiPk91dHB1dFN0cmVhbTwvdGV4dD4KPC9zdmc+Cg==" alt="piped output stream" width="212">
+</div>
+<div class="title">Figure 1. 출수관 (OutputStream)</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMjUiIGhlaWdodD0iNTQiIHZpZXdCb3g9IjAgMCAyMjUuMCA1NCI+CjwhLS0gQW4gSW5wdXRTdHJlYW0gYXMgYW4gaW5sZXQgcGlwZTogd2F0ZXIgY29tZXMgaW4gdGhyb3VnaCBpdCAtLT4KPHJlY3QgeD0iOC4wIiB5PSIxMCIgd2lkdGg9Ijk5LjkiIGhlaWdodD0iMzQiIHJ4PSIzIiBmaWxsPSIjRjFGMUYxIiBzdHJva2U9IiMxODE4MTgiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSI1OC4wIiB5PSIzMS4wIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzAwMDAwMCI+SW5wdXRTdHJlYW08L3RleHQ+CjxsaW5lIHgxPSIxMDcuOSIgeTE9IjI3LjAiIHgyPSIxNTUuOSIgeTI9IjI3LjAiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+CjxwYXRoIGQ9Ik0xNTcuOSwyNy4wIEwxNDguOSwyMy4wIEwxNDguOSwzMS4wIHoiIGZpbGw9IiMxODE4MTgiLz4KPHJlY3QgeD0iMTU3LjkiIHk9IjEwIiB3aWR0aD0iNTkuMSIgaGVpZ2h0PSIzNCIgcng9IjgiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjx0ZXh0IHg9IjE4Ny41IiB5PSIzMS4wIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMDAwMDAwIj53YXRlcjwvdGV4dD4KPC9zdmc+Cg==" alt="piped input stream" width="203">
+</div>
+<div class="title">Figure 2. 입수관 (InputStream)</div>
+</div>
+<div class="paragraph">
+<p>이제 출수관과 입수관을 파이프로 연결하면, 출수관을 통해 내보낸 물을 입수관에서 받을 수 있다. 한 번에 보낼 수 있는 물의 양은 파이프의 용량(capacity)에 의해 제한되며, 파이프가 가득 차 있으면 입수관에서 물을 소비하여 빈 공간이 생긴 후에야 다시 보낼 수 있다.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTQiIGhlaWdodD0iNTQiIHZpZXdCb3g9IjAgMCA1MTQuMyA1NCI+CjwhLS0gQW4gT3V0cHV0U3RyZWFtIGFuZCBhbiBJbnB1dFN0cmVhbSBjb25uZWN0ZWQgd2l0aCBhIHBpcGU6IHRoZSB3YXRlciBzZW50IG91dCB0aHJvdWdoIG9uZSBjb21lcyBpbiB0aHJvdWdoIHRoZSBvdGhlciAtLT4KPHJlY3QgeD0iOC4wIiB5PSIxMCIgd2lkdGg9IjU5LjEiIGhlaWdodD0iMzQiIHJ4PSI4IiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMxODE4MTgiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIzNy42IiB5PSIzMS4wIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMDAwMDAwIj53YXRlcjwvdGV4dD4KPGxpbmUgeDE9IjY3LjEiIHkxPSIyNy4wIiB4Mj0iMTE1LjEiIHkyPSIyNy4wIiBzdHJva2U9IiMxODE4MTgiIHN0cm9rZS13aWR0aD0iMSIvPgo8cGF0aCBkPSJNMTE3LjEsMjcuMCBMMTA4LjEsMjMuMCBMMTA4LjEsMzEuMCB6IiBmaWxsPSIjMTgxODE4Ii8+CjxyZWN0IHg9IjExNy4xIiB5PSIxMCIgd2lkdGg9IjExMC4yIiBoZWlnaHQ9IjM0IiByeD0iMyIgZmlsbD0iI0YxRjFGMSIgc3Ryb2tlPSIjMTgxODE4IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iMTcyLjIiIHk9IjMxLjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMDAwMDAwIj5PdXRwdXRTdHJlYW08L3RleHQ+CjxyZWN0IHg9IjIyNy4zIiB5PSIyMy4wIiB3aWR0aD0iNzAuMCIgaGVpZ2h0PSI4IiBmaWxsPSIjRDNEM0QzIiBzdHJva2U9IiMxODE4MTgiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIyNjIuMyIgeT0iMTguMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzAwMDAwMCI+cGlwZTwvdGV4dD4KPHJlY3QgeD0iMjk3LjMiIHk9IjEwIiB3aWR0aD0iOTkuOSIgaGVpZ2h0PSIzNCIgcng9IjMiIGZpbGw9IiNGMUYxRjEiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjx0ZXh0IHg9IjM0Ny4yIiB5PSIzMS4wIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzAwMDAwMCI+SW5wdXRTdHJlYW08L3RleHQ+CjxsaW5lIHgxPSIzOTcuMiIgeTE9IjI3LjAiIHgyPSI0NDUuMiIgeTI9IjI3LjAiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+CjxwYXRoIGQ9Ik00NDcuMiwyNy4wIEw0MzguMiwyMy4wIEw0MzguMiwzMS4wIHoiIGZpbGw9IiMxODE4MTgiLz4KPHJlY3QgeD0iNDQ3LjIiIHk9IjEwIiB3aWR0aD0iNTkuMSIgaGVpZ2h0PSIzNCIgcng9IjgiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzE4MTgxOCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjx0ZXh0IHg9IjQ3Ni43IiB5PSIzMS4wIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMDAwMDAwIj53YXRlcjwvdGV4dD4KPC9zdmc+Cg==" alt="piped streams" width="463">
+</div>
+<div class="title">Figure 3. 파이프로 연결된 출수관과 입수관</div>
+</div>
+<div class="paragraph">
+<p><code>java.io.PipedOutputStream</code> 과 <code>java.io.PipedInputStream</code> 은 위와 같이 파이프로 연결된 <code>(Out|In)putStream</code> 을 나타낸다. <code>PipedOutputStream</code> 에 기록한 바이트들은 연결된 <code>PipedInputStream</code> 의 내부 버퍼에 쌓이고, 그쪽에서 읽기로 꺼낼 수 있다.</p>
+</div>
+<div class="paragraph">
+<p>두 스트림은 보통 별도의 스레드에서 사용한다. 쓰기 측과 읽기 측을 분리해 한쪽이 기록하는 동안 다른 쪽이 읽어 가는 연속적인 데이터 흐름을 만들기 위해서다. 버퍼가 가득 차면 쓰기 측이 대기하고, 비어 있으면 읽기 측이 대기하면서 두 스레드가 자연스럽게 보조를 맞춘다.</p>
+</div>
+<hr>
+<div class="paragraph">
+<p><code>PipedOutputStream</code> 과 <code>PipedInputStream</code> 을 직접 연결해 <code>write(stream)</code> 을 확인하는 두 예시를 본다.</p>
+</div>
+<div class="paragraph">
+<p>먼저, 파이프 용량이 보낼 바이트 수보다 크거나 같으면 한 스레드에서 끝낼 수 있다. 기록이 버퍼를 넘치지 않아 막히지 않기 때문이다.</p>
+</div>
+<div class="listingblock">
+<div class="title">파이프 용량이 충분할 때</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="k">try</span> <span class="o">(</span><span class="kt">var</span> <span class="n">pos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PipedOutputStream</span><span class="o">();</span>
+     <span class="kt">var</span> <span class="n">pis</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PipedInputStream</span><span class="o">(</span><span class="nc">HelloWorld</span><span class="o">.</span><span class="na">BYTES</span><span class="o">))</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="n">pos</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">pis</span><span class="o">);</span>                                    <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="n">service</span><span class="o">().</span><span class="na">write</span><span class="o">(</span><span class="n">pos</span><span class="o">).</span><span class="na">flush</span><span class="o">();</span>                        <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="kd">final</span> <span class="kt">var</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">pis</span><span class="o">.</span><span class="na">readNBytes</span><span class="o">(</span><span class="nc">HelloWorld</span><span class="o">.</span><span class="na">BYTES</span><span class="o">);</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="kd">final</span> <span class="kt">var</span> <span class="n">string</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">US_ASCII</span><span class="o">);</span>
+    <span class="n">assertEquals</span><span class="o">(</span><span class="no">HELLO_WORLD_STRING</span><span class="o">,</span> <span class="n">string</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>B 를 인덱스 96 부터 설정하면 A(0~95)와 B(96~191)는 겹치는 비트가 없다.</td>
+<td>12 바이트를 모두 담을 수 있는 용량(<code>HelloWorld.BYTES</code>)으로 입수관을 만든다.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>교집합이 공집합이므로 <code>J(A, B)</code> 는 <code>0.0</code> 이 된다.</td>
+<td>출수관과 입수관을 연결한다.</td>
 </tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="해밍-거리-hamming-distance">해밍 거리 (Hamming distance)</h3>
-<div class="paragraph">
-<p><strong>해밍 거리</strong>(Hamming distance)는 두 비트열에서 서로 다른 비트의 수를 나타낸다 (<code>d(A, B) = |(A XOR B)|</code>). <code>xor()</code> 후 <code>cardinality()</code> 를 호출하면 한 번에 구할 수 있다. 오류 정정 코드(해밍 코드, BCH), 지역 민감 해싱(LSH), SimHash 지문 비교에 쓰인다.</p>
-</div>
-<div class="paragraph">
-<div class="title">A 와 B 가 동일하면 거리 = 0</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.HammingDistance_Test#</em>identical()</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">diff</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">a</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">diff</span><span class="o">.</span><span class="na">xor</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">diff</span><span class="o">.</span><span class="na">cardinality</span><span class="o">());</span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
 <tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>동일한 비트열의 XOR 는 모두 <code>0</code> 이므로 거리는 <code>0</code> 이다.</td>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>같은 스레드에서 기록한다. 버퍼가 충분해 막히지 않는다.</td>
 </tr>
-</table>
-</div>
-<div class="paragraph">
-<div class="title">A 와 B 가 겹치지 않으면 거리 = |A| + |B|</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.HammingDistance_Test#</em>disjoint()</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="mi">96</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">diff</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">a</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">diff</span><span class="o">.</span><span class="na">xor</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="n">a</span><span class="o">.</span><span class="na">cardinality</span><span class="o">()</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="na">cardinality</span><span class="o">(),</span> <span class="n">diff</span><span class="o">.</span><span class="na">cardinality</span><span class="o">());</span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
 <tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>겹치는 비트가 없으므로 XOR 결과는 양쪽의 모든 <code>true</code> 비트가 되며, 거리는 <code>|A| + |B| = 96</code> 이 된다.</td>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>입수관에서 12 바이트를 읽어 문자열로 확인한다.</td>
 </tr>
 </table>
 </div>
-</div>
-<div class="sect2">
-<h3 id="에라토스테네스의-체-sieve-of-eratosthenes">에라토스테네스의 체 (Sieve of Eratosthenes)</h3>
 <div class="paragraph">
-<p>에라토스테네스의 체(Sieve of Eratosthenes)는 <code>BitSet</code> 의 교과서적 응용이다. 각 인덱스가 정수를 나타내며, <code>true</code> 비트는 합성수를 표시한다. 체가 끝난 후 <code>false</code> 비트의 수 (<code>(N + 1) - cardinality()</code>) 가 소수의 개수가 된다.</p>
-</div>
-<div class="paragraph">
-<div class="title">N = 30 일 때 30 이하 소수 10 개</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.SieveOfEratosthenes_Test#</em>primesUpTo30()</p>
+<p>다음으로, 파이프 용량이 보낼 바이트 수보다 작으면 한 스레드만으로는 끝낼 수 없다. 기록과 읽기를 같은 스레드에서 하면, 버퍼가 가득 찬 채 쓰기가 막혀 읽기로 넘어가지 못한다(교착). 그래서 기록을 다른 스레드로 옮겨, 한쪽이 기록하는 동안 이쪽에서 읽어 버퍼를 비워 준다.</p>
 </div>
 <div class="listingblock">
+<div class="title">파이프 용량이 부족할 때, 기록은 다른 스레드에서</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">int</span> <span class="no">N</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">composite</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">(</span><span class="no">N</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
-<span class="n">composite</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>             <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="n">composite</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>             <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span> <span class="o">(</span><span class="kt">long</span><span class="o">)</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(!</span><span class="n">composite</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="o">{</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="no">N</span><span class="o">;</span> <span class="n">j</span> <span class="o">+=</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">composite</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">j</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">pipeSize</span> <span class="o">=</span> <span class="nc">ThreadLocalRandom</span><span class="o">.</span><span class="na">current</span><span class="o">().</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">HelloWorld</span><span class="o">.</span><span class="na">BYTES</span><span class="o">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="k">try</span> <span class="o">(</span><span class="kt">var</span> <span class="n">pos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PipedOutputStream</span><span class="o">();</span>
+     <span class="kt">var</span> <span class="n">pis</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PipedInputStream</span><span class="o">(</span><span class="n">pipeSize</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">pos</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">pis</span><span class="o">);</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">ofPlatform</span><span class="o">().</span><span class="na">start</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>                                          <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">service</span><span class="o">().</span><span class="na">write</span><span class="o">(</span><span class="n">pos</span><span class="o">).</span><span class="na">flush</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="nc">IOException</span> <span class="n">ioe</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">ioe</span><span class="o">);</span>
         <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-<span class="kd">final</span> <span class="kt">int</span> <span class="n">primeCount</span> <span class="o">=</span> <span class="o">(</span><span class="no">N</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">-</span> <span class="n">composite</span><span class="o">.</span><span class="na">cardinality</span><span class="o">();</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="n">primeCount</span><span class="o">);</span> <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+    <span class="o">});</span>
+    <span class="kd">final</span> <span class="kt">var</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">pis</span><span class="o">.</span><span class="na">readNBytes</span><span class="o">(</span><span class="nc">HelloWorld</span><span class="o">.</span><span class="na">BYTES</span><span class="o">);</span>                        <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="kd">final</span> <span class="kt">var</span> <span class="n">string</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">US_ASCII</span><span class="o">);</span>
+    <span class="n">assertEquals</span><span class="o">(</span><span class="no">HELLO_WORLD_STRING</span><span class="o">,</span> <span class="n">string</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>0 과 1 은 소수가 아니므로 미리 합성수로 표시한다.</td>
+<td>12 보다 작은 파이프 용량을 무작위로 골라, 일부러 버퍼를 부족하게 만든다.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>i 의 배수를 합성수로 표시한다. <code>i * i</code> 부터 시작하는 것은 그보다 작은 배수는 이미 처리됐기 때문이다.</td>
+<td>기록을 별도의 스레드에서 수행한다. 버퍼가 차면 이 스레드가 대기한다.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>30 이하의 소수: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 (총 10 개).</td>
+<td>이 스레드에서 읽어 버퍼를 비우면, 막혀 있던 기록이 다시 진행된다.</td>
 </tr>
 </table>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="java-io-writer"><code>java.io.Writer</code></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>책의 <code>java.io</code> 절은 <code>Writer</code> 의 메서드 가운데 <code>flush()</code> 만 따로 다룬다. <code>HelloWorld#write(Writer)</code> 는 받은 <code>Writer</code> 를 <code>append(Appendable)</code> 에 그대로 넘기므로, 실제로 <code>hello, world</code> 의 각 <code>char</code> 를 받는 것은 <code>Writer</code> 가 <code>Appendable</code> 로서 구현하는 <code>append(char)</code> 이다.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup></p>
 </div>
 <div class="sect2">
-<h3 id="블룸-필터-bloom-filter">블룸 필터 (Bloom filter)</h3>
+<h3 id="writer-appendchar-c"><code>Writer append(char c)</code></h3>
 <div class="paragraph">
-<p><strong>블룸 필터</strong> (Bloom filter) 는 집합 멤버십을 확률적으로 검사하는 자료구조다. 원소를 삽입하면 해시 지문 (fingerprint) 의 비트들이 필터에 켜지고, 질의는 <code>(query AND filter) == query</code> 로 모든 질의 비트가 필터에 있는지 확인한다. False positive 는 가능하지만 false negative 는 없다. 캐시, URL shortlist, 악성 URL 탐지, DB 조인 키 가지치기 등에 쓰인다.</p>
-</div>
-<div class="paragraph">
-<div class="title">삽입된 원소는 mightContain = true</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.BloomFilter_Test#</em>present()</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">filter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">filter</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>   <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">query</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">query</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">anded</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">query</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">anded</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">filter</span><span class="o">);</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="n">query</span><span class="o">,</span> <span class="n">anded</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>hello, world</code> 지문을 필터에 삽입한다.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>같은 지문으로 질의하면 모든 비트가 필터에 있으므로 <code>query AND filter</code> 가 <code>query</code> 와 같다.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<div class="title">삽입되지 않은 원소는 mightContain = false</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.BloomFilter_Test#</em>absent()</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">filter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">filter</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">query</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="n">service</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">query</span><span class="o">,</span> <span class="mi">200</span><span class="o">);</span>     <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">anded</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BitSet</span><span class="o">)</span> <span class="n">query</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
-<span class="n">anded</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">filter</span><span class="o">);</span>
-<span class="n">assertNotEquals</span><span class="o">(</span><span class="n">query</span><span class="o">,</span> <span class="n">anded</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>query</code> 는 인덱스 <code>200</code> 부터 설정되므로 <code>filter</code> 의 <code>0</code> ~ <code>95</code> 와 겹치지 않는다.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>교집합이 비어 있어 <code>query</code> 와 다르므로 필터에 없다고 판단한다.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="bitap-shift-and-부분-문자열-일치">Bitap (Shift-And) 부분 문자열 일치</h3>
-<div class="paragraph">
-<p>Bitap (Shift-And) 은 비트 병렬 (bit-parallel) 부분 문자열 일치 알고리즘이다. 길이 <code>m</code> 의 패턴에 대해 문자별 마스크가 패턴 내 각 문자의 위치를 표시한다. 텍스트의 각 문자에서 상태 레지스터 <code>R</code> 을 <code>R = ((R &lt;&lt; 1) | 1) AND mask[t]</code> 로 갱신하고, <code>R</code> 의 비트 <code>m - 1</code> 이 켜지면 매치가 현재 위치에서 끝난다. 근사 문자열 검색 (<code>agrep</code>, 퍼지 파일 탐색기) 에 응용된다.</p>
-</div>
-<div class="paragraph">
-<div class="title"><code>hello, world</code> 에서 <code>world</code> 매치가 인덱스 11 에서 끝남</div>
-<p>AI: com.github.jinahya.hello.api._java_util.HelloWorld_Set_BitSet_Index<em>Test.BitapSubstringMatch_Test#</em>found()</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="kd">final</span> <span class="kt">var</span> <span class="n">text</span> <span class="o">=</span> <span class="n">hello_world_byte_array</span><span class="o">();</span>
-<span class="kd">final</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">pattern</span> <span class="o">=</span> <span class="o">{</span><span class="sc">'w'</span><span class="o">,</span> <span class="sc">'o'</span><span class="o">,</span> <span class="sc">'r'</span><span class="o">,</span> <span class="sc">'l'</span><span class="o">,</span> <span class="sc">'d'</span><span class="o">};</span>
-<span class="kd">final</span> <span class="kt">var</span> <span class="n">mask</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">Byte</span><span class="o">,</span> <span class="nc">BitSet</span><span class="o">&gt;();</span>
-<span class="k">for</span> <span class="o">(</span><span class="kt">var</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">pattern</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>  <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="n">mask</span><span class="o">.</span><span class="na">computeIfAbsent</span><span class="o">(</span><span class="n">pattern</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">k</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">()).</span><span class="na">set</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-<span class="o">}</span>
-<span class="kt">var</span> <span class="n">register</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-<span class="kt">var</span> <span class="n">matchEnd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-<span class="k">for</span> <span class="o">(</span><span class="kt">var</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">text</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">t</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="kd">final</span> <span class="kt">var</span> <span class="n">shifted</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">();</span>
-    <span class="k">for</span> <span class="o">(</span><span class="kt">var</span> <span class="n">i</span> <span class="o">=</span> <span class="n">register</span><span class="o">.</span><span class="na">nextSetBit</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">register</span><span class="o">.</span><span class="na">nextSetBit</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span> <span class="o">{</span>
-        <span class="n">shifted</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>                 <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="o">}</span>
-    <span class="n">shifted</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
-    <span class="n">shifted</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">mask</span><span class="o">.</span><span class="na">getOrDefault</span><span class="o">(</span><span class="n">text</span><span class="o">[</span><span class="n">t</span><span class="o">],</span> <span class="k">new</span> <span class="nc">BitSet</span><span class="o">()));</span>
-    <span class="n">register</span> <span class="o">=</span> <span class="n">shifted</span><span class="o">;</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">register</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pattern</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">))</span> <span class="o">{</span> <i class="conum" data-value="3"></i><b>(3)</b>
-        <span class="n">matchEnd</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
-        <span class="k">break</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="mi">11</span><span class="o">,</span> <span class="n">matchEnd</span><span class="o">);</span>
-<span class="n">assertEquals</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="n">matchEnd</span> <span class="o">-</span> <span class="n">pattern</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>마스크 구축: 패턴 내 각 문자의 위치를 비트로 기록한다.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td><code>R &lt;&lt; 1</code> 에 해당하는 부분으로, 켜진 비트를 모두 한 비트 위로 옮긴다. 이어 <code>shifted.set(0)</code> 으로 <code>| 1</code> 까지 적용한다.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>패턴의 끝 비트 (<code>m - 1</code>) 가 켜지면 매치가 종료된다.</td>
-</tr>
-</table>
+<p><code>char</code> 하나를 덧붙인 뒤 자기 자신을 반환한다. 기본 구현은 <code>write(int)</code> 를 부르고, <code>write(int)</code> 는 주어진 값의 하위 <code>16</code> 비트 (UTF-16 코드 단위 하나) 를 내부 <code>char[]</code> 버퍼의 첫 칸에 담아 추상 메서드 <code>write(char[], int, int)</code> 를 길이 <code>1</code> 로 호출한다. 결국 모든 기록이 이 3-인자 메서드로 모이므로, <code>Writer</code> 를 확장하는 클래스는 그 하나를 반드시 구현해야 한다.<sup class="footnote">[<a id="_footnoteref_4" class="footnote" href="#_footnotedef_4" title="View footnote.">4</a>]</sup></p>
 </div>
 </div>
 </div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/ByteArrayOutputStream.html" target="_blank" rel="noopener"><code>java.io.ByteArrayOutputStream</code>, Java SE 27 API</a>
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/PipedOutputStream.html" target="_blank" rel="noopener"><code>java.io.PipedOutputStream</code>, Java SE 27 API</a>
+</div>
+<div class="footnote" id="_footnotedef_3">
+<a href="#_footnoteref_3">3</a>. <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/Writer.html" target="_blank" rel="noopener"><code>java.io.Writer</code>, Java SE 27 API</a>
+</div>
+<div class="footnote" id="_footnotedef_4">
+<a href="#_footnoteref_4">4</a>. <a href="https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/Writer.html#append(char)" target="_blank" rel="noopener"><code>Writer.append(char)</code>, Java SE 27 API</a>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 27<br>
-Last updated 2026-11-17 13:01:00 +0900
+Last updated 2026-11-17 13:36:51 +0900
 </div>
 </div>
 <script type="text/x-mathjax-config">

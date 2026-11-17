@@ -1,12 +1,14 @@
 # companion-chapters
 
-The companion chapters of *Verbose Hello World: Java I/O with 'hello, world'*: the chapters the book leaves out, each
-rendered alone as a PDF and an HTML page.
+The companions of *Verbose Hello World: Java I/O with 'hello, world'*: for every package the book covers, what the book
+leaves out of it, rendered alone as a PDF and an HTML page named after the package, dots to hyphens, with `-companion`:
+`java-io-companion.pdf` / `java-io-companion.html`, …, `org-reactivestreams-companion.pdf` / `.html`. A package with
+nothing left out yet still has its (empty) pair.
 
-| File | Chapter |
+| Package | Contents |
 |---|---|
-| `java-sql.pdf`, `java-sql.html` | `java.sql` (`JdbcHelloWorld`) |
-| `java-util-bitset.pdf`, `java-util-bitset.html` | `java.util.BitSet` use cases (Jaccard, Hamming, sieve, Bloom filter, Bitap) |
+| `java.sql` | the `java.sql` chapter (`JdbcHelloWorld`) |
+| `java.util` | `BitSet` use cases (Jaccard, Hamming, sieve, Bloom filter, Bitap) |
 
 They are generated from the book's manuscript, in the book's repository, by every build of the book, and are not
 edited here:
