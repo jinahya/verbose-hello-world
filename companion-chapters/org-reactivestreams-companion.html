@@ -448,6 +448,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#org-reactivestreams-publishert"><code>org.reactivestreams.Publisher&lt;T&gt;</code></a>
+<ul class="sectlevel2">
+<li><a href="#api-명세">API 명세</a></li>
+<li><a href="#org-reactivestreams-publisher-rule-table">규칙</a></li>
+</ul>
+</li>
+<li><a href="#org-reactivestreams-subscription"><code>org.reactivestreams.Subscription</code></a>
+<ul class="sectlevel2">
+<li><a href="#api-명세-2">API 명세</a></li>
+<li><a href="#org-reactivestreams-subscription-rule-table">규칙</a></li>
+</ul>
+</li>
+<li><a href="#org-reactivestreams-subscribert"><code>org.reactivestreams.Subscriber&lt;T&gt;</code></a>
+<ul class="sectlevel2">
+<li><a href="#api-명세-3">API 명세</a></li>
+<li><a href="#org-reactivestreams-subscriber-rule-table">규칙</a></li>
+</ul>
+</li>
 <li><a href="#org-reactivestreams-processort-r"><code>org.reactivestreams.Processor&lt;T, R&gt;</code></a>
 <ul class="sectlevel2">
 <li><a href="#단순-통과-pass-through">단순 통과 (pass-through)</a></li>
@@ -461,11 +479,1173 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Reactive Streams JVM 1.0.4 명세가 네 인터페이스에 정한 API 설명과 규칙을 영문 원문과 우리말 번역으로 함께 싣는다.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup> 책의 <code>org.reactivestreams</code> 절은 규칙의 번호와 원문 링크만 싣는다. 이어서 책이 구현하지 않는 처리자 (<code>Processor</code>) 를 다룬다.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="org-reactivestreams-publishert"><code>org.reactivestreams.Publisher&lt;T&gt;</code></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="api-명세">API 명세</h3>
+<div class="paragraph">
+<p>아래 표는 <code>Publisher</code> 의 메서드에 대한 API 명세를 원문과 번역으로 옮긴 것이다.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 1. <code>subscribe(Subscriber&lt;? super T&gt;)</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="4"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Request <code>Publisher</code> to start streaming data.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher</code> 에게 데이터 스트리밍을 시작하도록 요청한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>This is a "factory method" and can be called multiple times, each time starting a new <code>Subscription</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>이는 팩토리 메서드이며 여러 번 호출될 수 있고, 매 호출마다 새 <code>Subscription</code> 을 시작한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Each <code>Subscription</code> will work for only a single <code>Subscriber</code>. A <code>Subscriber</code> should only subscribe once to a single <code>Publisher</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>각 <code>Subscription</code> 은 오직 하나의 <code>Subscriber</code> 를 위해서만 동작한다. 한 <code>Subscriber</code> 는 한 <code>Publisher</code> 에 오직 한 번만 구독해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If the <code>Publisher</code> rejects the subscription attempt or otherwise fails it will signal the error via <code>Subscriber.onError(Throwable)</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher</code> 가 구독 시도를 거절하거나 그 외의 사유로 실패한다면, <code>Subscriber.onError(Throwable)</code> 을 통해 그 오류를 알린다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">매개변수 <code>s</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>the <code>Subscriber</code> that will consume signals from this <code>Publisher</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>이 <code>Publisher</code> 가 알리는 신호를 소비할 <code>Subscriber</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="org-reactivestreams-publisher-rule-table">규칙</h3>
+<div class="paragraph">
+<p>발행자 규칙 [1.1] 부터 [1.11] 까지를 명세의 1절에서 옮겼다. 각 규칙 아래의 ※ 줄은 명세가 그 규칙에 붙인 의도 (intent) 설명이다.</p>
+</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 2. 발행자 규칙 (Publisher Rules)</caption>
+<colgroup>
+<col style="width: 7%;">
+<col style="width: 46%;">
+<col style="width: 47%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ID</th>
+<th class="tableblock halign-left valign-top">Rule</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.1</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The total number of <code>onNext</code>´s signalled by a <code>Publisher</code> to a <code>Subscriber</code> MUST be less than or equal to the total number of elements requested by that <code>Subscriber</code>´s <code>Subscription</code> at all times.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>발행자가 한 구독자에게 알리는 <code>onNext</code> 의 총 개수는, 그 구독자의 구독이 요청한 원소 총 개수를 어느 시점에서도 초과해서는 안 된다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make it clear that Publishers cannot signal more elements than Subscribers have requested. There&#8217;s an implicit, but important, consequence to this rule: Since demand can only be fulfilled after it has been received, there&#8217;s a happens-before relationship between requesting elements and receiving elements.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 발행자가 구독자가 요청한 것보다 더 많은 원소를 전달할 수 없다는 점을 명확히 하는 데 있다. 이 규칙에는 암묵적이지만 중요한 결과가 따른다. 수요는 받은 뒤에야 충족될 수 있으므로, 원소를 요청하는 것과 받는 것 사이에는 happens-before 관계가 성립한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.2</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Publisher</code> MAY signal fewer <code>onNext</code> than requested and terminate the <code>Subscription</code> by calling <code>onComplete</code> or <code>onError</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>발행자는 요청한 것보다 적게 <code>onNext</code> 를 알리고 <code>onComplete</code> 또는 <code>onError</code> 로 그 구독을 종단시킬 수 있다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make it clear that a Publisher cannot guarantee that it will be able to produce the number of elements requested; it simply might not be able to produce them all; it may be in a failed state; it may be empty or otherwise already completed.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 발행자가 요청받은 만큼의 원소를 만들어 낼 수 있다고 보장하지 못한다는 점을 명확히 하는 데 있다. 단순히 모두 만들어 내지 못할 수도 있고, 실패 상태일 수도 있고, 비어 있거나 이미 종단된 상태일 수도 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.3</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>onSubscribe</code>, <code>onNext</code>, <code>onError</code> and <code>onComplete</code> signaled to a <code>Subscriber</code> MUST be signaled serially.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자에게 전달되는 <code>onSubscribe</code>, <code>onNext</code>, <code>onError</code>, <code>onComplete</code> 는 직렬 (serially) 로 전달되어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to permit the signalling of signals (including from multiple threads) if and only if a happens-before relation between each of the signals is established.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 (여러 스레드에서의 전달을 포함해) 신호를 전달하는 것을 허용하되, 각 신호 사이에 happens-before 관계가 성립할 때에 한해서만 허용하는 것이다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.4</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If a <code>Publisher</code> fails it MUST signal an <code>onError</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>발행자가 실패한다면 <code>onError</code> 를 전달해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make it clear that a Publisher is responsible for notifying its Subscribers if it detects that it cannot proceed—Subscribers must be given a chance to clean up resources or otherwise deal with the Publisher´s failures.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 발행자가 진행할 수 없음을 감지했을 때 구독자에게 알릴 책임이 있음을 명확히 하는 데 있다. 구독자는 자원을 정리하거나 발행자의 실패에 대응할 기회를 얻어야 한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.5</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If a <code>Publisher</code> terminates successfully (finite stream) it MUST signal an <code>onComplete</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>발행자가 유한한 항목 발행으로 정상 완료한다면 <code>onComplete</code> 를 전달해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make it clear that a Publisher is responsible for notifying its Subscribers that it has reached a terminal state—Subscribers can then act on this information; clean up resources, etc.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 발행자가 종단 상태에 도달했음을 구독자에게 알릴 책임이 있음을 명확히 하는 데 있다. 그 정보를 바탕으로 구독자는 자원 정리 등의 후처리를 할 수 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.6</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If a <code>Publisher</code> signals either <code>onError</code> or <code>onComplete</code> on a <code>Subscriber</code>, that <code>Subscriber</code>´s <code>Subscription</code> MUST be considered cancelled.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>발행자가 구독자에게 <code>onError</code> 또는 <code>onComplete</code> 를 전달한 시점에서, 그 구독자의 구독은 취소된 것으로 간주되어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that a Subscription is treated the same no matter if it was cancelled, the Publisher signalled onError or onComplete.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독이 취소되었든, 발행자가 <code>onError</code> 또는 <code>onComplete</code> 를 전달했든, 동일하게 다루어지도록 보장하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.7</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Once a terminal state has been signaled (<code>onError</code>, <code>onComplete</code>) it is REQUIRED that no further signals occur.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>종단 상태 (<code>onError</code>, <code>onComplete</code>) 가 전달된 뒤로는 어떤 추가 신호도 발생해서는 안 된다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that onError and onComplete are the final states of an interaction between a Publisher and Subscriber pair.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>onError</code> 와 <code>onComplete</code> 가 발행자와 구독자의 상호작용에서 최종 상태가 되도록 보장하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.8</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If a <code>Subscription</code> is cancelled its <code>Subscriber</code> MUST eventually stop being signaled.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 취소되면 그 구독자에게 가는 신호는 결국 (eventually) 멈춰야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that Publishers respect a Subscriber&#8217;s request to cancel a Subscription when Subscription.cancel() has been called. The reason for eventually is because signals can have propagation delay due to being asynchronous.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>Subscription.cancel()</code> 이 호출되면 발행자가 구독자의 취소 요청을 존중하도록 보장하는 데 있다. 결국 (eventually) 이라는 표현을 쓴 이유는 비동기 특성상 신호에 전파 지연이 있을 수 있기 때문이다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.9</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher.subscribe</code> MUST call <code>onSubscribe</code> on the provided <code>Subscriber</code> prior to any other signals to that <code>Subscriber</code> and MUST return normally, except when the provided <code>Subscriber</code> is <code>null</code> in which case it MUST throw a <code>java.lang.NullPointerException</code> to the caller, for all other situations the only legal way to signal failure (or reject the <code>Subscriber</code>) is by calling <code>onError</code> (after calling <code>onSubscribe</code>).</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher.subscribe</code> 는 다른 어떤 신호보다 먼저 주어진 구독자에 대해 <code>onSubscribe</code> 를 호출해야 하며, 호출 자체는 정상 반환되어야 한다. 단, 주어진 구독자가 <code>null</code> 인 경우에는 호출자에게 <code>java.lang.NullPointerException</code> 을 던져야 하고, 그 외 모든 상황에서 실패 (또는 구독 거절) 를 알리는 유일한 합법적인 방법은 (<code>onSubscribe</code> 를 호출한 뒤) <code>onError</code> 를 호출하는 것이다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that <code>onSubscribe</code> is always signalled before any of the other signals, so that initialization logic can be executed by the Subscriber when the signal is received. Also <code>onSubscribe</code> MUST only be called at most once. If the supplied <code>Subscriber</code> is <code>null</code>, there is nowhere else to signal this but to the caller, which means a <code>java.lang.NullPointerException</code> must be thrown. Examples of possible situations: A stateful Publisher can be overwhelmed, bounded by a finite number of underlying resources, exhausted, or in a terminal state.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>onSubscribe</code> 가 다른 어떤 신호보다 항상 먼저 전달되도록 하여, 구독자가 신호를 받은 시점에 초기화 로직을 실행할 수 있게 하는 데 있다. 또한 <code>onSubscribe</code> 는 최대 한 번만 호출되어야 한다. 주어진 구독자가 <code>null</code> 이라면 이를 알릴 곳이 호출자뿐이므로 <code>java.lang.NullPointerException</code> 을 던져야 한다. 가능한 상황의 예: 상태를 가진 발행자가 과부하 상태, 하부 자원의 수가 유한해 한정되어 있는 상태, 고갈 상태, 또는 종단 상태일 수 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.10</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher.subscribe</code> MAY be called as many times as wanted but MUST be with a different <code>Subscriber</code> each time.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher.subscribe</code> 는 원하는 만큼 호출될 수 있으나, 매 호출마다 서로 다른 구독자여야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to have callers of <code>subscribe</code> be aware that a generic Publisher and a generic Subscriber cannot be assumed to support being attached multiple times. Furthermore, it also mandates that the semantics of <code>subscribe</code> must be upheld no matter how many times it is called.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>subscribe</code> 의 호출자가 일반적인 발행자와 일반적인 구독자가 여러 번 연결될 수 있다고 가정해서는 안 된다는 점을 인지하도록 하는 데 있다. 또한 몇 번이 호출되더라도 <code>subscribe</code> 의 의미가 지켜져야 함을 강제한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.11</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Publisher</code> MAY support multiple <code>Subscriber</code>´s and decides whether each <code>Subscription</code> is unicast or multicast.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>발행자는 여러 구독자를 지원할 수 있으며, 각 구독이 유니캐스트인지 멀티캐스트인지를 스스로 결정한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to give Publisher implementations the flexibility to decide how many, if any, Subscribers they will support, and how elements are going to be distributed.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 발행자 구현체가 몇 명의 구독자를 (또는 아예 없도록) 지원할지, 그리고 원소를 어떻게 분배할지를 선택할 수 있도록 유연성을 부여하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="org-reactivestreams-subscription"><code>org.reactivestreams.Subscription</code></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="api-명세-2">API 명세</h3>
+<div class="paragraph">
+<p>아래 표는 <code>Subscription</code> 의 메서드에 대한 API 명세를 원문과 번역으로 옮긴 것이다.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup></p>
+</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 3. <code>request(long)</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="4"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>No events will be sent by a <code>Publisher</code> until demand is signaled via this method.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>이 메서드를 통해 수요가 알려지기 전까지 <code>Publisher</code> 는 어떠한 이벤트도 보내지 않는다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>It can be called however often and whenever needed—but if the outstanding cumulative demand ever becomes <code>Long.MAX_VALUE</code> or more, it may be treated by the <code>Publisher</code> as "effectively unbounded".</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>필요한 만큼 자주, 필요한 때마다 호출될 수 있다. 다만 미처리 누적 수요가 한 번이라도 <code>Long.MAX_VALUE</code> 이상이 되면, <code>Publisher</code> 는 이를 "사실상 무제한"으로 간주할 수 있다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Whatever has been requested can be sent by the <code>Publisher</code> so only signal demand for what can be safely handled.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>요청된 만큼은 <code>Publisher</code> 가 보낼 수 있으므로, 안전하게 처리할 수 있는 만큼만 수요로 알려야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Publisher</code> can send less than is requested if the stream ends but then must emit either <code>Subscriber.onError(Throwable)</code> or <code>Subscriber.onComplete()</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher</code> 는 발행이 끝나는 경우 요청보다 적게 보낼 수 있으며, 그때는 반드시 <code>Subscriber.onError(Throwable)</code> 또는 <code>Subscriber.onComplete()</code> 를 알려야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">매개변수 <code>n</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>the strictly positive number of elements to requests to the upstream <code>Publisher</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>업스트림 <code>Publisher</code> 에 요청할, 반드시 양수인 원소 개수.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 4. <code>cancel()</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Request the <code>Publisher</code> to stop sending data and clean up resources.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher</code> 에게 데이터 전송을 중단하고 자원을 정리하도록 요청한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Data may still be sent to meet previously signalled demand after calling <code>cancel</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>cancel</code> 호출 뒤에도 이미 알려진 수요를 충족하기 위해 데이터가 여전히 전달될 수 있다.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="org-reactivestreams-subscription-rule-table">규칙</h3>
+<div class="paragraph">
+<p>구독 규칙 [3.1] 부터 [3.17] 까지를 명세의 3절에서 옮겼다. 각 규칙 아래의 ※ 줄은 명세가 그 규칙에 붙인 의도 (intent) 설명이다.</p>
+</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 5. 구독 규칙 (Subscription Rules)</caption>
+<colgroup>
+<col style="width: 7%;">
+<col style="width: 46%;">
+<col style="width: 47%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ID</th>
+<th class="tableblock halign-left valign-top">Rule</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.1</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> and <code>Subscription.cancel</code> MUST only be called inside of its <code>Subscriber</code> context.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> 와 <code>Subscription.cancel</code> 은 해당 구독자의 컨텍스트 안에서만 호출되어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that a Subscription represents the unique relationship between a Subscriber and a Publisher. The Subscriber is in control over when elements are requested and when more elements are no longer needed.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독이 한 구독자와 한 발행자 사이의 유일한 관계를 표현함을 확립하는 데 있다. 언제 원소를 요청하고 언제 더 이상 필요 없는지는 구독자가 결정한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.2</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The <code>Subscription</code> MUST allow the <code>Subscriber</code> to call <code>Subscription.request</code> synchronously from within <code>onNext</code> or <code>onSubscribe</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독은 구독자가 <code>onNext</code> 또는 <code>onSubscribe</code> 안에서 동기적으로 <code>Subscription.request</code> 를 호출하는 것을 허용해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make it clear that implementations of <code>request</code> must be reentrant, to avoid stack overflows in the case of mutual recursion between <code>request</code> and <code>onNext</code> (and eventually <code>onComplete</code> / <code>onError</code>). This implies that Publishers can be <code>synchronous</code>, i.e. signalling <code>onNext</code>´s on the thread which calls <code>request</code>.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>request</code> 의 구현이 재진입 가능해야 한다는 점을 명확히 하는 데 있다. <code>request</code> 와 <code>onNext</code> (그리고 결국 <code>onComplete</code> / <code>onError</code>) 사이의 상호 재귀로 인한 스택 오버플로를 방지하기 위해서다. 이는 동기 발행자가 가능함을 함의한다. 즉 <code>request</code> 를 호출한 스레드 위에서 <code>onNext</code> 를 전달할 수 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.3</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> MUST place an upper bound on possible synchronous recursion between <code>Publisher</code> and <code>Subscriber</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> 는 발행자와 구독자 사이에 발생할 수 있는 동기 재귀에 상한을 두어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to complement [3.2] by placing an upper limit on the mutual recursion between <code>request</code> and <code>onNext</code> (and eventually <code>onComplete</code> / <code>onError</code>). Implementations are RECOMMENDED to limit this mutual recursion to a depth of <code>1</code> (ONE)—for the sake of conserving stack space. An example for undesirable synchronous, open recursion would be Subscriber.onNext &#8594; Subscription.request &#8594; Subscriber.onNext &#8594; …, as it otherwise will result in blowing the calling thread´s stack.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 [3.2] 를 보완하여 <code>request</code> 와 <code>onNext</code> (그리고 결국 <code>onComplete</code> / <code>onError</code>) 사이의 상호 재귀에 상한을 두는 데 있다. 구현체는 이 상호 재귀의 깊이를 1 (ONE)로 제한할 것이 권장된다 (스택 공간을 절약하기 위해). 바람직하지 않은 동기 무한 재귀의 예로는 <code>Subscriber.onNext</code> → <code>Subscription.request</code> → <code>Subscriber.onNext</code> → … 가 있다. 그대로 두면 호출 스레드에서 스택 오버플로가 발생한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.4</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> SHOULD respect the responsivity of its caller by returning in a timely manner.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> 는 호출자의 반응성을 존중하여 적시에 반환해야 한다 (SHOULD).</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that <code>request</code> is intended to be a non-obstructing method, and should be as quick to execute as possible on the calling thread, so avoid heavy computations and other things that would stall the caller´s thread of execution.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>request</code> 가 논블로킹 메서드이며 호출 스레드 위에서 가능한 한 빠르게 실행되어야 함을 확립하는 데 있다. 따라서 호출자의 실행 스레드를 정체시킬 무거운 계산 등은 피해야 한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.5</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.cancel</code> MUST respect the responsivity of its caller by returning in a timely manner, MUST be idempotent and MUST be thread-safe.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.cancel</code> 은 호출자의 반응성을 존중하여 적시에 반환해야 하며, 멱등이어야 하고 스레드 안전해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that <code>cancel</code> is intended to be a non-obstructing method, and should be as quick to execute as possible on the calling thread, so avoid heavy computations and other things that would stall the caller´s thread of execution. Furthermore, it is also important that it is possible to call it multiple times without any adverse effects.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>cancel</code> 이 논블로킹 메서드이며 호출 스레드 위에서 가능한 한 빠르게 실행되어야 함을 확립하는 데 있다. 무거운 계산 등은 피해야 한다. 또한 여러 번 호출되어도 부작용 없이 동작할 수 있어야 한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.6</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>After the <code>Subscription</code> is cancelled, additional <code>Subscription.request(long n)</code> MUST be NOPs.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 취소된 뒤의 추가 <code>Subscription.request(long n)</code> 호출은 아무 일도 하지 않아야 (NOP) 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish a causal relationship between cancellation of a subscription and the subsequent non-operation of requesting more elements.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독 취소와 이후 더 이상의 원소 요청이 무효화되는 것 사이의 인과 관계를 확립하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.7</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>After the <code>Subscription</code> is cancelled, additional <code>Subscription.cancel()</code> MUST be NOPs.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 취소된 뒤의 추가 <code>Subscription.cancel()</code> 호출도 아무 일도 하지 않아야 (NOP) 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is superseded by [3.5].</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 [3.5] 가 이미 포섭한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.8</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, <code>Subscription.request(long n)</code> MUST register the given number of additional elements to be produced to the respective subscriber.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.request(long n)</code> 은 주어진 개수만큼의 추가 원소가 해당 구독자에게 생산되도록 등록해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that <code>request</code>-ing is an additive operation, as well as ensuring that a request for elements is delivered to the Publisher.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>request</code> 가 누적되는 연산임을 보장하고, 원소 요청이 발행자에게 반드시 전달되도록 하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.9</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, <code>Subscription.request(long n)</code> MUST signal <code>onError</code> with a <code>java.lang.IllegalArgumentException</code> if the argument is &#8656; 0. The cause message SHOULD explain that non-positive request signals are illegal.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.request(long n)</code> 은 인자가 0 이하이면 <code>java.lang.IllegalArgumentException</code> 으로 <code>onError</code> 를 전달해야 한다. 원인 메시지에는 양수가 아닌 요청 신호는 불법이라고 설명해야 한다 (SHOULD).</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to prevent faulty implementations to proceed operation without any exceptions being raised. Requesting a negative or 0 number of elements, since requests are additive, most likely to be the result of an erroneous calculation on the behalf of the Subscriber.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 결함이 있는 구현체가 예외를 일으키지 않고 그대로 진행하는 것을 방지하는 데 있다. 요청은 누적되는 연산이므로, 음수나 0 의 원소 개수를 요청한다는 것은 구독자 측에서 잘못된 계산의 결과일 가능성이 가장 높다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.10</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, <code>Subscription.request(long n)</code> MAY synchronously call <code>onNext</code> on this (or other) subscriber(s).</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.request(long n)</code> 은 그 (또는 다른) 구독자에게 <code>onNext</code> 를 동기적으로 호출할 수도 있다 (MAY).</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that it is allowed to create synchronous Publishers, i.e. Publishers who execute their logic on the calling thread.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 동기 발행자 (호출 스레드 위에서 로직을 실행하는 발행자) 의 구현이 허용됨을 확립하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.11</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, <code>Subscription.request(long n)</code> MAY synchronously call <code>onComplete</code> or <code>onError</code> on this (or other) subscriber(s).</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.request(long n)</code> 은 그 (또는 다른) 구독자에게 <code>onComplete</code> 또는 <code>onError</code> 를 동기적으로 호출할 수도 있다 (MAY).</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that it is allowed to create synchronous Publishers, i.e. Publishers who execute their logic on the calling thread.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 동기 발행자 (호출 스레드 위에서 로직을 실행하는 발행자) 의 구현이 허용됨을 확립하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.12</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, <code>Subscription.cancel()</code> MUST request the <code>Publisher</code> to eventually stop signaling its <code>Subscriber</code>. The operation is NOT REQUIRED to affect the <code>Subscription</code> immediately.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.cancel()</code> 은 발행자가 결국 그 구독자에게 신호를 전달하지 않도록 요청해야 한다. 이 연산이 즉시 <code>Subscription</code> 에 효력을 발생시킬 필요는 없다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that the desire to cancel a Subscription is eventually respected by the Publisher, acknowledging that it may take some time before the signal is received.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독을 취소하려는 의사가 결국에는 발행자에 의해 존중됨을 확립하는 데 있다. 다만 신호가 수신되기까지 시간이 걸릴 수 있음을 인정한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.13</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, <code>Subscription.cancel()</code> MUST request the <code>Publisher</code> to eventually drop any references to the corresponding subscriber.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.cancel()</code> 은 발행자가 결국 해당 구독자에 대한 모든 참조를 해제하도록 요청해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that Subscribers can be properly garbage-collected after their subscription no longer being valid. Re-subscribing with the same Subscriber object is discouraged, but this specification does not mandate that it is disallowed since that would mean having to store previously cancelled subscriptions indefinitely.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독이 더 이상 유효하지 않게 된 뒤 구독자가 제대로 가비지 컬렉션 될 수 있도록 보장하는 데 있다. 같은 <code>Subscriber</code> 객체로 재구독하는 것은 권장되지 않으나, 본 명세가 이를 금지하지는 않는다. 금지하려면 이미 취소된 구독을 무기한 저장해야 하기 때문이다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.14</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>While the <code>Subscription</code> is not cancelled, calling <code>Subscription.cancel</code> MAY cause the <code>Publisher</code>, if stateful, to transition into the <code>shut-down</code> state if no other <code>Subscription</code> exists at this point.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독이 아직 취소되지 않은 동안, <code>Subscription.cancel</code> 호출은 (발행자가 상태를 가진다면) 그 시점에 다른 구독이 존재하지 않을 경우 발행자를 종료 상태(shut-down)로 전환시킬 수도 있다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to allow for Publishers to signal <code>onComplete</code> or <code>onError</code> following <code>onSubscribe</code> for new Subscribers in response to a cancellation signal from an existing Subscriber.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 기존 구독자의 취소 신호에 대응하여, 발행자가 새 구독자에게 <code>onSubscribe</code> 직후 <code>onComplete</code> 또는 <code>onError</code> 를 전달할 수 있도록 허용하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.15</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Calling <code>Subscription.cancel</code> MUST return normally.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.cancel</code> 호출은 반드시 정상 반환되어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to disallow implementations to throw exceptions in response to <code>cancel</code> being called.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>cancel</code> 호출에 대해 구현체가 예외를 던지지 못하도록 금지하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.16</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Calling <code>Subscription.request</code> MUST return normally.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request</code> 호출은 반드시 정상 반환되어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to disallow implementations to throw exceptions in response to <code>request</code> being called.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>request</code> 호출에 대해 구현체가 예외를 던지지 못하도록 금지하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.17</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscription</code> MUST support an unbounded number of calls to <code>request</code> and MUST support a demand up to 2^63-1 (<code>java.lang.Long.MAX_VALUE</code>). A demand equal or greater than 2^63-1 (<code>java.lang.Long.MAX_VALUE</code>) MAY be considered by the <code>Publisher</code> as "effectively unbounded".</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독은 <code>request</code> 의 무제한 호출을 지원해야 하며, 2^63-1 (<code>java.lang.Long.MAX_VALUE</code>) 까지의 수요를 지원해야 한다. 2^63-1 (<code>java.lang.Long.MAX_VALUE</code>) 이상의 수요는 발행자가 "사실상 무제한" 으로 간주할 수도 있다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that the Subscriber can request an unbounded number of elements, in any increment above 0, in any number of invocations of <code>request</code>. As it is not feasibly reachable with current or foreseen hardware within a reasonable amount of time (1 element per nanosecond would take 292 years) to fulfill a demand of 2^63-1, it is allowed for a Publisher to stop tracking demand beyond this point.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독자가 0 보다 큰 어떠한 증분으로든, <code>request</code> 의 어떠한 호출 횟수로도 무제한 개수의 원소를 요청할 수 있음을 확립하는 데 있다. 2^63-1의 수요를 충족하는 것이 현재 또는 예측 가능한 하드웨어로는 합리적 시간 안에 도달 불가능하므로 (1 원소/나노초로도 292 년이 걸린다), 발행자는 이 지점 이상에서 수요 추적을 중단할 수 있다.</em></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="org-reactivestreams-subscribert"><code>org.reactivestreams.Subscriber&lt;T&gt;</code></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="api-명세-3">API 명세</h3>
+<div class="paragraph">
+<p>아래 표는 <code>Subscriber</code> 의 메서드에 대한 API 명세를 원문과 번역으로 옮긴 것이다.<sup class="footnote">[<a id="_footnoteref_4" class="footnote" href="#_footnotedef_4" title="View footnote.">4</a>]</sup></p>
+</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 6. <code>onSubscribe(Subscription)</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="3"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Invoked after calling <code>Publisher.subscribe(Subscriber)</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Publisher.subscribe(Subscriber)</code> 가 호출된 뒤에 호출된다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>No data will start flowing until <code>Subscription.request(long)</code> is invoked.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request(long)</code> 이 호출되기 전에는 어떠한 데이터 신호도 전달되기 시작하지 않는다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>It is the responsibility of this <code>Subscriber</code> instance to call <code>Subscription.request(long)</code> whenever more data is wanted. The <code>Publisher</code> will send notifications only in response to <code>Subscription.request(long)</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>더 많은 데이터를 원할 때마다 <code>Subscription.request(long)</code> 을 호출하는 것은 이 <code>Subscriber</code> 인스턴스의 책임이다. <code>Publisher</code> 는 <code>Subscription.request(long)</code> 에 대한 응답으로만 신호를 보낸다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">매개변수 <code>s</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>the <code>Subscription</code> that allows requesting data via <code>Subscription.request(long)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request(long)</code> 을 통해 데이터를 요청할 수 있게 해 주는 <code>Subscription</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 7. <code>onNext(T)</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Data notification sent by the <code>Publisher</code> in response to requests to <code>Subscription.request(long)</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request(long)</code> 요청에 대한 응답으로 <code>Publisher</code> 가 보내는 데이터 신호.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">매개변수 <code>t</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>the element signaled</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>전달된 원소.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 8. <code>onError(Throwable)</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Failed terminal state.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>실패 종단 상태.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>No further events will be sent even if <code>Subscription.request(long)</code> is invoked again.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request(long)</code> 이 다시 호출되더라도 더 이상 어떤 이벤트도 전달되지 않는다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">매개변수 <code>t</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>the throwable signaled</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>전달된 <code>Throwable</code>.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 9. <code>onComplete()</code>: API 명세</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 42%;">
+<col style="width: 42%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">구분</th>
+<th class="tableblock halign-left valign-top">API 명세</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">설명</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Successful terminal state.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>성공 종단 상태.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>No further events will be sent even if <code>Subscription.request(long)</code> is invoked again.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscription.request(long)</code> 이 다시 호출되더라도 더 이상 어떤 이벤트도 전달되지 않는다.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="org-reactivestreams-subscriber-rule-table">규칙</h3>
+<div class="paragraph">
+<p>구독자 규칙 [2.1] 부터 [2.13] 까지를 명세의 2절에서 옮겼다. 각 규칙 아래의 ※ 줄은 명세가 그 규칙에 붙인 의도 (intent) 설명이다.</p>
+</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 10. 구독자 규칙 (Subscriber Rules)</caption>
+<colgroup>
+<col style="width: 7%;">
+<col style="width: 46%;">
+<col style="width: 47%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ID</th>
+<th class="tableblock halign-left valign-top">Rule</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.1</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST signal demand via <code>Subscription.request(long n)</code> to receive <code>onNext</code> signals.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 <code>onNext</code> 신호를 받으려면 <code>Subscription.request(long n)</code> 으로 수요를 알려야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that it is the responsibility of the Subscriber to decide when and how many elements it is able and willing to receive. To avoid signal reordering caused by reentrant Subscription methods, it is strongly RECOMMENDED for synchronous Subscriber implementations to invoke Subscription methods at the very end of any signal processing. It is RECOMMENDED that Subscribers request the upper limit of what they are able to process, as requesting only one element at a time results in an inherently inefficient "stop-and-wait" protocol.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 언제 몇 개의 원소를 받을 수 있고 받을 의향이 있는지를 구독자가 결정할 책임이 있음을 확립하는 데 있다. 재진입성 <code>Subscription</code> 메서드 호출에 의한 신호 순서 뒤바뀜을 피하기 위해, 동기 구독자 구현체는 신호 처리의 맨 마지막에 <code>Subscription</code> 메서드를 호출할 것이 강력히 권장된다. 또한 한 번에 하나씩 요청하면 본질적으로 비효율적인 "정지-대기" 프로토콜이 되므로, 처리 가능한 상한을 요청할 것이 권장된다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.2</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>If a <code>Subscriber</code> suspects that its processing of signals will negatively impact its <code>Publisher</code>´s responsivity, it is RECOMMENDED that it asynchronously dispatches its signals.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자가 자신의 신호 처리가 발행자의 반응성에 악영향을 줄 것으로 의심된다면, 비동기로 신호를 디스패치할 것이 권장된다 (RECOMMENDED).</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is that a Subscriber should not obstruct the progress of the Publisher from an execution point-of-view. In other words, the Subscriber should not starve the Publisher from receiving CPU cycles.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독자가 실행 관점에서 발행자의 진행을 방해해서는 안 된다는 것이다. 다시 말해, 구독자가 CPU 사이클을 차지해 발행자를 기아 상태로 만들어서는 안 된다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.3</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscriber.onComplete()</code> and <code>Subscriber.onError(Throwable t)</code> MUST NOT call any methods on the <code>Subscription</code> or the <code>Publisher</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscriber.onComplete()</code> 와 <code>Subscriber.onError(Throwable t)</code> 는 <code>Subscription</code> 또는 <code>Publisher</code> 의 어떤 메서드도 호출해서는 안 된다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to prevent cycles and race-conditions—between Publisher, Subscription and Subscriber—during the processing of completion signals.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 종단 신호 처리 중에 발행자·구독·구독자 사이의 사이클과 경쟁 조건이 발생하는 것을 방지하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.4</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscriber.onComplete()</code> and <code>Subscriber.onError(Throwable t)</code> MUST consider the Subscription cancelled after having received the signal.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscriber.onComplete()</code> 또는 <code>Subscriber.onError(Throwable t)</code> 를 받은 시점부터 구독자는 그 구독이 취소된 것으로 간주해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to make sure that Subscribers respect a Publisher&#8217;s terminal state signals. A Subscription is simply not valid anymore after an onComplete or onError signal has been received.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독자가 발행자의 종단 상태 신호를 존중하도록 보장하는 데 있다. <code>onComplete</code> 또는 <code>onError</code> 가 수신된 뒤에는 그 구독은 더 이상 유효하지 않다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.5</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST call <code>Subscription.cancel()</code> on the given <code>Subscription</code> after an <code>onSubscribe</code> signal if it already has an active <code>Subscription</code>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>이미 활성 구독을 보유한 구독자는, <code>onSubscribe</code> 신호로 또 다른 <code>Subscription</code> 을 받았다면 그 주어진 <code>Subscription</code> 에 대해 <code>cancel()</code> 을 호출해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to prevent that two, or more, separate Publishers from trying to interact with the same Subscriber. Enforcing this rule means that resource leaks are prevented since extra Subscriptions will be cancelled. Failure to conform to this rule may lead to violations of Publisher rule 1, amongst others. Such violations can lead to hard-to-diagnose bugs.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 둘 이상의 별개 발행자가 같은 구독자와 상호작용하려는 상황을 막는 데 있다. 이 규칙을 강제하면 여분의 구독이 취소되므로 자원 누수가 방지된다. 이 규칙을 어기면 Publisher 규칙 1 위반 등으로 이어질 수 있으며, 진단하기 어려운 버그의 원인이 된다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.6</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST call <code>Subscription.cancel()</code> if the <code>Subscription</code> is no longer needed.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 그 구독이 더 이상 필요 없으면 <code>Subscription.cancel()</code> 을 호출해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that Subscribers cannot just throw Subscriptions away when they are no longer needed, they have to call <code>cancel</code> so that resources held by that Subscription can be safely, and timely, reclaimed. An example of this would be a Subscriber which is only interested in a specific element, which would then cancel its Subscription to signal its completion to the Publisher.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독자가 더 이상 필요 없다는 이유만으로 <code>Subscription</code> 을 단순히 버려서는 안 되고, <code>cancel</code> 을 호출해 그 구독이 보유한 자원이 안전하고 시의적절하게 회수되도록 해야 함을 확립하는 데 있다. 예를 들어 특정 원소에만 관심이 있는 구독자는, 그 원소를 받은 뒤 <code>Subscription</code> 을 취소하여 발행자에게 완료를 알린다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.7</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A Subscriber MUST ensure that all calls on its Subscription&#8217;s request and cancel methods are performed serially.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 자신의 구독에 대한 <code>request</code> 와 <code>cancel</code> 호출이 모두 직렬 (serially) 로 수행되도록 보장해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to permit the calling of the request and cancel methods (including from multiple threads) if and only if a serial relation between each of the calls is established.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 (여러 스레드에서의 호출을 포함해) <code>request</code> 와 <code>cancel</code> 호출을 허용하되, 각 호출 사이에 직렬 관계가 성립할 때에 한해서만 허용하는 것이다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.8</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST be prepared to receive one or more <code>onNext</code> signals after having called <code>Subscription.cancel()</code> if there are still requested elements pending. <code>Subscription.cancel()</code> does not guarantee to perform the underlying cleaning operations immediately.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 <code>Subscription.cancel()</code> 을 호출한 뒤에도 요청해 둔 원소가 남아 있는 동안에는 하나 이상의 <code>onNext</code> 신호를 받을 준비가 되어 있어야 한다. <code>Subscription.cancel()</code> 은 내부 정리 작업의 즉시 수행을 보장하지 않는다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to highlight that there may be a delay between calling <code>cancel</code> and the Publisher observing that cancellation.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 <code>cancel</code> 을 호출한 시점과 발행자가 그 취소를 관측하는 시점 사이에 지연이 있을 수 있음을 강조하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.9</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST be prepared to receive an <code>onComplete</code> signal with or without a preceding <code>Subscription.request(long n)</code> call.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 선행하는 <code>Subscription.request(long n)</code> 호출 없이도 <code>onComplete</code> 신호를 받을 준비가 되어 있어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that completion is unrelated to the demand flow—this allows for streams which complete early, and obviates the need to poll for completion.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 완료가 수요와 무관함을 확립하는 데 있다. 이는 조기에 완료되는 스트림을 허용하며, 완료 여부를 능동적으로 폴링할 필요가 없게 한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.10</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST be prepared to receive an <code>onError</code> signal with or without a preceding <code>Subscription.request(long n)</code> call.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 선행하는 <code>Subscription.request(long n)</code> 호출 없이도 <code>onError</code> 신호를 받을 준비가 되어 있어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that Publisher failures may be completely unrelated to signalled demand. This means that Subscribers do not need to poll to find out if the Publisher will not be able to fulfill its requests.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 발행자의 실패가 전달된 수요와 완전히 무관할 수 있음을 확립하는 데 있다. 따라서 구독자는 발행자가 요청을 충족하지 못할지 여부를 능동적으로 폴링할 필요가 없다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.11</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Subscriber</code> MUST make sure that all calls on its signal methods happen-before the processing of the respective signals. I.e. the Subscriber must take care of properly publishing the signal to its processing logic.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>구독자는 자신의 신호 메서드 호출이 그에 대응하는 신호의 처리에 happens-before 관계를 갖도록 보장해야 한다. 즉, 신호를 처리 로직에 제대로 게시하는 것을 구독자가 처리한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that it is the responsibility of the Subscriber implementation to make sure that asynchronous processing of its signals are thread safe. See JMM definition of Happens-Before in section 17.4.5.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독자 구현체가 신호의 비동기 처리를 스레드 안전하게 만들 책임이 있음을 확립하는 데 있다. Happens-Before의 JMM 정의는 §17.4.5 를 참조한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.12</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>Subscriber.onSubscribe</code> MUST be called at most once for a given <code>Subscriber</code> (based on object equality).</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>주어진 구독자에 대해 (객체 동등성 기준으로) <code>Subscriber.onSubscribe</code> 는 최대 한 번 호출되어야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that it MUST be assumed that the same Subscriber can only be subscribed at most once. Note that object equality is <code>a.equals(b)</code>.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 같은 구독자는 최대 한 번만 구독될 수 있다고 가정해야 함을 확립하는 데 있다. 객체 동등성은 <code>a.equals(b)</code> 임에 유의한다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.13</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Calling <code>onSubscribe</code>, <code>onNext</code>, <code>onError</code> or <code>onComplete</code> MUST return normally except when any provided parameter is <code>null</code> in which case it MUST throw a <code>java.lang.NullPointerException</code> to the caller, for all other situations the only legal way for a <code>Subscriber</code> to signal failure is by cancelling its <code>Subscription</code>. In the case that this rule is violated, any associated <code>Subscription</code> to the <code>Subscriber</code> MUST be considered as cancelled, and the caller MUST raise this error condition in a fashion that is adequate for the runtime environment.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>onSubscribe</code>, <code>onNext</code>, <code>onError</code>, <code>onComplete</code> 호출은 반드시 정상 반환되어야 한다. 단, 주어진 인자가 <code>null</code> 인 경우에는 호출자에게 <code>java.lang.NullPointerException</code> 을 던져야 하며, 그 외 모든 상황에서 구독자가 실패를 알리는 유일한 합법적인 방법은 자신의 <code>Subscription</code> 을 취소하는 것이다. 이 규칙이 위반된 경우, 해당 구독자와 연관된 모든 <code>Subscription</code> 은 취소된 것으로 간주되어야 하며, 호출자는 런타임 환경에 적합한 방식으로 이 오류 상황을 표명해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish the semantics for the methods of Subscriber and what the Publisher is allowed to do in which case this rule is violated. «Raise this error condition in a fashion that is adequate for the runtime environment» could mean logging the error—or otherwise make someone or something aware of the situation—as the error cannot be signalled to the faulty Subscriber.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 구독자 메서드의 의미와, 이 규칙이 위반된 경우 발행자에게 허용되는 동작을 확립하는 데 있다. "런타임 환경에 적합한 방식으로 이 오류 상황을 표명" 한다는 것은 결함이 있는 구독자에게 그 오류를 신호로 보낼 수 없으므로, 오류를 로그로 남기거나 누군가/어떤 것에 상황을 알리는 것 등을 의미할 수 있다.</em></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="org-reactivestreams-processort-r"><code>org.reactivestreams.Processor&lt;T, R&gt;</code></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>org.reactivestreams.Processor&lt;T, R&gt;</code> <sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup> 인터페이스는 Reactive Streams 명세가 정의하는 네 인터페이스 중 처리 단계를 표현한다. 한쪽 끝에서는 구독자로, 다른 쪽 끝에서는 발행자로 동시에 동작하며, 두 인터페이스를 그대로 확장한 결합 인터페이스일 뿐 자신만의 메서드는 추가로 정의하지 않는다.</p>
+<p><code>org.reactivestreams.Processor&lt;T, R&gt;</code> <sup class="footnote">[<a id="_footnoteref_5" class="footnote" href="#_footnotedef_5" title="View footnote.">5</a>]</sup> 인터페이스는 Reactive Streams 명세가 정의하는 네 인터페이스 중 처리 단계를 표현한다. 한쪽 끝에서는 구독자로, 다른 쪽 끝에서는 발행자로 동시에 동작하며, 두 인터페이스를 그대로 확장한 결합 인터페이스일 뿐 자신만의 메서드는 추가로 정의하지 않는다.</p>
 </div>
 <div class="paragraph">
 <p>타입 매개변수 <code>T</code> 는 구독자로서 상위 발행자에게 요청하여 받는 항목의 타입, <code>R</code> 은 발행자의 입장에서 하위 구독자(들)에게 발행하는 타입이다. 둘이 같을 수도 (<code>Processor&lt;T, T&gt;</code>, 필터·로깅 등의 단순 통과 변형), 서로 다를 수도 (변환·디코딩·집계 등의 형 변환 변형) 있다.</p>
@@ -490,7 +1670,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>업스트림 측은 어느 경우든 한 처리자 인스턴스가 한 번에 하나의 활성 구독만 보유한다 (Subscriber 규칙 2.5). 다만 유니캐스트 처리자 패턴은 별개 인스턴스 각각이 자신의 업스트림 구독을 가지므로, 업스트림 입장에서는 여러 처리자가 잇따라 (또는 동시에) 구독하는 형태로 보인다. 신호가 실제로 어떻게 전달되는지는 업스트림이 <strong>콜드</strong> (cold) 발행자인지 <strong>핫</strong> (hot) / 멀티캐스트 발행자인지에 따라 달라진다.</p>
 </div>
 <div class="paragraph">
-<p>처리자가 지켜야 할 규칙은 Reactive Streams JVM 명세의 4절에 있다.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup> 처리자가 업스트림/다운스트림 구독에서 어떻게 맞물리는지를 시나리오별 시퀀스 도식으로 정리한다. 단순 통과, 업스트림 오류 전파, 업스트림 오류 복구, 다운스트림 측 취소의 업스트림 전파의 네 가지를 한 장씩 따로 그렸다.</p>
+<p>처리자가 지켜야 할 규칙은 Reactive Streams JVM 명세의 4절에 있다.<sup class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnotedef_6" title="View footnote.">6</a>]</sup> 처리자가 업스트림/다운스트림 구독에서 어떻게 맞물리는지를 시나리오별 시퀀스 도식으로 정리한다. 단순 통과, 업스트림 오류 전파, 업스트림 오류 복구, 다운스트림 측 취소의 업스트림 전파의 네 가지를 한 장씩 따로 그렸다.</p>
 </div>
 <div class="sect2">
 <h3 id="단순-통과-pass-through">단순 통과 (pass-through)</h3>
@@ -528,7 +1708,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="다운스트림-측-취소의-업스트림-전파-cancel-propagation">다운스트림 측 취소의 업스트림 전파 (cancel propagation)</h3>
 <div class="paragraph">
-<p>처리자의 마지막 다운스트림 구독자가 자신의 구독을 취소했을 때, 처리자가 자신의 업스트림 구독을 함께 취소하여 취소 신호가 업스트림으로 거슬러 올라가도록 하는 것이 권장되는 패턴이다.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup> 명세상 의무는 아니지만, 자원 회수와 구독 정리를 위해 일반적으로 따른다.</p>
+<p>처리자의 마지막 다운스트림 구독자가 자신의 구독을 취소했을 때, 처리자가 자신의 업스트림 구독을 함께 취소하여 취소 신호가 업스트림으로 거슬러 올라가도록 하는 것이 권장되는 패턴이다.<sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup> 명세상 의무는 아니지만, 자원 회수와 구독 정리를 위해 일반적으로 따른다.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -539,11 +1719,61 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="org-reactivestreams-processor-rules">규칙</h3>
 <div class="paragraph">
-<p>처리자 규칙 [4.1] 부터 [4.2] 까지의 원문은 Reactive Streams JVM 명세의 4절에 있다. 각 번호는 그 규칙의 원문으로 연결된다.</p>
+<p>처리자 규칙 [4.1] 과 [4.2] 를 명세의 4절에서 옮겼다. 각 규칙 아래의 ※ 줄은 명세가 그 규칙에 붙인 의도 (intent) 설명이다.</p>
 </div>
-<div class="paragraph">
-<p><a id="rs-4.1"></a><a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md#4.1" target="_blank" rel="noopener">[4.1]</a> <a id="rs-4.2"></a><a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md#4.2" target="_blank" rel="noopener">[4.2]</a></p>
-</div>
+<table class="tableblock frame-none grid-rows stretch">
+<caption class="title">Table 11. 처리자 규칙 (Processor Rules)</caption>
+<colgroup>
+<col style="width: 7%;">
+<col style="width: 46%;">
+<col style="width: 47%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ID</th>
+<th class="tableblock halign-left valign-top">Rule</th>
+<th class="tableblock halign-left valign-top">한국어</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.1</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Processor</code> represents a processing stage—which is both a <code>Subscriber</code> and a <code>Publisher</code> and MUST obey the contracts of both.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>처리자는 처리 단계를 표현하며, 구독자이자 발행자로서 두 인터페이스의 계약을 모두 따라야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to establish that Processors behave, and are bound by, both the Publisher and Subscriber specifications.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 처리자가 Publisher 명세와 Subscriber 명세 양쪽에 모두 구속되어 동작함을 확립하는 데 있다.</em></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.2</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A <code>Processor</code> MAY choose to recover an <code>onError</code> signal. If it chooses to do so, it MUST consider the <code>Subscription</code> cancelled, otherwise it MUST propagate the <code>onError</code> signal to its Subscribers immediately.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>처리자는 <code>onError</code> 신호를 복구하기로 선택할 수도 있다 (MAY). 그렇게 선택한 경우에는 해당 구독을 취소된 것으로 간주해야 하며, 그렇지 않다면 즉시 자신의 구독자들에게 그 <code>onError</code> 신호를 전파해야 한다.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">※</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The intent of this rule is to inform that it&#8217;s possible for implementations to be more than simple transformations.</em></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>이 규칙의 의도는 처리자 구현체가 단순한 변환에 그치지 않고 더 풍부한 동작을 할 수 있음을 알리는 데 있다.</em></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -551,13 +1781,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footnotes">
 <hr>
 <div class="footnote" id="_footnotedef_1">
-<a href="#_footnoteref_1">1</a>. <a href="https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc/org/reactivestreams/Processor.html" target="_blank" rel="noopener">Interface Processor — Reactive Streams JVM 1.0.4</a>
+<a href="#_footnoteref_1">1</a>. <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md" target="_blank" rel="noopener">Reactive Streams JVM Specification 1.0.4, README</a>
 </div>
 <div class="footnote" id="_footnotedef_2">
-<a href="#_footnoteref_2">2</a>. <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md" target="_blank" rel="noopener">Reactive Streams JVM Specification 1.0.4 — README</a>
+<a href="#_footnoteref_2">2</a>. <a href="https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc/org/reactivestreams/Publisher.html" target="_blank" rel="noopener">Interface Publisher, Reactive Streams JVM 1.0.4</a>
 </div>
 <div class="footnote" id="_footnotedef_3">
-<a href="#_footnoteref_3">3</a>. Reactive Streams JVM README, §4 (Processor) 의 비공식 주석: <em>"While not mandated, it can be a good idea to cancel a Processor&#8217;s upstream Subscription when/if its last Subscriber cancels their Subscription, to let the cancellation signal propagate upstream."</em> 규칙표에 등재된 의무 규약이 아닌, 같은 절의 본문에 덧붙은 non-normative remark 이다.
+<a href="#_footnoteref_3">3</a>. <a href="https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc/org/reactivestreams/Subscription.html" target="_blank" rel="noopener">Interface Subscription, Reactive Streams JVM 1.0.4</a>
+</div>
+<div class="footnote" id="_footnotedef_4">
+<a href="#_footnoteref_4">4</a>. <a href="https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc/org/reactivestreams/Subscriber.html" target="_blank" rel="noopener">Interface Subscriber, Reactive Streams JVM 1.0.4</a>
+</div>
+<div class="footnote" id="_footnotedef_5">
+<a href="#_footnoteref_5">5</a>. <a href="https://www.reactive-streams.org/reactive-streams-1.0.4-javadoc/org/reactivestreams/Processor.html" target="_blank" rel="noopener">Interface Processor — Reactive Streams JVM 1.0.4</a>
+</div>
+<div class="footnote" id="_footnotedef_6">
+<a href="#_footnoteref_6">6</a>. <a href="https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.4/README.md" target="_blank" rel="noopener">Reactive Streams JVM Specification 1.0.4 — README</a>
+</div>
+<div class="footnote" id="_footnotedef_7">
+<a href="#_footnoteref_7">7</a>. Reactive Streams JVM README, §4 (Processor) 의 비공식 주석: <em>"While not mandated, it can be a good idea to cancel a Processor&#8217;s upstream Subscription when/if its last Subscriber cancels their Subscription, to let the cancellation signal propagate upstream."</em> 규칙표에 등재된 의무 규약이 아닌, 같은 절의 본문에 덧붙은 non-normative remark 이다.
 </div>
 </div>
 <div id="footer">
